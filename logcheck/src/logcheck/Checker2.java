@@ -84,7 +84,7 @@ public class Checker2 extends AbstractChecker<Map<String, MsgMap>> {
 			System.out.println("[ " + msg.getMsg() + " ] : " + msg.sum());
 			msg.values().forEach(isp -> {
 				System.out.println("\t" + isp.getIsp().getName() + ("".equals(isp.getIsp().getCountry()) ? "" : " (" + isp.getIsp().getCountry() + ")") + " : " + isp.getSum());
-//				isp.getAddress().forEach(addr -> System.out.println("\t\t" + addr + "=" + isp.getCount(addr)));
+				isp.getAddress().forEach(addr -> System.out.println("\t\t" + addr + "=" + isp.getCount(addr)));
 			});
 		});
 		System.out.println();

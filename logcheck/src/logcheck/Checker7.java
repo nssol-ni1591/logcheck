@@ -14,7 +14,7 @@ import logcheck.msg.MsgBean;
 import logcheck.util.NetAddr;
 
 /*
- * 国 > ISP > メッセージ > クライアントIP 毎にログ数を集計する
+ * 国 > ISP > クライアントIP > メッセージ 毎にログ数を集計する
  */
 public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAddr, Map<MsgBean, Integer>>>>> {
 
@@ -94,33 +94,15 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 	public void report(Map<String, Map<IspList, Map<NetAddr, Map<MsgBean, Integer>>>> map) {
 		System.out.println("国\tISP/プロジェクト\tアドレス\tメッセージ\t出現日時\t最終日時\tログ数\tISP合計");
 		map.forEach((country, ispmap) -> {
-//			int sum = ispmap.values().stream().mapToInt(msgmap -> {
-//				return msgmap.values().stream().mapToInt(addrmap -> {
-//					return addrmap.values().stream().mapToInt(c -> c.intValue()).sum();
-//				}).sum();
-//			}).sum();
-//			int sum1 = ispmap.values().stream().mapToInt(msgmap -> {
-//				return msgmap.get(INFO_SUMMARY_MSG) == null ? 0 : msgmap.get(INFO_SUMMARY_MSG).values().stream().mapToInt(c -> c.intValue()).sum();
-//			}).sum();
-//			System.out.println(("".equals(country) ? "<MAGLIST>" : country) +
-//				new StringBuilder().append(" : ").append(sum - sum1).append(" / ").append(sum).append(" => ").append((sum - sum1) * 100 / sum).append("%").toString());
 
 			ispmap.forEach((isp, addrmap) -> {
-//				int sum2 = msgmap.values().stream().mapToInt(addrmap -> {
-//					return addrmap.values().stream().mapToInt(c -> c.intValue()).sum();
-//				}).sum();
-//				int sum21 = msgmap.get(INFO_SUMMARY_MSG) == null ? 0 : msgmap.get(INFO_SUMMARY_MSG).values().stream().mapToInt(c -> c.intValue()).sum();
-//				System.out.println(new StringBuilder().append("\t").append(isp).append(" : ").append(sum2 - sum21).append(" / ").append(sum2).append(" => ").append((sum2 - sum21) * 100 / sum2).append("%"));
 				int sumIspLog = addrmap.values().stream().mapToInt(msgmap -> {
 					return msgmap.values().stream().mapToInt(c -> c.intValue()).sum();
 				}).sum();
 
 				addrmap.forEach((addr, msgmap) -> {
-//					int sum3 = addrmap.values().stream().mapToInt(c -> c.intValue()).sum();
-//					System.out.println(new StringBuilder().append("\t\t[ ").append(msg).append(" ] : ").append(sum3));
 
 					msgmap.forEach((msg, count) -> {
-//						System.out.println(new StringBuilder().append("\t\t\t").append(addr).append(" : ").append(count));
 						System.out.println(
 								new StringBuilder("".equals(country) ? "<MAGLIST>" : country)
 								.append("\t")
@@ -140,9 +122,7 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 					});
 				});
 			});
-//			System.out.println();
 		});
-//		System.out.println();
 	}
 
 	public static void main(String... argv) {

@@ -97,22 +97,23 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 			int sum1 = ispmap.values().stream().mapToInt(msgmap -> {
 				return msgmap.get(INFO_SUMMARY_MSG) == null ? 0 : msgmap.get(INFO_SUMMARY_MSG).values().stream().mapToInt(c -> c.intValue()).sum();
 			}).sum();
-//			System.out.println(("".equals(country) ? "<MAGLIST>" : country) +
-//				new StringBuilder().append(" : ").append(sum - sum1).append(" / ").append(sum).append(" => ").append((sum - sum1) * 100 / sum).append("%").toString());
+			System.out.println(("".equals(country) ? "<MAGLIST>" : country) +
+				new StringBuilder().append(" : ").append(sum - sum1).append(" / ").append(sum).append(" => ").append((sum - sum1) * 100 / sum).append("%").toString());
 
 			ispmap.forEach((isp, msgmap) -> {
 				int sum2 = msgmap.values().stream().mapToInt(addrmap -> {
 					return addrmap.values().stream().mapToInt(c -> c.intValue()).sum();
 				}).sum();
 				int sum21 = msgmap.get(INFO_SUMMARY_MSG) == null ? 0 : msgmap.get(INFO_SUMMARY_MSG).values().stream().mapToInt(c -> c.intValue()).sum();
-//				System.out.println(new StringBuilder().append("\t").append(isp).append(" : ").append(sum2 - sum21).append(" / ").append(sum2).append(" => ").append((sum2 - sum21) * 100 / sum2).append("%"));
+				System.out.println(new StringBuilder().append("\t").append(isp).append(" : ").append(sum2 - sum21).append(" / ").append(sum2).append(" => ").append((sum2 - sum21) * 100 / sum2).append("%"));
 
 				msgmap.forEach((msg, addrmap) -> {
 					int sum3 = addrmap.values().stream().mapToInt(c -> c.intValue()).sum();
-//					System.out.println(new StringBuilder().append("\t\t[ ").append(msg).append(" ] : ").append(sum3));
+					System.out.println(new StringBuilder().append("\t\t[ ").append(msg).append(" ] : ").append(sum3));
 
 					addrmap.forEach((addr, count) -> {
-//						System.out.println(new StringBuilder().append("\t\t\t").append(addr).append(" : ").append(count));
+						System.out.println(new StringBuilder().append("\t\t\t").append(addr).append(" : ").append(count));
+						/*
 						System.out.println(
 								new StringBuilder("".equals(country) ? "<MAGLIST>" : country)
 								.append("\t")
@@ -123,6 +124,7 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 								.append(addr)
 								.append("\t")
 								.append(count));
+						*/
 					});
 				});
 			});
