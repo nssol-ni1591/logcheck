@@ -44,12 +44,13 @@ public class Checker8 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 						pattern = rc.get();
 					}
 					else {
-						rc = Stream.of(FAIL_PATTERNS_ALL)
+						rc = Stream.of(FAIL_PATTERNS_DUP)
 								.filter(p -> p.matcher(b.getMsg()).matches())
 								.map(p -> p.toString())
 								.findFirst();
 						if (rc.isPresent()) {
-							pattern = "(" + rc.get() + ")";
+							//同一原因で複数のエラーログが出力されることの対策
+							pattern = "(　" + rc.get() + "　)";
 						}
 						else if (!b.getMsg().contains("failed")) {
 							pattern = INFO_SUMMARY_MSG;
