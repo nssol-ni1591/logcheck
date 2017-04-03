@@ -53,6 +53,9 @@ public class AccessLog /*extends HashMap<String, AccessLogSummary>*/ {
 		id = array[2].substring(pos2 + 1, pos3);
 		role = array[2].substring(pos4 + 1, array[2].length() - 1);
 		msg = array[3];
+		for (int ix = 4; ix < array.length; ix++) {
+			msg = new StringBuilder(msg).append(" - ").append(array[ix]).toString();
+		}
 		return new AccessLogBean(date, host, ip, id, role, msg);
 	}
 	/*
@@ -93,7 +96,8 @@ public class AccessLog /*extends HashMap<String, AccessLogSummary>*/ {
 		}
 
 		String[] array = s.split(" - ");
-		if (array.length != 4) {
+		if (array.length < 4) {
+			System.err.println("ERROR: " + s);
 			return false;
 		}
 
