@@ -11,12 +11,14 @@ public class MsgBean implements Comparable<MsgBean> {
 
 	private String firstDate;
 	private String lastDate;
+	private String roles;
 	private int count;
 
 	public MsgBean(AccessLogBean log, String pattern) {
 		this.addr = log.getAddr();
 		this.id = log.getId();
 		this.pattern = pattern;
+		this.roles = log.getRoles();
 
 		this.firstDate = log.getDate();
 		this.lastDate = firstDate;
@@ -38,16 +40,23 @@ public class MsgBean implements Comparable<MsgBean> {
 	public String getPattern() {
 		return pattern;
 	}
+	public String getRoles() {
+		return roles;
+	}
 	public int getCount() {
 		return count;
 	}
 
-	public void update(String date) {
+	public synchronized void update(AccessLogBean b) {
+		String date = b.getDate();
 		if (firstDate.compareTo(date) > 0) {
 			this.firstDate = date;
 		}
 		if (lastDate.compareTo(date) < 0) {
 			this.lastDate = date;
+		}
+		if ("".equals(roles)) {
+			roles = b.getRoles();
 		}
 		this.count += 1;
 	}

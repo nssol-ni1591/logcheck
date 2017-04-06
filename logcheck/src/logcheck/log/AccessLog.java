@@ -40,7 +40,7 @@ public class AccessLog /*extends HashMap<String, AccessLogSummary>*/ {
 		String ip = null;
 		String id = null;
 		String role = null;
-		String msg = null;
+		StringBuilder msg = null;
 
 		String[] array = s.split(" - ");
 		date = array[0];
@@ -52,11 +52,11 @@ public class AccessLog /*extends HashMap<String, AccessLogSummary>*/ {
 		ip = array[2].substring(1, pos1);
 		id = array[2].substring(pos2 + 1, pos3);
 		role = array[2].substring(pos4 + 1, array[2].length() - 1);
-		msg = array[3];
+		msg = new StringBuilder(array[3]);
 		for (int ix = 4; ix < array.length; ix++) {
-			msg = new StringBuilder(msg).append(" - ").append(array[ix]).toString();
+			msg.append(" - ").append(array[ix]).toString();
 		}
-		return new AccessLogBean(date, host, ip, id, role, msg);
+		return new AccessLogBean(date, host, ip, id, role, msg.toString());
 	}
 	/*
 	public static AccessLogBean parse(String s) {
@@ -92,12 +92,13 @@ public class AccessLog /*extends HashMap<String, AccessLogSummary>*/ {
 	*/
 	public static boolean test(String s) {
 		if (s.startsWith("#")) {
+			System.err.println("SKIP: \"" + s + "\"");
 			return false;
 		}
 
 		String[] array = s.split(" - ");
 		if (array.length < 4) {
-			System.err.println("ERROR: " + s);
+			System.err.println("ERROR: \"" + s + "\"");
 			return false;
 		}
 
@@ -105,7 +106,7 @@ public class AccessLog /*extends HashMap<String, AccessLogSummary>*/ {
 		Matcher m = p.matcher(array[2]);
 		boolean rc = m.matches();
 		if (!rc) {
-			System.err.println("ERROR: " + s);
+			System.err.println("ERROR: \"" + s + "\"");
 		}
 		return rc;
 	}
@@ -133,11 +134,14 @@ public class AccessLog /*extends HashMap<String, AccessLogSummary>*/ {
 							}
 							als.addAddress(b.getAddr());
 							//als.add(b);
+							System.out.println("log=" + b);
 						});
+				/*
 				for (String ipaddr : map.keySet()) {
 					AccessLogSummary als = map.get(ipaddr);
 					System.out.println(ipaddr + " : " + als.sum());
 				}
+				*/
 				System.out.println("end AccessLog.main ...");
 			}
 		} catch (IOException e) {

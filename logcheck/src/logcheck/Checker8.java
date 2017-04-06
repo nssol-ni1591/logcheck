@@ -6,9 +6,11 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
+import logcheck.isp.Isp;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
+import logcheck.log.AccessLogBean;
 import logcheck.mag.MagList;
 import logcheck.msg.MsgBean;
 import logcheck.util.NetAddr;
@@ -16,10 +18,10 @@ import logcheck.util.NetAddr;
 /*
  * 国 > ISP > クライアントIP > メッセージ  > ID 毎にログ数を集計する
  */
-public class Checker8 extends AbstractChecker<Map<String, Map<IspList, Map<NetAddr, Map<String, Map<String, MsgBean>>>>>> {
+public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, MsgBean>>>>>> {
 
-	private final KnownList knownlist;
-	private final MagList maglist;
+	protected final KnownList knownlist;
+	protected final MagList maglist;
 	private static final String INFO_SUMMARY_MSG = "<><><> Information message summary <><><>";
 
 	public Checker8(String knownfile, String magfile) throws IOException {
@@ -27,39 +29,39 @@ public class Checker8 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 		this.maglist = loadMagList(magfile);
 	}
 
-	public Map<String, Map<IspList, Map<NetAddr, Map<String, Map<String, MsgBean>>>>> call(Stream<String> stream)
+	protected String getPattern(AccessLogBean b) {
+		Optional<String> rc = Stream.of(FAIL_PATTERNS)
+				.filter(p -> p.matcher(b.getMsg()).matches())
+				.map(p -> p.toString())
+				.findFirst();
+		if (rc.isPresent()) {
+			return rc.get();
+		}
+
+		rc = Stream.of(FAIL_PATTERNS_DUP)
+				.filter(p -> p.matcher(b.getMsg()).matches())
+				.map(p -> p.toString())
+				.findFirst();
+		if (rc.isPresent()) {
+			//同一原因で複数出力されるログは識別のため"（）"を付加する
+			return "(" + rc.get() + ")";
+		}
+		if (!b.getMsg().contains("failed")) {
+			// failed が含まれないメッセージは集約する
+			return INFO_SUMMARY_MSG;
+		}
+		System.err.println("ERROR: \"" + b.getMsg() + "\"");
+		return b.getMsg();
+	}
+
+	public Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, MsgBean>>>>> call(Stream<String> stream)
 			throws IOException {
-		Map<String, Map<IspList, Map<NetAddr, Map<String, Map<String, MsgBean>>>>> map = new TreeMap<>();
+		Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, MsgBean>>>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
 				.forEach(b -> {
-					String pattern;
-					// メッセージにIPアドレスなどが含まれるログは、それ以外の部分を比較対象とするための前処理
-					Optional<String> rc = Stream.of(FAIL_PATTERNS)
-							.filter(p -> p.matcher(b.getMsg()).matches())
-							.map(p -> p.toString())
-							.findFirst();
-					if (rc.isPresent()) {
-						pattern = rc.get();
-					}
-					else {
-						rc = Stream.of(FAIL_PATTERNS_DUP)
-								.filter(p -> p.matcher(b.getMsg()).matches())
-								.map(p -> p.toString())
-								.findFirst();
-						if (rc.isPresent()) {
-							//同一原因で複数のエラーログが出力されることの対策
-							pattern = "(　" + rc.get() + "　)";
-						}
-						else if (!b.getMsg().contains("failed")) {
-							pattern = INFO_SUMMARY_MSG;
-						}
-						else {
-							System.err.println("ERROR: \"" + b.getMsg() + "\"");
-							pattern = b.getMsg();
-						}
-					}
+					String pattern = getPattern(b);
 
 					NetAddr addr = b.getAddr();
 					IspList isp = maglist.get(addr);
@@ -68,7 +70,7 @@ public class Checker8 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 					}
 
 					if (isp != null) {
-						Map<IspList, Map<NetAddr, Map<String, Map<String, MsgBean>>>> ispmap;
+						Map<Isp, Map<NetAddr, Map<String, Map<String, MsgBean>>>> ispmap;
 						Map<NetAddr, Map<String, Map<String, MsgBean>>> addrmap;
 						Map<String, Map<String, MsgBean>> idmap;
 						Map<String, MsgBean> msgmap;
@@ -104,7 +106,7 @@ public class Checker8 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 							msgmap.put(pattern, msg);
 						}
 						else {
-							msg.update(b.getDate());
+							msg.update(b);
 						}
 
 					} else {
@@ -114,17 +116,18 @@ public class Checker8 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 		return map;
 	}
 
-	public void report(Map<String, Map<IspList, Map<NetAddr, Map<String, Map<String, MsgBean>>>>> map) {
-		System.out.println("国\tISP/プロジェクト\tアドレス\tユーザID\tメッセージ\t出現日時\t最終日時\tログ数\tISP合計");
+	public void report(Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, MsgBean>>>>> map) {
+		System.out.println("国\tISP/プロジェクト\tアドレス\tユーザID\tメッセージ\tロール\t出現日時\t最終日時\tログ数");
 		map.forEach((country, ispmap) -> {
 
 			ispmap.forEach((isp, addrmap) -> {
+				/*
 				int sumIspLog = addrmap.values().stream().mapToInt(idmap -> {
 					return idmap.values().stream().mapToInt(msgmap -> {
 						return msgmap.values().stream().mapToInt(msg -> msg.getCount()).sum();
 					}).sum();
 				}).sum();
-
+				*/
 				addrmap.forEach((addr, idmap) -> {
 
 					idmap.forEach((id, msgmap) -> {
@@ -141,13 +144,16 @@ public class Checker8 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 											.append("\t")
 											.append(pattern)
 											.append("\t")
+											.append(msg.getRoles())
+											.append("\t")
 											.append(msg.getFirstDate())
 											.append("\t")
 											.append(msg.getLastDate())
 											.append("\t")
 											.append(msg.getCount())
-											.append("\t")
-											.append(sumIspLog));
+//											.append("\t")
+//											.append(sumIspLog)
+											);
 						});
 					});
 				});
@@ -157,7 +163,7 @@ public class Checker8 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 
 	public static void main(String... argv) {
 		if (argv.length < 2) {
-			System.err.println("usage: java logcheck.Checker4 knownlist maglist [accesslog...]");
+			System.err.println("usage: java logcheck.Checker8 knownlist maglist [accesslog...]");
 			System.exit(1);
 		}
 

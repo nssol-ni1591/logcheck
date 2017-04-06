@@ -5,7 +5,7 @@ import java.util.TreeSet;
 
 import logcheck.util.NetAddr;
 
-public class IspList extends IspBean<Set<NetAddr>> {
+public class IspList extends IspBean<Set<NetAddr>> implements Isp {
 
 	public IspList(String name) {
 		super(name, "", new TreeSet<NetAddr>());

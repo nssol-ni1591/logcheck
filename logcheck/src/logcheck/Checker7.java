@@ -81,7 +81,7 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 							count = new Integer(0);
 						}
 						else {
-							msg.update(b.getDate());
+							msg.update(b);
 						}
 						count += 1;
 						msgmap.put(msg, count);
