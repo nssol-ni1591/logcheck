@@ -5,7 +5,7 @@ import logcheck.isp.IspList;
 public class MagListIsp extends IspList {
 
 	public MagListIsp(String prjId) {
-		super(prjId);
+		super(prjId, "<MAG>");
 	}
 
 	public String getPrjId() {
