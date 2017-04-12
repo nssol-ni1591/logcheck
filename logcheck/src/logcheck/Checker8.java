@@ -134,7 +134,7 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 
 						msgmap.forEach((pattern, msg) -> {
 							System.out.println(
-									new StringBuilder("".equals(country) ? "<MAG>" : country)
+									new StringBuilder(country)
 											.append("\t")
 											.append(isp)
 											.append("\t")
