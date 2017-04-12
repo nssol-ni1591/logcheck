@@ -1,5 +1,6 @@
 package logcheck.msg;
 
+import logcheck.isp.Isp;
 import logcheck.log.AccessLogBean;
 import logcheck.util.NetAddr;
 
@@ -8,6 +9,7 @@ public class MsgBean implements Comparable<MsgBean> {
 	private final NetAddr addr;
 	private final String id;
 	private final String pattern;
+	private Isp isp;
 
 	private String firstDate;
 	private String lastDate;
@@ -23,6 +25,10 @@ public class MsgBean implements Comparable<MsgBean> {
 		this.firstDate = log.getDate();
 		this.lastDate = firstDate;
 		this.count = 1;
+	}
+	public MsgBean(AccessLogBean log, String pattern, Isp isp) {
+		this(log, pattern);
+		this.isp = isp;
 	}
 
 	public String getFirstDate() {
@@ -40,6 +46,9 @@ public class MsgBean implements Comparable<MsgBean> {
 	public String getPattern() {
 		return pattern;
 	}
+	public Isp getIsp() {
+		return isp;
+	}
 	public String getRoles() {
 		return roles;
 	}
@@ -55,9 +64,16 @@ public class MsgBean implements Comparable<MsgBean> {
 		if (lastDate.compareTo(date) < 0) {
 			this.lastDate = date;
 		}
+
+//		if (!roles.equals(b.getRoles())) {
+//			System.err.println("Warning: old=" + roles + ", new=" + b.getRoles() + ", log=" + b);
+//		}
 		if ("".equals(roles)) {
 			roles = b.getRoles();
 		}
+		this.count += 1;
+	}
+	public void addCount() {
 		this.count += 1;
 	}
 
