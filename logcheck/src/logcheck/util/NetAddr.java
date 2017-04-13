@@ -41,15 +41,31 @@ public class NetAddr implements Comparable<NetAddr> {
 				int tmp_mask = 0;
 				for (int ix = 0; ix < 4; ix++) {
 					int m = Integer.parseInt(s2[ix]);
+					/*
 					while (m > 0) {
 						m = m / 2;
 						++tmp_mask;
+					}
+					*/
+					switch (m) {
+					case 0:		tmp_mask += 0 ; break;
+					case 127:	tmp_mask += 1 ; break;
+					case 128:	tmp_mask += 1 ; break;	// 記入ミス対応
+					case 192:	tmp_mask += 2 ; break;
+					case 224:	tmp_mask += 3 ; break;
+					case 240:	tmp_mask += 4 ; break;
+					case 248:	tmp_mask += 5 ; break;
+					case 252:	tmp_mask += 6 ; break;
+					case 254:	tmp_mask += 7 ; break;
+					case 255:	tmp_mask += 8 ; break;
+					default:
+						throw new IllegalArgumentException("ip error: " + addr + ", s2=" + s2);
 					}
 				}
 				mask = tmp_mask;
 			}
 			else {
-				throw new IllegalArgumentException("ip error: " + s0[0] + ", len=" + s1.length);
+				throw new IllegalArgumentException("ip error: " + addr + ", len=" + s1.length);
 			}
 		}
 
