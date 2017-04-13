@@ -30,26 +30,26 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 			Pattern.compile(""),
 	 */
 	protected static final Pattern[] FAIL_PATTERNS = {
-			Pattern.compile("Host Checker policy 'MAC_Address_Filter' failed on host .+"),
-			Pattern.compile("Login failed \\(NSSDC_LDAP\\).  Reason: LDAP Server"),
-			Pattern.compile("Login failed using auth server NSSDC_LDAP \\(LDAP Server\\).  Reason: Failed"),
-			Pattern.compile("Login failed using auth server NSSDC_LDAP \\(LDAP Server\\).  Reason: Short Password"),
-			Pattern.compile("Login failed.  Reason: Failed"),
-			Pattern.compile("Login failed.  Reason: IP Denied"),
-			Pattern.compile("Login failed.  Reason: No Certificate"),
-			Pattern.compile("Login failed.  Reason: No Roles"),
-			Pattern.compile("Login failed.  Reason: Revoked Certificate"),
-			Pattern.compile("Testing Source IP realm restrictions failed for /NSSDC-Auth1 *"),
-			Pattern.compile("TLS handshake failed - client issued alert 'untrusted or unknown certificate'"),
+			Pattern.compile("Host Checker policy 'MAC_Address_Filter' failed on host .+"),	// 単独で発生
+			Pattern.compile("Login failed using auth server NSSDC_LDAP \\(LDAP Server\\).  Reason: Failed"),		// 後："Primary authentication failed for [\\S ]+ from \\S+"
+			Pattern.compile("Login failed using auth server NSSDC_LDAP \\(LDAP Server\\).  Reason: Short Password"),//　後："Testing Password realm restrictions failed for [\\S ]+ , with certificate '[\\w ,=-]+' *"
+			Pattern.compile("Login failed.  Reason: Failed"),								// 単独で発生
+			Pattern.compile("Login failed.  Reason: No Certificate"),						// 後："Testing Certificate realm restrictions failed for [\\w\\.]*/NSSDC-Auth(1|2)(\\(MAC\\))? *"
+			Pattern.compile("Login failed.  Reason: No Roles"),								// 単独
+			Pattern.compile("Login failed.  Reason: Revoked Certificate"),					//　後："Testing Certificate realm restrictions failed for [\\w\\.]*/NSSDC-Auth(1|2)(\\(MAC\\))? , with certificate '[\\w ,=-]+' *"
+			Pattern.compile("Testing Source IP realm restrictions failed for /NSSDC-Auth1 *"),	// 単独or後："Login failed.  Reason: IP Denied"
 	};
 	protected static final Pattern[] FAIL_PATTERNS_DUP = {
 			Pattern.compile(" authentication failed for Primary/\\w+  from NSSDC_LDAP"),
-			Pattern.compile("Primary authentication failed for [\\S ]+ from \\S+"),
+			Pattern.compile("Login failed \\(NSSDC_LDAP\\).  Reason: LDAP Server"),			// 後： authentication failed for Primary/Z06290  from NSSDC_LDAP
+			Pattern.compile("Login failed.  Reason: IP Denied"),							// 前："Testing Source IP realm restrictions failed for \\w+/NSSDC-Auth1 *"
+			Pattern.compile("Primary authentication failed for [\\S ]+ from \\S+"),			
 			Pattern.compile("Testing Certificate realm restrictions failed for [\\w\\.]*/NSSDC-Auth(1|2)(\\(MAC\\))? *"),
 			Pattern.compile("Testing Certificate realm restrictions failed for [\\w\\.]*/NSSDC-Auth(1|2)(\\(MAC\\))? , with certificate '[\\w ,=-]+' *"),
 			Pattern.compile("Testing Password realm restrictions failed for [\\S ]+ , with certificate '[\\w ,=-]+' *"),
-			Pattern.compile("Testing Source IP realm restrictions failed for \\w+/NSSDC-Auth1 *"),
+			Pattern.compile("Testing Source IP realm restrictions failed for \\w+/NSSDC-Auth1 *"),	// 後："Login failed.  Reason: IP Denied"
 			Pattern.compile("The X\\.509 certificate for .+; Detail: 'certificate revoked' "),
+			Pattern.compile("TLS handshake failed - client issued alert 'untrusted or unknown certificate'"),	// 
 	};
 	protected static final Pattern[] INFO_PATTERNS = {
 			Pattern.compile("Active user '\\S+' in realm 'NSSDC-Auth(1|2)(\\(MAC\\))?' is deleted since user does not qualify reevaluated policies"),
