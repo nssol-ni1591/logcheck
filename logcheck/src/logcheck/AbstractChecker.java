@@ -85,7 +85,6 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 			Pattern.compile("Warning! Number of concurrent users is nearing the system limit \\(\\d+\\)\\."),
 			Pattern.compile("\\S+/NSSDC-Auth(1|2)(\\(MAC\\))? logged out from IP \\([\\d\\.]+\\) because user started new session from IP \\([\\d\\.]+\\)\\."),
 	};
-	public static String MAG = "利用申請";
 
 	public AbstractChecker() { }
 	/*
