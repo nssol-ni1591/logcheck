@@ -23,7 +23,10 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 	protected final MagList maglist;
 	private static final Pattern[] AUTH_PATTERNS = {
 			Pattern.compile("Primary authentication successful for [\\S ]+ from [\\d\\.]+"),
-			Pattern.compile("Primary authentication failed for [\\S ]+ from \\S+"),
+//			Pattern.compile("Primary authentication failed for [\\S ]+ from \\S+"),
+//			Pattern.compile("Certificate realm restrictions successfully passed for [\\S ]+ , with certificate '[\\S ]+'"),
+			Pattern.compile("Login failed using auth server NSSDC_LDAP \\(LDAP Server\\).  Reason: Failed"),
+			Pattern.compile("Login failed using auth server NSSDC_LDAP \\(LDAP Server\\).  Reason: Short Password"),
 	};
 	
 	public Checker10(String knownfile, String magfile) throws IOException {
@@ -54,11 +57,12 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 					}
 
 					if (isp != null) {
+						/*
 						int backward = list.size() - 10;
 						if (backward < 0) {
 							backward += 10;
 						}
-
+						*/
 						MsgBean msg = null;
 						if (b.getMsg().contains("failed")) {
 							// 失敗メッセージ
@@ -67,9 +71,14 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 								list.add(msg);
 							}
 							else {
-								for (int ix = 0; ix < backward; ix++) {
-									msg = list.get(list.size() - ix - 1);
-									if (msg.getAddr().equals(b.getAddr()) && msg.getIsp().equals(isp) && msg.getId().equals(b.getId())) {
+								String date = b.getDate().substring(0, 10);
+								for (int ix = list.size() - 1; ix >= 0; ix--) {
+									msg = list.get(ix);
+									if (!msg.getFirstDate().startsWith(date)) {
+										msg = null;
+										break;
+									}
+									else if (msg.getAddr().equals(b.getAddr()) && msg.getId().equals(b.getId())) {
 										msg.addCount();
 										break;
 									}
@@ -83,10 +92,14 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 						}
 						else {
 							// 成功メッセージ
-							for (int ix = 0; ix < backward; ix++) {
-								msg = list.get(list.size() - ix - 1);
-								if (msg.getAddr().equals(b.getAddr()) && msg.getIsp().equals(isp) && msg.getId().equals(b.getId())) {
-									list.remove(list.size() - ix - 1);
+							String date = b.getDate().substring(0, 10);
+							for (int ix = list.size() - 1; ix >= 0; ix--) {
+								msg = list.get(ix);
+								if (!msg.getFirstDate().startsWith(date)) {
+									break;
+								}
+								else if (msg.getAddr().equals(b.getAddr()) && msg.getId().equals(b.getId())) {
+									list.remove(ix);
 									break;
 								}
 							}
@@ -101,7 +114,7 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 	}
 
 	public void report(List<MsgBean> list) {
-		System.out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\tロール\tメッセージ");
+		System.out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\tエラー回数\tメッセージ");
 
 		list.forEach(msg -> {
 			System.out.println(
@@ -115,7 +128,7 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 					.append("\t")
 					.append(msg.getId())
 					.append("\t")
-					.append(msg.getRoles())
+					.append(msg.getCount())
 					.append("\t")
 					.append(msg.getPattern())
 					);
@@ -135,4 +148,4 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 		}
 		System.exit(1);
 	}
-	}
+}
