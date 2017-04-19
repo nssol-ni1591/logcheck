@@ -137,7 +137,7 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 		Matcher m = p.matcher(s);
 		boolean rc = m.find();
 		if (!rc) {
-			System.err.println("ERROR: " + s.trim());
+			System.err.println("WARNING: " + s.trim());
 		}
 
 		String[] array = s.split("\t");
