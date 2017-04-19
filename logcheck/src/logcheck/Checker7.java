@@ -15,6 +15,7 @@ import logcheck.util.NetAddr;
 
 /*
  * 国 > ISP > クライアントIP > メッセージ 毎にログ数を集計する
+ * ⇒ MsgBean, Integerでは、日時を正確に処理できない
  */
 public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAddr, Map<MsgBean, Integer>>>>> {
 
@@ -80,7 +81,7 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 							count = new Integer(0);
 						}
 						else {
-							msg.updateDate(b.getDate());
+							msg.update(b);
 						}
 						count += 1;
 						msgmap.put(msg, count);

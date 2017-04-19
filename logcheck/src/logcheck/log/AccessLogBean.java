@@ -8,15 +8,15 @@ public class AccessLogBean {
 	private final String host;
 	private final String ip;
 	private final String id;
-	private final String role;
+	private final String roles;
 	private final String msg;
 
-	public AccessLogBean(String date, String host, String ip, String id, String role, String msg) {
+	public AccessLogBean(String date, String host, String ip, String id, String roles, String msg) {
 		this.date = date;
 		this.host = host;
 		this.ip = ip;
 		this.id = id;
-		this.role = role;
+		this.roles = roles;
 		this.msg = msg;
 
 		if (ip == null) {
@@ -46,14 +46,14 @@ public class AccessLogBean {
 	public String getId() {
 		return id;
 	}
-	public String getRole() {
-		return role;
+	public String getRoles() {
+		return roles;
 	}
 	public String getMsg() {
 		return msg;
 	}
 
 	public String toString() {
-		return String.format("date=%s, msg=%s", date, msg);
+		return String.format("date=%s, roles=%s, msg=%s", date, roles, msg);
 	}
 }

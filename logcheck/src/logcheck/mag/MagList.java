@@ -50,7 +50,9 @@ public class MagList extends HashMap<String, MagListIsp> {
 						mp = new MagListIsp(b.getPrjId());
 						map.put(b.getPrjId(), mp);
 					}
-					mp.addAddress(new NetAddr(b.getMagIp() + "/" + b.getMagMask()));
+					NetAddr addr = new NetAddr(b.getMagIp() + "/" + b.getMagMask());
+					mp.addAddress(addr);
+					//System.out.printf("prjId=%s, addr=%s\n", b.getPrjId(), addr);
 				});
 		return map;
 	}
@@ -152,7 +154,7 @@ public class MagList extends HashMap<String, MagListIsp> {
 
 		for (String name : map.keySet()) {
 			MagListIsp c = map.get(name);
-			System.out.println(name + "=" + c);
+			System.out.println(name + "=" + c.getAddress());
 		}
 		System.out.println("MagList.main ... end");
 	}
