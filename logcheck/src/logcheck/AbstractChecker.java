@@ -106,9 +106,8 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 	protected MagList loadMagList(String file) throws Exception {
 		System.err.println("loading MagList ... ");
 		long time = System.currentTimeMillis();
-//		MagList maglist = MagList.load(file);
-//		MagList maglist = new TsvMagList().load(file);
-		MagList maglist = new DbMagList().load(file);
+		MagList maglist = new TsvMagList().load(file);
+//		MagList maglist = new DbMagList().load(file);
 		System.err.println("loaded MagList ... elaps=" + (System.currentTimeMillis() - time) + " ms");
 		return maglist;
 	}
