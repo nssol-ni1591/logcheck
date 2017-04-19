@@ -1,6 +1,5 @@
 package logcheck;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
@@ -32,7 +31,7 @@ public class Checker9 extends AbstractChecker<List<MsgBean>> {
 		System.arraycopy(FAIL_PATTERNS_DUP, 0, ALL_PATTERNS, INFO_PATTERNS.length + FAIL_PATTERNS.length, FAIL_PATTERNS_DUP.length);
 	}
 
-	public Checker9(String select, String knownfile, String magfile) throws IOException {
+	public Checker9(String select, String knownfile, String magfile) throws Exception {
 		this.select = select;
 		this.knownlist = loadKnownList(knownfile);
 		this.maglist = loadMagList(magfile);
@@ -51,8 +50,7 @@ public class Checker9 extends AbstractChecker<List<MsgBean>> {
 		return b.getMsg();
 	}
 
-	public List<MsgBean> call(Stream<String> stream)
-			throws IOException {
+	public List<MsgBean> call(Stream<String> stream) throws Exception {
 		List<MsgBean> list = new Vector<>(1000000);
 		stream//.parallel()
 				.filter(AccessLog::test)

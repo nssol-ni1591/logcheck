@@ -1,6 +1,5 @@
 package logcheck;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -31,12 +30,12 @@ public class Checker3 extends AbstractChecker<Map<String, IspMap<Map<String, Int
 	};
 	*/
 
-	public Checker3(String knownfile, String magfile) throws IOException {
+	public Checker3(String knownfile, String magfile) throws Exception {
 		this.knownlist = loadKnownList(knownfile);
 		this.maglist = loadMagList(magfile);
 	}
 
-	public Map<String, IspMap<Map<String, Integer>>> call(Stream<String> stream) throws IOException {
+	public Map<String, IspMap<Map<String, Integer>>> call(Stream<String> stream) throws Exception {
 		Map<String, IspMap<Map<String, Integer>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)

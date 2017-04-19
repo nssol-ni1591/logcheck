@@ -1,6 +1,5 @@
 package logcheck;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -24,7 +23,7 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 	protected final MagList maglist;
 	private static final String INFO_SUMMARY_MSG = "<><><> Information message summary <><><>";
 
-	public Checker8(String knownfile, String magfile) throws IOException {
+	public Checker8(String knownfile, String magfile) throws Exception {
 		this.knownlist = loadKnownList(knownfile);
 		this.maglist = loadMagList(magfile);
 	}
@@ -54,8 +53,7 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 		return b.getMsg();
 	}
 
-	public Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, MsgBean>>>>> call(Stream<String> stream)
-			throws IOException {
+	public Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, MsgBean>>>>> call(Stream<String> stream) throws Exception {
 		Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, MsgBean>>>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)

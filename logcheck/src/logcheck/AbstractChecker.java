@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 
 import logcheck.known.KnownList;
 import logcheck.mag.MagList;
+import logcheck.mag.db.DbMagList;
 import logcheck.mag.tsv.TsvMagList;
 
 /*
@@ -102,11 +103,12 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 		System.err.println("loaded KnownList ... elaps=" + (System.currentTimeMillis() - time) + " ms");
 		return knownlist;
 	}
-	protected MagList loadMagList(String file) throws IOException {
+	protected MagList loadMagList(String file) throws Exception {
 		System.err.println("loading MagList ... ");
 		long time = System.currentTimeMillis();
 //		MagList maglist = MagList.load(file);
-		MagList maglist = new TsvMagList().load(file);
+//		MagList maglist = new TsvMagList().load(file);
+		MagList maglist = new DbMagList().load(file);
 		System.err.println("loaded MagList ... elaps=" + (System.currentTimeMillis() - time) + " ms");
 		return maglist;
 	}
@@ -160,12 +162,12 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 		return map;
 	}
 
-	public T call() throws IOException {
+	public T call() throws Exception {
 		Stream<String> stream = getStream();
 		return call(stream);
 	}
 
-	public abstract T call(Stream<String> stream) throws IOException;
+	public abstract T call(Stream<String> stream) throws Exception;
 	public abstract void report(T map);
 
 	public void start(String[] argv, int offset) throws Exception {

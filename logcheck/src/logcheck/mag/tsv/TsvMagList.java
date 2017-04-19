@@ -44,29 +44,29 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 
 //	public static TsvMagList load(String file) throws IOException {
 	public TsvMagList load(String file) throws IOException {
-		TsvMagList map = new TsvMagList();
+//		TsvMagList map = new TsvMagList();
 		Files.lines(Paths.get(file), Charset.forName("MS932"))
 //				.filter(TsvMagList::test)
 				.filter(s -> test(s))
 //				.map(TsvMagList::parse)
 				.map(s -> parse(s))
 				.forEach(b -> {
-					MagListIsp mp = map.get(b.getPrjId());
+					MagListIsp mp = this.get(b.getPrjId());
 					if (mp == null) {
 						mp = new MagListIsp(b.getPrjId());
-						map.put(b.getPrjId(), mp);
+						this.put(b.getPrjId(), mp);
 					}
-					NetAddr addr = new NetAddr(b.getMagIp() + "/" + b.getMagMask());
+					NetAddr addr = new NetAddr(b.getMagIp());
 					mp.addAddress(addr);
 					//System.out.printf("prjId=%s, addr=%s\n", b.getPrjId(), addr);
 				});
-		return map;
+		return this;
 	}
 //	public static MagListBean parse(String s) {
-	public MagListBean parse(String s) {
+	private MagListBean parse(String s) {
 		String prjId = null;
 		String prjName = null;
-		String prjConn = null;
+		String prjSite = null;
 		String prjIp = null;
 		String magIp = null;
 		String magMask = null;
@@ -79,7 +79,7 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 			prjName = array[2];
 		}
 		if (array.length > 3) {
-			prjConn = array[3];
+			prjSite = array[3];
 		}
 		if (array.length > 4) {
 			prjIp = array[4];
@@ -90,7 +90,7 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 		if (array.length > 6) {
 			magMask = array[6];
 		}
-		return new MagListBean(prjId, prjName, prjConn, prjIp, magIp, magMask);
+		return new MagListBean(prjId, prjName, prjSite, prjIp, magIp, magMask);
 	}
 	/*
 	public static MagListBean parse(String s) {
@@ -125,7 +125,7 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 	}
 	*/
 //	public static boolean test(String s) {
-	public boolean test(String s) {
+	private boolean test(String s) {
 		if (s.startsWith("#")) {
 			return false;
 		}
@@ -151,7 +151,7 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 	}
 
 	public static void main(String... argv) {
-		System.out.println("start MagList.main ...");
+		System.out.println("start TsvMagList.main ...");
 		TsvMagList map = new TsvMagList();
 		try {
 			map = new TsvMagList().load(argv[0]);
@@ -164,6 +164,6 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 			MagListIsp c = map.get(name);
 			System.out.println(name + "=" + c.getAddress());
 		}
-		System.out.println("MagList.main ... end");
+		System.out.println("TsvMagList.main ... end");
 	}
 }

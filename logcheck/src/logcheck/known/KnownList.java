@@ -1,4 +1,3 @@
-
 package logcheck.known;
 
 import java.io.IOException;
