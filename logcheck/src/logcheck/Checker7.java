@@ -91,7 +91,7 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 	}
 
 	public void report(Map<String, Map<IspList, Map<NetAddr, Map<MsgBean, Integer>>>> map) {
-		System.out.println("国\tISP/プロジェクト\tアドレス\tメッセージ\t出現日時\t最終日時\tログ数\tISP合計");
+		System.out.println("国\tISP/プロジェクト\tアドレス\tメッセージ\t初回日時\t最終日時\tログ数\tISP合計");
 		map.forEach((country, ispmap) -> {
 
 			ispmap.forEach((isp, addrmap) -> {
