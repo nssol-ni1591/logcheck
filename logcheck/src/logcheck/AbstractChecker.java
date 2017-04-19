@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 
 import logcheck.known.KnownList;
 import logcheck.mag.MagList;
+import logcheck.mag.tsv.TsvMagList;
 
 /*
  * アクセスログのソースIPに一致するISP名/企業名を取得し、国別にISP名/企業名と出力ログ数を出力する
@@ -104,7 +105,8 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 	protected MagList loadMagList(String file) throws IOException {
 		System.err.println("loading MagList ... ");
 		long time = System.currentTimeMillis();
-		MagList maglist = MagList.load(file);
+//		MagList maglist = MagList.load(file);
+		MagList maglist = new TsvMagList().load(file);
 		System.err.println("loaded MagList ... elaps=" + (System.currentTimeMillis() - time) + " ms");
 		return maglist;
 	}
