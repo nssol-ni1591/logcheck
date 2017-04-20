@@ -19,9 +19,6 @@ public class DbMagList extends HashMap<String, MagListIsp> implements MagList {
 	public static String SQL_ALL_GIP = "select m.prj_id, m.prj_name, p.site_name, g.site_gip"
 			+ " from masterinfo.mst_project m, masterinfo.sas_prj_site_info p, masterinfo.sas_site_gip g"
 			+ " where m.prj_row_id = p.prj_row_id and p.site_id = g.site_id"
-//			+ " and m.delete_flag = '0'"
-//			+ " and p.delete_flag = '0'"
-//			+ " and g.delete_flag = '0'"
 			+ " and g.site_gip != '非固定'"
 //			+ " and g.site_gip != '追加不要'"
 			+ " order by m.prj_id";
