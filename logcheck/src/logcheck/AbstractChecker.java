@@ -94,7 +94,7 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 		System.err.println("loading KnownList ... ");
 		long time = System.currentTimeMillis();
 		KnownList knownlist = KnownList.load(file);
-		System.err.println("loaded KnownList ... elaps=" + (System.currentTimeMillis() - time) + " ms");
+		System.err.println("loaded KnownList. elaps=" + (System.currentTimeMillis() - time) + " ms");
 		return knownlist;
 	}
 	protected MagList loadMagList(String file) throws Exception {
@@ -102,7 +102,7 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 		long time = System.currentTimeMillis();
 		MagList maglist = new TsvMagList().load(file);
 //		MagList maglist = new DbMagList().load(DbMagList.SQL_ALL_GIP);
-		System.err.println("loaded MagList ... elaps=" + (System.currentTimeMillis() - time) + " ms");
+		System.err.println("loaded MagList. elaps=" + (System.currentTimeMillis() - time) + " ms");
 		return maglist;
 	}
 

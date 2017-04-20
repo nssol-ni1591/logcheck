@@ -41,14 +41,14 @@ public class DbMagList extends HashMap<String, MagListIsp> implements MagList {
 	}
 
 	@Override
-	public MagList load(String file) throws Exception {
+	public MagList load(String sql) throws Exception {
 		// Oracle JDBC Driverのロード
 		Class.forName("oracle.jdbc.driver.OracleDriver");
 
 		try (	// Oracleに接続
 				Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@172.31.247.139:1521:sdcdb011", "masterinfo", "masterinfo");
 				// ステートメントを作成
-				PreparedStatement stmt = conn.prepareStatement(SQL_ALL_GIP);
+				PreparedStatement stmt = conn.prepareStatement(sql);
 				)
 		{
 			ResultSet rs = stmt.executeQuery();
