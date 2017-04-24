@@ -28,7 +28,7 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 			Pattern.compile("Login failed using auth server NSSDC_LDAP \\(LDAP Server\\).  Reason: Short Password"),
 	};
 	
-	public Checker10(String knownfile, String magfile) throws IOException {
+	public Checker10(String knownfile, String magfile) throws Exception {
 		this.knownlist = loadKnownList(knownfile);
 		this.maglist = loadMagList(magfile);
 	}

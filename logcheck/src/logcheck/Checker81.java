@@ -1,6 +1,5 @@
 package logcheck;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -21,7 +20,7 @@ public class Checker81 extends Checker8 {
 		System.arraycopy(FAIL_PATTERNS_DUP, 0, ALL_PATTERNS, INFO_PATTERNS.length + FAIL_PATTERNS.length, FAIL_PATTERNS_DUP.length);
 	}
 
-	public Checker81(String knownfile, String magfile) throws IOException {
+	public Checker81(String knownfile, String magfile) throws Exception {
 		super(knownfile, magfile);
 	}
 
