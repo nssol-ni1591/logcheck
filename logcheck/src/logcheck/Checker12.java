@@ -15,6 +15,7 @@ import logcheck.msg.MsgBean;
 import logcheck.util.NetAddr;
 
 /*
+ * 利用申請外接続の検索処理：
  * IP_RANGE_PATTERN に合致するログを検索し、 国 > ISP > クライアントIP > MsgBean 毎にログ数を集計する
  */
 public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, MsgBean>>>> {
