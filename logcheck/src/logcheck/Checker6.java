@@ -111,22 +111,9 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 
 					addrmap.forEach((addr, count) -> {
 						System.out.println(new StringBuilder().append("\t\t\t").append(addr).append(" : ").append(count));
-						/*
-						System.out.println(
-								new StringBuilder("".equals(country) ? "<MAGLIST>" : country)
-								.append("\t")
-								.append(isp)
-								.append("\t")
-								.append(msg)
-								.append("\t")
-								.append(addr)
-								.append("\t")
-								.append(count));
-						*/
 					});
 				});
 			});
-//			System.out.println();
 		});
 		System.out.println();
 	}

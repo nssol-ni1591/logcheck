@@ -1,8 +1,5 @@
 package logcheck.mag;
 
-//import java.util.regex.Matcher;
-//import java.util.regex.Pattern;
-
 public class MagListBean {
 
 	private final String prjId;
@@ -10,7 +7,6 @@ public class MagListBean {
 	private final String prjSite;
 	private final String prjIp;
 	private final String magIp;
-//	private final String magMask;
 
 	public MagListBean(String prjId, String prjName, String prjSite, String magIp) {
 		this.prjId = prjId;
@@ -47,9 +43,6 @@ public class MagListBean {
 	public String getMagIp() {
 		return magIp;
 	}
-//	public String getMagMask() {
-//		return magMask;
-//	}
 
 	public String toString() {
 		return String.format("prjId=%s, magIp=%s", prjId, magIp);

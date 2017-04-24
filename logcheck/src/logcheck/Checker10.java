@@ -57,12 +57,6 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 					}
 
 					if (isp != null) {
-						/*
-						int backward = list.size() - 10;
-						if (backward < 0) {
-							backward += 10;
-						}
-						*/
 						MsgBean msg = null;
 						if (b.getMsg().contains("failed")) {
 							// 失敗メッセージ

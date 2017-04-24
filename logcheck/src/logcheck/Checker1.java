@@ -24,7 +24,6 @@ public class Checker1 extends AbstractChecker<Map<String, Map<String, AccessLogS
 	private final MagList maglist;
 
 	public Checker1(String knownfile, String magfile) throws Exception {
-//		super(knownfile, magfile);
 		this.knownlist = loadKnownList(knownfile);
 		this.maglist = loadMagList(magfile);
 	}

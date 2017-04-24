@@ -34,10 +34,6 @@ public class Checker2 extends AbstractChecker<Map<String, MsgMap>> {
 				.map(AccessLog::parse)
 				.forEach(b -> {
 					// メッセージにIPアドレスなどが含まれるログは、それ以外の部分を比較対象とするための前処理
-					/*
-					Optional<String> rc = Stream.of(checkMsgs).filter(msg -> b.getMsg().startsWith(msg)).findFirst();
-					String m = rc.isPresent() ? rc.get() : b.getMsg();
-					 */
 					Pattern[] patterns = new Pattern[INFO_PATTERNS.length + FAIL_PATTERNS.length];
 					System.arraycopy(INFO_PATTERNS, 0, patterns, 0, INFO_PATTERNS.length);
 					System.arraycopy(FAIL_PATTERNS, 0, patterns, INFO_PATTERNS.length, FAIL_PATTERNS.length);
