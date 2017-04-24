@@ -97,7 +97,6 @@ public class NetAddr implements Comparable<NetAddr> {
 			netaddr[3] = netaddr[3] & (int)(256 - Math.pow(2, 32 - mask));
 			brdaddr[3] = brdaddr[3] | (int)(Math.pow(2, 32 - mask) - 1);
 		}
-		//System.out.println("NetworkAddr<init>: addr=" + addr + ", this=" + this);
 	}
 
 	public int compareTo(NetAddr another) {
@@ -118,15 +117,7 @@ public class NetAddr implements Comparable<NetAddr> {
 	public boolean equals(NetAddr another) {
 		return compareTo(another) == 0 ? true : false;
 	}
-	/*
-	public int hashCode() {
-		long hash = 0;
-		for (int ix = 0; ix < 4; ix++) {
-			hash = hash * 256 + netaddr[ix];
-		}
-		return (int)hash;
-	}
-	*/
+
 	public boolean within(NetAddr another) {
 		int[] addr = another.getNetworkAddr();
 		for (int ix = 0; ix < 4; ix++) {
@@ -170,36 +161,4 @@ public class NetAddr implements Comparable<NetAddr> {
 		return sb.toString();
 	}
 
-	public static void main(String...argv) {
-		/*
-		System.out.println(new NetAddr("192.168.15.15"));
-		System.out.println(new NetAddr("192.168.15.15/30"));
-		System.out.println(new NetAddr("192.168.15.15/28"));
-		System.out.println(new NetAddr("192.168.15.15/24"));
-		System.out.println(new NetAddr("192.168.15.15/22"));
-		System.out.println(new NetAddr("192.168.15.15/20"));
-		System.out.println(new NetAddr("172.130.1.1/18"));
-		System.out.println(new NetAddr("172.130.1.1/16"));
-		System.out.println(new NetAddr("172.130.1.1/14"));
-		System.out.println(new NetAddr("172.130.1.1/12"));
-		System.out.println(new NetAddr("172.130.1.1/10"));
-		System.out.println(new NetAddr("172.130.1.1/8"));
-		System.out.println(new NetAddr("10.10.1.1/8"));
-
-		System.out.println(new NetAddr("192.168.15.10/30").within(new NetAddr("192.168.15.13")));
-		System.out.println(new NetAddr("192.168.15.13/30").within(new NetAddr("192.168.15.13")));
-		System.out.println(new NetAddr("192.168.15.16/30").within(new NetAddr("192.168.15.13")));
-		*/
-		System.out.println(new NetAddr("163.135.0.0/16").within(new NetAddr("163.135.151.75")));
-
-		//		NetworkAddr na1 = new NetworkAddr("192.168.15.13/30");
-//		NetworkAddr na2 = new NetworkAddr("192.168.15.13");
-/*
-		System.out.println("2 ^ 0 = " + Math.pow(2, 0));
-		System.out.println("2 ^ 1 = " + Math.pow(2, 1));
-		System.out.println("2 ^ 2 = " + Math.pow(2, 2));
-		System.out.println("2 ^ 3 = " + Math.pow(2, 3));
-		System.out.println("2 ^ 4 = " + Math.pow(2, 4));
-		*/
-	}
 }

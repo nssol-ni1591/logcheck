@@ -15,7 +15,8 @@ import logcheck.msg.MsgBean;
 import logcheck.util.NetAddr;
 
 /*
- * ユーザ認証の失敗後の認証成功ログを確認する
+ * ユーザ認証ログ突合せ処理：
+ * ユーザ認証の成功ログと同じアドレス、同一ユーザIDの認証失敗ログを検索する
  */
 public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predicate<AccessLogBean>*/ {
 
@@ -56,12 +57,6 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 					}
 
 					if (isp != null) {
-						/*
-						int backward = list.size() - 10;
-						if (backward < 0) {
-							backward += 10;
-						}
-						*/
 						MsgBean msg = null;
 						if (b.getMsg().contains("failed")) {
 							// 失敗メッセージ

@@ -65,9 +65,6 @@ public class MsgBean implements Comparable<MsgBean> {
 			this.lastDate = date;
 		}
 
-//		if (!roles.equals(b.getRoles())) {
-//			System.err.println("Warning: old=" + roles + ", new=" + b.getRoles() + ", log=" + b);
-//		}
 		if ("".equals(roles)) {
 			roles = b.getRoles();
 		}

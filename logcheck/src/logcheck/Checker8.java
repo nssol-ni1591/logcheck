@@ -119,13 +119,7 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 		map.forEach((country, ispmap) -> {
 
 			ispmap.forEach((isp, addrmap) -> {
-				/*
-				int sumIspLog = addrmap.values().stream().mapToInt(idmap -> {
-					return idmap.values().stream().mapToInt(msgmap -> {
-						return msgmap.values().stream().mapToInt(msg -> msg.getCount()).sum();
-					}).sum();
-				}).sum();
-				*/
+
 				addrmap.forEach((addr, idmap) -> {
 
 					idmap.forEach((id, msgmap) -> {

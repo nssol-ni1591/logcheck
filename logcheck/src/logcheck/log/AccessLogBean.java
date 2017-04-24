@@ -29,17 +29,11 @@ public class AccessLogBean {
 	}
 
 	public String getDate() {
-//		return LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 		return date;
 	}
 	public String getHost() {
 		return host;
 	}
-	/*
-	public String getIp() {
-		return ip;
-	}
-	*/
 	public NetAddr getAddr() {
 		return new NetAddr(ip);
 	}

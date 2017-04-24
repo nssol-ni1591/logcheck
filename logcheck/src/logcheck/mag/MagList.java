@@ -8,8 +8,4 @@ public interface MagList {
 
 	public MagList load(String file) throws Exception;
 
-//	public MagListBean parse(String s);
-
-//	public boolean test(String s);
-
 }

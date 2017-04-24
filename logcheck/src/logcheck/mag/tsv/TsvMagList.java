@@ -17,21 +17,10 @@ import logcheck.util.NetAddr;
 public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 
 	private static final long serialVersionUID = 1L;
-	//public static String PATTERN = "(PRJ_[\\w_]+)\t(^\t+)\t(^\t+)\t([\\d\\.]+)\t([\\d\\.]+)\t([\\d\\.]+)";
-	//public static String PATTERN = "(PRJ_[\\w_]+)\t(.+)\t(.+)\t(.+)\t([\\d+\\.\\d+\\.\\d+\\.\\d+]+)\t([\\d+\\.\\d+\\.\\d+\\.\\d+]+)";
-	//public static String PATTERN = "(PRJ_[\\w_]+)\t(.+)\t(.+)\t([\\d+\\\\.\\d+\\\\.\\d+\\\\.\\d+]+)\t([\\d+\\\\.\\d+\\\\.\\d+\\\\.\\d+]+)\t([\\d+\\\\.\\d+\\\\.\\d+\\\\.\\d+]+)";
 	public static String PATTERN = "(PRJ_[\\w_]+)\t(.+)\t(.+)\t([\\d\\.～\\/]+)\t([\\d+\\.\\d+\\.\\d+\\.\\d+]+)\t([\\d+\\.\\d+\\.\\d+\\.\\d+]+)";
 
 	public TsvMagList() { }
-	/*
-	public HashMap<NetAddr, String> listAddress() {
-		HashMap<NetAddr, String> map = new HashMap<>();
-		values().forEach(isp -> {
-			isp.getAddress().forEach(addr -> map.put(addr, isp.getName()));
-		});
-		return map;
-	}
-	*/
+
 	/*
 	 * 引数のIPアドレスを含むCompanyを取得する
 	 */
@@ -42,13 +31,9 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 		return rc.isPresent() ? rc.get() : null;
 	}
 
-//	public static TsvMagList load(String file) throws IOException {
 	public TsvMagList load(String file) throws IOException {
-//		TsvMagList map = new TsvMagList();
 		Files.lines(Paths.get(file), Charset.forName("MS932"))
-//				.filter(TsvMagList::test)
 				.filter(s -> test(s))
-//				.map(TsvMagList::parse)
 				.map(s -> parse(s))
 				.forEach(b -> {
 					MagListIsp mp = this.get(b.getPrjId());
@@ -58,11 +43,10 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 					}
 					NetAddr addr = new NetAddr(b.getMagIp());
 					mp.addAddress(addr);
-					//System.out.printf("prjId=%s, addr=%s\n", b.getPrjId(), addr);
 				});
 		return this;
 	}
-//	public static MagListBean parse(String s) {
+
 	private MagListBean parse(String s) {
 		String prjId = null;
 		String prjName = null;
@@ -92,39 +76,6 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 		}
 		return new MagListBean(prjId, prjName, prjSite, prjIp, magIp, magMask);
 	}
-	/*
-	public static MagListBean parse(String s) {
-		String prjId = null;
-		String prjName = null;
-		String prjConn = null;
-		String prjIp = null;
-		String magIp = null;
-		String magMask = null;
-
-		Pattern p = Pattern.compile(MagList.PATTERN);
-		Matcher m = p.matcher("   " + s);		// 1文字目が欠ける対策
-		if (m.find(1)) {
-			prjId = m.group(1);
-		}
-		if (m.find(2)) {
-			prjName = m.group(2);
-		}
-		if (m.find(3)) {
-			prjConn = m.group(3);
-		}
-		if (m.find(4)) {
-			prjIp = m.group(4);
-		}
-		if (m.find(5)) {
-			magIp = m.group(5);
-		}
-		if (m.find(6)) {
-			magMask = m.group(6);
-		}
-		return new MagListBean(prjId, prjName, prjConn, prjIp, magIp, magMask);
-	}
-	*/
-//	public static boolean test(String s) {
 	private boolean test(String s) {
 		if (s.startsWith("#")) {
 			return false;
