@@ -16,14 +16,16 @@ public class DbMagList extends HashMap<String, MagListIsp> implements MagList {
 
 	private static final long serialVersionUID = 1L;
 
-	public static String SQL_ALL_GIP = "select m.prj_id, m.prj_name, p.site_name, g.site_gip"
-			+ " from masterinfo.mst_project m, masterinfo.sas_prj_site_info p, masterinfo.sas_site_gip g"
+	public static String SQL_ALL_GIP = 
+			"select m.prj_id, m.prj_name, p.site_name, g.site_gip"
+			+ " from mst_project m, sas_prj_site_info p, sas_site_gip g"
 			+ " where m.prj_row_id = p.prj_row_id and p.site_id = g.site_id"
 			+ " and g.site_gip != '非固定'"
 //			+ " and g.site_gip != '追加不要'"
 			+ " order by m.prj_id";
-	public static String SQL_ACTIVE_GIP = "select m.prj_id, m.prj_name, p.site_name, g.site_gip"
-			+ " from masterinfo.mst_project m, masterinfo.sas_prj_site_info p, masterinfo.sas_site_gip g"
+	public static String SQL_ACTIVE_GIP = 
+			"select m.prj_id, m.prj_name, p.site_name, g.site_gip"
+			+ " from mst_project m, sas_prj_site_info p, sas_site_gip g"
 			+ " where m.prj_row_id = p.prj_row_id and p.site_id = g.site_id"
 			+ " and m.delete_flag = '0'"
 			+ " and p.delete_flag = '0'"
@@ -83,7 +85,7 @@ public class DbMagList extends HashMap<String, MagListIsp> implements MagList {
 		System.out.println("start DbMagList.main ...");
 		DbMagList map = new DbMagList();
 		try {
-			map.load(null);
+			map.load(SQL_ALL_GIP);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
