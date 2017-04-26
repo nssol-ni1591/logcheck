@@ -1,6 +1,7 @@
 package logcheck.known;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -14,7 +15,7 @@ import logcheck.util.NetAddr;
 public class KnownList extends HashMap<String, KnownListIsp> {
 
 	private static final long serialVersionUID = 1L;
-	public static final String PATTERN = "(\\d+\\.\\d+\\.\\d+\\.\\d+/?\\d*)\t+([^\t]+) \\((..|プライベート)\\)";
+	public static final String PATTERN = "(\\d+\\.\\d+\\.\\d+\\.\\d+/?\\d*)\t([^\t]+)\t(\\S\\S|プライベート)";
 
 	private KnownList() { }
 
@@ -30,7 +31,7 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 
 	public static KnownList load(String file) throws IOException {
 		KnownList map = new KnownList();
-		Files.lines(Paths.get(file), StandardCharsets.UTF_8)
+		Files.lines(Paths.get(file), Charset.forName("MS932"))
 				.filter(KnownList::test)
 				.map(KnownList::parse)
 				.forEach(b -> {
@@ -71,7 +72,7 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 		Matcher m = p.matcher(s);
 		boolean rc = m.find();
 		if (!rc) {
-			System.err.println("ERROR: " + s);
+			System.err.println("WARNING(KNOWN): " + s);
 		}
 		return rc;
 	}
