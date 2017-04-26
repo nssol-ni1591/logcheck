@@ -15,7 +15,7 @@ import logcheck.util.NetAddr;
 public class KnownList extends HashMap<String, KnownListIsp> {
 
 	private static final long serialVersionUID = 1L;
-	public static final String PATTERN = "(\\d+\\.\\d+\\.\\d+\\.\\d+/?\\d*)\t([^\t]+)\t(\\S\\S|プライベート)";
+	public static final String PATTERN = "(\\d+\\.\\d+\\.\\d+\\.\\d+/?\\d*)\t([^\t]+)\t(プライベート|\\S\\S)";
 
 	private KnownList() { }
 
