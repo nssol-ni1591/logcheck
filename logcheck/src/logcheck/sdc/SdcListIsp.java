@@ -1,10 +1,14 @@
 package logcheck.sdc;
 
 import logcheck.isp.IspList;
-import logcheck.util.NetAddr;
 
 public class SdcListIsp extends IspList {
 
+	public SdcListIsp(String name, String type) {
+		super(name, type);
+		//System.out.println(this);
+	}
+	/*
 	public SdcListIsp(String name, String addr) {
 		super(name, "SDC");
 		addAddress(new NetAddr(addr));
@@ -15,6 +19,7 @@ public class SdcListIsp extends IspList {
 		addAddress(new NetAddr(addr));
 		//System.out.println(this);
 	}
+	*/
 	/*
 	public SdcListIsp(String name) {
 		super(name, "SDC");

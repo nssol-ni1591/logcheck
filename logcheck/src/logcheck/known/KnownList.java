@@ -43,8 +43,8 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 				});
 		return map;
 	}
-	
-	public static KnownListBean parse(String s) {
+
+	private static KnownListBean parse(String s) {
 		String addr = null;
 		String name = null;
 		String country = null;
@@ -62,7 +62,7 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 		}
 		return new KnownListBean(addr, name, country);
 	}
-	public static boolean test(String s) {
+	private static boolean test(String s) {
 		if (s.startsWith("#")) {
 			return false;
 		}

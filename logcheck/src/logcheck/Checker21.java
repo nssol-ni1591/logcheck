@@ -22,10 +22,10 @@ public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 	protected final MagList maglist;
 	protected final SdcList sdclist;
 
-	public Checker21(String knownfile, String magfile) throws Exception {
+	public Checker21(String knownfile, String magfile, String sdcfile) throws Exception {
 		this.knownlist = loadKnownList(knownfile);
 		this.maglist = loadMagList(magfile);
-		this.sdclist = new SdcList().load();
+		this.sdclist = SdcList.load(sdcfile);
 	}
 
 	private IspList getIspList(NetAddr addr) {
@@ -100,12 +100,12 @@ public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 
 	public static void main(String... argv) {
 		if (argv.length < 3) {
-			System.err.println("usage: java logcheck.Checker21 knownlist maglist [accesslog...]");
+			System.err.println("usage: java logcheck.Checker21 knownlist maglist sdclist [accesslog...]");
 			System.exit(1);
 		}
 
 		try {
-			new Checker21(argv[0], argv[1]).start(argv, 2);
+			new Checker21(argv[0], argv[1], argv[2]).start(argv, 3);
 		} catch (Exception ex) {
 			ex.printStackTrace(System.err);
 		}
