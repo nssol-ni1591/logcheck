@@ -88,7 +88,10 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 
 		for (String name : map.keySet()) {
 			KnownListIsp n = map.get(name);
-			System.out.println(n.getCountry() + "\t" + n.getName() + "\t" + n);
+			System.out.println(n.getCountry() + "\t" + n + "\t" + n.getAddress());
+			System.out.print("\t");
+			n.getAddress().forEach(s -> System.out.printf("[%s]", s.toStringRange()));
+			System.out.println();
 		}
 		System.out.println("IspList.main ... end");
 	}

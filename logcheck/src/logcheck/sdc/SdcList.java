@@ -4,17 +4,17 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.LinkedHashMap;
 import java.util.Optional;
-import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import logcheck.util.NetAddr;
 
-public class SdcList extends TreeMap<String, SdcListIsp> {
+public class SdcList extends LinkedHashMap<String, SdcListIsp> {
 
 	private static final long serialVersionUID = 1L;
-	public static final String PATTERN = "([\\S ]+)\t(\\d+\\.\\d+\\.\\d+\\.\\d+/?[\\d\\.]*)\t([\\S ]+)";
+	public static final String PATTERN = "(\\d+\\.\\d+\\.\\d+\\.\\d+/?[\\d\\.]*)\t([\\S ]+)\t([\\S ]+)";
 
 	private SdcList() { }
 
@@ -47,12 +47,12 @@ public class SdcList extends TreeMap<String, SdcListIsp> {
 		String type = null;
 
 		Pattern p = Pattern.compile(PATTERN);
-		Matcher m = p.matcher("   " + s);		// 1文字目が欠ける対策
+		Matcher m = p.matcher(s);		// 1文字目が欠ける対策
 		if (m.find(1)) {
-			name = m.group(1);
+			addr = m.group(1);
 		}
 		if (m.find(2)) {
-			addr = m.group(2);
+			name = m.group(2);
 		}
 		if (m.find(3)) {
 			type = m.group(3);
@@ -60,9 +60,6 @@ public class SdcList extends TreeMap<String, SdcListIsp> {
 		return new SdcListBean(name, addr, type);
 	}
 	public static boolean test(String s) {
-		if (s.length() == 0) {
-			return false;
-		}
 		if (s.startsWith("#")) {
 			return false;
 		}
