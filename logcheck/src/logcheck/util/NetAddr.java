@@ -136,6 +136,9 @@ public class NetAddr implements Comparable<NetAddr> {
 		return true;
 	}
 
+	public int[] getAddr() {
+		return srcaddr;
+	}
 	public int[] getNetworkAddr() {
 		return netaddr;
 	}

@@ -2,7 +2,6 @@ package logcheck.known;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -44,8 +43,8 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 				});
 		return map;
 	}
-	
-	public static KnownListBean parse(String s) {
+
+	private static KnownListBean parse(String s) {
 		String addr = null;
 		String name = null;
 		String country = null;
@@ -63,7 +62,7 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 		}
 		return new KnownListBean(addr, name, country);
 	}
-	public static boolean test(String s) {
+	private static boolean test(String s) {
 		if (s.startsWith("#")) {
 			return false;
 		}
@@ -89,7 +88,10 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 
 		for (String name : map.keySet()) {
 			KnownListIsp n = map.get(name);
-			System.out.println(n.getCountry() + "\t" + n.getName() + "\t" + n);
+			System.out.println(n.getCountry() + "\t" + n + "\t" + n.getAddress());
+			System.out.print("\t");
+			n.getAddress().forEach(s -> System.out.printf("[%s]", s.toStringRange()));
+			System.out.println();
 		}
 		System.out.println("IspList.main ... end");
 	}

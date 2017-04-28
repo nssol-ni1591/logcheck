@@ -1,0 +1,114 @@
+package logcheck;
+
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Stream;
+
+import logcheck.fw.FwLog;
+import logcheck.fw.FwLogSummary;
+import logcheck.isp.IspList;
+import logcheck.known.KnownList;
+import logcheck.mag.MagList;
+import logcheck.sdc.SdcList;
+import logcheck.util.NetAddr;
+
+/*
+ * 時間 > ISP > ソースIP > ID > メッセージ 毎にログ数を出力する（集計はしない）
+ */
+public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
+
+	protected final KnownList knownlist;
+	protected final MagList maglist;
+	protected final SdcList sdclist;
+
+	public Checker21(String knownfile, String magfile, String sdcfile) throws Exception {
+		this.knownlist = loadKnownList(knownfile);
+		this.maglist = loadMagList(magfile);
+		this.sdclist = SdcList.load(sdcfile);
+	}
+
+	private IspList getIspList(NetAddr addr) {
+		IspList isp = sdclist.get(addr);
+		if (isp != null) {
+			return isp;
+		}
+		isp = maglist.get(addr);
+		if (isp != null) {
+			return isp;
+		}
+		isp = knownlist.get(addr);
+		if (isp != null) {
+			return isp;
+		}
+
+		isp = new IspList(addr.toString(), "unknown");
+		return isp;
+	}
+	public Set<FwLogSummary> call(Stream<String> stream) throws Exception {
+		Set<FwLogSummary> list = new TreeSet<>();
+		stream//.parallel()
+				.filter(FwLog::test)
+				.map(FwLog::parse)
+				.forEach(b -> {
+					Optional<FwLogSummary> op = list.stream()
+							.filter(isp -> (isp.getDstPort() - b.getDstPort()) == 0)
+							.filter(isp -> isp.getSrcAddr().equals(b.getSrcIp()))
+							.filter(isp -> isp.getDstAddr().equals(b.getDstIp()))
+							.findFirst();
+					FwLogSummary sum = op.isPresent() ? op.get() : null;
+					if (sum == null) {
+						IspList srcIsp = getIspList(b.getSrcIp());
+						IspList dstIsp = getIspList(b.getDstIp());
+						sum = new FwLogSummary(b, srcIsp, dstIsp);
+						list.add(sum);
+					}
+					else {
+						sum.update(b);
+					}
+				});
+		return list;
+	}
+
+	public void report(Set<FwLogSummary> map) {
+		System.out.println("出現日時\t最終日時\t接続元国\t接続元名\t接続元IP\t接続先国\t接続先名\t接続先IP\t接続先ポート\tログ数");
+
+		map.forEach(s -> {
+			System.out.println(
+					new StringBuilder(s.getFirstDate() == null ? "" : s.getFirstDate())
+					.append("\t")
+					.append(s.getLastDate())
+					.append("\t")
+					.append(s.getSrcIsp().getCountry())
+					.append("\t")
+					.append(s.getSrcIsp().getName())
+					.append("\t")
+					.append(s.getSrcAddr())
+					.append("\t")
+					.append(s.getDstIsp().getCountry())
+					.append("\t")
+					.append(s.getDstIsp().getName())
+					.append("\t")
+					.append(s.getDstAddr())
+					.append("\t")
+					.append(s.getDstPort())
+					.append("\t")
+					.append(s.getCount())
+					);
+		});
+	}
+
+	public static void main(String... argv) {
+		if (argv.length < 3) {
+			System.err.println("usage: java logcheck.Checker21 knownlist maglist sdclist [accesslog...]");
+			System.exit(1);
+		}
+
+		try {
+			new Checker21(argv[0], argv[1], argv[2]).start(argv, 3);
+		} catch (Exception ex) {
+			ex.printStackTrace(System.err);
+		}
+		System.exit(0);
+	}
+}
