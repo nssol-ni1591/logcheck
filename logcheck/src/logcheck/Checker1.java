@@ -5,6 +5,11 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
+
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
+
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
@@ -20,12 +25,15 @@ import logcheck.util.NetAddr;
  */
 public class Checker1 extends AbstractChecker<Map<String, Map<String, AccessLogSummary>>> {
 
-	private final KnownList knownlist;
-	private final MagList maglist;
+	@Inject private KnownList knownlist;
+	@Inject private MagList maglist;
 
-	public Checker1(String knownfile, String magfile) throws Exception {
-		this.knownlist = loadKnownList(knownfile);
-		this.maglist = loadMagList(magfile);
+	private Checker1() { }
+
+	public Checker1 init(String knownfile, String magfile) throws Exception {
+		this.knownlist.load(knownfile);
+		this.maglist.load(magfile);
+		return this;
 	}
 
 	public Map<String, Map<String, AccessLogSummary>> call(Stream<String> stream) throws Exception {
@@ -81,9 +89,19 @@ public class Checker1 extends AbstractChecker<Map<String, Map<String, AccessLogS
 			System.err.println("usage: java logcheck.Checker knownlist maglist accesslog...");
 			System.exit(1);
 		}
-
+		/*
 		try {
 			new Checker1(argv[0], argv[1]).start(argv, 2);;
+		}
+		catch (Exception ex) {
+			ex.printStackTrace(System.err);
+		}
+		*/
+		Weld weld = new Weld();
+		try (WeldContainer container = weld.initialize()) {
+			Checker1 application = container.instance().select(Checker1.class).get();
+			application.init(argv[0], argv[1]).start(argv, 2);
+			System.exit(0);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace(System.err);

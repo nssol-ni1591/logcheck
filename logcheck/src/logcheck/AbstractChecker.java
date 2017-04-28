@@ -89,7 +89,7 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 	};
 
 	public AbstractChecker() { }
-
+	/*
 	protected KnownList loadKnownList(String file) throws IOException {
 		System.err.println("loading KnownList ... ");
 		long time = System.currentTimeMillis();
@@ -105,7 +105,7 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 		System.err.println("loaded MagList. elaps=" + (System.currentTimeMillis() - time) + " ms");
 		return maglist;
 	}
-
+	*/
 	protected Stream<String> getStream() {
 		return stream;
 	}

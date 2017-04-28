@@ -6,6 +6,11 @@ import java.util.Vector;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
+
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
+
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
@@ -19,11 +24,12 @@ import logcheck.util.NetAddr;
  */
 public class Checker9 extends AbstractChecker<List<MsgBean>> {
 
-	protected final KnownList knownlist;
-	protected final MagList maglist;
+	private String select;
+	@Inject private KnownList knownlist;
+	@Inject private MagList maglist;
+
 	private static final Pattern[] ALL_PATTERNS;
-	private final String select;
-	
+
 	static {
 		ALL_PATTERNS = new Pattern[INFO_PATTERNS.length + FAIL_PATTERNS.length + FAIL_PATTERNS_DUP.length];
 		System.arraycopy(INFO_PATTERNS, 0, ALL_PATTERNS, 0, INFO_PATTERNS.length);
@@ -31,10 +37,14 @@ public class Checker9 extends AbstractChecker<List<MsgBean>> {
 		System.arraycopy(FAIL_PATTERNS_DUP, 0, ALL_PATTERNS, INFO_PATTERNS.length + FAIL_PATTERNS.length, FAIL_PATTERNS_DUP.length);
 	}
 
-	public Checker9(String select, String knownfile, String magfile) throws Exception {
+	public Checker9() {
+	}
+
+	public Checker9 init(String select, String knownfile, String magfile) throws Exception {
 		this.select = select;
-		this.knownlist = loadKnownList(knownfile);
-		this.maglist = loadMagList(magfile);
+		this.knownlist.load(knownfile);
+		this.maglist.load(magfile);
+		return this;
 	}
 
 	protected String getPattern(AccessLogBean b) {
@@ -102,10 +112,20 @@ public class Checker9 extends AbstractChecker<List<MsgBean>> {
 			System.err.println("usage: java yyyy-mm-dd logcheck.Checker9 knownlist maglist [accesslog...]");
 			System.exit(1);
 		}
-
+		/*
 		try {
 			new Checker9(argv[0], argv[1], argv[2]).start(argv, 3);
 		} catch (Exception ex) {
+			ex.printStackTrace(System.err);
+		}
+		*/
+		Weld weld = new Weld();
+		try (WeldContainer container = weld.initialize()) {
+			Checker9 application = container.instance().select(Checker9.class).get();
+			application.init(argv[0], argv[1], argv[2]).start(argv, 3);
+			System.exit(0);
+		}
+		catch (Exception ex) {
 			ex.printStackTrace(System.err);
 		}
 		System.exit(1);

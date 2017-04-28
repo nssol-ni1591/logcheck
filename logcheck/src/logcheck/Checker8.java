@@ -5,6 +5,12 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
+import javax.enterprise.inject.Any;
+import javax.inject.Inject;
+
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
+
 import logcheck.isp.Isp;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
@@ -17,15 +23,21 @@ import logcheck.util.NetAddr;
 /*
  * 国 > ISP > クライアントIP > メッセージ  > ID 毎にログ数を集計する
  */
+@Any
 public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, MsgBean>>>>>> {
 
-	protected final KnownList knownlist;
-	protected final MagList maglist;
+	@Inject protected KnownList knownlist;
+	@Inject protected MagList maglist;
+
 	private static final String INFO_SUMMARY_MSG = "<><><> Information message summary <><><>";
 
-	public Checker8(String knownfile, String magfile) throws Exception {
-		this.knownlist = loadKnownList(knownfile);
-		this.maglist = loadMagList(magfile);
+	protected Checker8() {
+	}
+
+	public Checker8 init(String knownfile, String magfile) throws Exception {
+		this.knownlist.load(knownfile);
+		this.maglist.load(magfile);
+		return this;
 	}
 
 	protected String getPattern(AccessLogBean b) {
@@ -158,10 +170,20 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 			System.err.println("usage: java logcheck.Checker8 knownlist maglist [accesslog...]");
 			System.exit(1);
 		}
-
+		/*
 		try {
 			new Checker8(argv[0], argv[1]).start(argv, 2);
 		} catch (Exception ex) {
+			ex.printStackTrace(System.err);
+		}
+		*/
+		Weld weld = new Weld();
+		try (WeldContainer container = weld.initialize()) {
+			Checker8 application = container.instance().select(Checker8.class).get();
+			application.init(argv[0], argv[1]).start(argv, 2);
+			System.exit(0);
+		}
+		catch (Exception ex) {
 			ex.printStackTrace(System.err);
 		}
 		System.exit(1);

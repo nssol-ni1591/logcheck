@@ -6,6 +6,11 @@ import java.util.Vector;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
+
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
+
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
@@ -20,18 +25,22 @@ import logcheck.util.NetAddr;
  */
 public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predicate<AccessLogBean>*/ {
 
-	protected final KnownList knownlist;
-	protected final MagList maglist;
+	@Inject private KnownList knownlist;
+	@Inject private MagList maglist;
+
 	private static final Pattern[] AUTH_PATTERNS = {
 			Pattern.compile("Primary authentication successful for [\\S ]+ from [\\d\\.]+"),
 //			Pattern.compile("Primary authentication failed for [\\S ]+ from \\S+"),
 			Pattern.compile("Login failed using auth server NSSDC_LDAP \\(LDAP Server\\).  Reason: Failed"),
 			Pattern.compile("Login failed using auth server NSSDC_LDAP \\(LDAP Server\\).  Reason: Short Password"),
 	};
+
+	private Checker10() { }
 	
-	public Checker10(String knownfile, String magfile) throws Exception {
-		this.knownlist = loadKnownList(knownfile);
-		this.maglist = loadMagList(magfile);
+	public Checker10 init(String knownfile, String magfile) throws Exception {
+		this.knownlist.load(knownfile);
+		this.maglist.load(magfile);
+		return this;
 	}
 
 	public static boolean test(AccessLogBean b) {
@@ -134,10 +143,20 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 			System.err.println("usage: java logcheck.Checker10 knownlist maglist [accesslog...]");
 			System.exit(1);
 		}
-
+		/*
 		try {
 			new Checker10(argv[0], argv[1]).start(argv, 2);
 		} catch (Exception ex) {
+			ex.printStackTrace(System.err);
+		}
+		*/
+		Weld weld = new Weld();
+		try (WeldContainer container = weld.initialize()) {
+			Checker10 application = container.instance().select(Checker10.class).get();
+			application.init(argv[0], argv[1]).start(argv, 2);
+			System.exit(0);
+		}
+		catch (Exception ex) {
 			ex.printStackTrace(System.err);
 		}
 		System.exit(1);

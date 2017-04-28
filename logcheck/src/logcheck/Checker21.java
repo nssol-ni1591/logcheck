@@ -5,6 +5,11 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
+
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
+
 import logcheck.fw.FwLog;
 import logcheck.fw.FwLogSummary;
 import logcheck.isp.IspList;
@@ -18,14 +23,20 @@ import logcheck.util.NetAddr;
  */
 public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 
-	protected final KnownList knownlist;
-	protected final MagList maglist;
-	protected final SdcList sdclist;
+	private KnownList knownlist;
+	private MagList maglist;
+	@Inject private SdcList sdclist;
 
-	public Checker21(String knownfile, String magfile, String sdcfile) throws Exception {
-		this.knownlist = loadKnownList(knownfile);
-		this.maglist = loadMagList(magfile);
-		this.sdclist = SdcList.load(sdcfile);
+	private Checker21() { }
+
+	public Checker21 init(String knownfile, String magfile, String sdcfile) throws Exception {
+//		this.knownlist = loadKnownList(knownfile);
+//		this.maglist = loadMagList(magfile);
+//		this.sdclist = SdcList.load(sdcfile);
+		this.knownlist.load(knownfile);
+		this.maglist.load(magfile);
+		this.sdclist.load(sdcfile);
+		return this;
 	}
 
 	private IspList getIspList(NetAddr addr) {
@@ -103,12 +114,23 @@ public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 			System.err.println("usage: java logcheck.Checker21 knownlist maglist sdclist [accesslog...]");
 			System.exit(1);
 		}
-
+		/*
 		try {
 			new Checker21(argv[0], argv[1], argv[2]).start(argv, 3);
 		} catch (Exception ex) {
 			ex.printStackTrace(System.err);
 		}
-		System.exit(0);
+		*/
+		Weld weld = new Weld();
+		try (WeldContainer container = weld.initialize()) {
+			Checker21 application = container.instance().select(Checker21.class).get();
+			application.init(argv[0], argv[1], argv[2]).start(argv, 3);
+			System.exit(0);
+		}
+		catch (Exception ex) {
+			ex.printStackTrace(System.err);
+		}
+		System.exit(1);
 	}
+
 }

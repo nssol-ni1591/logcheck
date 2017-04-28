@@ -28,20 +28,23 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 		return rc.isPresent() ? rc.get() : null;
 	}
 
-	public static KnownList load(String file) throws IOException {
-		KnownList map = new KnownList();
+	public KnownList load(String file) throws IOException {
+//		KnownList map = new KnownList();
 		Files.lines(Paths.get(file), Charset.forName("MS932"))
 				.filter(KnownList::test)
 				.map(KnownList::parse)
 				.forEach(b -> {
-					KnownListIsp isp = map.get(b.getName());
+//					KnownListIsp isp = map.get(b.getName());
+					KnownListIsp isp = get(b.getName());
 					if (isp == null) {
 						isp = new KnownListIsp(b.getName(), b.getCountry());
-						map.put(b.getName(), isp);
+//						map.put(b.getName(), isp);
+						put(b.getName(), isp);
 					}
 					isp.addAddress(new NetAddr(b.getAddr()));
 				});
-		return map;
+//		return map;
+		return this;
 	}
 
 	private static KnownListBean parse(String s) {
@@ -80,7 +83,7 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 		System.out.println("start IspList.main ...");
 		KnownList map = new KnownList();
 		try {
-			map = KnownList.load(argv[0]);
+			map = new KnownList().load(argv[0]);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

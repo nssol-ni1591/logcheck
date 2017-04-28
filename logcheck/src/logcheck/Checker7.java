@@ -5,6 +5,11 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
+
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
+
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
@@ -18,13 +23,17 @@ import logcheck.util.NetAddr;
  */
 public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAddr, Map<MsgBean, Integer>>>>> {
 
-	private final KnownList knownlist;
-	private final MagList maglist;
+	@Inject private KnownList knownlist;
+	@Inject private MagList maglist;
+
 	private static final String INFO_SUMMARY_MSG = "<><><> Information message summary <><><>";
 
-	public Checker7(String knownfile, String magfile) throws Exception {
-		this.knownlist = loadKnownList(knownfile);
-		this.maglist = loadMagList(magfile);
+	private Checker7() { }
+
+	public Checker7 init(String knownfile, String magfile) throws Exception {
+		this.knownlist.load(knownfile);
+		this.maglist.load(magfile);
+		return this;
 	}
 
 	public Map<String, Map<IspList, Map<NetAddr, Map<MsgBean, Integer>>>> call(Stream<String> stream) throws Exception {
@@ -129,10 +138,20 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 			System.err.println("usage: java logcheck.Checker4 knownlist maglist [accesslog...]");
 			System.exit(1);
 		}
-
+		/*
 		try {
 			new Checker7(argv[0], argv[1]).start(argv, 2);
 		} catch (Exception ex) {
+			ex.printStackTrace(System.err);
+		}
+		*/
+		Weld weld = new Weld();
+		try (WeldContainer container = weld.initialize()) {
+			Checker7 application = container.instance().select(Checker7.class).get();
+			application.init(argv[0], argv[1]).start(argv, 2);
+			System.exit(0);
+		}
+		catch (Exception ex) {
 			ex.printStackTrace(System.err);
 		}
 		System.exit(1);

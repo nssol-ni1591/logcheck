@@ -25,20 +25,24 @@ public class SdcList extends LinkedHashMap<String, SdcListIsp> {
 		return rc.isPresent() ? rc.get() : null;
 	}
 
-	public static SdcList load(String file) throws IOException {
-		SdcList map = new SdcList();
+	//public static SdcList load(String file) throws IOException {
+	public SdcList load(String file) throws IOException {
+//		SdcList map = new SdcList();
 		Files.lines(Paths.get(file), Charset.forName("MS932"))
 				.filter(SdcList::test)
 				.map(SdcList::parse)
 				.forEach(b -> {
-					SdcListIsp isp = map.get(b.getName());
+//					SdcListIsp isp = map.get(b.getName());
+					SdcListIsp isp = get(b.getName());
 					if (isp == null) {
 						isp = new SdcListIsp(b.getName(), b.getType());
-						map.put(b.getName(), isp);
+//						map.put(b.getName(), isp);
+						put(b.getName(), isp);
 					}
 					isp.addAddress(new NetAddr(b.getAddr()));
 				});
-		return map;
+//		return map;
+		return this;
 	}
 
 	public static SdcListBean parse(String s) {

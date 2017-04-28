@@ -9,11 +9,14 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.enterprise.inject.Alternative;
+
 import logcheck.mag.MagList;
 import logcheck.mag.MagListBean;
 import logcheck.mag.MagListIsp;
 import logcheck.util.NetAddr;
 
+@Alternative
 public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 
 	private static final long serialVersionUID = 1L;

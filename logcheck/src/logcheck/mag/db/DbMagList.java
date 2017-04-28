@@ -7,11 +7,14 @@ import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Optional;
 
+import javax.enterprise.inject.Alternative;
+
 import logcheck.mag.MagList;
 import logcheck.mag.MagListBean;
 import logcheck.mag.MagListIsp;
 import logcheck.util.NetAddr;
 
+@Alternative
 public class DbMagList extends HashMap<String, MagListIsp> implements MagList {
 
 	private static final long serialVersionUID = 1L;
