@@ -74,7 +74,7 @@ public class DbMagList extends HashMap<String, MagListIsp> implements MagList {
 					//System.out.printf("prjId=%s, addr=%s\n", prjId, addr);
 				}
 				else {
-					System.err.printf("WARNING: prjId=%s, magIp=%s\n", prjId, magIp);
+					System.err.printf("WARNING(MAG): prjId=%s, magIp=%s\n", prjId, magIp);
 				}
 			}
 		}

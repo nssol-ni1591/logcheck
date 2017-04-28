@@ -1,7 +1,7 @@
 package logcheck.known;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import logcheck.util.NetAddr;
 public class KnownList extends HashMap<String, KnownListIsp> {
 
 	private static final long serialVersionUID = 1L;
-	public static final String PATTERN = "(\\d+\\.\\d+\\.\\d+\\.\\d+/?\\d*)\t+([^\t]+) \\((..|プライベート)\\)";
+	public static final String PATTERN = "(\\d+\\.\\d+\\.\\d+\\.\\d+/?\\d*)\t([^\t]+)\t(プライベート|\\S\\S)";
 
 	private KnownList() { }
 
@@ -30,7 +30,7 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 
 	public static KnownList load(String file) throws IOException {
 		KnownList map = new KnownList();
-		Files.lines(Paths.get(file), StandardCharsets.UTF_8)
+		Files.lines(Paths.get(file), Charset.forName("MS932"))
 				.filter(KnownList::test)
 				.map(KnownList::parse)
 				.forEach(b -> {
@@ -43,8 +43,8 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 				});
 		return map;
 	}
-	
-	public static KnownListBean parse(String s) {
+
+	private static KnownListBean parse(String s) {
 		String addr = null;
 		String name = null;
 		String country = null;
@@ -62,7 +62,7 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 		}
 		return new KnownListBean(addr, name, country);
 	}
-	public static boolean test(String s) {
+	private static boolean test(String s) {
 		if (s.startsWith("#")) {
 			return false;
 		}
@@ -71,7 +71,7 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 		Matcher m = p.matcher(s);
 		boolean rc = m.find();
 		if (!rc) {
-			System.err.println("ERROR: " + s);
+			System.err.println("WARNING(KNOWN): " + s);
 		}
 		return rc;
 	}
@@ -88,7 +88,10 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 
 		for (String name : map.keySet()) {
 			KnownListIsp n = map.get(name);
-			System.out.println(n.getCountry() + "\t" + n.getName() + "\t" + n);
+			System.out.println(n.getCountry() + "\t" + n + "\t" + n.getAddress());
+			System.out.print("\t");
+			n.getAddress().forEach(s -> System.out.printf("[%s]", s.toStringRange()));
+			System.out.println();
 		}
 		System.out.println("IspList.main ... end");
 	}

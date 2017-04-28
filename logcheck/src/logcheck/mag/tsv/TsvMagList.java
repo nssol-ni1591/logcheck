@@ -88,7 +88,7 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 		Matcher m = p.matcher(s);
 		boolean rc = m.find();
 		if (!rc) {
-			System.err.println("WARNING: " + s.trim());
+			System.err.println("WARNING(MAG): " + s.trim());
 		}
 
 		String[] array = s.split("\t");
