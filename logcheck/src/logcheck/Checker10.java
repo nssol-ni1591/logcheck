@@ -35,8 +35,6 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 			Pattern.compile("Login failed using auth server NSSDC_LDAP \\(LDAP Server\\).  Reason: Short Password"),
 	};
 
-	private Checker10() { }
-	
 	public Checker10 init(String knownfile, String magfile) throws Exception {
 		this.knownlist.load(knownfile);
 		this.maglist.load(magfile);
@@ -143,13 +141,7 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 			System.err.println("usage: java logcheck.Checker10 knownlist maglist [accesslog...]");
 			System.exit(1);
 		}
-		/*
-		try {
-			new Checker10(argv[0], argv[1]).start(argv, 2);
-		} catch (Exception ex) {
-			ex.printStackTrace(System.err);
-		}
-		*/
+
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
 			Checker10 application = container.instance().select(Checker10.class).get();

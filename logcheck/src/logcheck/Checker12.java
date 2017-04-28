@@ -30,8 +30,6 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 
 	private static final Pattern IP_RANGE_PATTERN = Pattern.compile("Testing Source IP realm restrictions failed for /NSSDC-Auth1 *");
 
-	private Checker12() { }
-
 	public Checker12 init(String knownfile, String magfile) throws Exception {
 		this.knownlist.load(knownfile);
 		this.maglist.load(magfile);
@@ -117,13 +115,7 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 			System.err.println("usage: java logcheck.Checker12 knownlist maglist [accesslog...]");
 			System.exit(1);
 		}
-		/*
-		try {
-			new Checker12(argv[0], argv[1]).start(argv, 2);
-		} catch (Exception ex) {
-			ex.printStackTrace(System.err);
-		}
-		*/
+
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
 			Checker12 application = container.instance().select(Checker12.class).get();

@@ -26,8 +26,6 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 
 	private static final String INFO_SUMMARY_MSG = "<><><> Information message summary <><><>";
 
-	private Checker6() { }
-
 	public Checker6 init(String knownfile, String magfile) throws Exception {
 		this.knownlist.load(knownfile);
 		this.maglist.load(magfile);
@@ -132,13 +130,7 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 			System.err.println("usage: java logcheck.Checker4 knownlist maglist [accesslog...]");
 			System.exit(1);
 		}
-		/*
-		try {
-			new Checker6(argv[0], argv[1]).start(argv, 2);
-		} catch (Exception ex) {
-			ex.printStackTrace(System.err);
-		}
-		*/
+
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
 			Checker6 application = container.instance().select(Checker6.class).get();

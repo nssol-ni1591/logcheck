@@ -29,21 +29,17 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 	}
 
 	public KnownList load(String file) throws IOException {
-//		KnownList map = new KnownList();
 		Files.lines(Paths.get(file), Charset.forName("MS932"))
 				.filter(KnownList::test)
 				.map(KnownList::parse)
 				.forEach(b -> {
-//					KnownListIsp isp = map.get(b.getName());
 					KnownListIsp isp = get(b.getName());
 					if (isp == null) {
 						isp = new KnownListIsp(b.getName(), b.getCountry());
-//						map.put(b.getName(), isp);
 						put(b.getName(), isp);
 					}
 					isp.addAddress(new NetAddr(b.getAddr()));
 				});
-//		return map;
 		return this;
 	}
 

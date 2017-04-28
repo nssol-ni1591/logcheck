@@ -128,14 +128,7 @@ public class Checker4 extends AbstractChecker<Map<String ,Map<String, IspMap<Map
 			System.err.println("usage: java logcheck.Checker4 knownlist maglist [accesslog...]");
 			System.exit(1);
 		}
-		/*
-		try {
-			new Checker4(argv[0], argv[1]).start(argv, 2);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace(System.err);
-		}
-		*/
+
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
 			Checker4 application = container.instance().select(Checker4.class).get();

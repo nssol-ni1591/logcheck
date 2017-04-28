@@ -25,8 +25,6 @@ public class Checker3 extends AbstractChecker<Map<String, IspMap<Map<String, Int
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-	private Checker3() { }
-
 	public Checker3 init(String knownfile, String magfile) throws Exception {
 		this.knownlist.load(knownfile);
 		this.maglist.load(magfile);
@@ -99,14 +97,7 @@ public class Checker3 extends AbstractChecker<Map<String, IspMap<Map<String, Int
 			System.err.println("usage: java logcheck.Checker3 knownlist maglist [accesslog...]");
 			System.exit(1);
 		}
-		/*
-		try {
-			new Checker3(argv[0], argv[1]).start(argv, 2);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace(System.err);
-		}
-		*/
+
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
 			Checker3 application = container.instance().select(Checker3.class).get();

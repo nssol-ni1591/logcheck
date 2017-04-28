@@ -23,16 +23,11 @@ import logcheck.util.NetAddr;
  */
 public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 
-	private KnownList knownlist;
-	private MagList maglist;
+	@Inject private KnownList knownlist;
+	@Inject private MagList maglist;
 	@Inject private SdcList sdclist;
 
-	private Checker21() { }
-
 	public Checker21 init(String knownfile, String magfile, String sdcfile) throws Exception {
-//		this.knownlist = loadKnownList(knownfile);
-//		this.maglist = loadMagList(magfile);
-//		this.sdclist = SdcList.load(sdcfile);
 		this.knownlist.load(knownfile);
 		this.maglist.load(magfile);
 		this.sdclist.load(sdcfile);
@@ -114,13 +109,7 @@ public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 			System.err.println("usage: java logcheck.Checker21 knownlist maglist sdclist [accesslog...]");
 			System.exit(1);
 		}
-		/*
-		try {
-			new Checker21(argv[0], argv[1], argv[2]).start(argv, 3);
-		} catch (Exception ex) {
-			ex.printStackTrace(System.err);
-		}
-		*/
+
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
 			Checker21 application = container.instance().select(Checker21.class).get();

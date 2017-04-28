@@ -24,8 +24,6 @@ public class Checker5 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-	private Checker5() { }
-
 	public Checker5 init(String knownfile, String magfile) throws Exception {
 		this.knownlist.load(knownfile);
 		this.maglist.load(magfile);
@@ -108,14 +106,7 @@ public class Checker5 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 			System.err.println("usage: java logcheck.Checker4 knownlist maglist [accesslog...]");
 			System.exit(1);
 		}
-		/*
-		try {
-			new Checker5(argv[0], argv[1]).start(argv, 2);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace(System.err);
-		}
-		*/
+
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
 			Checker5 application = container.instance().select(Checker5.class).get();

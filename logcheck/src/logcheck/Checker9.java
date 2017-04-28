@@ -37,9 +37,6 @@ public class Checker9 extends AbstractChecker<List<MsgBean>> {
 		System.arraycopy(FAIL_PATTERNS_DUP, 0, ALL_PATTERNS, INFO_PATTERNS.length + FAIL_PATTERNS.length, FAIL_PATTERNS_DUP.length);
 	}
 
-	public Checker9() {
-	}
-
 	public Checker9 init(String select, String knownfile, String magfile) throws Exception {
 		this.select = select;
 		this.knownlist.load(knownfile);
@@ -112,13 +109,7 @@ public class Checker9 extends AbstractChecker<List<MsgBean>> {
 			System.err.println("usage: java yyyy-mm-dd logcheck.Checker9 knownlist maglist [accesslog...]");
 			System.exit(1);
 		}
-		/*
-		try {
-			new Checker9(argv[0], argv[1], argv[2]).start(argv, 3);
-		} catch (Exception ex) {
-			ex.printStackTrace(System.err);
-		}
-		*/
+
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
 			Checker9 application = container.instance().select(Checker9.class).get();

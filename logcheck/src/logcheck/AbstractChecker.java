@@ -1,7 +1,6 @@
 package logcheck;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -13,11 +12,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-
-import logcheck.known.KnownList;
-import logcheck.mag.MagList;
-import logcheck.mag.db.DbMagList;
-import logcheck.mag.tsv.TsvMagList;
 
 /*
  * アクセスログのソースIPに一致するISP名/企業名を取得し、国別にISP名/企業名と出力ログ数を出力する
@@ -89,23 +83,7 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 	};
 
 	public AbstractChecker() { }
-	/*
-	protected KnownList loadKnownList(String file) throws IOException {
-		System.err.println("loading KnownList ... ");
-		long time = System.currentTimeMillis();
-		KnownList knownlist = KnownList.load(file);
-		System.err.println("loaded KnownList. elaps=" + (System.currentTimeMillis() - time) + " ms");
-		return knownlist;
-	}
-	protected MagList loadMagList(String file) throws Exception {
-		System.err.println("loading MagList ... ");
-		long time = System.currentTimeMillis();
-		MagList maglist = new TsvMagList().load(file);
-//		MagList maglist = new DbMagList().load(DbMagList.SQL_ALL_GIP);
-		System.err.println("loaded MagList. elaps=" + (System.currentTimeMillis() - time) + " ms");
-		return maglist;
-	}
-	*/
+
 	protected Stream<String> getStream() {
 		return stream;
 	}
