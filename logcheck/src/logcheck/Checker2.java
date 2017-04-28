@@ -1,6 +1,5 @@
 package logcheck;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -23,22 +22,18 @@ public class Checker2 extends AbstractChecker<Map<String, MsgMap>> {
 	private final KnownList knownlist;
 	private final MagList maglist;
 
-	public Checker2(String knownfile, String magfile) throws IOException {
+	public Checker2(String knownfile, String magfile) throws Exception {
 		this.knownlist = loadKnownList(knownfile);
 		this.maglist = loadMagList(magfile);
 	}
 
-	public Map<String, MsgMap> call(Stream<String> stream) throws IOException {
+	public Map<String, MsgMap> call(Stream<String> stream) throws Exception {
 		Map<String, MsgMap> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
 				.forEach(b -> {
 					// メッセージにIPアドレスなどが含まれるログは、それ以外の部分を比較対象とするための前処理
-					/*
-					Optional<String> rc = Stream.of(checkMsgs).filter(msg -> b.getMsg().startsWith(msg)).findFirst();
-					String m = rc.isPresent() ? rc.get() : b.getMsg();
-					 */
 					Pattern[] patterns = new Pattern[INFO_PATTERNS.length + FAIL_PATTERNS.length];
 					System.arraycopy(INFO_PATTERNS, 0, patterns, 0, INFO_PATTERNS.length);
 					System.arraycopy(FAIL_PATTERNS, 0, patterns, INFO_PATTERNS.length, FAIL_PATTERNS.length);
@@ -84,7 +79,7 @@ public class Checker2 extends AbstractChecker<Map<String, MsgMap>> {
 			System.out.println("[ " + msg.getMsg() + " ] : " + msg.sum());
 			msg.values().forEach(isp -> {
 				System.out.println("\t" + isp.getIsp().getName() + ("".equals(isp.getIsp().getCountry()) ? "" : " (" + isp.getIsp().getCountry() + ")") + " : " + isp.getSum());
-//				isp.getAddress().forEach(addr -> System.out.println("\t\t" + addr + "=" + isp.getCount(addr)));
+				isp.getAddress().forEach(addr -> System.out.println("\t\t" + addr + "=" + isp.getCount(addr)));
 			});
 		});
 		System.out.println();

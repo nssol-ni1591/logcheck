@@ -1,4 +1,3 @@
-
 package logcheck.known;
 
 import java.io.IOException;
@@ -15,19 +14,10 @@ import logcheck.util.NetAddr;
 public class KnownList extends HashMap<String, KnownListIsp> {
 
 	private static final long serialVersionUID = 1L;
-	public static final String PATTERN = "(\\d+\\.\\d+\\.\\d+\\.\\d+/?\\d*)\t+([^\t]+) \\((..)\\)";
-	//public static String PATTERN = "([\\d\\.]+/?\\d*)\t+([^\t]+) \\((..)\\)";
+	public static final String PATTERN = "(\\d+\\.\\d+\\.\\d+\\.\\d+/?\\d*)\t+([^\t]+) \\((..|プライベート)\\)";
 
 	private KnownList() { }
-	/*
-	public HashMap<NetAddr, String> listAddress() {
-		HashMap<NetAddr, String> map = new HashMap<>();
-		values().forEach(isp -> {
-			isp.getAddress().forEach(addr -> map.put(addr, isp.getName()));
-		});
-		return map;
-	}
-	*/
+
 	/*
 	 * 引数のIPアドレスを含むISPを取得する
 	 */

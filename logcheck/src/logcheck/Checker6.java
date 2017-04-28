@@ -1,6 +1,5 @@
 package logcheck;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -21,13 +20,12 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 	private final MagList maglist;
 	private static final String INFO_SUMMARY_MSG = "<><><> Information message summary <><><>";
 
-	public Checker6(String knownfile, String magfile) throws IOException {
+	public Checker6(String knownfile, String magfile) throws Exception {
 		this.knownlist = loadKnownList(knownfile);
 		this.maglist = loadMagList(magfile);
 	}
 
-	public Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> call(Stream<String> stream)
-			throws IOException {
+	public Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> call(Stream<String> stream) throws Exception {
 		Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)
@@ -97,36 +95,25 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 			int sum1 = ispmap.values().stream().mapToInt(msgmap -> {
 				return msgmap.get(INFO_SUMMARY_MSG) == null ? 0 : msgmap.get(INFO_SUMMARY_MSG).values().stream().mapToInt(c -> c.intValue()).sum();
 			}).sum();
-//			System.out.println(("".equals(country) ? "<MAGLIST>" : country) +
-//				new StringBuilder().append(" : ").append(sum - sum1).append(" / ").append(sum).append(" => ").append((sum - sum1) * 100 / sum).append("%").toString());
+			System.out.println(("".equals(country) ? "<MAGLIST>" : country) +
+				new StringBuilder().append(" : ").append(sum - sum1).append(" / ").append(sum).append(" => ").append((sum - sum1) * 100 / sum).append("%").toString());
 
 			ispmap.forEach((isp, msgmap) -> {
 				int sum2 = msgmap.values().stream().mapToInt(addrmap -> {
 					return addrmap.values().stream().mapToInt(c -> c.intValue()).sum();
 				}).sum();
 				int sum21 = msgmap.get(INFO_SUMMARY_MSG) == null ? 0 : msgmap.get(INFO_SUMMARY_MSG).values().stream().mapToInt(c -> c.intValue()).sum();
-//				System.out.println(new StringBuilder().append("\t").append(isp).append(" : ").append(sum2 - sum21).append(" / ").append(sum2).append(" => ").append((sum2 - sum21) * 100 / sum2).append("%"));
+				System.out.println(new StringBuilder().append("\t").append(isp).append(" : ").append(sum2 - sum21).append(" / ").append(sum2).append(" => ").append((sum2 - sum21) * 100 / sum2).append("%"));
 
 				msgmap.forEach((msg, addrmap) -> {
 					int sum3 = addrmap.values().stream().mapToInt(c -> c.intValue()).sum();
-//					System.out.println(new StringBuilder().append("\t\t[ ").append(msg).append(" ] : ").append(sum3));
+					System.out.println(new StringBuilder().append("\t\t[ ").append(msg).append(" ] : ").append(sum3));
 
 					addrmap.forEach((addr, count) -> {
-//						System.out.println(new StringBuilder().append("\t\t\t").append(addr).append(" : ").append(count));
-						System.out.println(
-								new StringBuilder("".equals(country) ? "<MAGLIST>" : country)
-								.append("\t")
-								.append(isp)
-								.append("\t")
-								.append(msg)
-								.append("\t")
-								.append(addr)
-								.append("\t")
-								.append(count));
+						System.out.println(new StringBuilder().append("\t\t\t").append(addr).append(" : ").append(count));
 					});
 				});
 			});
-//			System.out.println();
 		});
 		System.out.println();
 	}

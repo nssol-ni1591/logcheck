@@ -22,16 +22,17 @@ public class IspBean<E> implements Comparable<IspBean<E>> {
 		return ref;
 	}
 
-	public String toString() {
-		return name + ("".equals(country) ? "" : " (" + country + ")");
-	}
-	public String toStringWithAddress() {
-		return toString() + " " + ref.toString();
-	}
-
 	@Override
 	public int compareTo(IspBean<E> o) {
 		// TODO Auto-generated method stub
 		return name.compareTo(o.getName());
+	}
+
+	public String toString() {
+//		return name + ("".equals(country) ? "" : " (" + country + ")");
+		return name;
+	}
+	public String toStringWithAddress() {
+		return toString() + " " + ref.toString();
 	}
 }

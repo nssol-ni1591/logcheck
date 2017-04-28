@@ -41,15 +41,31 @@ public class NetAddr implements Comparable<NetAddr> {
 				int tmp_mask = 0;
 				for (int ix = 0; ix < 4; ix++) {
 					int m = Integer.parseInt(s2[ix]);
+					/*
 					while (m > 0) {
 						m = m / 2;
 						++tmp_mask;
+					}
+					*/
+					switch (m) {
+					case 0:		tmp_mask += 0 ; break;
+					case 127:	tmp_mask += 1 ; break;
+					case 128:	tmp_mask += 1 ; break;	// 記入ミス対応
+					case 192:	tmp_mask += 2 ; break;
+					case 224:	tmp_mask += 3 ; break;
+					case 240:	tmp_mask += 4 ; break;
+					case 248:	tmp_mask += 5 ; break;
+					case 252:	tmp_mask += 6 ; break;
+					case 254:	tmp_mask += 7 ; break;
+					case 255:	tmp_mask += 8 ; break;
+					default:
+						throw new IllegalArgumentException("ip error: " + addr + ", s2=" + s2);
 					}
 				}
 				mask = tmp_mask;
 			}
 			else {
-				throw new IllegalArgumentException("ip error: " + s0[0] + ", len=" + s1.length);
+				throw new IllegalArgumentException("ip error: " + addr + ", len=" + s1.length);
 			}
 		}
 
@@ -81,7 +97,6 @@ public class NetAddr implements Comparable<NetAddr> {
 			netaddr[3] = netaddr[3] & (int)(256 - Math.pow(2, 32 - mask));
 			brdaddr[3] = brdaddr[3] | (int)(Math.pow(2, 32 - mask) - 1);
 		}
-		//System.out.println("NetworkAddr<init>: addr=" + addr + ", this=" + this);
 	}
 
 	public int compareTo(NetAddr another) {
@@ -102,15 +117,7 @@ public class NetAddr implements Comparable<NetAddr> {
 	public boolean equals(NetAddr another) {
 		return compareTo(another) == 0 ? true : false;
 	}
-	/*
-	public int hashCode() {
-		long hash = 0;
-		for (int ix = 0; ix < 4; ix++) {
-			hash = hash * 256 + netaddr[ix];
-		}
-		return (int)hash;
-	}
-	*/
+
 	public boolean within(NetAddr another) {
 		int[] addr = another.getNetworkAddr();
 		for (int ix = 0; ix < 4; ix++) {
@@ -154,36 +161,4 @@ public class NetAddr implements Comparable<NetAddr> {
 		return sb.toString();
 	}
 
-	public static void main(String...argv) {
-		/*
-		System.out.println(new NetAddr("192.168.15.15"));
-		System.out.println(new NetAddr("192.168.15.15/30"));
-		System.out.println(new NetAddr("192.168.15.15/28"));
-		System.out.println(new NetAddr("192.168.15.15/24"));
-		System.out.println(new NetAddr("192.168.15.15/22"));
-		System.out.println(new NetAddr("192.168.15.15/20"));
-		System.out.println(new NetAddr("172.130.1.1/18"));
-		System.out.println(new NetAddr("172.130.1.1/16"));
-		System.out.println(new NetAddr("172.130.1.1/14"));
-		System.out.println(new NetAddr("172.130.1.1/12"));
-		System.out.println(new NetAddr("172.130.1.1/10"));
-		System.out.println(new NetAddr("172.130.1.1/8"));
-		System.out.println(new NetAddr("10.10.1.1/8"));
-
-		System.out.println(new NetAddr("192.168.15.10/30").within(new NetAddr("192.168.15.13")));
-		System.out.println(new NetAddr("192.168.15.13/30").within(new NetAddr("192.168.15.13")));
-		System.out.println(new NetAddr("192.168.15.16/30").within(new NetAddr("192.168.15.13")));
-		*/
-		System.out.println(new NetAddr("163.135.0.0/16").within(new NetAddr("163.135.151.75")));
-
-		//		NetworkAddr na1 = new NetworkAddr("192.168.15.13/30");
-//		NetworkAddr na2 = new NetworkAddr("192.168.15.13");
-/*
-		System.out.println("2 ^ 0 = " + Math.pow(2, 0));
-		System.out.println("2 ^ 1 = " + Math.pow(2, 1));
-		System.out.println("2 ^ 2 = " + Math.pow(2, 2));
-		System.out.println("2 ^ 3 = " + Math.pow(2, 3));
-		System.out.println("2 ^ 4 = " + Math.pow(2, 4));
-		*/
-	}
 }

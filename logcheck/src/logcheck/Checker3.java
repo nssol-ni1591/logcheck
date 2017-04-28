@@ -1,6 +1,5 @@
 package logcheck;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -20,23 +19,13 @@ public class Checker3 extends AbstractChecker<Map<String, IspMap<Map<String, Int
 
 	private final KnownList knownlist;
 	private final MagList maglist;
-	/*
-	private static final Pattern[] patterns = {
-			Pattern.compile("Primary authentication failed for [\\S ]+ from \\S+"),
-			Pattern.compile("Testing Source IP realm restrictions failed for \\S+\\s*"),
-			Pattern.compile("Testing Password realm restrictions failed for [\\S ]+ , with certificate .+"),
-			Pattern.compile("Testing Certificate realm restrictions failed for .+"),
-			Pattern.compile("Host Checker policy 'MAC_Address_Filter' failed on host .+"),
-			Pattern.compile("The X\\.509 certificate for .+; Detail: 'certificate revoked' "),
-	};
-	*/
 
-	public Checker3(String knownfile, String magfile) throws IOException {
+	public Checker3(String knownfile, String magfile) throws Exception {
 		this.knownlist = loadKnownList(knownfile);
 		this.maglist = loadMagList(magfile);
 	}
 
-	public Map<String, IspMap<Map<String, Integer>>> call(Stream<String> stream) throws IOException {
+	public Map<String, IspMap<Map<String, Integer>>> call(Stream<String> stream) throws Exception {
 		Map<String, IspMap<Map<String, Integer>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)

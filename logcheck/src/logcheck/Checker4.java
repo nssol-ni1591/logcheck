@@ -1,6 +1,5 @@
 package logcheck;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -22,12 +21,12 @@ public class Checker4 extends AbstractChecker<Map<String ,Map<String, IspMap<Map
 	private final MagList maglist;
 
 
-	public Checker4(String knownfile, String magfile) throws IOException {
+	public Checker4(String knownfile, String magfile) throws Exception {
 		this.knownlist = loadKnownList(knownfile);
 		this.maglist = loadMagList(magfile);
 	}
 
-	public Map<String, Map<String, IspMap<Map<String, Integer>>>> call(Stream<String> stream) throws IOException {
+	public Map<String, Map<String, IspMap<Map<String, Integer>>>> call(Stream<String> stream) throws Exception {
 		Map<String, Map<String, IspMap<Map<String, Integer>>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)
@@ -111,18 +110,6 @@ public class Checker4 extends AbstractChecker<Map<String ,Map<String, IspMap<Map
 
 					msgmap.forEach((msg, count) -> {
 						System.out.println(new StringBuilder().append("\t\t\t[ ").append(msg).append(" ] : ").append(count));
-						/*
-						System.out.println(
-								new StringBuilder("".equals(country) ? "<MAGLIST>" : country)
-								.append("\t")
-								.append(isp)
-								.append("\t")
-								.append(addr)
-								.append("\t")
-								.append(msg)
-								.append("\t")
-								.append(count));
-						 */
 					});
 				});
 			});
