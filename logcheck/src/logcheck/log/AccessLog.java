@@ -72,10 +72,9 @@ public class AccessLog {
 						.forEach(b -> {
 							AccessLogSummary als = map.get(b.getAddr().toString());
 							if (als == null) {
-								als = new AccessLogSummary(b.getAddr().toString());
+								als = new AccessLogSummary(b, null);
 								map.put(b.getAddr().toString(), als);
 							}
-							als.addAddress(b.getAddr());
 							System.out.println("log=" + b);
 						});
 				System.out.println("end AccessLog.main ...");

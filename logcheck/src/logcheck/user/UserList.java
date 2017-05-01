@@ -6,6 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.HashMap;
 
+/*
+ * 有効なVPNクライアント証明書が発行されているユーザの一覧を取得する
+ */
 public class UserList extends HashMap<String, UserListBean> {
 
 	private static final long serialVersionUID = 1L;

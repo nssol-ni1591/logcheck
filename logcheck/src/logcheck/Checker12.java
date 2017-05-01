@@ -15,15 +15,15 @@ import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
 import logcheck.log.AccessLogBean;
+import logcheck.log.AccessLogSummary;
 import logcheck.mag.MagList;
-import logcheck.msg.MsgBean;
 import logcheck.util.NetAddr;
 
 /*
  * 利用申請外接続の検索処理：
  * IP_RANGE_PATTERN に合致するログを検索し、 国 > ISP > クライアントIP > MsgBean 毎にログ数を集計する
  */
-public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, MsgBean>>>> {
+public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>>> {
 
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
@@ -41,8 +41,8 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 		return IP_RANGE_PATTERN.matcher(b.getMsg()).matches();
 	}
 
-	public Map<String, Map<Isp, Map<NetAddr, MsgBean>>> call(Stream<String> stream) throws Exception {
-		Map<String, Map<Isp, Map<NetAddr, MsgBean>>> map = new TreeMap<>();
+	public Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> call(Stream<String> stream) throws Exception {
+		Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
@@ -55,9 +55,9 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 					}
 
 					if (isp != null) {
-						Map<Isp, Map<NetAddr, MsgBean>> ispmap;
-						Map<NetAddr, MsgBean> addrmap;
-						MsgBean msg;
+						Map<Isp, Map<NetAddr, AccessLogSummary>> ispmap;
+						Map<NetAddr, AccessLogSummary> addrmap;
+						AccessLogSummary msg;
 
 						ispmap = map.get(isp.getCountry());
 						if (ispmap == null) {
@@ -73,7 +73,7 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 
 						msg = addrmap.get(addr);
 						if (msg == null) {
-							msg = new MsgBean(b, IP_RANGE_PATTERN.toString());
+							msg = new AccessLogSummary(b, IP_RANGE_PATTERN.toString());
 							addrmap.put(addr, msg);
 						}
 						else {
@@ -87,7 +87,7 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 		return map;
 	}
 
-	public void report(Map<String, Map<Isp, Map<NetAddr, MsgBean>>> map) {
+	public void report(Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> map) {
 		System.out.println("国\tISP/プロジェクト\tアドレス\t初回日時\t最終日時\tログ数");
 		map.forEach((country, ispmap) -> {
 

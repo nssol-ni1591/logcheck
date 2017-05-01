@@ -15,14 +15,14 @@ import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
 import logcheck.log.AccessLogBean;
+import logcheck.log.AccessLogSummary;
 import logcheck.mag.MagList;
-import logcheck.msg.MsgBean;
 import logcheck.util.NetAddr;
 
 /*
  * 時間 > ISP > ソースIP > ID > メッセージ 毎にログ数を出力する（集計はしない）
  */
-public class Checker9 extends AbstractChecker<List<MsgBean>> {
+public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 
 	private String select;
 	@Inject private KnownList knownlist;
@@ -57,8 +57,8 @@ public class Checker9 extends AbstractChecker<List<MsgBean>> {
 		return b.getMsg();
 	}
 
-	public List<MsgBean> call(Stream<String> stream) throws Exception {
-		List<MsgBean> list = new Vector<>(1000000);
+	public List<AccessLogSummary> call(Stream<String> stream) throws Exception {
+		List<AccessLogSummary> list = new Vector<>(1000000);
 		stream//.parallel()
 				.filter(AccessLog::test)
 				.filter(s -> s.startsWith(select))
@@ -73,7 +73,7 @@ public class Checker9 extends AbstractChecker<List<MsgBean>> {
 					}
 
 					if (isp != null) {
-						MsgBean msg = new MsgBean(b, pattern, isp);
+						AccessLogSummary msg = new AccessLogSummary(b, pattern, isp);
 						list.add(msg);
 					} else {
 							System.err.println("unknown ip: addr=" + addr);
@@ -82,7 +82,7 @@ public class Checker9 extends AbstractChecker<List<MsgBean>> {
 		return list;
 	}
 
-	public void report(List<MsgBean> list) {
+	public void report(List<AccessLogSummary> list) {
 		System.out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\tロール\tメッセージ");
 
 		list.forEach(msg -> {

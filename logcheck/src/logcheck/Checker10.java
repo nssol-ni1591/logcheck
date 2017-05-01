@@ -15,15 +15,15 @@ import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
 import logcheck.log.AccessLogBean;
+import logcheck.log.AccessLogSummary;
 import logcheck.mag.MagList;
-import logcheck.msg.MsgBean;
 import logcheck.util.NetAddr;
 
 /*
  * ユーザ認証ログ突合せ処理：
  * ユーザ認証の成功ログと同じアドレス、同一ユーザIDの認証失敗ログを検索する
  */
-public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predicate<AccessLogBean>*/ {
+public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*implements Predicate<AccessLogBean>*/ {
 
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
@@ -50,8 +50,8 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 				.isPresent();
 	}
 
-	public List<MsgBean> call(Stream<String> stream) throws IOException {
-		List<MsgBean> list = new Vector<>(1000);
+	public List<AccessLogSummary> call(Stream<String> stream) throws IOException {
+		List<AccessLogSummary> list = new Vector<>(1000);
 		stream//.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
@@ -64,11 +64,11 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 					}
 
 					if (isp != null) {
-						MsgBean msg = null;
+						AccessLogSummary msg = null;
 						if (b.getMsg().contains("failed")) {
 							// 失敗メッセージ
 							if (list.isEmpty()) {
-								msg = new MsgBean(b, b.getMsg(), isp);
+								msg = new AccessLogSummary(b, b.getMsg(), isp);
 								list.add(msg);
 							}
 							else {
@@ -86,7 +86,7 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 									msg = null;
 								}
 								if (msg == null) {
-									msg = new MsgBean(b, b.getMsg(), isp);
+									msg = new AccessLogSummary(b, b.getMsg(), isp);
 									list.add(msg);
 								}
 							}
@@ -114,7 +114,7 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 		return list;
 	}
 
-	public void report(List<MsgBean> list) {
+	public void report(List<AccessLogSummary> list) {
 		System.out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\tエラー回数\tメッセージ");
 
 		list.forEach(msg -> {

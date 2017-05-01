@@ -1,30 +1,85 @@
 package logcheck.log;
 
-import logcheck.isp.IspMap;
+import logcheck.isp.Isp;
 import logcheck.util.NetAddr;
 
-public class AccessLogSummary extends IspMap<Integer> {
+public class AccessLogSummary implements Comparable<AccessLogSummary> {
 
-	public AccessLogSummary(String name) {
-		super(name);
+	private final NetAddr addr;
+	private final String id;
+	private final String pattern;
+	private Isp isp;
+
+	private String firstDate;
+	private String lastDate;
+	private String roles;
+	private int count;
+
+	public AccessLogSummary(AccessLogBean log, String pattern) {
+		this.addr = log.getAddr();
+		this.id = log.getId();
+		this.pattern = pattern;
+		this.roles = log.getRoles();
+
+		this.firstDate = log.getDate();
+		this.lastDate = firstDate;
+		this.count = 1;
 	}
-	public AccessLogSummary(String name, String country) {
-		super(name, country);
+	public AccessLogSummary(AccessLogBean log, String pattern, Isp isp) {
+		this(log, pattern);
+		this.isp = isp;
 	}
 
-	public int sum() {
-		return getRef().values().stream().mapToInt(Integer::intValue).sum();
+	public String getFirstDate() {
+		return firstDate;
 	}
-	public void addAddress(NetAddr addr) {
-		Integer count = get(addr);
-		if (count == null) {
-			count = new Integer(0);
+	public String getLastDate() {
+		return lastDate;
+	}
+	public NetAddr getAddr() {
+		return addr;
+	}
+	public String getId() {
+		return id;
+	}
+	public String getPattern() {
+		return pattern;
+	}
+	public Isp getIsp() {
+		return isp;
+	}
+	public String getRoles() {
+		return roles;
+	}
+	public int getCount() {
+		return count;
+	}
+
+	public synchronized void update(AccessLogBean b) {
+		String date = b.getDate();
+		if (firstDate.compareTo(date) > 0) {
+			this.firstDate = date;
 		}
-		count += 1;
-		put(addr, count);
+		if (lastDate.compareTo(date) < 0) {
+			this.lastDate = date;
+		}
+
+		if ("".equals(roles)) {
+			roles = b.getRoles();
+		}
+		this.count += 1;
+	}
+	public void addCount() {
+		this.count += 1;
 	}
 
+	@Override
+	public int compareTo(AccessLogSummary o) {
+		// TODO Auto-generated method stub
+		return pattern.compareTo(o.getPattern());
+	}
+	
 	public String toString() {
-		return "name=" + getName()+ ", sum=" + sum();
+		return String.format("[first=%s, last=%s, addr=%s, id=%s, count=%d]", firstDate, lastDate, addr.toString(), id, count);
 	}
 }
