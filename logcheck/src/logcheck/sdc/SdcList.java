@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import logcheck.annotations.WithElaps;
 import logcheck.util.NetAddr;
 
 public class SdcList extends LinkedHashMap<String, SdcListIsp> {
@@ -16,7 +17,9 @@ public class SdcList extends LinkedHashMap<String, SdcListIsp> {
 	private static final long serialVersionUID = 1L;
 	public static final String PATTERN = "(\\d+\\.\\d+\\.\\d+\\.\\d+/?[\\d\\.]*)\t([\\S ]+)\t([\\S ]+)";
 
-	private SdcList() { }
+	public SdcList() {
+		super(100);
+	}
 
 	public SdcListIsp get(NetAddr addr) {
 		Optional<SdcListIsp> rc = values().stream().filter(isp -> {
@@ -25,6 +28,7 @@ public class SdcList extends LinkedHashMap<String, SdcListIsp> {
 		return rc.isPresent() ? rc.get() : null;
 	}
 
+	@WithElaps
 	public SdcList load(String file) throws IOException {
 		Files.lines(Paths.get(file), Charset.forName("MS932"))
 				.filter(SdcList::test)

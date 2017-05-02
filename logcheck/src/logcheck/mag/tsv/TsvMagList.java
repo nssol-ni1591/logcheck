@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import javax.enterprise.inject.Alternative;
 
+import logcheck.annotations.WithElaps;
 import logcheck.mag.MagList;
 import logcheck.mag.MagListBean;
 import logcheck.mag.MagListIsp;
@@ -22,7 +23,9 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 	private static final long serialVersionUID = 1L;
 	public static String PATTERN = "(PRJ_[\\w_]+)\t(.+)\t(.+)\t([\\d\\.～\\/]+)\t([\\d+\\.\\d+\\.\\d+\\.\\d+]+)\t([\\d+\\.\\d+\\.\\d+\\.\\d+]+)";
 
-	public TsvMagList() { }
+	public TsvMagList() {
+		super(200);
+	}
 
 	/*
 	 * 引数のIPアドレスを含むCompanyを取得する
@@ -34,6 +37,7 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 		return rc.isPresent() ? rc.get() : null;
 	}
 
+	@WithElaps
 	public TsvMagList load(String file) throws IOException {
 		Files.lines(Paths.get(file), Charset.forName("MS932"))
 				.filter(s -> test(s))

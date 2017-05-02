@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import javax.enterprise.inject.Alternative;
 
+import logcheck.annotations.WithElaps;
 import logcheck.mag.MagList;
 import logcheck.mag.MagListBean;
 import logcheck.mag.MagListIsp;
@@ -37,6 +38,10 @@ public class DbMagList extends HashMap<String, MagListIsp> implements MagList {
 //			+ " and g.site_gip != '追加不要'"
 			+ " order by m.prj_id";
 
+	public DbMagList() {
+		super(200);
+	}
+
 	@Override
 	public MagListIsp get(NetAddr addr) {
 		Optional<MagListIsp> rc = values().stream().filter(isp -> {
@@ -45,13 +50,13 @@ public class DbMagList extends HashMap<String, MagListIsp> implements MagList {
 		return rc.isPresent() ? rc.get() : null;
 	}
 
-	@Override
+	@Override @WithElaps
 	public MagList load(String sql) throws Exception {
 		// Oracle JDBC Driverのロード
 		Class.forName("oracle.jdbc.driver.OracleDriver");
 
 		try (	// Oracleに接続
-				Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@172.31.247.139:1521:sdcdb011", "masterinfo", "masterinfo");
+				Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@172.31.247.137:1521/sdcdb01", "masterinfo", "masterinfo");
 				// ステートメントを作成
 				PreparedStatement stmt = conn.prepareStatement(sql);
 				)
@@ -99,6 +104,7 @@ public class DbMagList extends HashMap<String, MagListIsp> implements MagList {
 			System.out.println(name + "=" + c.getAddress());
 		}
 		System.out.println("DbMagList.main ... end");
+		System.exit(0);
 	}
 
 }

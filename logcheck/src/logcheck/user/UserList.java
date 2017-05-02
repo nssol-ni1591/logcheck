@@ -4,12 +4,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+
+import logcheck.annotations.WithElaps;
 
 /*
  * 有効なVPNクライアント証明書が発行されているユーザの一覧を取得する
  */
-public class UserList extends HashMap<String, UserListBean> {
+public class UserList extends LinkedHashMap<String, UserListBean> {
 
 	private static final long serialVersionUID = 1L;
 /*
@@ -24,7 +26,7 @@ public class UserList extends HashMap<String, UserListBean> {
 			+ "　and site_user.delete_flag = '0'";
 */
 	public static String SQL_ACTIVE_CERTIFICATION_ZUSER = 
-			"select l.user_id , p.prj_id, s.site_name, s.site_type_cd, s.connect_type_cd"
+			"select l.user_id , p.prj_id, s.site_name, s.site_type_cd, s.connect_type_cd, p.delete_flag,　s.delete_flag, u.delete_flag"
 			+ " from mst_project p, sas_prj_site_info s, sas_prj_site_user u, user_ssl_info l"
 			+ " where l.valid_flg = '1'"
 //	証明書が有効なユーザに関する情報を取得する。その際、過去のPRJは考慮しない
@@ -37,12 +39,17 @@ public class UserList extends HashMap<String, UserListBean> {
 			+ " and l.user_id like 'Z%'"
 			+ " order by l.user_id";
 
+	public UserList() {
+		super(1500);
+	}
+
+	@WithElaps
 	public UserList load(String sql) throws Exception {
 		// Oracle JDBC Driverのロード
 		Class.forName("oracle.jdbc.driver.OracleDriver");
 
 		try (	// Oracleに接続
-				Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@172.31.247.139:1521:sdcdb011", "masterinfo", "masterinfo");
+				Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@172.31.247.137:1521/sdcdb01", "masterinfo", "masterinfo");
 				// ステートメントを作成
 				PreparedStatement stmt = conn.prepareStatement(sql);
 				)
@@ -55,13 +62,16 @@ public class UserList extends HashMap<String, UserListBean> {
 				String siteName = rs.getString(3);
 				String siteCd = rs.getString(4);
 				String connCd = rs.getString(5);
+				String prjDelFlag = rs.getString(6);
+				String siteDelFlag = rs.getString(7);
+				String userDelFlag = rs.getString(8);
 
 				UserListBean b = this.get(userId);
 				if (b == null) {
-					b = new UserListBean(userId);
+					b = new UserListBean(userId, userDelFlag);
 					this.put(userId, b);
 				}
-				b.addPrjs(new UserListSite(prjId, siteName, siteCd, connCd));
+				b.addPrjs(new UserListSite(prjId, siteName, siteCd, connCd, prjDelFlag, siteDelFlag));
 				//System.out.println(b);
 			}
 		}

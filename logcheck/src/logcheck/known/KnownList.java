@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import logcheck.annotations.WithElaps;
 import logcheck.util.NetAddr;
 
 public class KnownList extends HashMap<String, KnownListIsp> {
@@ -16,7 +17,9 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 	private static final long serialVersionUID = 1L;
 	public static final String PATTERN = "(\\d+\\.\\d+\\.\\d+\\.\\d+/?\\d*)\t([^\t]+)\t(プライベート|\\S\\S)";
 
-	private KnownList() { }
+	public KnownList() {
+		super(200);
+	}
 
 	/*
 	 * 引数のIPアドレスを含むISPを取得する
@@ -28,6 +31,7 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 		return rc.isPresent() ? rc.get() : null;
 	}
 
+	@WithElaps
 	public KnownList load(String file) throws IOException {
 		Files.lines(Paths.get(file), Charset.forName("MS932"))
 				.filter(KnownList::test)
