@@ -6,8 +6,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 public class FwLog {
+
+	private static Logger log = Logger.getLogger(FwLog.class.getName());
 
 	private FwLog() { }
 
@@ -60,7 +63,8 @@ public class FwLog {
 
 	public static boolean test(String s) {
 		if (s.startsWith("#")) {
-			System.err.println("SKIP: \"" + s + "\"");
+//			System.err.println("SKIP: \"" + s + "\"");
+			log.warning("(FwLog): \"" + s + "\"");
 			return false;
 		}
 		return true;

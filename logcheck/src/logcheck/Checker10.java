@@ -108,7 +108,8 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 
 					}
 					else {
-							System.err.println("unknown ip: addr=" + addr);
+//						System.err.println("unknown ip: addr=" + addr);
+						log.warning("unknown ip: addr=" + addr);
 					}
 				});
 		return list;

@@ -81,7 +81,8 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 						}
 
 					} else {
-							System.err.println("unknown ip: addr=" + addr);
+//						System.err.println("unknown ip: addr=" + addr);
+						log.warning("unknown ip: addr=" + addr);
 					}
 				});
 		return map;

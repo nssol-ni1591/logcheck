@@ -6,10 +6,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.enterprise.inject.Alternative;
+import javax.inject.Inject;
 
 import logcheck.annotations.WithElaps;
 import logcheck.mag.MagList;
@@ -20,7 +22,10 @@ import logcheck.util.NetAddr;
 @Alternative
 public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 
+	@Inject private Logger log;
+
 	private static final long serialVersionUID = 1L;
+
 	public static String PATTERN = "(PRJ_[\\w_]+)\t(.+)\t(.+)\t([\\d\\.～\\/]+)\t([\\d+\\.\\d+\\.\\d+\\.\\d+]+)\t([\\d+\\.\\d+\\.\\d+\\.\\d+]+)";
 
 	public TsvMagList() {
@@ -95,7 +100,8 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 		Matcher m = p.matcher(s);
 		boolean rc = m.find();
 		if (!rc) {
-			System.err.println("WARNING(MAG): " + s.trim());
+//			System.err.println("WARNING(MAG): " + s.trim());
+			log.warning("(MagList): \"" + s.trim() + "\"");
 		}
 
 		String[] array = s.split("\t");

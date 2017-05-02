@@ -32,7 +32,8 @@ public class Checker81 extends Checker8 {
 		if (rc.isPresent()) {
 			return rc.get();
 		}
-		System.err.println("ERROR: \"" + b.getMsg() + "\"");
+//		System.err.println("ERROR: \"" + b.getMsg() + "\"");
+		log.warning("(Pattern): \"" + b.getMsg() + "\"");
 		return b.getMsg();
 	}
 

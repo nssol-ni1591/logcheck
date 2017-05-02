@@ -5,10 +5,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AccessLog {
+
+	private static Logger log = Logger.getLogger(AccessLog.class.getName());
 
 	public static final String PATTERN = "(\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d) - ([\\w-]+) - \\[([\\d\\.]*)\\] (.+)\\(([\\w\\(\\)-]*)\\)\\[(.*)\\] - (.*)$";
 	public static final String PATTERN2 = "\\[\\d+\\.\\d+\\.\\d+\\.\\d+\\] ([\\S ])+\\(\\S*\\)\\[[\\S ]*\\]";
@@ -42,13 +45,14 @@ public class AccessLog {
 
 	public static boolean test(String s) {
 		if (s.startsWith("#")) {
-			System.err.println("SKIP: \"" + s + "\"");
+//			System.err.println("SKIP: \"" + s + "\"");
 			return false;
 		}
 
 		String[] array = s.split(" - ");
 		if (array.length < 4) {
-			System.err.println("ERROR: \"" + s + "\"");
+//			System.err.println("ERROR: \"" + s + "\"");
+			log.warning("(AccessLog): \"" + s + "\"");
 			return false;
 		}
 
@@ -56,7 +60,8 @@ public class AccessLog {
 		Matcher m = p.matcher(array[2]);
 		boolean rc = m.matches();
 		if (!rc) {
-			System.err.println("ERROR: \"" + s + "\"");
+//			System.err.println("ERROR: \"" + s + "\"");
+			log.warning("(AccessLog): \"" + s + "\"");
 		}
 		return rc;
 	}

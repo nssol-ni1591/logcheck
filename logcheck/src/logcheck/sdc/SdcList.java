@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,6 +14,8 @@ import logcheck.annotations.WithElaps;
 import logcheck.util.NetAddr;
 
 public class SdcList extends LinkedHashMap<String, SdcListIsp> {
+
+	private static Logger log = Logger.getLogger(SdcList.class.getName());
 
 	private static final long serialVersionUID = 1L;
 	public static final String PATTERN = "(\\d+\\.\\d+\\.\\d+\\.\\d+/?[\\d\\.]*)\t([\\S ]+)\t([\\S ]+)";
@@ -71,7 +74,8 @@ public class SdcList extends LinkedHashMap<String, SdcListIsp> {
 		Matcher m = p.matcher(s);
 		boolean rc = m.find();
 		if (!rc) {
-			System.err.println("WARNING(SDC): " + s);
+//			System.err.println("WARNING(SDC): " + s);
+			log.warning("(SdcList): \"" + s + "\"");
 		}
 		return rc;
 	}

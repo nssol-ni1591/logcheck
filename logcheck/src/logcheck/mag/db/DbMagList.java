@@ -6,8 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import javax.enterprise.inject.Alternative;
+import javax.inject.Inject;
 
 import logcheck.annotations.WithElaps;
 import logcheck.mag.MagList;
@@ -17,6 +19,8 @@ import logcheck.util.NetAddr;
 
 @Alternative
 public class DbMagList extends HashMap<String, MagListIsp> implements MagList {
+
+	@Inject private Logger log;
 
 	private static final long serialVersionUID = 1L;
 
@@ -82,7 +86,8 @@ public class DbMagList extends HashMap<String, MagListIsp> implements MagList {
 					//System.out.printf("prjId=%s, addr=%s\n", prjId, addr);
 				}
 				else {
-					System.err.printf("WARNING(MAG): prjId=%s, magIp=%s\n", prjId, magIp);
+//					System.err.printf("WARNING(MAG): prjId=%s, magIp=%s\n", prjId, magIp);
+					log.warning("(MagList): prjId=" + prjId + ", magIp=" + magIp);
 				}
 			}
 		}

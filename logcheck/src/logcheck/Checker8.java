@@ -11,7 +11,6 @@ import javax.inject.Inject;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
-import logcheck.annotations.WithElaps;
 import logcheck.isp.Isp;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
@@ -31,6 +30,8 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 	@Inject protected MagList maglist;
 
 	private static final String INFO_SUMMARY_MSG = "<><><> Information message summary <><><>";
+
+	public Checker8 () { }
 
 	public Checker8 init(String knownfile, String magfile) throws Exception {
 		this.knownlist.load(knownfile);
@@ -59,7 +60,8 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 			// failed が含まれないメッセージは集約する
 			return INFO_SUMMARY_MSG;
 		}
-		System.err.println("ERROR: \"" + b.getMsg() + "\"");
+//		System.err.println("ERROR: \"" + b.getMsg() + "\"");
+		log.warning("(Pattern): \"" + b.getMsg() + "\"");
 		return b.getMsg();
 	}
 
@@ -118,7 +120,8 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 						}
 
 					} else {
-							System.err.println("unknown ip: addr=" + addr);
+//						System.err.println("unknown ip: addr=" + addr);
+						log.warning("unknown ip: addr=" + addr);
 					}
 				});
 		return map;

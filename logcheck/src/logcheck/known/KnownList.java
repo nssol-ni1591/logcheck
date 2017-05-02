@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,7 +15,9 @@ import logcheck.util.NetAddr;
 
 public class KnownList extends HashMap<String, KnownListIsp> {
 
+	private static Logger log = Logger.getLogger(KnownList.class.getName());
 	private static final long serialVersionUID = 1L;
+
 	public static final String PATTERN = "(\\d+\\.\\d+\\.\\d+\\.\\d+/?\\d*)\t([^\t]+)\t(プライベート|\\S\\S)";
 
 	public KnownList() {
@@ -59,6 +62,12 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 		}
 		if (m.find(2)) {
 			name = m.group(2);
+			if (name.length() > 0 && name.charAt(0) == '\"') {
+				name = name.substring(1);
+			}
+			if (name.length() > 0 && name.charAt(name.length() - 1) == '\"') {
+				name = name.substring(0, name.length() - 1);
+			}
 		}
 		if (m.find(3)) {
 			country = m.group(3);
@@ -74,7 +83,8 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 		Matcher m = p.matcher(s);
 		boolean rc = m.find();
 		if (!rc) {
-			System.err.println("WARNING(KNOWN): " + s);
+//			System.err.println("WARNING(KNOWN): " + s);
+			log.warning("(KnownList): \"" + s + "\"");
 		}
 		return rc;
 	}

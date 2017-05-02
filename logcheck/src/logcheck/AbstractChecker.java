@@ -10,8 +10,11 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+
+import javax.inject.Inject;
 
 /*
  * アクセスログのソースIPに一致するISP名/企業名を取得し、国別にISP名/企業名と出力ログ数を出力する
@@ -21,7 +24,10 @@ import java.util.stream.Stream;
  */
 public abstract class AbstractChecker<T> implements Callable<T> {
 
+	@Inject protected Logger log;
+
 	private Stream<String> stream;
+
 	/*
 			Pattern.compile(""),
 	 */
@@ -92,23 +98,27 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 	}
 
 	public T run(InputStream is) throws Exception {
-		System.err.println("checking from InputStream:");
+//		System.err.println("checking from InputStream:");
+		log.info("checking from InputStream:");
 		long time = System.currentTimeMillis();
 
 		T map = run(new BufferedReader(new InputStreamReader(is)).lines());
 
 		System.err.println();
-		System.err.println("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
+//		System.err.println("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
+		log.info("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
 		return map;
 	}
 	public T run(String file) throws Exception {
-		System.err.println("checking from file=" + file + ":");
+//		System.err.println("checking from file=" + file + ":");
+		log.info("checking from file=" + file + ":");
 		long time = System.currentTimeMillis();
 
 		T map = run(Files.lines(Paths.get(file), StandardCharsets.UTF_8));
 
 		System.err.println();
-		System.err.println("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
+//		System.err.println("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
+		log.info("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
 		return map;
 	}
 	public T run(Stream<String> stream) throws Exception {
@@ -165,9 +175,10 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+//					e.printStackTrace();
 				}
 			}
+//			System.err.println();	// このタイミングでは、call()スレッドが終了しているので間に合わない
 		}
 		
 		public void stopRequest() {
