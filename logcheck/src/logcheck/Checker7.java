@@ -5,30 +5,37 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
+
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
+
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
+import logcheck.log.AccessLogSummary;
 import logcheck.mag.MagList;
-import logcheck.msg.MsgBean;
 import logcheck.util.NetAddr;
 
 /*
  * 国 > ISP > クライアントIP > メッセージ 毎にログ数を集計する
  * ⇒ MsgBean, Integerでは、日時を正確に処理できない
  */
-public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAddr, Map<MsgBean, Integer>>>>> {
+public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAddr, Map<AccessLogSummary, Integer>>>>> {
 
-	private final KnownList knownlist;
-	private final MagList maglist;
+	@Inject private KnownList knownlist;
+	@Inject private MagList maglist;
+
 	private static final String INFO_SUMMARY_MSG = "<><><> Information message summary <><><>";
 
-	public Checker7(String knownfile, String magfile) throws Exception {
-		this.knownlist = loadKnownList(knownfile);
-		this.maglist = loadMagList(magfile);
+	public Checker7 init(String knownfile, String magfile) throws Exception {
+		this.knownlist.load(knownfile);
+		this.maglist.load(magfile);
+		return this;
 	}
 
-	public Map<String, Map<IspList, Map<NetAddr, Map<MsgBean, Integer>>>> call(Stream<String> stream) throws Exception {
-		Map<String, Map<IspList, Map<NetAddr, Map<MsgBean, Integer>>>> map = new TreeMap<>();
+	public Map<String, Map<IspList, Map<NetAddr, Map<AccessLogSummary, Integer>>>> call(Stream<String> stream) throws Exception {
+		Map<String, Map<IspList, Map<NetAddr, Map<AccessLogSummary, Integer>>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
@@ -50,9 +57,9 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 					}
 
 					if (isp != null) {
-						Map<IspList, Map<NetAddr, Map<MsgBean, Integer>>> ispmap;
-						Map<NetAddr, Map<MsgBean, Integer>> addrmap;
-						Map<MsgBean, Integer> msgmap;
+						Map<IspList, Map<NetAddr, Map<AccessLogSummary, Integer>>> ispmap;
+						Map<NetAddr, Map<AccessLogSummary, Integer>> addrmap;
+						Map<AccessLogSummary, Integer> msgmap;
 						Integer count;
 
 						ispmap = map.get(isp.getCountry());
@@ -73,7 +80,7 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 							addrmap.put(addr, msgmap);
 						}
 
-						MsgBean msg = new MsgBean(b, pattern);
+						AccessLogSummary msg = new AccessLogSummary(b, pattern);
 						count = msgmap.get(msg);
 						if (count == null) {
 							count = new Integer(0);
@@ -90,7 +97,7 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 		return map;
 	}
 
-	public void report(Map<String, Map<IspList, Map<NetAddr, Map<MsgBean, Integer>>>> map) {
+	public void report(Map<String, Map<IspList, Map<NetAddr, Map<AccessLogSummary, Integer>>>> map) {
 		System.out.println("国\tISP/プロジェクト\tアドレス\tメッセージ\t初回日時\t最終日時\tログ数\tISP合計");
 		map.forEach((country, ispmap) -> {
 
@@ -130,11 +137,16 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 			System.exit(1);
 		}
 
-		try {
-			new Checker7(argv[0], argv[1]).start(argv, 2);
-		} catch (Exception ex) {
-			ex.printStackTrace(System.err);
+		int rc = 0;
+		Weld weld = new Weld();
+		try (WeldContainer container = weld.initialize()) {
+			Checker7 application = container.instance().select(Checker7.class).get();
+			application.init(argv[0], argv[1]).start(argv, 2);
 		}
-		System.exit(1);
+		catch (Exception ex) {
+			ex.printStackTrace(System.err);
+			rc = 1;
+		}
+		System.exit(rc);
 	}
 }

@@ -6,15 +6,21 @@ import java.util.Set;
 public class UserListBean {
 
 	private final String userId;
+	private final String userDelFlag;
+
 	private Set<UserListSite> list;
 
-	public UserListBean(String userId) {
+	public UserListBean(String userId, String userDelFlag) {
 		this.userId = userId;
+		this.userDelFlag = userDelFlag;
 		this.list = new HashSet<>();
 	}
 
 	public String getUserId() {
 		return userId;
+	}
+	public String getUserDelFlag() {
+		return userDelFlag;
 	}
 	public Set<UserListSite> getPrjs() {
 		return list;
@@ -24,6 +30,6 @@ public class UserListBean {
 	}
 
 	public String toString() {
-		return String.format("userId=%s prjs=%s", userId, list);
+		return String.format("userId=%s del=%s, site=%s", userId, userDelFlag, list);
 	}
 }

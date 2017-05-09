@@ -6,17 +6,23 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import logcheck.annotations.WithElaps;
 import logcheck.util.NetAddr;
 
 public class SdcList extends LinkedHashMap<String, SdcListIsp> {
 
+	private static Logger log = Logger.getLogger(SdcList.class.getName());
+
 	private static final long serialVersionUID = 1L;
 	public static final String PATTERN = "(\\d+\\.\\d+\\.\\d+\\.\\d+/?[\\d\\.]*)\t([\\S ]+)\t([\\S ]+)";
 
-	private SdcList() { }
+	public SdcList() {
+		super(100);
+	}
 
 	public SdcListIsp get(NetAddr addr) {
 		Optional<SdcListIsp> rc = values().stream().filter(isp -> {
@@ -25,20 +31,20 @@ public class SdcList extends LinkedHashMap<String, SdcListIsp> {
 		return rc.isPresent() ? rc.get() : null;
 	}
 
-	public static SdcList load(String file) throws IOException {
-		SdcList map = new SdcList();
+	@WithElaps
+	public SdcList load(String file) throws IOException {
 		Files.lines(Paths.get(file), Charset.forName("MS932"))
 				.filter(SdcList::test)
 				.map(SdcList::parse)
 				.forEach(b -> {
-					SdcListIsp isp = map.get(b.getName());
+					SdcListIsp isp = get(b.getName());
 					if (isp == null) {
 						isp = new SdcListIsp(b.getName(), b.getType());
-						map.put(b.getName(), isp);
+						put(b.getName(), isp);
 					}
 					isp.addAddress(new NetAddr(b.getAddr()));
 				});
-		return map;
+		return this;
 	}
 
 	public static SdcListBean parse(String s) {
@@ -68,7 +74,8 @@ public class SdcList extends LinkedHashMap<String, SdcListIsp> {
 		Matcher m = p.matcher(s);
 		boolean rc = m.find();
 		if (!rc) {
-			System.err.println("WARNING(SDC): " + s);
+//			System.err.println("WARNING(SDC): " + s);
+			log.warning("(SdcList): \"" + s + "\"");
 		}
 		return rc;
 	}

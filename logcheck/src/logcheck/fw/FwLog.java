@@ -6,8 +6,11 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 public class FwLog {
+
+	private static Logger log = Logger.getLogger(FwLog.class.getName());
 
 	private FwLog() { }
 
@@ -27,7 +30,8 @@ public class FwLog {
 		for (String st: array) {
 			int index = st.indexOf("=");
 			if (index < 0) {
-				//throw new IllegalArgumentException("index < 0 : st=" + st);
+				// 値に空白が含まれるログ対応：例えば、"United State"など
+//				throw new IllegalArgumentException("index < 0 : st=" + st);
 				break;
 			}
 			String key = st.substring(0, index);
@@ -55,12 +59,25 @@ public class FwLog {
 				break;
 			}
 		}
+		/* test（）にcheckを入れたので、parseでの以下の条件は不要（なはず）
+		if (srcip == null) {
+			throw new IllegalArgumentException("srcip is null: \"" + s + "\"");
+		}
+		else if (dstip == null) {
+			throw new IllegalArgumentException("desip is null: \"" + s + "\"");
+		}
+		*/
 		return new FwLogBean(date, time, level, srcip, srcport, dstip, dstport);
 	}
 
 	public static boolean test(String s) {
 		if (s.startsWith("#")) {
-			System.err.println("SKIP: \"" + s + "\"");
+//			System.err.println("SKIP: \"" + s + "\"");
+			log.warning("(FwLog): \"" + s + "\"");
+			return false;
+		}
+		if (!s.contains("srcip=") || !s.contains("dstip=")) {
+			log.warning("(FwLog): \"" + s + "\"");
 			return false;
 		}
 		return true;

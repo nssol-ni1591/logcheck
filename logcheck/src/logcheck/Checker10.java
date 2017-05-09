@@ -6,32 +6,39 @@ import java.util.Vector;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
+
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
+
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
 import logcheck.log.AccessLogBean;
+import logcheck.log.AccessLogSummary;
 import logcheck.mag.MagList;
-import logcheck.msg.MsgBean;
 import logcheck.util.NetAddr;
 
 /*
  * ユーザ認証ログ突合せ処理：
  * ユーザ認証の成功ログと同じアドレス、同一ユーザIDの認証失敗ログを検索する
  */
-public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predicate<AccessLogBean>*/ {
+public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*implements Predicate<AccessLogBean>*/ {
 
-	protected final KnownList knownlist;
-	protected final MagList maglist;
+	@Inject private KnownList knownlist;
+	@Inject private MagList maglist;
+
 	private static final Pattern[] AUTH_PATTERNS = {
 			Pattern.compile("Primary authentication successful for [\\S ]+ from [\\d\\.]+"),
 //			Pattern.compile("Primary authentication failed for [\\S ]+ from \\S+"),
 			Pattern.compile("Login failed using auth server NSSDC_LDAP \\(LDAP Server\\).  Reason: Failed"),
 			Pattern.compile("Login failed using auth server NSSDC_LDAP \\(LDAP Server\\).  Reason: Short Password"),
 	};
-	
-	public Checker10(String knownfile, String magfile) throws Exception {
-		this.knownlist = loadKnownList(knownfile);
-		this.maglist = loadMagList(magfile);
+
+	public Checker10 init(String knownfile, String magfile) throws Exception {
+		this.knownlist.load(knownfile);
+		this.maglist.load(magfile);
+		return this;
 	}
 
 	public static boolean test(AccessLogBean b) {
@@ -43,8 +50,8 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 				.isPresent();
 	}
 
-	public List<MsgBean> call(Stream<String> stream) throws IOException {
-		List<MsgBean> list = new Vector<>(1000);
+	public List<AccessLogSummary> call(Stream<String> stream) throws IOException {
+		List<AccessLogSummary> list = new Vector<>(1000);
 		stream//.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
@@ -57,11 +64,11 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 					}
 
 					if (isp != null) {
-						MsgBean msg = null;
+						AccessLogSummary msg = null;
 						if (b.getMsg().contains("failed")) {
 							// 失敗メッセージ
 							if (list.isEmpty()) {
-								msg = new MsgBean(b, b.getMsg(), isp);
+								msg = new AccessLogSummary(b, b.getMsg(), isp);
 								list.add(msg);
 							}
 							else {
@@ -79,7 +86,7 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 									msg = null;
 								}
 								if (msg == null) {
-									msg = new MsgBean(b, b.getMsg(), isp);
+									msg = new AccessLogSummary(b, b.getMsg(), isp);
 									list.add(msg);
 								}
 							}
@@ -101,13 +108,14 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 
 					}
 					else {
-							System.err.println("unknown ip: addr=" + addr);
+//						System.err.println("unknown ip: addr=" + addr);
+						log.warning("unknown ip: addr=" + addr);
 					}
 				});
 		return list;
 	}
 
-	public void report(List<MsgBean> list) {
+	public void report(List<AccessLogSummary> list) {
 		System.out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\tエラー回数\tメッセージ");
 
 		list.forEach(msg -> {
@@ -135,11 +143,16 @@ public class Checker10 extends AbstractChecker<List<MsgBean>> /*implements Predi
 			System.exit(1);
 		}
 
-		try {
-			new Checker10(argv[0], argv[1]).start(argv, 2);
-		} catch (Exception ex) {
-			ex.printStackTrace(System.err);
+		int rc = 0;
+		Weld weld = new Weld();
+		try (WeldContainer container = weld.initialize()) {
+			Checker10 application = container.instance().select(Checker10.class).get();
+			application.init(argv[0], argv[1]).start(argv, 2);
 		}
-		System.exit(1);
+		catch (Exception ex) {
+			ex.printStackTrace(System.err);
+			rc = 1;
+		}
+		System.exit(rc);
 	}
 }

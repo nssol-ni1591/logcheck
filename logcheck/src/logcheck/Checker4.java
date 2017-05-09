@@ -5,6 +5,11 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
+
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
+
 import logcheck.isp.IspList;
 import logcheck.isp.IspMap;
 import logcheck.known.KnownList;
@@ -17,13 +22,13 @@ import logcheck.util.NetAddr;
  */
 public class Checker4 extends AbstractChecker<Map<String ,Map<String, IspMap<Map<String, Integer>>>>> {
 
-	private final KnownList knownlist;
-	private final MagList maglist;
+	@Inject private KnownList knownlist;
+	@Inject private MagList maglist;
 
-
-	public Checker4(String knownfile, String magfile) throws Exception {
-		this.knownlist = loadKnownList(knownfile);
-		this.maglist = loadMagList(magfile);
+	public Checker4 init(String knownfile, String magfile) throws Exception {
+		this.knownlist.load(knownfile);
+		this.maglist.load(magfile);
+		return this;
 	}
 
 	public Map<String, Map<String, IspMap<Map<String, Integer>>>> call(Stream<String> stream) throws Exception {
@@ -124,12 +129,16 @@ public class Checker4 extends AbstractChecker<Map<String ,Map<String, IspMap<Map
 			System.exit(1);
 		}
 
-		try {
-			new Checker4(argv[0], argv[1]).start(argv, 2);
+		int rc = 0;
+		Weld weld = new Weld();
+		try (WeldContainer container = weld.initialize()) {
+			Checker4 application = container.instance().select(Checker4.class).get();
+			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace(System.err);
+			rc = 1;
 		}
-		System.exit(1);
+		System.exit(rc);
 	}
 }

@@ -6,17 +6,23 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import logcheck.annotations.WithElaps;
 import logcheck.util.NetAddr;
 
 public class KnownList extends HashMap<String, KnownListIsp> {
 
+	private static Logger log = Logger.getLogger(KnownList.class.getName());
 	private static final long serialVersionUID = 1L;
+
 	public static final String PATTERN = "(\\d+\\.\\d+\\.\\d+\\.\\d+/?\\d*)\t([^\t]+)\t(プライベート|\\S\\S)";
 
-	private KnownList() { }
+	public KnownList() {
+		super(200);
+	}
 
 	/*
 	 * 引数のIPアドレスを含むISPを取得する
@@ -28,20 +34,20 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 		return rc.isPresent() ? rc.get() : null;
 	}
 
-	public static KnownList load(String file) throws IOException {
-		KnownList map = new KnownList();
+	@WithElaps
+	public KnownList load(String file) throws IOException {
 		Files.lines(Paths.get(file), Charset.forName("MS932"))
 				.filter(KnownList::test)
 				.map(KnownList::parse)
 				.forEach(b -> {
-					KnownListIsp isp = map.get(b.getName());
+					KnownListIsp isp = get(b.getName());
 					if (isp == null) {
 						isp = new KnownListIsp(b.getName(), b.getCountry());
-						map.put(b.getName(), isp);
+						put(b.getName(), isp);
 					}
 					isp.addAddress(new NetAddr(b.getAddr()));
 				});
-		return map;
+		return this;
 	}
 
 	private static KnownListBean parse(String s) {
@@ -56,6 +62,12 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 		}
 		if (m.find(2)) {
 			name = m.group(2);
+			if (name.length() > 0 && name.charAt(0) == '\"') {
+				name = name.substring(1);
+			}
+			if (name.length() > 0 && name.charAt(name.length() - 1) == '\"') {
+				name = name.substring(0, name.length() - 1);
+			}
 		}
 		if (m.find(3)) {
 			country = m.group(3);
@@ -71,7 +83,8 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 		Matcher m = p.matcher(s);
 		boolean rc = m.find();
 		if (!rc) {
-			System.err.println("WARNING(KNOWN): " + s);
+//			System.err.println("WARNING(KNOWN): " + s);
+			log.warning("(KnownList): \"" + s + "\"");
 		}
 		return rc;
 	}
@@ -80,7 +93,7 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 		System.out.println("start IspList.main ...");
 		KnownList map = new KnownList();
 		try {
-			map = KnownList.load(argv[0]);
+			map = new KnownList().load(argv[0]);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

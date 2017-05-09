@@ -1,7 +1,6 @@
 package logcheck;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -11,13 +10,11 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import logcheck.known.KnownList;
-import logcheck.mag.MagList;
-import logcheck.mag.db.DbMagList;
-import logcheck.mag.tsv.TsvMagList;
+import javax.inject.Inject;
 
 /*
  * アクセスログのソースIPに一致するISP名/企業名を取得し、国別にISP名/企業名と出力ログ数を出力する
@@ -27,7 +24,10 @@ import logcheck.mag.tsv.TsvMagList;
  */
 public abstract class AbstractChecker<T> implements Callable<T> {
 
+	@Inject protected Logger log;
+
 	private Stream<String> stream;
+
 	/*
 			Pattern.compile(""),
 	 */
@@ -88,52 +88,40 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 			Pattern.compile("\\S+/NSSDC-Auth(1|2)(\\(MAC\\))? logged out from IP \\([\\d\\.]+\\) because user started new session from IP \\([\\d\\.]+\\)\\."),
 	};
 
-	public AbstractChecker() { }
+	protected AbstractChecker() { }
 
-	protected KnownList loadKnownList(String file) throws IOException {
-		System.err.println("loading KnownList ... ");
-		long time = System.currentTimeMillis();
-		KnownList knownlist = KnownList.load(file);
-		System.err.println("loaded KnownList. elaps=" + (System.currentTimeMillis() - time) + " ms");
-		return knownlist;
-	}
-	protected MagList loadMagList(String file) throws Exception {
-		System.err.println("loading MagList ... ");
-		long time = System.currentTimeMillis();
-		MagList maglist = new TsvMagList().load(file);
-//		MagList maglist = new DbMagList().load(DbMagList.SQL_ALL_GIP);
-		System.err.println("loaded MagList. elaps=" + (System.currentTimeMillis() - time) + " ms");
-		return maglist;
-	}
-
-	protected Stream<String> getStream() {
+	private Stream<String> getStream() {
 		return stream;
 	}
-	protected void setStream(Stream<String> stream) {
+	private void setStream(Stream<String> stream) {
 		this.stream = stream;
 	}
 
-	public T run(InputStream is) throws Exception {
-		System.err.println("checking from InputStream:");
+	private T run(InputStream is) throws Exception {
+//		System.err.println("checking from InputStream:");
+		log.info("checking from InputStream:");
 		long time = System.currentTimeMillis();
 
-		T map = run(new BufferedReader(new InputStreamReader(is)).lines());
+		T map = run2(new BufferedReader(new InputStreamReader(is)).lines());
 
 		System.err.println();
-		System.err.println("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
+//		System.err.println("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
+		log.info("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
 		return map;
 	}
-	public T run(String file) throws Exception {
-		System.err.println("checking from file=" + file + ":");
+	private T run(String file) throws Exception {
+//		System.err.println("checking from file=" + file + ":");
+		log.info("checking from file=" + file + ":");
 		long time = System.currentTimeMillis();
 
-		T map = run(Files.lines(Paths.get(file), StandardCharsets.UTF_8));
+		T map = run2(Files.lines(Paths.get(file), StandardCharsets.UTF_8));
 
 		System.err.println();
-		System.err.println("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
+//		System.err.println("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
+		log.info("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
 		return map;
 	}
-	public T run(Stream<String> stream) throws Exception {
+	private T run2(Stream<String> stream) throws Exception {
 		setStream(stream);
 
 		ExecutorService exec = null;
@@ -155,14 +143,16 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 		return map;
 	}
 
+	@Override
 	public T call() throws Exception {
 		Stream<String> stream = getStream();
 		return call(stream);
 	}
 
-	public abstract T call(Stream<String> stream) throws Exception;
-	public abstract void report(T map);
+	protected abstract T call(Stream<String> stream) throws Exception;
+	protected abstract void report(T map);
 
+	// 将来的にサブクラス外からの呼び出しを考慮してpublicとする
 	public void start(String[] argv, int offset) throws Exception {
 		if (argv.length <= offset) {
 			T map = run(System.in);
@@ -176,7 +166,7 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 		}
 	}
 	
-	public class ChecherProgress implements Runnable {
+	private class ChecherProgress implements Runnable {
 		
 		private boolean stopRequest = false;
 
@@ -187,9 +177,10 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+//					e.printStackTrace();
 				}
 			}
+//			System.err.println();	// このタイミングでは、call()スレッドが終了しているので間に合わない
 		}
 		
 		public void stopRequest() {

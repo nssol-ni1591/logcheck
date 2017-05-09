@@ -5,29 +5,35 @@ import java.util.TreeMap;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
+
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
+
 import logcheck.isp.Isp;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
 import logcheck.log.AccessLogBean;
+import logcheck.log.AccessLogSummary;
 import logcheck.mag.MagList;
-import logcheck.msg.MsgBean;
 import logcheck.util.NetAddr;
 
 /*
  * 利用申請外接続の検索処理：
  * IP_RANGE_PATTERN に合致するログを検索し、 国 > ISP > クライアントIP > MsgBean 毎にログ数を集計する
  */
-public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, MsgBean>>>> {
+public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>>> {
 
-	protected final KnownList knownlist;
-	protected final MagList maglist;
+	@Inject private KnownList knownlist;
+	@Inject private MagList maglist;
 
 	private static final Pattern IP_RANGE_PATTERN = Pattern.compile("Testing Source IP realm restrictions failed for /NSSDC-Auth1 *");
 
-	public Checker12(String knownfile, String magfile) throws Exception {
-		this.knownlist = loadKnownList(knownfile);
-		this.maglist = loadMagList(magfile);
+	public Checker12 init(String knownfile, String magfile) throws Exception {
+		this.knownlist.load(knownfile);
+		this.maglist.load(magfile);
+		return this;
 	}
 
 	public static boolean test(AccessLogBean b) {
@@ -35,8 +41,8 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 		return IP_RANGE_PATTERN.matcher(b.getMsg()).matches();
 	}
 
-	public Map<String, Map<Isp, Map<NetAddr, MsgBean>>> call(Stream<String> stream) throws Exception {
-		Map<String, Map<Isp, Map<NetAddr, MsgBean>>> map = new TreeMap<>();
+	public Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> call(Stream<String> stream) throws Exception {
+		Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
@@ -49,9 +55,9 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 					}
 
 					if (isp != null) {
-						Map<Isp, Map<NetAddr, MsgBean>> ispmap;
-						Map<NetAddr, MsgBean> addrmap;
-						MsgBean msg;
+						Map<Isp, Map<NetAddr, AccessLogSummary>> ispmap;
+						Map<NetAddr, AccessLogSummary> addrmap;
+						AccessLogSummary msg;
 
 						ispmap = map.get(isp.getCountry());
 						if (ispmap == null) {
@@ -67,7 +73,7 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 
 						msg = addrmap.get(addr);
 						if (msg == null) {
-							msg = new MsgBean(b, IP_RANGE_PATTERN.toString());
+							msg = new AccessLogSummary(b, IP_RANGE_PATTERN.toString());
 							addrmap.put(addr, msg);
 						}
 						else {
@@ -75,13 +81,14 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 						}
 
 					} else {
-							System.err.println("unknown ip: addr=" + addr);
+//						System.err.println("unknown ip: addr=" + addr);
+						log.warning("unknown ip: addr=" + addr);
 					}
 				});
 		return map;
 	}
 
-	public void report(Map<String, Map<Isp, Map<NetAddr, MsgBean>>> map) {
+	public void report(Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> map) {
 		System.out.println("国\tISP/プロジェクト\tアドレス\t初回日時\t最終日時\tログ数");
 		map.forEach((country, ispmap) -> {
 
@@ -110,11 +117,16 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 			System.exit(1);
 		}
 
-		try {
-			new Checker12(argv[0], argv[1]).start(argv, 2);
-		} catch (Exception ex) {
-			ex.printStackTrace(System.err);
+		int rc = 0;
+		Weld weld = new Weld();
+		try (WeldContainer container = weld.initialize()) {
+			Checker12 application = container.instance().select(Checker12.class).get();
+			application.init(argv[0], argv[1]).start(argv, 2);
 		}
-		System.exit(1);
+		catch (Exception ex) {
+			ex.printStackTrace(System.err);
+			rc = 1;
+		}
+		System.exit(rc);
 	}
 }
