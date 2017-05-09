@@ -12,7 +12,8 @@ public class LoggerProducer {
 	@Produces
 	@Dependent
 	public Logger getLogger(InjectionPoint ip) {
-		return Logger.getLogger(ip.getMember().getDeclaringClass().getPackage().getName());
+//		return Logger.getLogger(ip.getMember().getDeclaringClass().getPackage().getName());
+		return Logger.getLogger(ip.getMember().getDeclaringClass().getName());
 	}
 
 }
