@@ -88,40 +88,40 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 			Pattern.compile("\\S+/NSSDC-Auth(1|2)(\\(MAC\\))? logged out from IP \\([\\d\\.]+\\) because user started new session from IP \\([\\d\\.]+\\)\\."),
 	};
 
-	public AbstractChecker() { }
+	protected AbstractChecker() { }
 
-	protected Stream<String> getStream() {
+	private Stream<String> getStream() {
 		return stream;
 	}
-	protected void setStream(Stream<String> stream) {
+	private void setStream(Stream<String> stream) {
 		this.stream = stream;
 	}
 
-	public T run(InputStream is) throws Exception {
+	private T run(InputStream is) throws Exception {
 //		System.err.println("checking from InputStream:");
 		log.info("checking from InputStream:");
 		long time = System.currentTimeMillis();
 
-		T map = run(new BufferedReader(new InputStreamReader(is)).lines());
+		T map = run2(new BufferedReader(new InputStreamReader(is)).lines());
 
 		System.err.println();
 //		System.err.println("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
 		log.info("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
 		return map;
 	}
-	public T run(String file) throws Exception {
+	private T run(String file) throws Exception {
 //		System.err.println("checking from file=" + file + ":");
 		log.info("checking from file=" + file + ":");
 		long time = System.currentTimeMillis();
 
-		T map = run(Files.lines(Paths.get(file), StandardCharsets.UTF_8));
+		T map = run2(Files.lines(Paths.get(file), StandardCharsets.UTF_8));
 
 		System.err.println();
 //		System.err.println("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
 		log.info("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
 		return map;
 	}
-	public T run(Stream<String> stream) throws Exception {
+	private T run2(Stream<String> stream) throws Exception {
 		setStream(stream);
 
 		ExecutorService exec = null;
@@ -143,14 +143,16 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 		return map;
 	}
 
+	@Override
 	public T call() throws Exception {
 		Stream<String> stream = getStream();
 		return call(stream);
 	}
 
-	public abstract T call(Stream<String> stream) throws Exception;
-	public abstract void report(T map);
+	protected abstract T call(Stream<String> stream) throws Exception;
+	protected abstract void report(T map);
 
+	// 将来的にサブクラス外からの呼び出しを考慮してpublicとする
 	public void start(String[] argv, int offset) throws Exception {
 		if (argv.length <= offset) {
 			T map = run(System.in);
@@ -164,7 +166,7 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 		}
 	}
 	
-	public class ChecherProgress implements Runnable {
+	private class ChecherProgress implements Runnable {
 		
 		private boolean stopRequest = false;
 

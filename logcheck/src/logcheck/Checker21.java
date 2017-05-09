@@ -110,16 +110,17 @@ public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 			System.exit(1);
 		}
 
+		int rc = 0;
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
 			Checker21 application = container.instance().select(Checker21.class).get();
 			application.init(argv[0], argv[1], argv[2]).start(argv, 3);
-			System.exit(0);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace(System.err);
+			rc = 1;
 		}
-		System.exit(1);
+		System.exit(rc);
 	}
 
 }

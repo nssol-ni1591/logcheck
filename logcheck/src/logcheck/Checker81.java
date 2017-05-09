@@ -43,15 +43,16 @@ public class Checker81 extends Checker8 {
 			System.exit(1);
 		}
 
+		int rc = 0;
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
 			Checker81 application = container.instance().select(Checker81.class).get();
 			application.init(argv[0], argv[1]).start(argv, 2);
-			System.exit(0);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace(System.err);
+			rc = 1;
 		}
-		System.exit(1);
+		System.exit(rc);
 	}
 }
