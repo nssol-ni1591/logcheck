@@ -63,7 +63,7 @@ public class FwLogSummary implements Comparable<FwLogSummary> {
 		return count;
 	}
 
-	public void update(FwLogBean bean) {
+	public synchronized void update(FwLogBean bean) {
 		firstDate = bean.getDate();
 		count += 1;
 	}

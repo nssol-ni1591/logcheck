@@ -53,7 +53,7 @@ public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 	}
 	public Set<FwLogSummary> call(Stream<String> stream) throws Exception {
 		Set<FwLogSummary> list = new TreeSet<>();
-		stream//.parallel()
+		stream.parallel()
 				.filter(FwLog::test)
 				.map(FwLog::parse)
 				.forEach(b -> {
