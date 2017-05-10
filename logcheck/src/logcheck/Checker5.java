@@ -114,7 +114,7 @@ public class Checker5 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 			System.err.println("usage: java logcheck.Checker4 knownlist maglist [accesslog...]");
 			System.exit(1);
 		}
-		
+
 		System.setProperty("java.util.logging.config.class", "logcheck.util.LogConfig");
 		System.setProperty("file.encoding", "UTF-8");
 
