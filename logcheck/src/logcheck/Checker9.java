@@ -20,7 +20,10 @@ import logcheck.mag.MagList;
 import logcheck.util.NetAddr;
 
 /*
- * 時間 > ISP > ソースIP > ID > メッセージ 毎にログ数を出力する（集計はしない）
+ * ログ解析用ツール2：
+ * 利用方法としては、プログラムの出力を直接参照するのではなく、Excelに読み込ませpivotで解析する想定のためTSV形式で出力する。
+ * なお、このツールは、ユーザ、メッセージ単位の集約を行わないため、1ログメッセージに対して1レコードを出力する。
+ * このため、1か月ログを処理した場合、後続に32bit版のExcelを使用する場合、ファイル読込でエラーが発生する可能性がある。
  */
 public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 
@@ -29,7 +32,6 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 	@Inject private MagList maglist;
 
 	private static final Pattern[] ALL_PATTERNS;
-
 	static {
 		ALL_PATTERNS = new Pattern[INFO_PATTERNS.length + FAIL_PATTERNS.length + FAIL_PATTERNS_DUP.length];
 		System.arraycopy(INFO_PATTERNS, 0, ALL_PATTERNS, 0, INFO_PATTERNS.length);
@@ -62,7 +64,7 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 		List<AccessLogSummary> list = new Vector<>(1000000);
 		stream//.parallel()
 				.filter(AccessLog::test)
-				.filter(s -> s.startsWith(select))
+				.filter(s -> select.startsWith("-") || s.startsWith(select))
 				.map(AccessLog::parse)
 				.forEach(b -> {
 					String pattern = getPattern(b);
