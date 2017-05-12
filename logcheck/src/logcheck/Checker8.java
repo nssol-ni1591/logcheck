@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
-import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
 
 import org.jboss.weld.environment.se.Weld;
@@ -26,7 +26,7 @@ import logcheck.util.NetAddr;
  * 利用方法としては、プログラムの出力を直接参照するのではなく、Excelに読み込ませpivotで解析する想定のためTSV形式で出力する。
  * なお、このツールでは、正常系ログは集約を行う。
  */
-@Any
+@Alternative
 public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>>> {
 
 	@Inject protected KnownList knownlist;

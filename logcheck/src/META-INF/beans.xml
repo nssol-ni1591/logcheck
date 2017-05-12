@@ -8,5 +8,6 @@
 		<!-- 
 		<class>logcheck.mag.db.DbMagList</class>
 		 -->
+		<class>logcheck.Checker8</class>
 	</alternatives>
 </beans>

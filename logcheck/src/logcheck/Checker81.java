@@ -4,6 +4,8 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import javax.enterprise.inject.Alternative;
+
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
@@ -15,6 +17,7 @@ import logcheck.log.AccessLogBean;
  * 利用方法としては、プログラムの出力を直接参照するのではなく、Excelに読み込ませpivotで解析する想定のためTSV形式で出力する。
  * なお、このツールでは、正常系ログの集約処理は行わない。
  */
+@Alternative
 public class Checker81 extends Checker8 {
 
 	private static final Pattern[] ALL_PATTERNS;
