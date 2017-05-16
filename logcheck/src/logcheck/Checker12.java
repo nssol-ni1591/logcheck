@@ -21,7 +21,8 @@ import logcheck.util.NetAddr;
 
 /*
  * 利用申請外接続の検索処理：
- * IP_RANGE_PATTERN に合致するログを検索し、 国 > ISP > クライアントIP > MsgBean 毎にログ数を集計する
+ * VPNログを読込、送信元IPアドレスが申請外のログ（IP_RANGE_PATTERN）に合致する場合は、そのログをコレクションに登録する。
+ * もし、コレクションに、IPアドレスが一人いエントリが存在していた場合は、ログ数を更新する。
  */
 public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>>> {
 
@@ -91,7 +92,6 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 	public void report(Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> map) {
 		System.out.println("国\tISP/プロジェクト\tアドレス\t初回日時\t最終日時\tログ数");
 		map.forEach((country, ispmap) -> {
-
 			ispmap.forEach((isp, addrmap) -> {
 				addrmap.forEach((addr, msg) -> {
 					System.out.println(

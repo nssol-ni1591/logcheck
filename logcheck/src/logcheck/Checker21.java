@@ -19,7 +19,10 @@ import logcheck.sdc.SdcList;
 import logcheck.util.NetAddr;
 
 /*
- * 時間 > ISP > ソースIP > ID > メッセージ 毎にログ数を出力する（集計はしない）
+ * FWログの集約処理：
+ * FWログを読込、コレクションにログ情報を登録する。出力結果は、TSV形式とし、Excelでの利用を想定している。
+ * なお、コレクションへの登録に際し、送信元アドレス、送信先アドレス、送信先ポートが等しいエントリが存在する場合は、
+ * 該当エントリのログ回数の加算、初回日時（ログは新しいログ順で登録されているため）を更新する。
  */
 public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 
@@ -53,7 +56,7 @@ public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 	}
 	public Set<FwLogSummary> call(Stream<String> stream) throws Exception {
 		Set<FwLogSummary> list = new TreeSet<>();
-		stream.parallel()
+		stream//.parallel()			parallelでは java.util.ConcurrentModificationException が発生
 				.filter(FwLog::test)
 				.map(FwLog::parse)
 				.forEach(b -> {
