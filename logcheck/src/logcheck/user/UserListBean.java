@@ -10,6 +10,11 @@ public class UserListBean {
 
 	private Set<UserListSite> list;
 
+	public UserListBean(String userId) {
+		this.userId = userId;
+		this.userDelFlag = "-";
+		this.list = new HashSet<>();
+	}
 	public UserListBean(String userId, String userDelFlag) {
 		this.userId = userId;
 		this.userDelFlag = userDelFlag;
