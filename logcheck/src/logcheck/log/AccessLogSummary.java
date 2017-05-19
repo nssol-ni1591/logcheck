@@ -8,7 +8,7 @@ public class AccessLogSummary implements Comparable<AccessLogSummary> {
 	private final NetAddr addr;
 	private final String id;
 	private final String pattern;
-	private Isp isp;
+	private final Isp isp;
 
 	private String firstDate;
 	private String lastDate;
@@ -19,15 +19,24 @@ public class AccessLogSummary implements Comparable<AccessLogSummary> {
 		this.addr = log.getAddr();
 		this.id = log.getId();
 		this.pattern = pattern;
-		this.roles = log.getRoles();
+		this.isp = null;
 
 		this.firstDate = log.getDate();
 		this.lastDate = firstDate;
+		this.roles = log.getRoles();
 		this.count = 1;
 	}
 	public AccessLogSummary(AccessLogBean log, String pattern, Isp isp) {
-		this(log, pattern);
+//		this(log, pattern);
+		this.addr = log.getAddr();
+		this.id = log.getId();
+		this.pattern = pattern;
 		this.isp = isp;
+
+		this.firstDate = log.getDate();
+		this.lastDate = firstDate;
+		this.roles = log.getRoles();
+		this.count = 1;
 	}
 
 	public String getFirstDate() {
