@@ -9,6 +9,14 @@ public class UserListSite {
 	private final String prjDelFlag;
 	private final String siteDelFlag;
 
+	public UserListSite(String prjId, String siteName) {
+		this.prjId = prjId;
+		this.siteName = siteName;
+		this.siteCd = "-";
+		this.connCd = "-";
+		this.prjDelFlag = "-";
+		this.siteDelFlag = "-";
+	}
 	public UserListSite(String prjId, String siteName, String siteCd, String connCd, String prjDelFlag, String siteDelFlag) {
 		this.prjId = prjId;
 		this.siteName = siteName;

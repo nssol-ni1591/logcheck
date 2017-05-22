@@ -29,7 +29,7 @@ public class DbMagList extends HashMap<String, MagListIsp> implements MagList {
 			+ " from mst_project m, sas_prj_site_info p, sas_site_gip g"
 			+ " where m.prj_row_id = p.prj_row_id and p.site_id = g.site_id"
 			+ " and g.site_gip != '非固定'"
-//			+ " and g.site_gip != '追加不要'"
+			+ " and g.site_gip != '追加不要'"
 			+ " order by m.prj_id";
 	public static String SQL_ACTIVE_GIP = 
 			"select m.prj_id, m.prj_name, p.site_name, g.site_gip"
@@ -39,7 +39,7 @@ public class DbMagList extends HashMap<String, MagListIsp> implements MagList {
 			+ " and p.delete_flag = '0'"
 			+ " and g.delete_flag = '0'"
 			+ " and g.site_gip != '非固定'"
-//			+ " and g.site_gip != '追加不要'"
+			+ " and g.site_gip != '追加不要'"
 			+ " order by m.prj_id";
 
 	public DbMagList() {
@@ -86,8 +86,8 @@ public class DbMagList extends HashMap<String, MagListIsp> implements MagList {
 					//System.out.printf("prjId=%s, addr=%s\n", prjId, addr);
 				}
 				else {
-//					System.err.printf("WARNING(MAG): prjId=%s, magIp=%s\n", prjId, magIp);
-					log.warning("(MagList): prjId=" + prjId + ", magIp=" + magIp);
+//					System.err.printf("WARNING(MAG): prjId=\"%s\", magIp=\"%s\"\n", prjId, magIp);
+					log.warning(String.format("(インターネット経由接続先): prjId=\"%s\", magIp=\"%s\"", prjId, magIp));
 				}
 			}
 		}

@@ -1,5 +1,6 @@
 package logcheck.log;
 
+import logcheck.util.ClientAddr;
 import logcheck.util.NetAddr;
 
 public class AccessLogBean {
@@ -35,7 +36,7 @@ public class AccessLogBean {
 		return host;
 	}
 	public NetAddr getAddr() {
-		return new NetAddr(ip);
+		return new ClientAddr(ip);
 	}
 	public String getId() {
 		return id;

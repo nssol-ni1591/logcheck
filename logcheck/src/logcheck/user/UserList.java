@@ -26,7 +26,8 @@ public class UserList extends LinkedHashMap<String, UserListBean> {
 			+ "　and site_user.delete_flag = '0'";
 */
 	public static String SQL_ACTIVE_CERTIFICATION_ZUSER = 
-			"select l.user_id , p.prj_id, s.site_name, s.site_type_cd, s.connect_type_cd, p.delete_flag,　s.delete_flag, u.delete_flag"
+//			"select l.user_id , p.prj_id, s.site_name, s.site_type_cd, s.connect_type_cd, p.delete_flag,　s.delete_flag, u.delete_flag"
+			"select l.user_id , p.prj_id, s.site_name"
 			+ " from mst_project p, sas_prj_site_info s, sas_prj_site_user u, user_ssl_info l"
 			+ " where l.valid_flg = '1'"
 //	証明書が有効なユーザに関する情報を取得する。その際、過去のPRJは考慮しない
@@ -60,18 +61,20 @@ public class UserList extends LinkedHashMap<String, UserListBean> {
 				String userId = rs.getString(1);
 				String prjId = rs.getString(2);
 				String siteName = rs.getString(3);
-				String siteCd = rs.getString(4);
-				String connCd = rs.getString(5);
-				String prjDelFlag = rs.getString(6);
-				String siteDelFlag = rs.getString(7);
-				String userDelFlag = rs.getString(8);
+//				String siteCd = rs.getString(4);
+//				String connCd = rs.getString(5);
+//				String prjDelFlag = rs.getString(6);
+//				String siteDelFlag = rs.getString(7);
+//				String userDelFlag = rs.getString(8);
 
 				UserListBean b = this.get(userId);
 				if (b == null) {
-					b = new UserListBean(userId, userDelFlag);
+//					b = new UserListBean(userId, userDelFlag);
+					b = new UserListBean(userId);
 					this.put(userId, b);
 				}
-				b.addPrjs(new UserListSite(prjId, siteName, siteCd, connCd, prjDelFlag, siteDelFlag));
+//				b.addPrjs(new UserListSite(prjId, siteName, siteCd, connCd, prjDelFlag, siteDelFlag));
+				b.addPrjs(new UserListSite(prjId, siteName));
 				//System.out.println(b);
 			}
 		}

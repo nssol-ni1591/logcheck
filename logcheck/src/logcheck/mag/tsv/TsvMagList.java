@@ -101,7 +101,7 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 		boolean rc = m.find();
 		if (!rc) {
 //			System.err.println("WARNING(MAG): " + s.trim());
-			log.warning("(MagList): \"" + s.trim() + "\"");
+			log.warning("(インターネット経由接続先): s=\"" + s.trim() + "\"");
 		}
 
 		String[] array = s.split("\t");

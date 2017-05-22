@@ -6,28 +6,41 @@ import logcheck.util.NetAddr;
 public class AccessLogSummary implements Comparable<AccessLogSummary> {
 
 	private final NetAddr addr;
-	private final String id;
+	private final String usrId;
 	private final String pattern;
-	private Isp isp;
+	private final Isp isp;
 
 	private String firstDate;
 	private String lastDate;
 	private String roles;
 	private int count;
+	
+	private String afterUsrId = "";		// 直後の同じIPアドレスからの認証正常ログのユーザID
+	private String reason = "";
+	private String detail = "";
 
 	public AccessLogSummary(AccessLogBean log, String pattern) {
 		this.addr = log.getAddr();
-		this.id = log.getId();
+		this.usrId = log.getId();
 		this.pattern = pattern;
-		this.roles = log.getRoles();
+		this.isp = null;
 
 		this.firstDate = log.getDate();
 		this.lastDate = firstDate;
+		this.roles = log.getRoles();
 		this.count = 1;
 	}
 	public AccessLogSummary(AccessLogBean log, String pattern, Isp isp) {
-		this(log, pattern);
+//		this(log, pattern);
+		this.addr = log.getAddr();
+		this.usrId = log.getId();
+		this.pattern = pattern;
 		this.isp = isp;
+
+		this.firstDate = log.getDate();
+		this.lastDate = firstDate;
+		this.roles = log.getRoles();
+		this.count = 1;
 	}
 
 	public String getFirstDate() {
@@ -40,7 +53,7 @@ public class AccessLogSummary implements Comparable<AccessLogSummary> {
 		return addr;
 	}
 	public String getId() {
-		return id;
+		return usrId;
 	}
 	public String getPattern() {
 		return pattern;
@@ -53,6 +66,25 @@ public class AccessLogSummary implements Comparable<AccessLogSummary> {
 	}
 	public int getCount() {
 		return count;
+	}
+
+	public String getAfterUsrId() {
+		return afterUsrId;
+	}
+	public void setAfterUsrId(String afterUsrId) {
+		this.afterUsrId = afterUsrId;
+	}
+	public String getReason() {
+		return reason;
+	}
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+	public String getDetail() {
+		return detail;
+	}
+	public void setDetail(String detail) {
+		this.detail = detail;
 	}
 
 	public synchronized void update(AccessLogBean b) {
@@ -80,6 +112,6 @@ public class AccessLogSummary implements Comparable<AccessLogSummary> {
 	}
 	
 	public String toString() {
-		return String.format("[first=%s, last=%s, addr=%s, id=%s, count=%d]", firstDate, lastDate, addr.toString(), id, count);
+		return String.format("[first=%s, last=%s, addr=%s, id=%s, count=%d]", firstDate, lastDate, addr.toString(), usrId, count);
 	}
 }

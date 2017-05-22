@@ -84,7 +84,7 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 		boolean rc = m.find();
 		if (!rc) {
 //			System.err.println("WARNING(KNOWN): " + s);
-			log.warning("(KnownList): \"" + s + "\"");
+			log.warning("(既知ISP_IPアドレス): s=\"" + s + "\"");
 		}
 		return rc;
 	}

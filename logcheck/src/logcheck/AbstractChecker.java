@@ -10,11 +10,14 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
+
+import logcheck.annotations.WithElaps;
 
 /*
  * アクセスログのソースIPに一致するISP名/企業名を取得し、国別にISP名/企業名と出力ログ数を出力する
@@ -87,6 +90,7 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 			Pattern.compile("Warning! Number of concurrent users is nearing the system limit \\(\\d+\\)\\."),
 			Pattern.compile("\\S+/NSSDC-Auth(1|2)(\\(MAC\\))? logged out from IP \\([\\d\\.]+\\) because user started new session from IP \\([\\d\\.]+\\)\\."),
 	};
+	protected static final String INFO_SUMMARY_MSG = "<><><> Information message summary <><><>";
 
 	protected AbstractChecker() { }
 
@@ -135,15 +139,19 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 			exec.execute(p);
 
 			map = f.get();
-		}
-		finally {
+
 			p.stopRequest();
+			exec.awaitTermination(10, TimeUnit.SECONDS);
+		}
+		catch (InterruptedException ex) { }
+		finally {
 			exec.shutdown();
 		}
 		return map;
 	}
 
 	@Override
+	@WithElaps
 	public T call() throws Exception {
 		Stream<String> stream = getStream();
 		return call(stream);
@@ -165,7 +173,7 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 			}
 		}
 	}
-	
+
 	private class ChecherProgress implements Runnable {
 		
 		private boolean stopRequest = false;
@@ -184,7 +192,9 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 		}
 		
 		public void stopRequest() {
+			System.err.println();
 			stopRequest = true;
 		}
 	}
+
 }

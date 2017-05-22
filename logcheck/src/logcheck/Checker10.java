@@ -21,7 +21,11 @@ import logcheck.util.NetAddr;
 
 /*
  * ユーザ認証ログ突合せ処理：
- * ユーザ認証の成功ログと同じアドレス、同一ユーザIDの認証失敗ログを検索する
+ * まず、VPNログを読み込み、ユーザ認証に失敗したログの場合は、[ユーザ認証失敗コレクション]を検索し、
+ * IPアドレスとユーザIDがも等しいログがあったならば、ログ回数を加算する。
+ * 該当するログが存在しない場合は、[ユーザ認証失敗コレクション]にログを登録する。
+ * もし、ログがユーザ認証の成功ログの場合は、成功ログのIPアドレスとユーザIDが等しいログを、
+ * [ユーザ認証失敗コレクション]を検索し、存在していた場合はコレクションのエントリを削除する。
  */
 public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*implements Predicate<AccessLogBean>*/ {
 
@@ -93,30 +97,60 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 						}
 						else {
 							// 成功メッセージ
+							// listをさかのぼる範囲は同じ日付のログまで
 							String date = b.getDate().substring(0, 10);
 							for (int ix = list.size() - 1; ix >= 0; ix--) {
 								msg = list.get(ix);
 								if (!msg.getFirstDate().startsWith(date)) {
+									// listの日付が変わったのでさかのぼる処理をやめる
 									break;
 								}
-								else if (msg.getAddr().equals(b.getAddr()) && msg.getId().equals(b.getId())) {
-									list.remove(ix);
-									break;
+
+								if (msg.getAddr().equals(b.getAddr()) && msg.getId().equals(b.getId())) {
+									// アドレスもユーザIDも一致している場合
+									// list.remove(ix);
+									msg.setReason("パスワードの入力ミス：");
+									msg.setDetail(b.getDate() + " に認証成功");
+								}
+								else if (msg.getId().equals(b.getId())) {
+									// アドレスが一致していないが、ユーザIDが一致している場合
+									msg.setReason("VPN利用方法のミス：");
+									msg.setDetail(b.getAddr() + " からの認証成功");
+								}
+								else if ("利用申請".equals(msg.getIsp().getCountry())) {
+									msg.setReason("利用申請先からの接続：");
+									msg.setDetail("問題なしとする");
+								}
+								else if (msg.getAddr().equals(b.getAddr())) {
+									// アドレスが一致しているが、ユーザIDが一致していない場合
+									msg.setAfterUsrId(b.getId());
+									msg.setReason("ユーザIDの入力ミス（※）：");
+									msg.setDetail(b.getId() + " での認証成功");
 								}
 							}
 						}
-
 					}
 					else {
 //						System.err.println("unknown ip: addr=" + addr);
 						log.warning("unknown ip: addr=" + addr);
 					}
 				});
+		list.stream()
+			.filter(sum -> "".equals(sum.getReason()))
+			.forEach(sum -> {
+				if (sum.getCount() <= 10) {
+					sum.setReason("経過観察（※）：");
+				}
+				else {
+					sum.setReason("ログ精査（※）：");
+				}
+			});
 		return list;
 	}
 
 	public void report(List<AccessLogSummary> list) {
-		System.out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\tエラー回数\tメッセージ");
+//		System.out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\t参考ユーザID\tエラー回数\tメッセージ\t想定される原因\t詳細");
+		System.out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\t参考ユーザID\tエラー回数\t想定される原因\t詳細");
 
 		list.forEach(msg -> {
 			System.out.println(
@@ -130,9 +164,15 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 					.append("\t")
 					.append(msg.getId())
 					.append("\t")
-					.append(msg.getCount())
+					.append(msg.getAfterUsrId())
 					.append("\t")
-					.append(msg.getPattern())
+					.append(msg.getCount())
+//					.append("\t")
+//					.append(msg.getPattern())
+					.append("\t")
+					.append(msg.getReason())
+					.append("\t")
+					.append(msg.getDetail())
 					);
 		});
 	}

@@ -4,18 +4,23 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import javax.enterprise.inject.Alternative;
+
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
 import logcheck.log.AccessLogBean;
 
 /*
- * 国 > ISP > クライアントIP > メッセージ  > ID 毎にログ数を集計する
+ * ログ解析用の集約ツール1'：
+ * 国 > ISP > クライアントIP > メッセージ  > ID 毎にログ数を集計する。
+ * 利用方法としては、プログラムの出力を直接参照するのではなく、Excelに読み込ませpivotで解析する想定のためTSV形式で出力する。
+ * なお、このツールでは、正常系ログの集約処理は行わない。
  */
+@Alternative
 public class Checker81 extends Checker8 {
 
 	private static final Pattern[] ALL_PATTERNS;
-	
 	static {
 		ALL_PATTERNS = new Pattern[INFO_PATTERNS.length + FAIL_PATTERNS.length + FAIL_PATTERNS_DUP.length];
 		System.arraycopy(INFO_PATTERNS, 0, ALL_PATTERNS, 0, INFO_PATTERNS.length);

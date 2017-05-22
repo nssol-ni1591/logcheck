@@ -3,6 +3,7 @@ package logcheck;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -24,7 +25,12 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-	private static final String INFO_SUMMARY_MSG = "<><><> Information message summary <><><>";
+	private static final Pattern[] FAIL_PATTERNS_ALL;
+	static {
+		FAIL_PATTERNS_ALL = new Pattern[FAIL_PATTERNS.length + FAIL_PATTERNS_DUP.length];
+		System.arraycopy(FAIL_PATTERNS, 0, FAIL_PATTERNS_ALL, 0, FAIL_PATTERNS.length);
+		System.arraycopy(FAIL_PATTERNS_DUP, 0, FAIL_PATTERNS_ALL, FAIL_PATTERNS.length, FAIL_PATTERNS_DUP.length);
+	}
 
 	public Checker6 init(String knownfile, String magfile) throws Exception {
 		this.knownlist.load(knownfile);
@@ -39,7 +45,7 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 				.map(AccessLog::parse)
 				.forEach(b -> {
 					// メッセージにIPアドレスなどが含まれるログは、それ以外の部分を比較対象とするための前処理
-					Optional<String> rc = Stream.of(FAIL_PATTERNS)
+					Optional<String> rc = Stream.of(FAIL_PATTERNS_ALL)
 							.filter(p -> p.matcher(b.getMsg()).matches())
 							.map(p -> p.toString())
 							.findFirst();
