@@ -149,7 +149,6 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 	}
 
 	public void report(List<AccessLogSummary> list) {
-//		System.out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\t参考ユーザID\tエラー回数\tメッセージ\t想定される原因\t詳細");
 		System.out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\t参考ユーザID\tエラー回数\t想定される原因\t詳細");
 
 		list.forEach(msg -> {

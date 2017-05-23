@@ -14,7 +14,8 @@ public class MagListBean {
 		this.prjSite = prjSite;
 		this.prjIp = null;
 		this.magIp = magIp;
-		//System.out.println(this);
+		// コンストラクタで＠Injectを参照することができない
+		//log.fine(this.toString());
 	}
 	public MagListBean(String prjId, String prjName, String prjSite, String prjIp, String magIp, String magMask) {
 		this.prjId = prjId;
@@ -25,7 +26,8 @@ public class MagListBean {
 			throw new IllegalArgumentException("magIp contains \"/\"");
 		}
 		this.magIp = magIp + "/" + magMask;
-		//System.out.println(this);
+		// コンストラクタで＠Injectを参照することができない
+		//log.fine(this.toString());
 	}
 
 	public String getPrjId() {

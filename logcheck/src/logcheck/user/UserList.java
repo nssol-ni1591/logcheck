@@ -5,6 +5,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedHashMap;
+import java.util.logging.Logger;
+
+import javax.inject.Inject;
 
 import logcheck.annotations.WithElaps;
 
@@ -39,6 +42,8 @@ public class UserList extends LinkedHashMap<String, UserListBean> {
 			+ " and u.user_id = l.user_id"
 			+ " and l.user_id like 'Z%'"
 			+ " order by l.user_id";
+
+	@Inject private Logger log;
 
 	public UserList() {
 		super(2000);
@@ -75,7 +80,7 @@ public class UserList extends LinkedHashMap<String, UserListBean> {
 				}
 //				b.addPrjs(new UserListSite(prjId, siteName, siteCd, connCd, prjDelFlag, siteDelFlag));
 				b.addPrjs(new UserListSite(prjId, siteName));
-				//System.out.println(b);
+				log.fine(b.toString());
 			}
 		}
 		return this;

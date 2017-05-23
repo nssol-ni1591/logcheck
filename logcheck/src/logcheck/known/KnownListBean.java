@@ -10,7 +10,8 @@ public class KnownListBean {
 		this.addr = addr;
 		this.name = name;
 		this.country = country;
-		//System.out.println(this);
+		// コンストラクタで＠Injectを参照することができない
+		//log.fine(this.toString());
 	}
 
 	public String getAddr() {

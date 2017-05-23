@@ -88,7 +88,7 @@ public class DbMagList extends HashMap<String, MagListIsp> implements MagList {
 					}
 					NetAddr addr = new NetAddr(b.getMagIp());
 					mp.addAddress(addr);
-					//System.out.printf("prjId=%s, addr=%s\n", prjId, addr);
+					log.fine(String.format("prjId=%s, addr=%s\n", prjId, addr));
 				}
 				else {
 //					System.err.printf("WARNING(MAG): prjId=\"%s\", magIp=\"%s\"\n", prjId, magIp);
