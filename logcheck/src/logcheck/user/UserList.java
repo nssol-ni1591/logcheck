@@ -41,7 +41,7 @@ public class UserList extends LinkedHashMap<String, UserListBean> {
 			+ " order by l.user_id";
 
 	public UserList() {
-		super(1500);
+		super(2000);
 	}
 
 	@WithElaps

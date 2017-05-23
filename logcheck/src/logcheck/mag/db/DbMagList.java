@@ -43,7 +43,7 @@ public class DbMagList extends HashMap<String, MagListIsp> implements MagList {
 			+ " order by m.prj_id";
 
 	public DbMagList() {
-		super(200);
+		super(2000);
 	}
 
 	@Override
@@ -54,8 +54,13 @@ public class DbMagList extends HashMap<String, MagListIsp> implements MagList {
 		return rc.isPresent() ? rc.get() : null;
 	}
 
+	/*
+	 * 引数のmagfileは無視される
+	 * @see logcheck.mag.MagList#load(java.lang.String)
+	 */
 	@Override @WithElaps
-	public MagList load(String sql) throws Exception {
+	public MagList load(String magfile) throws Exception {
+		String sql = SQL_ALL_GIP;
 		// Oracle JDBC Driverのロード
 		Class.forName("oracle.jdbc.driver.OracleDriver");
 
