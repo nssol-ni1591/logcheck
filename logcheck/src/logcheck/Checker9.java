@@ -109,8 +109,13 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 	}
 
 	public static void main(String... argv) {
+		Pattern p = Pattern.compile("\\d\\d\\d\\d-\\d\\d-\\d\\d");
 		if (argv.length < 3) {
-			System.err.println("usage: java yyyy-mm-dd logcheck.Checker9 knownlist maglist [accesslog...]");
+			System.err.println("usage: java logcheck.Checker9 yyyy-mm-dd knownlist maglist [accesslog...]");
+			System.exit(1);
+		}
+		if (!p.matcher(argv[0]).matches()) {
+			System.err.println("usage: java logcheck.Checker9 yyyy-mm-dd knownlist maglist [accesslog...]");
 			System.exit(1);
 		}
 
