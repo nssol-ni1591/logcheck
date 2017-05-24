@@ -8,6 +8,8 @@
 		<class>logcheck.mag.tsv.TsvMagList</class>
 		 -->
 		<class>logcheck.mag.db.DbMagList</class>
+		<!-- 
 		<class>logcheck.Checker8</class>
+		 -->
 	</alternatives>
 </beans>
