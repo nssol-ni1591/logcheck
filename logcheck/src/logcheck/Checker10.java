@@ -125,7 +125,7 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 									// アドレスが一致しているが、ユーザIDが一致していない場合
 									msg.setAfterUsrId(b.getId());
 									msg.setReason("ユーザIDの入力ミス（※）：");
-									msg.setDetail(b.getId() + " での認証成功");
+									msg.setDetail(b.getId() + " / " + b.getDate() + " での認証成功");
 								}
 							}
 						}
