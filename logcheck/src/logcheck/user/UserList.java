@@ -5,9 +5,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedHashMap;
-import java.util.logging.Logger;
-
-import javax.inject.Inject;
 
 import logcheck.annotations.WithElaps;
 
@@ -29,8 +26,8 @@ public class UserList extends LinkedHashMap<String, UserListBean> {
 			+ "　and site_user.delete_flag = '0'";
 */
 	public static String SQL_ACTIVE_CERTIFICATION_ZUSER = 
-//			"select l.user_id , p.prj_id, s.site_name, s.site_type_cd, s.connect_type_cd, p.delete_flag,　s.delete_flag, u.delete_flag"
-			"select l.user_id , p.prj_id, s.site_name"
+			"select l.user_id , p.prj_id, s.site_name, s.site_type_cd, s.connect_type_cd, p.delete_flag,　s.delete_flag, u.delete_flag"
+//			"select l.user_id , p.prj_id, s.site_name"
 			+ " from mst_project p, sas_prj_site_info s, sas_prj_site_user u, user_ssl_info l"
 			+ " where l.valid_flg = '1'"
 //	証明書が有効なユーザに関する情報を取得する。その際、過去のPRJは考慮しない
@@ -43,12 +40,15 @@ public class UserList extends LinkedHashMap<String, UserListBean> {
 			+ " and l.user_id like 'Z%'"
 			+ " order by l.user_id";
 
-	@Inject private Logger log;
+//	@Inject private Logger log;
 
 	public UserList() {
 		super(2000);
 	}
 
+	public UserList load() throws Exception {
+		return load(SQL_ACTIVE_CERTIFICATION_ZUSER);
+	}
 	@WithElaps
 	public UserList load(String sql) throws Exception {
 		// Oracle JDBC Driverのロード
@@ -66,21 +66,19 @@ public class UserList extends LinkedHashMap<String, UserListBean> {
 				String userId = rs.getString(1);
 				String prjId = rs.getString(2);
 				String siteName = rs.getString(3);
-//				String siteCd = rs.getString(4);
-//				String connCd = rs.getString(5);
-//				String prjDelFlag = rs.getString(6);
-//				String siteDelFlag = rs.getString(7);
-//				String userDelFlag = rs.getString(8);
+				String siteCd = rs.getString(4);
+				String connCd = rs.getString(5);
+				String prjDelFlag = rs.getString(6);
+				String siteDelFlag = rs.getString(7);
+				String userDelFlag = rs.getString(8);
 
 				UserListBean b = this.get(userId);
 				if (b == null) {
-//					b = new UserListBean(userId, userDelFlag);
-					b = new UserListBean(userId);
+					b = new UserListBean(userId, userDelFlag);
 					this.put(userId, b);
 				}
-//				b.addPrjs(new UserListSite(prjId, siteName, siteCd, connCd, prjDelFlag, siteDelFlag));
-				b.addPrjs(new UserListSite(prjId, siteName));
-				log.fine(b.toString());
+				b.addPrjs(new UserListSite(prjId, siteName, siteCd, connCd, prjDelFlag, siteDelFlag));
+//				log.fine(b.toString());		// デバックmainでは使用不可
 			}
 		}
 		return this;
@@ -98,7 +96,9 @@ public class UserList extends LinkedHashMap<String, UserListBean> {
 
 		for (String userId : map.keySet()) {
 			UserListBean b = map.get(userId);
-			System.out.println(b);
+			String userDel = "0".equals(b.getUserDelFlag()) ? " " : "*";
+			String siteDel = b.isDelFlag() ? "*" : " ";
+			System.out.println(userDel + siteDel + " " + b);
 		}
 		System.out.println("UserList.main ... end");
 	}

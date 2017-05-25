@@ -9,14 +9,6 @@ public class UserListSite {
 	private final String prjDelFlag;
 	private final String siteDelFlag;
 
-	public UserListSite(String prjId, String siteName) {
-		this.prjId = prjId;
-		this.siteName = siteName;
-		this.siteCd = "-";
-		this.connCd = "-";
-		this.prjDelFlag = "-";
-		this.siteDelFlag = "-";
-	}
 	public UserListSite(String prjId, String siteName, String siteCd, String connCd, String prjDelFlag, String siteDelFlag) {
 		this.prjId = prjId;
 		this.siteName = siteName;
@@ -45,12 +37,23 @@ public class UserListSite {
 		return siteDelFlag;
 	}
 
+	public boolean isDelFlag() {
+		if (siteDelFlag.equals("0")) {
+			if (!prjDelFlag.equals("0")) {
+				return true;
+			}
+			return false;
+		}
+		return true;
+	}
+
 	public boolean equals(UserListSite prj) {
 		return prjId.equals(prj.prjId);
 	}
 
 	public String toString() {
-		return String.format("prjId=%s site=%s, code=[%s, %s], del=[%s, %s]", prjId, siteName, siteCd, connCd, prjDelFlag, siteDelFlag);
+		//return String.format("prjId=%s site=%s, code=[%s, %s], del=[%s, %s]", prjId, siteName, siteCd, connCd, prjDelFlag, siteDelFlag);
+		return String.format("prjId=%s site=%s, del=[%s, %s]", prjId, siteName, prjDelFlag, siteDelFlag);
 	}
 
 }

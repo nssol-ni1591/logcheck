@@ -10,11 +10,6 @@ public class UserListBean {
 
 	private Set<UserListSite> list;
 
-	public UserListBean(String userId) {
-		this.userId = userId;
-		this.userDelFlag = "-";
-		this.list = new HashSet<>();
-	}
 	public UserListBean(String userId, String userDelFlag) {
 		this.userId = userId;
 		this.userDelFlag = userDelFlag;
@@ -32,6 +27,15 @@ public class UserListBean {
 	}
 	public void addPrjs(UserListSite prj) {
 		list.add(prj);
+	}
+
+	public boolean isDelFlag() {
+		for (UserListSite site : list) {
+			if (!site.isDelFlag()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public String toString() {
