@@ -4,11 +4,11 @@ import logcheck.isp.IspList;
 
 public class MagListIsp extends IspList {
 
-	public MagListIsp(String prjId) {
-		super(prjId, "利用申請");
+	public MagListIsp(String projId) {
+		super(projId, "利用申請");
 	}
 
-	public String getPrjId() {
+	public String getProjId() {
 		return getName();
 	}
 }

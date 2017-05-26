@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.util.LinkedHashMap;
 
 import logcheck.annotations.WithElaps;
+import logcheck.util.NetAddr;
 
 /*
  * 有効なVPNクライアント証明書が発行されているユーザの一覧を取得する
@@ -26,10 +27,11 @@ public class UserList extends LinkedHashMap<String, UserListBean> {
 			+ "　and site_user.delete_flag = '0'";
 */
 	public static String SQL_ACTIVE_CERTIFICATION_ZUSER = 
-			"select l.user_id , p.prj_id, s.site_name, s.site_type_cd, s.connect_type_cd, p.delete_flag,　s.delete_flag, u.delete_flag"
+			"select l.user_id , p.prj_id, s.site_name, g.site_gip, p.delete_flag,　s.delete_flag, u.delete_flag, l.valid_flg"
+//			"select l.user_id , p.prj_id, s.site_name, g.site_gip, s.site_type_cd, s.connect_type_cd, p.delete_flag,　s.delete_flag, u.delete_flag, l.valid_flg"
 //			"select l.user_id , p.prj_id, s.site_name"
-			+ " from mst_project p, sas_prj_site_info s, sas_prj_site_user u, user_ssl_info l"
-			+ " where l.valid_flg = '1'"
+			+ " from mst_project p, sas_prj_site_info s, sas_prj_site_user u, user_ssl_info l, sas_site_gip g"
+			+ " where l.user_id like 'Z%'"
 //	証明書が有効なユーザに関する情報を取得する。その際、過去のPRJは考慮しない
 //			+ " and p.delete_flag = '0'"
 //			+ " and s.delete_flag = '0'"
@@ -37,25 +39,35 @@ public class UserList extends LinkedHashMap<String, UserListBean> {
 			+ " and p.prj_row_id = s.prj_row_id"
 			+ " and s.site_id = u.site_id"
 			+ " and u.user_id = l.user_id"
-			+ " and l.user_id like 'Z%'"
-			+ " order by l.user_id";
-
+			+ " and s.site_id = g.site_id"
+// 未利用ユーザを確認する時点ですでに無効になっているとエラーになるための処置　->エラーにしなければよいか?
+//			+ " and l.valid_flg = '1'"
+			+ " and g.site_gip != '非固定'"
+			+ " and g.site_gip != '追加不要'"
+			+ " order by"
+			+ "  p.delete_flag"
+			+ ", s.delete_flag"
+			+ ", u.delete_flag"
+			+ ", l.user_id"
+	;
 //	@Inject private Logger log;
 
 	public UserList() {
-		super(2000);
+		super(4000);
 	}
 
 	public UserList load() throws Exception {
 		return load(SQL_ACTIVE_CERTIFICATION_ZUSER);
 	}
+
 	@WithElaps
 	public UserList load(String sql) throws Exception {
 		// Oracle JDBC Driverのロード
 		Class.forName("oracle.jdbc.driver.OracleDriver");
 
 		try (	// Oracleに接続
-				Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@172.31.247.137:1521/sdcdb01", "masterinfo", "masterinfo");
+				//Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@172.31.247.137:1521/sdcdb01", "masterinfo", "masterinfo");
+				Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@172.31.247.137:1521:sdcdb011", "masterinfo", "masterinfo");
 				// ステートメントを作成
 				PreparedStatement stmt = conn.prepareStatement(sql);
 				)
@@ -64,20 +76,31 @@ public class UserList extends LinkedHashMap<String, UserListBean> {
 			// 問合せ結果の表示
 			while (rs.next()) {
 				String userId = rs.getString(1);
-				String prjId = rs.getString(2);
+				String projId = rs.getString(2);
 				String siteName = rs.getString(3);
-				String siteCd = rs.getString(4);
-				String connCd = rs.getString(5);
-				String prjDelFlag = rs.getString(6);
-				String siteDelFlag = rs.getString(7);
-				String userDelFlag = rs.getString(8);
+				String siteIp = rs.getString(4);
+//				String siteCd = rs.getString(5);
+//				String connCd = rs.getString(6);
+				String projDelFlag = rs.getString(5);
+				String siteDelFlag = rs.getString(6);
+				String userDelFlag = rs.getString(7);
+				String validFlag = rs.getString(8);
 
 				UserListBean b = this.get(userId);
 				if (b == null) {
-					b = new UserListBean(userId, userDelFlag);
+					b = new UserListBean(userId, userDelFlag, validFlag);
 					this.put(userId, b);
 				}
-				b.addPrjs(new UserListSite(prjId, siteName, siteCd, connCd, prjDelFlag, siteDelFlag));
+				NetAddr siteAddr = new NetAddr(siteIp);
+				UserListSite site = b.getSite(projId, siteName);
+				if (site == null) {
+//					site = new UserListSite(prjId, siteName, siteIp, siteCd, connCd, prjDelFlag, siteDelFlag);
+					site = new UserListSite(projId, siteName, siteAddr, projDelFlag, siteDelFlag);
+					b.addSite(site);
+				}
+				else {
+					site.addAddress(siteAddr);
+				}
 //				log.fine(b.toString());		// デバックmainでは使用不可
 			}
 		}
@@ -94,12 +117,15 @@ public class UserList extends LinkedHashMap<String, UserListBean> {
 			e.printStackTrace();
 		}
 
+		int ix = 0;
 		for (String userId : map.keySet()) {
 			UserListBean b = map.get(userId);
 			String userDel = "0".equals(b.getUserDelFlag()) ? " " : "*";
 			String siteDel = b.isDelFlag() ? "*" : " ";
 			System.out.println(userDel + siteDel + " " + b);
+			ix += 1;
 		}
+		System.out.println("ix=" + ix);
 		System.out.println("UserList.main ... end");
 	}
 

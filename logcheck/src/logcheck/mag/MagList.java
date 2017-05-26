@@ -8,4 +8,8 @@ public interface MagList {
 
 	public MagList load(String file) throws Exception;
 
+	default public MagList load() throws Exception {
+		throw new IllegalArgumentException("not override");
+	}
+
 }
