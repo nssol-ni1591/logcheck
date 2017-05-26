@@ -62,13 +62,13 @@ public class Checker14 extends AbstractChecker<UserList> {
 						userId = m.group(1);
 					}
 
-					UserListBean u = userlist.get(userId);
-					if (u == null) {
+					UserListBean user = userlist.get(userId);
+					if (user == null) {
 						log.warning("not found user: userid=" + userId);
 						return;
 					} 
 
-					UserListSite site = u.getSite(b.getAddr());
+					UserListSite site = user.getSite(b.getAddr());
 					if (site == null) {
 						MagListIsp magisp = maglist.get(addr);
 						if (magisp == null) {
@@ -77,14 +77,14 @@ public class Checker14 extends AbstractChecker<UserList> {
 								log.warning("unknown ip: addr=" + addr);
 								return;
 							}
-							u.update(b, isp);
+							user.update(b, isp);
 						}
 						else {
-							u.update(b, magisp);
+							user.update(b, magisp);
 						}
 					}
 					else {
-						u.update(b, site);
+						user.update(b, site);
 					}
 				});
 		return userlist;
@@ -93,10 +93,10 @@ public class Checker14 extends AbstractChecker<UserList> {
 	public void report(UserList map) {
 		System.out.println("ユーザID\tプロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数");
 		map.values().stream()
-			.forEach(list -> {
-				list.getSites().forEach(site -> {
+			.forEach(user -> {
+				user.getSites().forEach(site -> {
 					System.out.println(
-							new StringBuilder(list.getUserId())
+							new StringBuilder(user.getUserId())
 							.append("\t")
 							.append(site.getProjId())
 							.append("\t")
@@ -106,9 +106,9 @@ public class Checker14 extends AbstractChecker<UserList> {
 							.append("\t")
 							.append(site.getSiteDelFlag())
 							.append("\t")
-							.append(list.getUserDelFlag())
+							.append(user.getUserDelFlag())
 							.append("\t")
-							.append(list.getValidFlag())
+							.append(user.getValidFlag())
 							.append("\t")
 							.append(site.getFirstDate())
 							.append("\t")
