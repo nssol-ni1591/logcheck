@@ -78,9 +78,11 @@ public class Checker14 extends AbstractChecker<UserList> {
 								return;
 							}
 							user.update(b, isp);
+							log.fine(String.format("user=%s, isp=%s", user, isp));
 						}
 						else {
 							user.update(b, magisp);
+							log.fine(String.format("user=%s, magisp=%s", user, magisp));
 						}
 					}
 					else {
