@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -18,7 +18,7 @@ import logcheck.mag.MagListIsp;
 import logcheck.util.NetAddr;
 
 @Alternative
-public class DbMagList extends HashMap<String, MagListIsp> implements MagList {
+public class DbMagList extends LinkedHashMap<String, MagListIsp> implements MagList {
 
 	@Inject private Logger log;
 
@@ -30,7 +30,6 @@ public class DbMagList extends HashMap<String, MagListIsp> implements MagList {
 			+ " where p.prj_row_id = s.prj_row_id and s.site_id = g.site_id"
 			+ " and g.site_gip != '非固定'"
 			+ " and g.site_gip != '追加不要'"
-//			+ " order by p.prj_id";
 			+ " order by"
 			+ "  p.delete_flag"
 			+ ", s.delete_flag"
@@ -49,7 +48,7 @@ public class DbMagList extends HashMap<String, MagListIsp> implements MagList {
 			+ " order by m.prj_id";
 
 	public DbMagList() {
-		super(2000);
+		super(2000);	// for HashMap
 	}
 
 	@Override
