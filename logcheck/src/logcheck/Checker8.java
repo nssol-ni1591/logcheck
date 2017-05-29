@@ -19,7 +19,7 @@ import logcheck.log.AccessLog;
 import logcheck.log.AccessLogBean;
 import logcheck.log.AccessLogSummary;
 import logcheck.mag.MagList;
-import logcheck.util.NetAddr;
+import logcheck.util.net.NetAddr;
 
 /*
  * ログ解析用の集約ツール1：

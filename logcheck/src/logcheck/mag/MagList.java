@@ -1,6 +1,6 @@
 package logcheck.mag;
 
-import logcheck.util.NetAddr;
+import logcheck.util.net.NetAddr;
 
 public interface MagList {
 

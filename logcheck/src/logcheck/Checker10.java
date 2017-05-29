@@ -17,7 +17,7 @@ import logcheck.log.AccessLog;
 import logcheck.log.AccessLogBean;
 import logcheck.log.AccessLogSummary;
 import logcheck.mag.MagList;
-import logcheck.util.NetAddr;
+import logcheck.util.net.NetAddr;
 
 /*
  * ユーザ認証ログ突合せ処理：

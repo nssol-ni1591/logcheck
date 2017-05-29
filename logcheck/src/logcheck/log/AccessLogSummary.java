@@ -1,7 +1,7 @@
 package logcheck.log;
 
 import logcheck.isp.Isp;
-import logcheck.util.NetAddr;
+import logcheck.util.net.NetAddr;
 
 public class AccessLogSummary implements Comparable<AccessLogSummary> {
 

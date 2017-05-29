@@ -3,7 +3,7 @@ package logcheck.isp;
 import java.util.Set;
 import java.util.TreeSet;
 
-import logcheck.util.NetAddr;
+import logcheck.util.net.NetAddr;
 
 public class IspList extends IspBean<Set<NetAddr>> implements Isp {
 

@@ -17,12 +17,12 @@ import logcheck.log.AccessLog;
 import logcheck.log.AccessLogBean;
 import logcheck.log.AccessLogSummary;
 import logcheck.mag.MagList;
-import logcheck.util.NetAddr;
+import logcheck.util.net.NetAddr;
 
 /*
  * 利用申請外接続の検索処理：
  * VPNログを読込、送信元IPアドレスが申請外のログ（IP_RANGE_PATTERN）に合致する場合は、そのログをコレクションに登録する。
- * もし、コレクションに、IPアドレスが一人いエントリが存在していた場合は、ログ数を更新する。
+ * もし、ログのIPアドレスが、コレクションのエントリに存在していた場合はログ数を更新する。
  */
 public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>>> {
 

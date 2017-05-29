@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.TreeMap;
 
-import logcheck.util.NetAddr;
+import logcheck.util.net.NetAddr;
 
 public class IspMap<V> extends IspBean<TreeMap<NetAddr, V>> {
 

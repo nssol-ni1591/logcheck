@@ -17,7 +17,7 @@ import logcheck.annotations.WithElaps;
 import logcheck.mag.MagList;
 import logcheck.mag.MagListBean;
 import logcheck.mag.MagListIsp;
-import logcheck.util.NetAddr;
+import logcheck.util.net.NetAddr;
 
 @Alternative
 public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {

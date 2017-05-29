@@ -16,7 +16,7 @@ import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.mag.MagList;
 import logcheck.sdc.SdcList;
-import logcheck.util.NetAddr;
+import logcheck.util.net.NetAddr;
 
 /*
  * FWログの集約処理：

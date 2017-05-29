@@ -18,11 +18,12 @@ import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
 import logcheck.log.AccessLogBean;
 import logcheck.mag.MagList;
-import logcheck.util.NetAddr;
+import logcheck.util.net.NetAddr;
 
 /*
  * 利用申請外接続の検索処理：その2
  * Checker12のログ数の集約を行わないバージョン
+ * 全てのログが出力されるので、認証失敗の状況などより細かい解析が可能
  */
 public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessLogBean>>>> {
 

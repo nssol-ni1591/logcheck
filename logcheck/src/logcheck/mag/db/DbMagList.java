@@ -15,7 +15,7 @@ import logcheck.log.AccessLog;
 import logcheck.mag.MagList;
 import logcheck.mag.MagListBean;
 import logcheck.mag.MagListIsp;
-import logcheck.util.NetAddr;
+import logcheck.util.net.NetAddr;
 
 @Alternative
 public class DbMagList extends LinkedHashMap<String, MagListIsp> implements MagList {

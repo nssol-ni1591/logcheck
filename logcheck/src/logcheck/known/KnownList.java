@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import logcheck.annotations.WithElaps;
-import logcheck.util.NetAddr;
+import logcheck.util.net.NetAddr;
 
 public class KnownList extends HashMap<String, KnownListIsp> {
 

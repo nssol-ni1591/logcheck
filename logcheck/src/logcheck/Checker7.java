@@ -16,7 +16,7 @@ import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
 import logcheck.log.AccessLogSummary;
 import logcheck.mag.MagList;
-import logcheck.util.NetAddr;
+import logcheck.util.net.NetAddr;
 
 /*
  * 国 > ISP > クライアントIP > メッセージ 毎にログ数を集計する

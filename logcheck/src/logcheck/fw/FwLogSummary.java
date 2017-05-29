@@ -1,7 +1,7 @@
 package logcheck.fw;
 
 import logcheck.isp.Isp;
-import logcheck.util.NetAddr;
+import logcheck.util.net.NetAddr;
 
 public class FwLogSummary implements Comparable<FwLogSummary> {
 

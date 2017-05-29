@@ -7,7 +7,7 @@ import java.util.Set;
 import logcheck.isp.IspList;
 import logcheck.log.AccessLogBean;
 import logcheck.mag.MagListIsp;
-import logcheck.util.NetAddr;
+import logcheck.util.net.NetAddr;
 
 public class UserListBean {
 

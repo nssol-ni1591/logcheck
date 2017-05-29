@@ -5,16 +5,19 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedHashMap;
+import java.util.logging.Logger;
 
 import logcheck.annotations.WithElaps;
-import logcheck.util.NetAddr;
+import logcheck.log.AccessLog;
+import logcheck.util.net.NetAddr;
 
 /*
- * 有効なVPNクライアント証明書が発行されているユーザの一覧を取得する
+ * VPNクライアント証明書が発行されているユーザの一覧を取得する
  */
 public class UserList extends LinkedHashMap<String, UserListBean> {
 
 	private static final long serialVersionUID = 1L;
+	private static Logger log = Logger.getLogger(AccessLog.class.getName());
 /*
 	public static String SQL_ACTIVE_USER = 
 			"select prj.prj_id, site.site_name, site_user.user_id"
@@ -101,7 +104,7 @@ public class UserList extends LinkedHashMap<String, UserListBean> {
 				else {
 					site.addAddress(siteAddr);
 				}
-//				log.fine(b.toString());		// デバックmainでは使用不可
+				log.fine(b.toString());		// デバックmainでは使用不可
 			}
 		}
 		return this;

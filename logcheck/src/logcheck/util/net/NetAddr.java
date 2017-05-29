@@ -1,4 +1,4 @@
-package logcheck.util;
+package logcheck.util.net;
 
 public class NetAddr implements Comparable<NetAddr> {
 

@@ -21,7 +21,7 @@ import logcheck.mag.MagListIsp;
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
 import logcheck.user.UserListSite;
-import logcheck.util.NetAddr;
+import logcheck.util.net.NetAddr;
 
 /*
  * ユーザの利用状況を取得する：
@@ -81,11 +81,11 @@ public class Checker14 extends AbstractChecker<UserList> {
 								return;
 							}
 							user.update(b, isp);
-							log.fine(String.format("user=%s, isp=%s", user, isp));
+							log.config(String.format("user=%s, isp=%s", user, isp));
 						}
 						else {
 							user.update(b, magisp);
-							log.fine(String.format("user=%s, magisp=%s", user, magisp));
+							log.config(String.format("user=%s, magisp=%s", user, magisp));
 						}
 					}
 					else {
