@@ -5,11 +5,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
+import logcheck.annotations.UseChecker14;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
@@ -26,6 +28,7 @@ import logcheck.util.NetAddr;
  * 
  * 
  */
+@UseChecker14
 public class Checker14 extends AbstractChecker<UserList> {
 
 	@Inject private KnownList knownlist;
@@ -131,7 +134,10 @@ public class Checker14 extends AbstractChecker<UserList> {
 		int rc = 0;
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-			Checker14 application = container.instance().select(Checker14.class).get();
+//			Checker14 application = container.instance().select(Checker14.class).get();
+			Checker14 application = container.instance().select(Checker14.class, new AnnotationLiteral<UseChecker14>(){
+				private static final long serialVersionUID = 1L;
+			}).get();
 			application.init(argv[0]).start(argv, 1);
 		}
 		catch (Exception ex) {
