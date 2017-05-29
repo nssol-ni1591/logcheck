@@ -2,6 +2,7 @@ package logcheck.sdc;
 
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import logcheck.isp.IspList;
@@ -12,6 +13,10 @@ public class SdcListIsp extends IspList {
 
 	public SdcListIsp(String name, String type) {
 		super(name, type);
+	}
+
+	@PostConstruct
+	public void init() {
 		log.fine(this.toString());
 	}
 

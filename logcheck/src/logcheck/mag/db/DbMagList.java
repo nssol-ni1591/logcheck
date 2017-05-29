@@ -9,9 +9,9 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 import javax.enterprise.inject.Alternative;
-import javax.inject.Inject;
 
 import logcheck.annotations.WithElaps;
+import logcheck.log.AccessLog;
 import logcheck.mag.MagList;
 import logcheck.mag.MagListBean;
 import logcheck.mag.MagListIsp;
@@ -20,7 +20,8 @@ import logcheck.util.NetAddr;
 @Alternative
 public class DbMagList extends LinkedHashMap<String, MagListIsp> implements MagList {
 
-	@Inject private Logger log;
+	private static Logger log = Logger.getLogger(AccessLog.class.getName());
+	//@Inject private Logger log;
 
 	private static final long serialVersionUID = 1L;
 

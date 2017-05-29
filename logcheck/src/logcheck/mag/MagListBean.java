@@ -1,5 +1,10 @@
 package logcheck.mag;
 
+import java.util.logging.Logger;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
 public class MagListBean {
 
 	private final String projId;
@@ -7,6 +12,8 @@ public class MagListBean {
 	private final String projSite;
 	private final String projIp;
 	private final String magIp;
+	
+	@Inject private Logger log;
 
 	public MagListBean(String projId, String projName, String projSite, String magIp) {
 		this.projId = projId;
@@ -14,8 +21,6 @@ public class MagListBean {
 		this.projSite = projSite;
 		this.projIp = null;
 		this.magIp = magIp;
-		// コンストラクタで＠Injectを参照することができない
-		//log.fine(this.toString());
 	}
 	public MagListBean(String projId, String projName, String projSite, String projIp, String magIp, String magMask) {
 		this.projId = projId;
@@ -26,8 +31,11 @@ public class MagListBean {
 			throw new IllegalArgumentException("magIp contains \"/\"");
 		}
 		this.magIp = magIp + "/" + magMask;
-		// コンストラクタで＠Injectを参照することができない
-		//log.fine(this.toString());
+	}
+
+	@PostConstruct
+	public void init() {
+		log.fine(this.toString());
 	}
 
 	public String getProjId() {
