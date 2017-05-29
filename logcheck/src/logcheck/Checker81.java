@@ -4,12 +4,9 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import javax.enterprise.util.AnnotationLiteral;
-
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
-import logcheck.annotations.UseChecker81;
 import logcheck.log.AccessLogBean;
 
 /*
@@ -52,15 +49,6 @@ public class Checker81 extends Checker8 {
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
 			Checker81 application = container.instance().select(Checker81.class).get();
-			/*
-			@SuppressWarnings("serial")
-			Checker81 application = (Checker81) container.instance().select(new AnnotationLiteral<UseChecker81>(){}).get();
-			*/
-			/*
-			Checker81 application = container.instance().select(Checker81.class, new AnnotationLiteral<UseChecker81>(){
-				private static final long serialVersionUID = 1L;
-			}).get();
-			*/
 			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {
