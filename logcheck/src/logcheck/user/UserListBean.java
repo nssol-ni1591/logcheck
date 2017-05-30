@@ -79,6 +79,6 @@ public class UserListBean {
 	}
 
 	public String toString() {
-		return String.format("userId=%s del=%s, site=%s", userId, userDelFlag, list);
+		return String.format("userId=%s, del=%s, site=%s", userId, userDelFlag, list);
 	}
 }
