@@ -29,11 +29,11 @@ import logcheck.util.net.NetAddr;
  * 
  */
 @UseChecker14
-public class Checker14 extends AbstractChecker<UserList> {
+public class Checker14 extends AbstractChecker<UserList<UserListSummary>> {
 
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
-	@Inject private UserList userlist;
+	@Inject private UserList<UserListSummary> userlist;
 
 	@Inject private Logger log;
 
@@ -42,7 +42,8 @@ public class Checker14 extends AbstractChecker<UserList> {
 	public Checker14 init(String knownfile) throws Exception {
 		this.knownlist.load(knownfile);
 		this.maglist.load();
-		this.userlist.load();
+//		this.userlist.load();
+		this.userlist.load(UserListSummary.class);
 		return this;
 	}
 
@@ -51,7 +52,7 @@ public class Checker14 extends AbstractChecker<UserList> {
 		return AUTH_PATTERN.matcher(b.getMsg()).matches();
 	}
 
-	public UserList call(Stream<String> stream) throws Exception {
+	public UserList<UserListSummary> call(Stream<String> stream) throws Exception {
 		stream//.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
@@ -102,7 +103,7 @@ public class Checker14 extends AbstractChecker<UserList> {
 		return userlist;
 	}
 
-	public void report(UserList map) {
+	public void report(UserList<UserListSummary> map) {
 		System.out.println("ユーザID\tプロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数");
 		map.values().stream()
 			.forEach(user -> {

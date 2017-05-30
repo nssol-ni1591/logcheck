@@ -7,6 +7,7 @@ import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
 import logcheck.user.UserList;
+import logcheck.user.UserListSummary;
 
 /*
  * 未利用ユーザ検索：
@@ -15,7 +16,7 @@ import logcheck.user.UserList;
  */
 public class Checker15 extends Checker14 {
 
-	public void report(UserList map) {
+	public void report(UserList<UserListSummary> map) {
 		// 出力用コレクションに作り直す
 		Map<String, Map<String, String>> projmap = new TreeMap<>(); 
 		map.values().stream()

@@ -1,5 +1,6 @@
 package logcheck.user;
 
+import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -8,13 +9,14 @@ import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
 import logcheck.annotations.WithElaps;
+import logcheck.isp.IspList;
 import logcheck.log.AccessLog;
 import logcheck.util.net.NetAddr;
 
 /*
  * VPNクライアント証明書が発行されているユーザの一覧を取得する
  */
-public class UserList extends LinkedHashMap<String, UserListBean<UserListSummary>> {
+public class UserList<E extends IspList> extends LinkedHashMap<String, UserListBean<E>> {
 
 	private static final long serialVersionUID = 1L;
 	private static Logger log = Logger.getLogger(AccessLog.class.getName());
@@ -53,18 +55,17 @@ public class UserList extends LinkedHashMap<String, UserListBean<UserListSummary
 			+ ", u.delete_flag"
 			+ ", l.user_id"
 	;
-//	@Inject private Logger log;
 
 	public UserList() {
 		super(4000);
 	}
 
-	public UserList load() throws Exception {
-		return load(SQL_ACTIVE_CERTIFICATION_ZUSER);
+	public UserList<E> load(Class<E> clazz) throws Exception {
+		return load(SQL_ACTIVE_CERTIFICATION_ZUSER, clazz);
 	}
 
 	@WithElaps
-	public UserList load(String sql) throws Exception {
+	public UserList<E> load(String sql, Class<E> clazz) throws Exception {
 		// Oracle JDBC Driverのロード
 		Class.forName("oracle.jdbc.driver.OracleDriver");
 
@@ -82,23 +83,25 @@ public class UserList extends LinkedHashMap<String, UserListBean<UserListSummary
 				String projId = rs.getString(2);
 				String siteName = rs.getString(3);
 				String siteIp = rs.getString(4);
-//				String siteCd = rs.getString(5);
-//				String connCd = rs.getString(6);
 				String projDelFlag = rs.getString(5);
 				String siteDelFlag = rs.getString(6);
 				String userDelFlag = rs.getString(7);
 				String validFlag = rs.getString(8);
 
-				UserListBean<UserListSummary> b = this.get(userId);
+				UserListBean<E> b = this.get(userId);
 				if (b == null) {
 					b = new UserListBean<>(userId, userDelFlag, validFlag);
 					this.put(userId, b);
 				}
 				NetAddr siteAddr = new NetAddr(siteIp);
-				UserListSummary site = b.getSite(projId, siteName);
+				E site = b.getSite(projId, siteName);
 				if (site == null) {
-//					site = new UserListSite(prjId, siteName, siteIp, siteCd, connCd, prjDelFlag, siteDelFlag);
-					site = new UserListSummary(projId, siteName, siteAddr, projDelFlag, siteDelFlag);
+//					site = new UserListSummary(projId, siteName, siteAddr, projDelFlag, siteDelFlag);
+					Class<?>[] types = { String.class, String.class, NetAddr.class, String.class, String.class };
+					Object[] args = { projId, siteName, siteAddr, projDelFlag, siteDelFlag };
+					Constructor<E> c = clazz.getConstructor(types);
+					site = c.newInstance(args);
+
 					b.addSite(site);
 				}
 				else {
@@ -112,9 +115,9 @@ public class UserList extends LinkedHashMap<String, UserListBean<UserListSummary
 
 	public static void main(String[] args) {
 		System.out.println("start UserList.main ...");
-		UserList map = new UserList();
+		UserList<UserListSummary> map = new UserList<>();
 		try {
-			map.load(SQL_ACTIVE_CERTIFICATION_ZUSER);
+			map.load(UserListSummary.class);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
