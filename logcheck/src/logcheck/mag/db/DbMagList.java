@@ -96,7 +96,7 @@ public class DbMagList extends LinkedHashMap<String, MagListIsp> implements MagL
 
 					MagListIsp mp = this.get(b.getProjId());
 					if (mp == null) {
-						mp = new MagListIsp(b.getProjId());
+						mp = new MagListIsp(b);
 						this.put(b.getProjId(), mp);
 					}
 					NetAddr addr = new NetAddr(b.getMagIp());

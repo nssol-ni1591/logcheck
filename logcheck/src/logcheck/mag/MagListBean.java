@@ -9,24 +9,25 @@ public class MagListBean {
 
 	private final String projId;
 	private final String projName;
-	private final String projSite;
-	private final String projIp;
+	private final String siteName;
+//	private final String projIp;
 	private final String magIp;
 	
 	@Inject private Logger log;
 
-	public MagListBean(String projId, String projName, String projSite, String magIp) {
+	public MagListBean(String projId, String projName, String siteName, String magIp) {
 		this.projId = projId;
 		this.projName = projName;
-		this.projSite = projSite;
-		this.projIp = null;
+		this.siteName = siteName;
+//		this.projIp = null;
 		this.magIp = magIp;
 	}
-	public MagListBean(String projId, String projName, String projSite, String projIp, String magIp, String magMask) {
+//	public MagListBean(String projId, String projName, String projSite, String projIp, String magIp, String magMask) {
+	public MagListBean(String projId, String projName, String siteName, String magIp, String magMask) {
 		this.projId = projId;
 		this.projName = projName;
-		this.projSite = projSite;
-		this.projIp = projIp;
+		this.siteName = siteName;
+//		this.projIp = projIp;
 		if (magIp.contains("/")) {
 			throw new IllegalArgumentException("magIp contains \"/\"");
 		}
@@ -44,12 +45,14 @@ public class MagListBean {
 	public String getProjName() {
 		return projName;
 	}
-	public String getProjSite() {
-		return projSite;
+	public String getSiteName() {
+		return siteName;
 	}
+	/*
 	public String getProjIp() {
 		return projIp;
 	}
+	*/
 	public String getMagIp() {
 		return magIp;
 	}

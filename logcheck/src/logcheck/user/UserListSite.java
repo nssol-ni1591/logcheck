@@ -26,7 +26,7 @@ public class UserListSite extends IspList {
 		isp.getAddress().forEach(addr -> addAddress(addr));
 	}
 	public UserListSite(MagListIsp isp) {
-		super(isp.getName(), isp.getProjId());
+		super(isp.getSiteName(), isp.getProjId());
 		this.projDelFlag = "-";
 		this.siteDelFlag = "-";
 		isp.getAddress().forEach(addr -> addAddress(addr));

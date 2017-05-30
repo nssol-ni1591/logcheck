@@ -50,7 +50,8 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 				.forEach(b -> {
 					MagListIsp mp = this.get(b.getProjId());
 					if (mp == null) {
-						mp = new MagListIsp(b.getProjId());
+//						mp = new MagListIsp(b.getProjId());
+						mp = new MagListIsp(b);
 						this.put(b.getProjId(), mp);
 					}
 					NetAddr addr = new NetAddr(b.getMagIp());
@@ -62,7 +63,7 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 	private MagListBean parse(String s) {
 		String projId = null;
 		String projName = null;
-		String projSite = null;
+		String siteName = null;
 		String projIp = null;
 		String magIp = null;
 		String magMask = null;
@@ -75,7 +76,7 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 			projName = array[2];
 		}
 		if (array.length > 3) {
-			projSite = array[3];
+			siteName = array[3];
 		}
 		if (array.length > 4) {
 			projIp = array[4];
@@ -86,7 +87,8 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 		if (array.length > 6) {
 			magMask = array[6];
 		}
-		return new MagListBean(projId, projName, projSite, projIp, magIp, magMask);
+//		return new MagListBean(projId, projName, projSite, projIp, magIp, magMask);
+		return new MagListBean(projId, projName, siteName, magIp, magMask);
 	}
 	private boolean test(String s) {
 		if (s.startsWith("#")) {
