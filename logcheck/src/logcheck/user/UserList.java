@@ -95,10 +95,10 @@ public class UserList extends LinkedHashMap<String, UserListBean> {
 					this.put(userId, b);
 				}
 				NetAddr siteAddr = new NetAddr(siteIp);
-				UserListSite site = b.getSite(projId, siteName);
+				UserListSummary site = b.getSite(projId, siteName);
 				if (site == null) {
 //					site = new UserListSite(prjId, siteName, siteIp, siteCd, connCd, prjDelFlag, siteDelFlag);
-					site = new UserListSite(projId, siteName, siteAddr, projDelFlag, siteDelFlag);
+					site = new UserListSummary(projId, siteName, siteAddr, projDelFlag, siteDelFlag);
 					b.addSite(site);
 				}
 				else {

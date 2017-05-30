@@ -15,7 +15,7 @@ public class UserListBean {
 	private final String userDelFlag;
 	private final String validFlag;
 
-	private Set<UserListSite> list;
+	private Set<UserListSummary> list;
 
 	public UserListBean(String userId, String userDelFlag, String validFlag) {
 		this.userId = userId;
@@ -34,25 +34,25 @@ public class UserListBean {
 		return validFlag;
 	}
 
-	public Set<UserListSite> getSites() {
+	public Set<UserListSummary> getSites() {
 		return list;
 	}
-	public void addSite(UserListSite site) {
+	public void addSite(UserListSummary site) {
 		list.add(site);
 	}
-	public UserListSite getSite(NetAddr addr) {
-		Optional<UserListSite> rc = list.stream().filter(site -> {
+	public UserListSummary getSite(NetAddr addr) {
+		Optional<UserListSummary> rc = list.stream().filter(site -> {
 			return site.getAddress().stream().filter(net -> net.within(addr)).findFirst().isPresent();
 		}).findFirst();
 		return rc.isPresent() ? rc.get() : null;
 	}
-	public UserListSite getSite(String projId, String name) {
-		Optional<UserListSite> rc = list.stream().filter(site -> site.getProjId().equals(projId) && site.getName().equals(name)).findFirst();
+	public UserListSummary getSite(String projId, String name) {
+		Optional<UserListSummary> rc = list.stream().filter(site -> site.getProjId().equals(projId) && site.getName().equals(name)).findFirst();
 		return rc.isPresent() ? rc.get() : null;
 	}
 
 	public boolean isDelFlag() {
-		for (UserListSite site : list) {
+		for (UserListSummary site : list) {
 			if (!site.isDelFlag()) {
 				return false;
 			}
@@ -60,16 +60,16 @@ public class UserListBean {
 		return true;
 	}
 
-	public void update(AccessLogBean b, UserListSite site) {
+	public void update(AccessLogBean b, UserListSummary site) {
 		site.update(b.getDate());
 	}
 	public void update(AccessLogBean b, IspList isp) {
-		UserListSite site = new UserListSite(isp);
+		UserListSummary site = new UserListSummary(isp);
 		addSite(site);
 		site.update(b.getDate());
 	}
 	public void update(AccessLogBean b, MagListIsp isp) {
-		UserListSite site = new UserListSite(isp);
+		UserListSummary site = new UserListSummary(isp);
 		addSite(site);
 		site.update(b.getDate());
 	}

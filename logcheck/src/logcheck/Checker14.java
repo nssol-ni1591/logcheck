@@ -20,7 +20,7 @@ import logcheck.mag.MagList;
 import logcheck.mag.MagListIsp;
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
-import logcheck.user.UserListSite;
+import logcheck.user.UserListSummary;
 import logcheck.util.net.NetAddr;
 
 /*
@@ -71,7 +71,7 @@ public class Checker14 extends AbstractChecker<UserList> {
 						return;
 					} 
 
-					UserListSite site = user.getSite(b.getAddr());
+					UserListSummary site = user.getSite(b.getAddr());
 					if (site == null) {
 						MagListIsp magisp = maglist.get(addr);
 						if (magisp == null) {

@@ -4,7 +4,7 @@ import logcheck.isp.IspList;
 import logcheck.mag.MagListIsp;
 import logcheck.util.net.NetAddr;
 
-public class UserListSite extends IspList {
+public class UserListSummary extends IspList {
 
 	private final String projDelFlag;
 	private final String siteDelFlag;
@@ -13,19 +13,19 @@ public class UserListSite extends IspList {
 	private String lastDate = "";
 	private int count;
 
-	public UserListSite(String projId, String siteName, NetAddr siteAddr, String projDelFlag, String siteDelFlag) {
+	public UserListSummary(String projId, String siteName, NetAddr siteAddr, String projDelFlag, String siteDelFlag) {
 		super(siteName, projId);
 		this.projDelFlag = projDelFlag;
 		this.siteDelFlag = siteDelFlag;
 		super.addAddress(siteAddr);
 	}
-	public UserListSite(IspList isp) {
+	public UserListSummary(IspList isp) {
 		super(isp.getName(), isp.getCountry());
 		this.projDelFlag = "-";
 		this.siteDelFlag = "-";
 		isp.getAddress().forEach(addr -> addAddress(addr));
 	}
-	public UserListSite(MagListIsp isp) {
+	public UserListSummary(MagListIsp isp) {
 		super(isp.getSiteName(), isp.getProjId());
 		this.projDelFlag = "-";
 		this.siteDelFlag = "-";
