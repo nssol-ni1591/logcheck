@@ -19,7 +19,8 @@ public class Checker15 extends Checker14 {
 		// 出力用コレクションに作り直す
 		Map<String, Map<String, String>> projmap = new TreeMap<>(); 
 		map.values().stream()
-				.filter(user -> user.sumCount() == 0 && "0".equals(user.getUserDelFlag()))
+//				.filter(user -> user.sumCount() == 0 && "0".equals(user.getUserDelFlag()))
+				.filter(user -> user.getSites().stream().mapToInt(site -> site.getCount()).sum() == 0 && "0".equals(user.getUserDelFlag()))
 				.forEach(user -> {
 					user.getSites().stream()
 							.filter(site -> "0".equals(site.getProjDelFlag()) && "0".equals(site.getSiteDelFlag()))
@@ -43,11 +44,11 @@ public class Checker15 extends Checker14 {
 		projmap.forEach((projId, sitemap) -> {
 			sitemap.forEach((sitename, userId) -> {
 				System.out.println(
-						new StringBuilder(projId)
+						new StringBuilder(userId)
+						.append("\t")
+						.append(projId)
 						.append("\t")
 						.append(sitename)
-						.append("\t")
-						.append(userId)
 						);
 			});
 		});

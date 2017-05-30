@@ -1,9 +1,10 @@
 package logcheck.log;
 
 import logcheck.isp.Isp;
+import logcheck.util.Summary;
 import logcheck.util.net.NetAddr;
 
-public class AccessLogSummary implements Comparable<AccessLogSummary> {
+public class AccessLogSummary implements Comparable<AccessLogSummary>, Summary {
 
 	private final NetAddr addr;
 	private final String usrId;
@@ -64,6 +65,7 @@ public class AccessLogSummary implements Comparable<AccessLogSummary> {
 	public String getRoles() {
 		return roles;
 	}
+	@Override
 	public int getCount() {
 		return count;
 	}

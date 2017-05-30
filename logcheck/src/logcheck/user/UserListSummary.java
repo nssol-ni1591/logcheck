@@ -2,9 +2,10 @@ package logcheck.user;
 
 import logcheck.isp.IspList;
 import logcheck.mag.MagListIsp;
+import logcheck.util.Summary;
 import logcheck.util.net.NetAddr;
 
-public class UserListSummary extends IspList {
+public class UserListSummary extends IspList implements Summary {
 
 	private final String projDelFlag;
 	private final String siteDelFlag;
@@ -60,6 +61,7 @@ public class UserListSummary extends IspList {
 	public String getLastDate() {
 		return lastDate;
 	}
+	@Override
 	public int getCount() {
 		return count;
 	}

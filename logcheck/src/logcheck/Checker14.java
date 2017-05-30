@@ -65,7 +65,7 @@ public class Checker14 extends AbstractChecker<UserList> {
 						userId = m.group(1);
 					}
 
-					UserListBean user = userlist.get(userId);
+					UserListBean<UserListSummary> user = userlist.get(userId);
 					if (user == null) {
 						log.warning("not found user: userid=" + userId);
 						return;
@@ -80,16 +80,23 @@ public class Checker14 extends AbstractChecker<UserList> {
 								log.warning("unknown ip: addr=" + addr);
 								return;
 							}
-							user.update(b, isp);
+//							user.update(b, isp);
+							site = new UserListSummary(isp);
+							user.addSite(site);
+							site.update(b.getDate());
 							log.config(String.format("user=%s, isp=%s", user, isp));
 						}
 						else {
-							user.update(b, magisp);
+//							user.update(b, magisp);
+							site = new UserListSummary(magisp);
+							user.addSite(site);
+							site.update(b.getDate());
 							log.config(String.format("user=%s, magisp=%s", user, magisp));
 						}
 					}
 					else {
-						user.update(b, site);
+//						user.update(b, site);
+						site.update(b.getDate());
 					}
 				});
 		return userlist;

@@ -14,7 +14,7 @@ import logcheck.util.net.NetAddr;
 /*
  * VPNクライアント証明書が発行されているユーザの一覧を取得する
  */
-public class UserList extends LinkedHashMap<String, UserListBean> {
+public class UserList extends LinkedHashMap<String, UserListBean<UserListSummary>> {
 
 	private static final long serialVersionUID = 1L;
 	private static Logger log = Logger.getLogger(AccessLog.class.getName());
@@ -89,9 +89,9 @@ public class UserList extends LinkedHashMap<String, UserListBean> {
 				String userDelFlag = rs.getString(7);
 				String validFlag = rs.getString(8);
 
-				UserListBean b = this.get(userId);
+				UserListBean<UserListSummary> b = this.get(userId);
 				if (b == null) {
-					b = new UserListBean(userId, userDelFlag, validFlag);
+					b = new UserListBean<>(userId, userDelFlag, validFlag);
 					this.put(userId, b);
 				}
 				NetAddr siteAddr = new NetAddr(siteIp);
@@ -122,9 +122,10 @@ public class UserList extends LinkedHashMap<String, UserListBean> {
 
 		int ix = 0;
 		for (String userId : map.keySet()) {
-			UserListBean b = map.get(userId);
+			UserListBean<UserListSummary> b = map.get(userId);
 			String userDel = "0".equals(b.getUserDelFlag()) ? " " : "*";
-			String siteDel = b.isDelFlag() ? "*" : " ";
+//			String siteDel = b.isDelFlag() ? "*" : " ";
+			String siteDel = b.getSites().stream().filter(site -> site.isDelFlag()).findFirst().isPresent() ? "*" : " ";
 			System.out.println(userDel + siteDel + " " + b);
 			ix += 1;
 		}

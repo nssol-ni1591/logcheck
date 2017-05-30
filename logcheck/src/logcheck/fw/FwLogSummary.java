@@ -1,9 +1,10 @@
 package logcheck.fw;
 
 import logcheck.isp.Isp;
+import logcheck.util.Summary;
 import logcheck.util.net.NetAddr;
 
-public class FwLogSummary implements Comparable<FwLogSummary> {
+public class FwLogSummary implements Comparable<FwLogSummary>, Summary {
 
 	private String firstDate;
 	private final String lastDate;
@@ -59,6 +60,7 @@ public class FwLogSummary implements Comparable<FwLogSummary> {
 	public int getDstPort() {
 		return dstPort;
 	}
+	@Override
 	public int getCount() {
 		return count;
 	}
