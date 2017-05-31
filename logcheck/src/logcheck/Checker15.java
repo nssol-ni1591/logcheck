@@ -12,7 +12,6 @@ import logcheck.user.UserListSummary;
 /*
  * 未利用ユーザ検索：
  * 
- * 
  */
 public class Checker15 extends Checker14 {
 

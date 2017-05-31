@@ -14,7 +14,6 @@ import org.jboss.weld.environment.se.WeldContainer;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
-import logcheck.log.AccessLogBean;
 import logcheck.log.AccessLogSummary;
 import logcheck.mag.MagList;
 import logcheck.util.net.NetAddr;
@@ -44,7 +43,7 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 		this.maglist.load(magfile);
 		return this;
 	}
-
+/*
 	public static boolean test(AccessLogBean b) {
 		// メッセージにIPアドレスなどが含まれるログは、それ以外の部分を比較対象とするための前処理
 		return Stream.of(AUTH_PATTERNS)
@@ -52,14 +51,19 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 				.map(p -> p.toString())
 				.findFirst()
 				.isPresent();
+	
 	}
-
+*/
 	public List<AccessLogSummary> call(Stream<String> stream) throws IOException {
 		List<AccessLogSummary> list = new Vector<>(1000);
 		stream//.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
-				.filter(Checker10::test)
+//				.filter(Checker10::test)
+				.filter(b -> Stream.of(AUTH_PATTERNS)
+						// 正規化表現に一致するメッセージのみを処理対象にする
+						.anyMatch(p -> p.matcher(b.getMsg()).matches())
+						)
 				.forEach(b -> {
 					NetAddr addr = b.getAddr();
 					IspList isp = maglist.get(addr);

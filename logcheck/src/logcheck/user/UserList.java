@@ -128,7 +128,8 @@ public class UserList<E extends IspList> extends LinkedHashMap<String, UserListB
 			UserListBean<UserListSummary> b = map.get(userId);
 			String userDel = "0".equals(b.getUserDelFlag()) ? " " : "*";
 //			String siteDel = b.isDelFlag() ? "*" : " ";
-			String siteDel = b.getSites().stream().filter(site -> site.isDelFlag()).findFirst().isPresent() ? "*" : " ";
+//			String siteDel = b.getSites().stream().filter(site -> site.isDelFlag()).findFirst().isPresent() ? "*" : " ";
+			String siteDel = b.getSites().stream().allMatch(site -> site.isDelFlag()) ? "*" : " ";
 			System.out.println(userDel + siteDel + " " + b);
 			ix += 1;
 		}

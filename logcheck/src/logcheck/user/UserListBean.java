@@ -39,13 +39,20 @@ public class UserListBean<E extends IspList> {
 		list.add(site);
 	}
 	public E getSite(NetAddr addr) {
-		Optional<E> rc = list.stream().filter(site -> {
-			return site.getAddress().stream().filter(net -> net.within(addr)).findFirst().isPresent();
-		}).findFirst();
+		Optional<E> rc = list.stream()
+/*
+				.filter(site -> {
+					return site.getAddress().stream().filter(net -> net.within(addr)).findFirst().isPresent();
+				})
+*/
+				.filter(site -> site.getAddress().stream().anyMatch(net -> net.within(addr)))
+				.findFirst();
 		return rc.isPresent() ? rc.get() : null;
 	}
 	public E getSite(String projId, String name) {
-		Optional<E> rc = list.stream().filter(site -> site.getCountry().equals(projId) && site.getName().equals(name)).findFirst();
+		Optional<E> rc = list.stream()
+				.filter(site -> site.getCountry().equals(projId) && site.getName().equals(name))
+				.findFirst();
 		return rc.isPresent() ? rc.get() : null;
 	}
 /*

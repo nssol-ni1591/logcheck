@@ -15,7 +15,6 @@ import logcheck.annotations.UseChecker14;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
-import logcheck.log.AccessLogBean;
 import logcheck.mag.MagList;
 import logcheck.mag.MagListIsp;
 import logcheck.user.UserList;
@@ -46,17 +45,18 @@ public class Checker14 extends AbstractChecker<UserList<UserListSummary>> {
 		this.userlist.load(UserListSummary.class);
 		return this;
 	}
-
+/*
 	public static boolean test(AccessLogBean b) {
 		// メッセージにIPアドレスなどが含まれるログは、それ以外の部分を比較対象とするための前処理
 		return AUTH_PATTERN.matcher(b.getMsg()).matches();
 	}
-
+*/
 	public UserList<UserListSummary> call(Stream<String> stream) throws Exception {
 		stream//.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
-				.filter(Checker14::test)
+//				.filter(Checker14::test)
+				.filter(b -> AUTH_PATTERN.matcher(b.getMsg()).matches())
 				.forEach(b -> {
 					NetAddr addr = b.getAddr();
 					String userId = null;

@@ -64,7 +64,7 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 		String projId = null;
 		String projName = null;
 		String siteName = null;
-		String projIp = null;
+//		String projIp = null;
 		String magIp = null;
 		String magMask = null;
 
@@ -78,9 +78,9 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 		if (array.length > 3) {
 			siteName = array[3];
 		}
-		if (array.length > 4) {
-			projIp = array[4];
-		}
+//		if (array.length > 4) {
+//			projIp = array[4];
+//		}
 		if (array.length > 5) {
 			magIp = array[5];
 		}

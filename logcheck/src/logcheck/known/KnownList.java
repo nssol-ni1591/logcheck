@@ -28,9 +28,15 @@ public class KnownList extends HashMap<String, KnownListIsp> {
 	 * 引数のIPアドレスを含むISPを取得する
 	 */
 	public KnownListIsp get(NetAddr addr) {
-		Optional<KnownListIsp> rc = values().stream().filter(isp -> {
-			return isp.getAddress().stream().filter(net -> net.within(addr)).findFirst().isPresent();
-		}).findFirst();
+		Optional<KnownListIsp> rc = values().stream()
+/*
+				.filter(isp -> {
+//					return isp.getAddress().stream().filter(net -> net.within(addr)).findFirst().isPresent();
+					return isp.getAddress().stream().anyMatch(net -> net.within(addr));
+				})
+*/
+				.filter(isp -> isp.getAddress().stream().anyMatch(net -> net.within(addr)))
+				.findFirst();
 		return rc.isPresent() ? rc.get() : null;
 	}
 

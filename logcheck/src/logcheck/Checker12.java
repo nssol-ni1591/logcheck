@@ -14,7 +14,6 @@ import logcheck.isp.Isp;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
-import logcheck.log.AccessLogBean;
 import logcheck.log.AccessLogSummary;
 import logcheck.mag.MagList;
 import logcheck.util.net.NetAddr;
@@ -36,18 +35,19 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 		this.maglist.load(magfile);
 		return this;
 	}
-
+/*
 	public static boolean test(AccessLogBean b) {
 		// メッセージにIPアドレスなどが含まれるログは、それ以外の部分を比較対象とするための前処理
 		return IP_RANGE_PATTERN.matcher(b.getMsg()).matches();
 	}
-
+*/
 	public Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> call(Stream<String> stream) throws Exception {
 		Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
-				.filter(Checker12::test)
+//				.filter(Checker12::test)
+				.filter(b -> IP_RANGE_PATTERN.matcher(b.getMsg()).matches())
 				.forEach(b -> {
 					NetAddr addr = b.getAddr();
 					IspList isp = maglist.get(addr);

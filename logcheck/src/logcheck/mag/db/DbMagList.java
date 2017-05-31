@@ -54,9 +54,15 @@ public class DbMagList extends LinkedHashMap<String, MagListIsp> implements MagL
 
 	@Override
 	public MagListIsp get(NetAddr addr) {
-		Optional<MagListIsp> rc = values().stream().filter(isp -> {
-			return isp.getAddress().stream().filter(net -> net.within(addr)).findFirst().isPresent();
-		}).findFirst();
+		Optional<MagListIsp> rc = values().stream()
+/*
+				.filter(isp -> {
+//					return isp.getAddress().stream().filter(net -> net.within(addr)).findFirst().isPresent();
+					return isp.getAddress().stream().anyMatch(net -> net.within(addr));
+				})
+*/
+				.filter(isp -> isp.getAddress().stream().anyMatch(net -> net.within(addr)))
+				.findFirst();
 		return rc.isPresent() ? rc.get() : null;
 	}
 
