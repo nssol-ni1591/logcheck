@@ -1,17 +1,14 @@
 package logcheck.annotations;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.interceptor.InterceptorBinding;
+import javax.inject.Qualifier;
 
-@InterceptorBinding
-@Inherited
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Qualifier
 @Retention(RetentionPolicy.RUNTIME)
-public @interface UsedLogger {
-
+@Target(ElementType.TYPE)
+public @interface UseChecker14 {
 }

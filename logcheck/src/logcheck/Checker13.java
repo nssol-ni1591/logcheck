@@ -18,11 +18,12 @@ import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
 import logcheck.log.AccessLogBean;
 import logcheck.mag.MagList;
-import logcheck.util.NetAddr;
+import logcheck.util.net.NetAddr;
 
 /*
  * 利用申請外接続の検索処理：その2
  * Checker12のログ数の集約を行わないバージョン
+ * 全てのログが出力されるので、認証失敗の状況などより細かい解析が可能
  */
 public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessLogBean>>>> {
 
@@ -36,18 +37,19 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 		this.maglist.load(magfile);
 		return this;
 	}
-
+/*
 	public static boolean test(AccessLogBean b) {
 		// メッセージにIPアドレスなどが含まれるログは、それ以外の部分を比較対象とするための前処理
 		return IP_RANGE_PATTERN.matcher(b.getMsg()).matches();
 	}
-
+*/
 	public Map<String, Map<Isp, List<AccessLogBean>>> call(Stream<String> stream) throws Exception {
 		Map<String, Map<Isp, List<AccessLogBean>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
-				.filter(Checker13::test)
+//				.filter(Checker13::test)
+				.filter(b -> IP_RANGE_PATTERN.matcher(b.getMsg()).matches())
 				.forEach(b -> {
 					NetAddr addr = b.getAddr();
 					IspList isp = maglist.get(addr);

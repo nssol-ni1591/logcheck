@@ -16,7 +16,7 @@ import logcheck.isp.IspMap;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
 import logcheck.mag.MagList;
-import logcheck.util.NetAddr;
+import logcheck.util.net.NetAddr;
 
 /*
  * 国 > ISP > IPアドレス > メッセージ毎にログ数を集計する
@@ -45,7 +45,7 @@ public class Checker4 extends AbstractChecker<Map<String ,Map<String, IspMap<Map
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
 				.forEach(b -> {
-					// メッセージにIPアドレスなどが含まれるログは、それ以外の部分を比較対象とするための前処理
+					// ログのメッセージ部分はPatternの正規化表現で集約するため、対象ログが一致したPattern文字列を取得する
 					Optional<String> rc = Stream.of(FAIL_PATTERNS_ALL)
 							.filter(p -> p.matcher(b.getMsg()).matches())
 							.map(p -> p.toString())

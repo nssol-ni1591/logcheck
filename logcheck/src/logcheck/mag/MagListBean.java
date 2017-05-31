@@ -1,50 +1,63 @@
 package logcheck.mag;
 
+import java.util.logging.Logger;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
 public class MagListBean {
 
-	private final String prjId;
-	private final String prjName;
-	private final String prjSite;
-	private final String prjIp;
+	private final String projId;
+	private final String projName;
+	private final String siteName;
+//	private final String projIp;
 	private final String magIp;
+	
+	@Inject private Logger log;
 
-	public MagListBean(String prjId, String prjName, String prjSite, String magIp) {
-		this.prjId = prjId;
-		this.prjName = prjName;
-		this.prjSite = prjSite;
-		this.prjIp = null;
+	public MagListBean(String projId, String projName, String siteName, String magIp) {
+		this.projId = projId;
+		this.projName = projName;
+		this.siteName = siteName;
+//		this.projIp = null;
 		this.magIp = magIp;
-		//System.out.println(this);
 	}
-	public MagListBean(String prjId, String prjName, String prjSite, String prjIp, String magIp, String magMask) {
-		this.prjId = prjId;
-		this.prjName = prjName;
-		this.prjSite = prjSite;
-		this.prjIp = prjIp;
+//	public MagListBean(String projId, String projName, String projSite, String projIp, String magIp, String magMask) {
+	public MagListBean(String projId, String projName, String siteName, String magIp, String magMask) {
+		this.projId = projId;
+		this.projName = projName;
+		this.siteName = siteName;
+//		this.projIp = projIp;
 		if (magIp.contains("/")) {
 			throw new IllegalArgumentException("magIp contains \"/\"");
 		}
 		this.magIp = magIp + "/" + magMask;
-		//System.out.println(this);
 	}
 
-	public String getPrjId() {
-		return prjId;
+	@PostConstruct
+	public void init() {
+		log.fine(this.toString());
 	}
-	public String getPrjName() {
-		return prjName;
+
+	public String getProjId() {
+		return projId;
 	}
-	public String getPrjSite() {
-		return prjSite;
+	public String getProjName() {
+		return projName;
 	}
-	public String getPrjIp() {
-		return prjIp;
+	public String getSiteName() {
+		return siteName;
 	}
+	/*
+	public String getProjIp() {
+		return projIp;
+	}
+	*/
 	public String getMagIp() {
 		return magIp;
 	}
 
 	public String toString() {
-		return String.format("prjId=%s, magIp=%s", prjId, magIp);
+		return String.format("projId=%s, magIp=%s", projId, magIp);
 	}
 }

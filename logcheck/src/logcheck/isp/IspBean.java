@@ -25,6 +25,10 @@ public class IspBean<E> implements Comparable<IspBean<E>> {
 	@Override
 	public int compareTo(IspBean<E> o) {
 		// TODO Auto-generated method stub
+		int rc = country.compareTo(o.getCountry());
+		if (rc != 0) {
+			return rc;
+		}
 		return name.compareTo(o.getName());
 	}
 

@@ -1,34 +1,27 @@
 package logcheck.sdc;
 
+import java.util.logging.Logger;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
 import logcheck.isp.IspList;
 
 public class SdcListIsp extends IspList {
 
+	@Inject private Logger log;
+
 	public SdcListIsp(String name, String type) {
 		super(name, type);
-		//System.out.println(this);
 	}
-	/*
-	public SdcListIsp(String name, String addr) {
-		super(name, "SDC");
-		addAddress(new NetAddr(addr));
-		//System.out.println(this);
+
+	@PostConstruct
+	public void init() {
+		log.fine(this.toString());
 	}
-	public SdcListIsp(String name, String addr, String type) {
-		super(name, type);
-		addAddress(new NetAddr(addr));
-		//System.out.println(this);
-	}
-	*/
-	/*
-	public SdcListIsp(String name) {
-		super(name, "SDC");
-		//System.out.println(this);
-	}
-	*/
-	/*
+
 	public String toString() {
 		return String.format("name=%s, addr=%s", getName(), getAddress());
 	}
-	*/
+
 }

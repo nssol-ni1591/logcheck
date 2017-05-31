@@ -17,7 +17,7 @@ import logcheck.log.AccessLog;
 import logcheck.log.AccessLogBean;
 import logcheck.log.AccessLogSummary;
 import logcheck.mag.MagList;
-import logcheck.util.NetAddr;
+import logcheck.util.net.NetAddr;
 
 /*
  * ログ解析用ツール2：
@@ -46,8 +46,8 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 		return this;
 	}
 
+	// ログのメッセージ部分はPatternの正規化表現で集約するため、対象ログが一致したPattern文字列を取得する
 	protected String getPattern(AccessLogBean b) {
-		// メッセージにIPアドレスなどが含まれるログは、それ以外の部分を比較対象とするための前処理
 		Optional<String> rc = Stream.of(ALL_PATTERNS)
 				.filter(p -> p.matcher(b.getMsg()).matches())
 				.map(p -> p.toString())
@@ -109,8 +109,13 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 	}
 
 	public static void main(String... argv) {
+		Pattern p = Pattern.compile("\\d\\d\\d\\d-\\d\\d-\\d\\d");
 		if (argv.length < 3) {
-			System.err.println("usage: java yyyy-mm-dd logcheck.Checker9 knownlist maglist [accesslog...]");
+			System.err.println("usage: java logcheck.Checker9 yyyy-mm-dd knownlist maglist [accesslog...]");
+			System.exit(1);
+		}
+		if (!p.matcher(argv[0]).matches()) {
+			System.err.println("usage: java logcheck.Checker9 yyyy-mm-dd knownlist maglist [accesslog...]");
 			System.exit(1);
 		}
 

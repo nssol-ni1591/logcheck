@@ -1,7 +1,7 @@
 package logcheck.log;
 
-import logcheck.util.ClientAddr;
-import logcheck.util.NetAddr;
+import logcheck.util.net.ClientAddr;
+import logcheck.util.net.NetAddr;
 
 public class AccessLogBean {
 

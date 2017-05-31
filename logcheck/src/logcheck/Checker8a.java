@@ -4,8 +4,6 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import javax.enterprise.inject.Alternative;
-
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
@@ -17,8 +15,7 @@ import logcheck.log.AccessLogBean;
  * 利用方法としては、プログラムの出力を直接参照するのではなく、Excelに読み込ませpivotで解析する想定のためTSV形式で出力する。
  * なお、このツールでは、正常系ログの集約処理は行わない。
  */
-@Alternative
-public class Checker81 extends Checker8 {
+public class Checker8a extends Checker8 {
 
 	private static final Pattern[] ALL_PATTERNS;
 	static {
@@ -28,8 +25,8 @@ public class Checker81 extends Checker8 {
 		System.arraycopy(FAIL_PATTERNS_DUP, 0, ALL_PATTERNS, INFO_PATTERNS.length + FAIL_PATTERNS.length, FAIL_PATTERNS_DUP.length);
 	}
 
+	// ログのメッセージ部分はPatternの正規化表現で集約するため、対象ログが一致したPattern文字列を取得する
 	protected String getPattern(AccessLogBean b) {
-		// メッセージにIPアドレスなどが含まれるログは、それ以外の部分を比較対象とするための前処理
 		Optional<String> rc = Stream.of(ALL_PATTERNS)
 				.filter(p -> p.matcher(b.getMsg()).matches())
 				.map(p -> p.toString())
@@ -51,7 +48,7 @@ public class Checker81 extends Checker8 {
 		int rc = 0;
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-			Checker81 application = container.instance().select(Checker81.class).get();
+			Checker8a application = container.instance().select(Checker8a.class).get();
 			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {

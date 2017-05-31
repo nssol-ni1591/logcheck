@@ -4,10 +4,9 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/beans_1_1.xsd">
 
 	<alternatives>
-		<class>logcheck.mag.tsv.TsvMagList</class>
 		<!-- 
-		<class>logcheck.mag.db.DbMagList</class>
+		<class>logcheck.mag.tsv.TsvMagList</class>
 		 -->
-		<class>logcheck.Checker8</class>
+		<class>logcheck.mag.db.DbMagList</class>
 	</alternatives>
 </beans>
