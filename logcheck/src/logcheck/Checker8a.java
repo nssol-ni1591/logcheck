@@ -15,7 +15,7 @@ import logcheck.log.AccessLogBean;
  * 利用方法としては、プログラムの出力を直接参照するのではなく、Excelに読み込ませpivotで解析する想定のためTSV形式で出力する。
  * なお、このツールでは、正常系ログの集約処理は行わない。
  */
-public class Checker81 extends Checker8 {
+public class Checker8a extends Checker8 {
 
 	private static final Pattern[] ALL_PATTERNS;
 	static {
@@ -48,7 +48,7 @@ public class Checker81 extends Checker8 {
 		int rc = 0;
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-			Checker81 application = container.instance().select(Checker81.class).get();
+			Checker8a application = container.instance().select(Checker8a.class).get();
 			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {
