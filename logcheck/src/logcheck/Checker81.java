@@ -25,8 +25,8 @@ public class Checker81 extends Checker8 {
 		System.arraycopy(FAIL_PATTERNS_DUP, 0, ALL_PATTERNS, INFO_PATTERNS.length + FAIL_PATTERNS.length, FAIL_PATTERNS_DUP.length);
 	}
 
+	// ログのメッセージ部分はPatternの正規化表現で集約するため、対象ログが一致したPattern文字列を取得する
 	protected String getPattern(AccessLogBean b) {
-		// メッセージにIPアドレスなどが含まれるログは、それ以外の部分を比較対象とするための前処理
 		Optional<String> rc = Stream.of(ALL_PATTERNS)
 				.filter(p -> p.matcher(b.getMsg()).matches())
 				.map(p -> p.toString())

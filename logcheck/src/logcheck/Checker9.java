@@ -46,8 +46,8 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 		return this;
 	}
 
+	// ログのメッセージ部分はPatternの正規化表現で集約するため、対象ログが一致したPattern文字列を取得する
 	protected String getPattern(AccessLogBean b) {
-		// メッセージにIPアドレスなどが含まれるログは、それ以外の部分を比較対象とするための前処理
 		Optional<String> rc = Stream.of(ALL_PATTERNS)
 				.filter(p -> p.matcher(b.getMsg()).matches())
 				.map(p -> p.toString())
