@@ -2,7 +2,6 @@ package logcheck.user;
 
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedHashMap;
@@ -11,6 +10,7 @@ import java.util.logging.Logger;
 import logcheck.annotations.WithElaps;
 import logcheck.isp.IspList;
 import logcheck.log.AccessLog;
+import logcheck.util.DB;
 import logcheck.util.net.NetAddr;
 
 /*
@@ -67,11 +67,12 @@ public class UserList<E extends IspList> extends LinkedHashMap<String, UserListB
 	@WithElaps
 	public UserList<E> load(String sql, Class<E> clazz) throws Exception {
 		// Oracle JDBC Driverのロード
-		Class.forName("oracle.jdbc.driver.OracleDriver");
+		//Class.forName("oracle.jdbc.driver.OracleDriver");
 
 		try (	// Oracleに接続
 				//Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@172.31.247.137:1521/sdcdb01", "masterinfo", "masterinfo");
-				Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@172.31.247.137:1521:sdcdb011", "masterinfo", "masterinfo");
+				//Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@172.31.247.137:1521:sdcdb011", "masterinfo", "masterinfo");
+				Connection conn = DB.createConnection();
 				// ステートメントを作成
 				PreparedStatement stmt = conn.prepareStatement(sql);
 				)
