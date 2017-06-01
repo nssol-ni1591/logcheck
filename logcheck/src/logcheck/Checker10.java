@@ -181,7 +181,7 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 	}
 
 	public static void main(String... argv) {
-		if (argv.length < 3) {
+		if (argv.length < 2) {
 			System.err.println("usage: java logcheck.Checker10 knownlist maglist [accesslog...]");
 			System.exit(1);
 		}
