@@ -39,7 +39,7 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 		return this;
 	}
 
-	// ログのメッセージ部分はPatternの正規化表現で集約するため、対象ログが一致したPattern文字列を取得する
+	// ログのメッセージ部分はPatternの正規化表現で集約するため、対象ログと一致したPattern文字列を取得する
 	protected String getPattern(AccessLogBean b) {
 		Optional<String> rc = Stream.of(FAIL_PATTERNS)
 				.filter(p -> p.matcher(b.getMsg()).matches())

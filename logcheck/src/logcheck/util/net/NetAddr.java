@@ -7,8 +7,29 @@ public class NetAddr implements Comparable<NetAddr> {
 	private final int[] brdaddr;
 	private final int mask;
 
+	public NetAddr(String src, String net, String brd) {
+		srcaddr = addr(src);
+		netaddr = addr(net);
+		brdaddr = addr(brd);
+//		mask = 0;
+		int mask = 0;
+		for (int ix = 0; ix < 4; ix++) {
+			switch (brdaddr[ix] - netaddr[ix]) {
+			case 0:		mask += 8; break;
+			case 1:		mask += 7; break;
+			case 3:		mask += 6; break;
+			case 7:		mask += 5; break;
+			case 15:	mask += 4; break;
+			case 32:	mask += 3; break;
+			case 63:	mask += 2; break;
+			case 127:	mask += 1; break;
+			case 255:	mask += 0; break;
+			}
+		}
+		this.mask = mask;
+	}
 	public NetAddr(String addr) {
-		srcaddr = new int[4];
+//		srcaddr = new int[4];
 		netaddr = new int[4];
 		brdaddr = new int[4];
 
@@ -16,14 +37,16 @@ public class NetAddr implements Comparable<NetAddr> {
 		if (s0.length != 1 && s0.length != 2) {
 			throw new IllegalArgumentException("netaddr error: " + addr);
 		}
-	
+		/*
 		String[] s1 = s0[0].split("\\.");
 		if (s1.length != 4) {
 			throw new IllegalArgumentException("ip error: " + s0[0] + ", len=" + s1.length);
 		}
+		*/
+		srcaddr = addr(s0[0]);
 
 		for (int ix = 0; ix < 4; ix++) {
-			srcaddr[ix] = Integer.parseInt(s1[ix]);
+//			srcaddr[ix] = Integer.parseInt(s1[ix]);
 			netaddr[ix] = srcaddr[ix];
 			brdaddr[ix] = srcaddr[ix];
 		}
@@ -65,7 +88,7 @@ public class NetAddr implements Comparable<NetAddr> {
 				mask = tmp_mask;
 			}
 			else {
-				throw new IllegalArgumentException("ip error: " + addr + ", len=" + s1.length);
+				throw new IllegalArgumentException("ip error: " + addr + ", len=" + s2.length);
 			}
 		}
 
@@ -97,6 +120,18 @@ public class NetAddr implements Comparable<NetAddr> {
 			netaddr[3] = netaddr[3] & (int)(256 - Math.pow(2, 32 - mask));
 			brdaddr[3] = brdaddr[3] | (int)(Math.pow(2, 32 - mask) - 1);
 		}
+	}
+
+	private int[] addr(String s) {
+		String[] s1 = s.split("\\.");
+		if (s1.length != 4) {
+			throw new IllegalArgumentException("ip error: " + s + ", len=" + s1.length);
+		}
+		int[] addr = new int[4];
+		for (int ix = 0; ix < 4; ix++) {
+			addr[ix] = Integer.parseInt(s1[ix]);
+		}
+		return addr;
 	}
 
 	public int compareTo(NetAddr another) {

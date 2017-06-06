@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import logcheck.annotations.WithElaps;
 import logcheck.isp.IspList;
-import logcheck.log.AccessLog;
 import logcheck.util.DB;
 import logcheck.util.net.NetAddr;
 
@@ -19,7 +18,7 @@ import logcheck.util.net.NetAddr;
 public class UserList<E extends IspList> extends LinkedHashMap<String, UserListBean<E>> {
 
 	private static final long serialVersionUID = 1L;
-	private static Logger log = Logger.getLogger(AccessLog.class.getName());
+	private static Logger log = Logger.getLogger(UserList.class.getName());
 /*
 	public static String SQL_ACTIVE_USER = 
 			"select prj.prj_id, site.site_name, site_user.user_id"
