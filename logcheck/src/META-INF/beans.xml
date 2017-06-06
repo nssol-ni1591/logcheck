@@ -6,7 +6,9 @@
 	<alternatives>
 		<!-- 
 		<class>logcheck.mag.tsv.TsvMagList</class>
+		<class>logcheck.known.tsv.TsvKnownList</class>
 		 -->
 		<class>logcheck.mag.db.DbMagList</class>
+		<class>logcheck.known.net.Whois</class>
 	</alternatives>
 </beans>

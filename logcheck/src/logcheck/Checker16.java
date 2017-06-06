@@ -8,7 +8,7 @@ import logcheck.user.UserListSummary;
 
 /*
  * 未利用ユーザ検索：
- * Checker14をスーパークラスとして出力のみを絞り込む
+ * Checker14をスーパークラスとして出力項目を変更する
  * 出力項目は上野さんのリクエストで各テーブルの削除フラグを出力する
  */
 public class Checker16 extends Checker14 {

@@ -1,7 +1,6 @@
 package logcheck.mag.db;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedHashMap;
@@ -11,16 +10,16 @@ import java.util.logging.Logger;
 import javax.enterprise.inject.Alternative;
 
 import logcheck.annotations.WithElaps;
-import logcheck.log.AccessLog;
 import logcheck.mag.MagList;
 import logcheck.mag.MagListBean;
 import logcheck.mag.MagListIsp;
+import logcheck.util.DB;
 import logcheck.util.net.NetAddr;
 
 @Alternative
 public class DbMagList extends LinkedHashMap<String, MagListIsp> implements MagList {
 
-	private static Logger log = Logger.getLogger(AccessLog.class.getName());
+	private static Logger log = Logger.getLogger(DbMagList.class.getName());
 	//@Inject private Logger log;
 
 	private static final long serialVersionUID = 1L;
@@ -79,12 +78,14 @@ public class DbMagList extends LinkedHashMap<String, MagListIsp> implements MagL
 	@Override @WithElaps
 	public MagList load() throws Exception {
 		String sql = SQL_ALL_GIP;
+
 		// Oracle JDBC Driverのロード
-		Class.forName("oracle.jdbc.driver.OracleDriver");
+		//Class.forName("oracle.jdbc.driver.OracleDriver");
 
 		try (	// Oracleに接続
 				//Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@172.31.247.137:1521/sdcdb01", "masterinfo", "masterinfo");
-				Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@172.31.247.137:1521:sdcdb011", "masterinfo", "masterinfo");
+				//Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@172.31.247.137:1521:sdcdb011", "masterinfo", "masterinfo");
+				Connection conn = DB.createConnection();
 				// ステートメントを作成
 				PreparedStatement stmt = conn.prepareStatement(sql);
 				)
