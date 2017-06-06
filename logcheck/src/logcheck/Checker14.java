@@ -51,6 +51,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListSummary>> {
 		return AUTH_PATTERN.matcher(b.getMsg()).matches();
 	}
 */
+	@Override
 	public UserList<UserListSummary> call(Stream<String> stream) throws Exception {
 		stream//.parallel()
 				.filter(AccessLog::test)
@@ -103,9 +104,10 @@ public class Checker14 extends AbstractChecker<UserList<UserListSummary>> {
 		return userlist;
 	}
 
-	public void report(UserList<UserListSummary> map) {
+	@Override
+	public void report() {
 		System.out.println("ユーザID\tプロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数");
-		map.values().stream()
+		userlist.values().stream()
 			.forEach(user -> {
 				user.getSites().forEach(site -> {
 					System.out.println(

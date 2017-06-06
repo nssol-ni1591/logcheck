@@ -31,6 +31,8 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
+	private final List<AccessLogSummary> list = new Vector<>(1000);
+
 	private static final Pattern[] AUTH_PATTERNS = {
 			Pattern.compile("Primary authentication successful for [\\S ]+ from [\\d\\.]+"),
 //			Pattern.compile("Primary authentication failed for [\\S ]+ from \\S+"),
@@ -54,8 +56,8 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 	
 	}
 */
+	@Override
 	public List<AccessLogSummary> call(Stream<String> stream) throws IOException {
-		List<AccessLogSummary> list = new Vector<>(1000);
 		stream//.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
@@ -152,7 +154,8 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 		return list;
 	}
 
-	public void report(List<AccessLogSummary> list) {
+	@Override
+	public void report() {
 		System.out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\t参考ユーザID\tエラー回数\t想定される原因\t詳細");
 
 		list.forEach(msg -> {

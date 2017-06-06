@@ -158,18 +158,18 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 	}
 
 	protected abstract T call(Stream<String> stream) throws Exception;
-	protected abstract void report(T map);
+	protected abstract void report();
 
 	// 将来的にサブクラス外からの呼び出しを考慮してpublicとする
 	public void start(String[] argv, int offset) throws Exception {
 		if (argv.length <= offset) {
 			T map = run(System.in);
-			report(map);
+			report();
 		}
 		else {
 			for (int ix = offset; ix < argv.length; ix++ ) {
 				T map = run(argv[ix]);
-				report(map);
+				report();
 			}
 		}
 	}

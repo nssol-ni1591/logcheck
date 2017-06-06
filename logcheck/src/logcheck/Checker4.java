@@ -26,6 +26,8 @@ public class Checker4 extends AbstractChecker<Map<String ,Map<String, IspMap<Map
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
+	private Map<String, Map<String, IspMap<Map<String, Integer>>>> map = new TreeMap<>();
+
 	private static final Pattern[] FAIL_PATTERNS_ALL;
 	static {
 		FAIL_PATTERNS_ALL = new Pattern[FAIL_PATTERNS.length + FAIL_PATTERNS_DUP.length];
@@ -39,8 +41,8 @@ public class Checker4 extends AbstractChecker<Map<String ,Map<String, IspMap<Map
 		return this;
 	}
 
+	@Override
 	public Map<String, Map<String, IspMap<Map<String, Integer>>>> call(Stream<String> stream) throws Exception {
-		Map<String, Map<String, IspMap<Map<String, Integer>>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
@@ -99,7 +101,8 @@ public class Checker4 extends AbstractChecker<Map<String ,Map<String, IspMap<Map
 		return map;
 	}
 
-	public void report(Map<String, Map<String, IspMap<Map<String, Integer>>>> map) {
+	@Override
+	public void report() {
 		System.out.println();
 		map.forEach((country, ispmap) -> {
 			int sum = ispmap.values().stream().mapToInt(addrmap -> {

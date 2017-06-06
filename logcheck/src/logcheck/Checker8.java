@@ -32,6 +32,8 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 
 	@Inject protected KnownList knownlist;
 	@Inject protected MagList maglist;
+	
+	private Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> map = new TreeMap<>();
 
 	public Checker8 init(String knownfile, String magfile) throws Exception {
 		this.knownlist.load(knownfile);
@@ -66,8 +68,8 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 		return b.getMsg();
 	}
 
+	@Override
 	public Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> call(Stream<String> stream) throws Exception {
-		Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
@@ -128,7 +130,8 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 		return map;
 	}
 
-	public void report(Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> map) {
+	@Override
+	public void report() {
 		System.out.println("国\tISP/プロジェクト\tアドレス\tユーザID\tメッセージ\tロール\t初回日時\t最終日時\tログ数");
 		map.forEach((country, ispmap) -> {
 

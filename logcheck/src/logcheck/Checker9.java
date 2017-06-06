@@ -27,9 +27,11 @@ import logcheck.util.net.NetAddr;
  */
 public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 
-	private String select;
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
+
+	private String select;
+	private List<AccessLogSummary> list = new Vector<>(1000000);
 
 	private static final Pattern[] ALL_PATTERNS;
 	static {
@@ -61,7 +63,6 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 	}
 
 	public List<AccessLogSummary> call(Stream<String> stream) throws Exception {
-		List<AccessLogSummary> list = new Vector<>(1000000);
 		stream//.parallel()
 				.filter(AccessLog::test)
 				.filter(s -> select.startsWith("-") || s.startsWith(select))
@@ -86,7 +87,7 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 		return list;
 	}
 
-	public void report(List<AccessLogSummary> list) {
+	public void report() {
 		System.out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\tロール\tメッセージ");
 
 		list.forEach(msg -> {
