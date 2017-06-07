@@ -146,16 +146,26 @@ public class Whois extends TreeMap<NetAddr, KnownListIsp> implements KnownList {
 						if (name == null) {
 							name = tmp;
 						}
-						else if (name.contains("Inc.") || name.contains("INC.")) { }
+						else if (name.contains("Inc.") || name.contains("INC.")
+								|| name.contains("Corporation")
+								|| name.contains("Company")
+								) {
+						}
 						else if (tmp.contains("Inc.") || tmp.contains("INC.")) {
 							name = tmp;
 						}
+						else if (tmp.contains("HaNoi")
+								|| tmp.contains("Bangkok")
+								|| tmp.contains("Route")
+								|| tmp.contains("STATIC")
+								) {
+						}
 						else if ("Paris, France".equals(tmp)
 								|| "Security Gateway for Customer".equals(tmp)
-								) { }
-						else if ("PH".equals(country)
-								|| "PL".equals(country)
-								|| "IN".equals(country)
+								) {
+						}
+						else if ("PL".equals(country)
+//								|| "PH".equals(country)
 								) {
 							// 下位のエントリの方が記述が曖昧なので、文字の置換は行わない
 						}
@@ -258,12 +268,18 @@ public class Whois extends TreeMap<NetAddr, KnownListIsp> implements KnownList {
 		NetAddr[] addrs = {
 //				new ClientAddr(""),
 //				new ClientAddr(""),
+//				new ClientAddr(""),
+//				new ClientAddr(""),
+				new ClientAddr("110.77.214.76"),
+				new ClientAddr("101.99.14.161"),
+				new ClientAddr("59.153.233.226"),
+				new ClientAddr("117.4.252.36"),
+				new ClientAddr("222.252.17.6"),
 				new ClientAddr("122.2.36.229"),
 				new ClientAddr("93.150.63.11"),
 				new ClientAddr("183.82.120.86"),
 				new ClientAddr("103.40.133.2"),
 				new ClientAddr("79.191.82.167"),
-				new ClientAddr("219.90.84.2"),
 				new ClientAddr("219.90.84.2"),
 				new ClientAddr("122.2.36.229"),
 		};
@@ -271,9 +287,9 @@ public class Whois extends TreeMap<NetAddr, KnownListIsp> implements KnownList {
 		Whois f = new Whois();
 		for (NetAddr addr : addrs) {
 			KnownListIsp isp = f.get(addr);
-			System.out.println("addr=" + addr + ", isp=[" + isp + " (" + isp.getCountry() + ")" +", addr=" + isp.getAddress() + "]");
+			System.out.println("addr=" + addr + ", isp=[" + isp + " C=" + isp.getCountry() +", NET=" + isp.getAddress() + "]");
 		}
-		System.out.println("f=" + f);
+//		System.out.println("f=" + f);
 	}
 
 }
