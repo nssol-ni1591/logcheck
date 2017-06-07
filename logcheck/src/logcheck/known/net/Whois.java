@@ -16,7 +16,6 @@ import javax.enterprise.inject.Alternative;
 
 import logcheck.known.KnownList;
 import logcheck.known.KnownListIsp;
-import logcheck.mag.db.DbMagList;
 import logcheck.util.net.ClientAddr;
 import logcheck.util.net.NetAddr;
 
@@ -59,7 +58,7 @@ public class Whois extends TreeMap<NetAddr, KnownListIsp> implements KnownList {
 	};
 
 	//@Inject private Logger log;
-	private static Logger log = Logger.getLogger(DbMagList.class.getName());
+	private static Logger log = Logger.getLogger(Whois.class.getName());
 
 	@PostConstruct
 	public void init() {

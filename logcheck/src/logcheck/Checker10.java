@@ -114,7 +114,9 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 									break;
 								}
 
-								if (msg.getAddr().equals(b.getAddr()) && msg.getId().equals(b.getId())) {
+								if (!"".equals(msg.getReason()) && !msg.getReason().endsWith("（※）：")) {
+								}
+								else if (msg.getAddr().equals(b.getAddr()) && msg.getId().equals(b.getId())) {
 									// アドレスもユーザIDも一致している場合
 									// list.remove(ix);
 									msg.setReason("パスワードの入力ミス：");
