@@ -101,23 +101,26 @@ public class Checker14 extends AbstractChecker<UserList<UserListSummary>> {
 
 	@Override
 	public void report() {
-		System.out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数");
+		System.out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tIPアドレス\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数");
 		userlist.values().stream()
 			.forEach(user -> {
 				user.getSites().forEach(site -> {
-					System.out.println(
-							new StringBuilder(user.getUserId())
-							.append("\t").append(site.getCountry())
-							.append("\t").append(site.getProjId())
-							.append("\t").append(site.getSiteName())
-							.append("\t").append(site.getProjDelFlag())
-							.append("\t").append(site.getSiteDelFlag())
-							.append("\t").append(user.getUserDelFlag())
-							.append("\t").append(user.getValidFlag())
-							.append("\t").append(site.getFirstDate())
-							.append("\t").append(site.getLastDate())
-							.append("\t").append(site.getCount())
-							);
+					site.getAddress().forEach(addr -> {
+						System.out.println(
+								new StringBuilder(user.getUserId())
+								.append("\t").append(site.getCountry())
+								.append("\t").append(site.getProjId())
+								.append("\t").append(site.getSiteName())
+								.append("\t").append(addr)
+								.append("\t").append(site.getProjDelFlag())
+								.append("\t").append(site.getSiteDelFlag())
+								.append("\t").append(user.getUserDelFlag())
+								.append("\t").append(user.getValidFlag())
+								.append("\t").append(site.getFirstDate())
+								.append("\t").append(site.getLastDate())
+								.append("\t").append(site.getCount())
+								);
+					});
 			});
 		});
 	}
