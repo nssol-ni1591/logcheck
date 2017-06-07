@@ -120,20 +120,14 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 					msgmap.forEach((msg, count) -> {
 						System.out.println(
 								new StringBuilder("".equals(country) ? "<MAGLIST>" : country)
-								.append("\t")
-								.append(isp)
-								.append("\t")
-								.append(addr)
-								.append("\t")
-								.append(msg.getPattern())
-								.append("\t")
-								.append(msg.getFirstDate())
-								.append("\t")
-								.append(msg.getLastDate())
-								.append("\t")
-								.append(count)
-								.append("\t")
-								.append(sumIspLog));
+								.append("\t").append(isp)
+								.append("\t").append(addr)
+								.append("\t").append(msg.getPattern())
+								.append("\t").append(msg.getFirstDate())
+								.append("\t").append(msg.getLastDate())
+								.append("\t").append(count)
+								.append("\t").append(sumIspLog)
+								);
 					});
 				});
 			});

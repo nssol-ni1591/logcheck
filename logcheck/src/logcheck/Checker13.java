@@ -30,7 +30,9 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-	private Map<String, Map<Isp, List<AccessLogBean>>> map = new TreeMap<>();
+//	@Inject private Logger log;
+
+	private final Map<String, Map<Isp, List<AccessLogBean>>> map = new TreeMap<>();
 
 	private static final Pattern IP_RANGE_PATTERN = Pattern.compile("Testing Source IP realm restrictions failed for /NSSDC-Auth1 *");
 
@@ -89,7 +91,8 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 
 					} else {
 //						System.err.println("unknown ip: addr=" + addr);
-						log.warning("unknown ip: addr=" + addr);
+//						log.warning("unknown ip: addr=" + addr);
+						addrErrs.add(b.getAddr());
 					}
 				});
 		return map;
@@ -103,12 +106,9 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 				addrmap.forEach((msg) -> {
 					System.out.println(
 							new StringBuilder(country)
-									.append("\t")
-									.append(isp)
-									.append("\t")
-									.append(msg.getAddr())
-									.append("\t")
-									.append(msg.getDate())
+									.append("\t").append(isp)
+									.append("\t").append(msg.getAddr())
+									.append("\t").append(msg.getDate())
 									);
 				});
 			});

@@ -3,6 +3,7 @@ package logcheck;
 import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -30,8 +31,10 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
+	@Inject private Logger log;
+
 	private String select;
-	private List<AccessLogSummary> list = new Vector<>(1000000);
+	private final List<AccessLogSummary> list = new Vector<>(1000000);
 
 	private static final Pattern[] ALL_PATTERNS;
 	static {
@@ -81,7 +84,8 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 						list.add(msg);
 					} else {
 //						System.err.println("unknown ip: addr=" + addr);
-						log.warning("unknown ip: addr=" + addr);
+//						log.warning("unknown ip: addr=" + addr);
+						addrErrs.add(b.getAddr());
 					}
 				});
 		return list;
@@ -89,22 +93,15 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 
 	public void report() {
 		System.out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\tロール\tメッセージ");
-
 		list.forEach(msg -> {
 			System.out.println(
 					new StringBuilder(msg.getFirstDate())
-					.append("\t")
-					.append(msg.getIsp().getCountry())
-					.append("\t")
-					.append(msg.getIsp().getName())
-					.append("\t")
-					.append(msg.getAddr())
-					.append("\t")
-					.append(msg.getId())
-					.append("\t")
-					.append(msg.getRoles())
-					.append("\t")
-					.append(msg.getPattern())
+					.append("\t").append(msg.getIsp().getCountry())
+					.append("\t").append(msg.getIsp().getName())
+					.append("\t").append(msg.getAddr())
+					.append("\t").append(msg.getId())
+					.append("\t").append(msg.getRoles())
+					.append("\t").append(msg.getPattern())
 					);
 		});
 	}

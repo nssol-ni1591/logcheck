@@ -3,6 +3,7 @@ package logcheck;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import javax.enterprise.util.AnnotationLiteral;
@@ -32,7 +33,9 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 
 	@Inject protected KnownList knownlist;
 	@Inject protected MagList maglist;
-	
+
+	@Inject private Logger log;
+
 	private Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> map = new TreeMap<>();
 
 	public Checker8 init(String knownfile, String magfile) throws Exception {
@@ -124,7 +127,8 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 
 					} else {
 //						System.err.println("unknown ip: addr=" + addr);
-						log.warning("unknown ip: addr=" + addr);
+//						log.warning("unknown ip: addr=" + addr);
+						addrErrs.add(b.getAddr());
 					}
 				});
 		return map;
@@ -144,24 +148,15 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 						msgmap.forEach((pattern, msg) -> {
 							System.out.println(
 									new StringBuilder(country)
-											.append("\t")
-											.append(isp)
-											.append("\t")
-											.append(addr)
-											.append("\t")
-											.append(id)
-											.append("\t")
-											.append(pattern)
-											.append("\t")
-											.append(msg.getRoles())
-											.append("\t")
-											.append(msg.getFirstDate())
-											.append("\t")
-											.append(msg.getLastDate())
-											.append("\t")
-											.append(msg.getCount())
-//											.append("\t")
-//											.append(sumIspLog)
+											.append("\t").append(isp)
+											.append("\t").append(addr)
+											.append("\t").append(id)
+											.append("\t").append(pattern)
+											.append("\t").append(msg.getRoles())
+											.append("\t").append(msg.getFirstDate())
+											.append("\t").append(msg.getLastDate())
+											.append("\t").append(msg.getCount())
+//											.append("\t").append(sumIspLog)
 											);
 						});
 					});

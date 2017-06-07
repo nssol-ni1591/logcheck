@@ -89,24 +89,15 @@ public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 		list.forEach(s -> {
 			System.out.println(
 					new StringBuilder(s.getFirstDate() == null ? "" : s.getFirstDate())
-					.append("\t")
-					.append(s.getLastDate())
-					.append("\t")
-					.append(s.getSrcIsp().getCountry())
-					.append("\t")
-					.append(s.getSrcIsp().getName())
-					.append("\t")
-					.append(s.getSrcAddr())
-					.append("\t")
-					.append(s.getDstIsp().getCountry())
-					.append("\t")
-					.append(s.getDstIsp().getName())
-					.append("\t")
-					.append(s.getDstAddr())
-					.append("\t")
-					.append(s.getDstPort())
-					.append("\t")
-					.append(s.getCount())
+					.append("\t").append(s.getLastDate())
+					.append("\t").append(s.getSrcIsp().getCountry())
+					.append("\t").append(s.getSrcIsp().getName())
+					.append("\t").append(s.getSrcAddr())
+					.append("\t").append(s.getDstIsp().getCountry())
+					.append("\t").append(s.getDstIsp().getName())
+					.append("\t").append(s.getDstAddr())
+					.append("\t").append(s.getDstPort())
+					.append("\t").append(s.getCount())
 					);
 		});
 	}

@@ -28,7 +28,9 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-	private Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> map = new TreeMap<>();
+//	@Inject private Logger log;
+
+	private final Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> map = new TreeMap<>();
 
 	private static final Pattern IP_RANGE_PATTERN = Pattern.compile("Testing Source IP realm restrictions failed for /NSSDC-Auth1 *");
 
@@ -85,7 +87,8 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 
 					} else {
 //						System.err.println("unknown ip: addr=" + addr);
-						log.warning("unknown ip: addr=" + addr);
+//						log.warning("unknown ip: addr=" + addr);
+						addrErrs.add(b.getAddr());
 					}
 				});
 		return map;
@@ -99,16 +102,11 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 				addrmap.forEach((addr, msg) -> {
 					System.out.println(
 							new StringBuilder(country)
-									.append("\t")
-									.append(isp)
-									.append("\t")
-									.append(addr)
-									.append("\t")
-									.append(msg.getFirstDate())
-									.append("\t")
-									.append(msg.getLastDate())
-									.append("\t")
-									.append(msg.getCount()));
+									.append("\t").append(isp)
+									.append("\t").append(addr)
+									.append("\t").append(msg.getFirstDate())
+									.append("\t").append(msg.getLastDate())
+									.append("\t").append(msg.getCount()));
 				});
 			});
 		});

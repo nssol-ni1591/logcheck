@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,6 +20,7 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 
 import logcheck.annotations.WithElaps;
+import logcheck.util.net.NetAddr;
 
 /*
  * アクセスログのソースIPに一致するISP名/企業名を取得し、国別にISP名/企業名と出力ログ数を出力する
@@ -27,9 +30,12 @@ import logcheck.annotations.WithElaps;
  */
 public abstract class AbstractChecker<T> implements Callable<T> {
 
-	@Inject protected Logger log;
+	@Inject private Logger log;
 
 	private Stream<String> stream;
+
+	protected final Set<String> userErrs = new TreeSet<>(); 
+	protected final Set<NetAddr> addrErrs = new TreeSet<>(); 
 
 	/*
 			Pattern.compile(""),
@@ -163,15 +169,18 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 	// 将来的にサブクラス外からの呼び出しを考慮してpublicとする
 	public void start(String[] argv, int offset) throws Exception {
 		if (argv.length <= offset) {
-			T map = run(System.in);
-			report();
+			/*T map = */run(System.in);
+			//report();
 		}
 		else {
 			for (int ix = offset; ix < argv.length; ix++ ) {
-				T map = run(argv[ix]);
-				report();
+				/*T map = */run(argv[ix]);
+				//report();
 			}
 		}
+		addrErrs.forEach(addr -> log.warning("unknown ip: addr=" + addr));
+		userErrs.forEach(userId -> log.warning("not found user: userid=" + userId));
+		report();
 	}
 
 	private class ChecherProgress implements Runnable {

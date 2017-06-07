@@ -1,8 +1,11 @@
 package logcheck;
 
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+
+import javax.inject.Inject;
 
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
@@ -16,6 +19,8 @@ import logcheck.log.AccessLogBean;
  * なお、このツールでは、正常系ログの集約処理は行わない。
  */
 public class Checker8a extends Checker8 {
+
+	@Inject private Logger log;
 
 	private static final Pattern[] ALL_PATTERNS;
 	static {

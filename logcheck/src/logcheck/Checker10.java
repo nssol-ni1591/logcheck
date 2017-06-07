@@ -31,6 +31,8 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
+//	@Inject private Logger log;
+
 	private final List<AccessLogSummary> list = new Vector<>(1000);
 
 	private static final Pattern[] AUTH_PATTERNS = {
@@ -138,7 +140,8 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 					}
 					else {
 //						System.err.println("unknown ip: addr=" + addr);
-						log.warning("unknown ip: addr=" + addr);
+//						log.warning("unknown ip: addr=" + addr);
+						addrErrs.add(b.getAddr());
 					}
 				});
 		list.stream()
@@ -157,28 +160,18 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 	@Override
 	public void report() {
 		System.out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\t参考ユーザID\tエラー回数\t想定される原因\t詳細");
-
 		list.forEach(msg -> {
 			System.out.println(
 					new StringBuilder(msg.getFirstDate())
-					.append("\t")
-					.append(msg.getIsp().getCountry())
-					.append("\t")
-					.append(msg.getIsp().getName())
-					.append("\t")
-					.append(msg.getAddr())
-					.append("\t")
-					.append(msg.getId())
-					.append("\t")
-					.append(msg.getAfterUsrId())
-					.append("\t")
-					.append(msg.getCount())
-//					.append("\t")
-//					.append(msg.getPattern())
-					.append("\t")
-					.append(msg.getReason())
-					.append("\t")
-					.append(msg.getDetail())
+					.append("\t").append(msg.getIsp().getCountry())
+					.append("\t").append(msg.getIsp().getName())
+					.append("\t").append(msg.getAddr())
+					.append("\t").append(msg.getId())
+					.append("\t").append(msg.getAfterUsrId())
+					.append("\t").append(msg.getCount())
+//					.append("\t").append(msg.getPattern())
+					.append("\t").append(msg.getReason())
+					.append("\t").append(msg.getDetail())
 					);
 		});
 	}
