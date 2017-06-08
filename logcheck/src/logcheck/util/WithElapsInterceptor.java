@@ -36,11 +36,10 @@ public class WithElapsInterceptor {
 //		System.err.println("start " + classAndMethod + ".");
 		log.info("start " + classAndMethod + ".");
 
-		long time;
 		Object rc = null;
+		long time = System.currentTimeMillis();
 		try {
 			// メソッドの実行
-			time = System.currentTimeMillis();
 			rc = ic.proceed();
 			time = System.currentTimeMillis() - time;
 		}
@@ -55,6 +54,7 @@ public class WithElapsInterceptor {
 
 		// メソッド終了後のログ
 //		System.err.println("end " + classAndMethod + ". (elaps=" + time + " ms)");
+		System.err.println();
 		log.info("end " + classAndMethod + "... elaps=" + time + " ms");
 		return rc;
 	}
