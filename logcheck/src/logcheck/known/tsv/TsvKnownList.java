@@ -28,7 +28,7 @@ import logcheck.util.net.NetAddr;
  * 今のHashMapでは、Hash地の値により、どちらが取得されるか判断付かない。
  */
 @Alternative
-public class TsvKnownList extends HashMap<String, KnownListIsp> implements KnownList {
+public class TsvKnownList extends HashMap<NetAddr, KnownListIsp> implements KnownList {
 
 	private static Logger log = Logger.getLogger(TsvKnownList.class.getName());
 	private static final long serialVersionUID = 1L;
@@ -56,15 +56,17 @@ public class TsvKnownList extends HashMap<String, KnownListIsp> implements Known
 	}
 
 	@WithElaps
-	public TsvKnownList load(String file) throws IOException {
+	public KnownList load(String file) throws IOException {
 		Files.lines(Paths.get(file), Charset.forName("MS932"))
 				.filter(TsvKnownList::test)
 				.map(TsvKnownList::parse)
 				.forEach(b -> {
-					KnownListIsp isp = get(b.getName());
+//					KnownListIsp isp = get(b.getName());
+					KnownListIsp isp = get(new NetAddr(b.getAddr()));
 					if (isp == null) {
 						isp = new KnownListIsp(b.getName(), b.getCountry());
-						put(b.getName(), isp);
+//						put(b.getName(), isp);
+						put(new NetAddr(b.getAddr()), isp);
 					}
 					isp.addAddress(new NetAddr(b.getAddr()));
 				});
@@ -112,7 +114,7 @@ public class TsvKnownList extends HashMap<String, KnownListIsp> implements Known
 
 	public static void main(String... argv) {
 		System.out.println("start IspList.main ...");
-		TsvKnownList map = new TsvKnownList();
+		KnownList map = new TsvKnownList();
 		try {
 			map = new TsvKnownList().load(argv[0]);
 		} catch (IOException e) {
@@ -120,8 +122,9 @@ public class TsvKnownList extends HashMap<String, KnownListIsp> implements Known
 			e.printStackTrace();
 		}
 
-		for (String name : map.keySet()) {
-			KnownListIsp n = map.get(name);
+//		for (String name : map.keySet()) {
+		for (NetAddr addr : map.keySet()) {
+			KnownListIsp n = map.get(addr);
 			System.out.println(n.getCountry() + "\t" + n + "\t" + n.getAddress());
 			System.out.print("\t");
 			n.getAddress().forEach(s -> System.out.printf("[%s]", s.toStringRange()));
