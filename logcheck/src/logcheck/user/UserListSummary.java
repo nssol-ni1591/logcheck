@@ -7,6 +7,7 @@ import logcheck.util.net.NetAddr;
 
 public class UserListSummary extends IspList implements Summary {
 
+	private final String siteName;
 	private final String projDelFlag;
 	private final String siteDelFlag;
 
@@ -15,29 +16,35 @@ public class UserListSummary extends IspList implements Summary {
 	private int count;
 
 	public UserListSummary(String projId, String siteName, NetAddr siteAddr, String projDelFlag, String siteDelFlag) {
-		super(siteName, projId);
+		super(projId, "利用申請");
+		this.siteName = siteName;
 		this.projDelFlag = projDelFlag;
 		this.siteDelFlag = siteDelFlag;
 		super.addAddress(siteAddr);
 	}
 	public UserListSummary(IspList isp) {
 		super(isp.getName(), isp.getCountry());
+		this.siteName = "-";
 		this.projDelFlag = "-";
 		this.siteDelFlag = "-";
 		isp.getAddress().forEach(addr -> addAddress(addr));
 	}
 	public UserListSummary(MagListIsp isp) {
-		super(isp.getSiteName(), isp.getProjId());
+		super(isp.getProjId(), "利用申請");
+		this.siteName = isp.getSiteName();
 		this.projDelFlag = "-";
 		this.siteDelFlag = "-";
 		isp.getAddress().forEach(addr -> addAddress(addr));
 	}
 
-	public String getProjId() {
+	public String getCountry() {
 		return super.getCountry();
 	}
-	public String getSiteName() {
+	public String getProjId() {
 		return super.getName();
+	}
+	public String getSiteName() {
+		return siteName;
 	}
 	public String getProjDelFlag() {
 		return projDelFlag;

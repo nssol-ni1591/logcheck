@@ -20,7 +20,6 @@ import logcheck.mag.MagListIsp;
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
 import logcheck.user.UserListSummary;
-import logcheck.util.net.NetAddr;
 
 /*
  * ユーザの利用状況を取得する：
@@ -32,7 +31,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListSummary>> {
 
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
-	@Inject private UserList<UserListSummary> userlist;
+	@Inject protected UserList<UserListSummary> userlist;
 
 	@Inject private Logger log;
 
@@ -45,20 +44,15 @@ public class Checker14 extends AbstractChecker<UserList<UserListSummary>> {
 		this.userlist.load(UserListSummary.class);
 		return this;
 	}
-/*
-	public static boolean test(AccessLogBean b) {
-		// メッセージにIPアドレスなどが含まれるログは、それ以外の部分を比較対象とするための前処理
-		return AUTH_PATTERN.matcher(b.getMsg()).matches();
-	}
-*/
+
+	@Override
 	public UserList<UserListSummary> call(Stream<String> stream) throws Exception {
 		stream//.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
-//				.filter(Checker14::test)
 				.filter(b -> AUTH_PATTERN.matcher(b.getMsg()).matches())
 				.forEach(b -> {
-					NetAddr addr = b.getAddr();
+//					NetAddr addr = b.getAddr();
 					String userId = null;
 
 					Matcher m = AUTH_PATTERN.matcher("   " + b.getMsg()); // 1文字目が欠ける対策
@@ -68,17 +62,19 @@ public class Checker14 extends AbstractChecker<UserList<UserListSummary>> {
 
 					UserListBean<UserListSummary> user = userlist.get(userId);
 					if (user == null) {
-						log.warning("not found user: userid=" + userId);
+//						log.warning("not found user: userid=" + userId);
+						userErrs.add(userId);
 						return;
 					} 
 
 					UserListSummary site = user.getSite(b.getAddr());
 					if (site == null) {
-						MagListIsp magisp = maglist.get(addr);
+						MagListIsp magisp = maglist.get(b.getAddr());
 						if (magisp == null) {
-							IspList isp = knownlist.get(addr);
+							IspList isp = knownlist.get(b.getAddr());
 							if (isp == null) {
-								log.warning("unknown ip: addr=" + addr);
+//								log.warning("unknown ip: addr=" + addr);
+								addrErrs.add(b.getAddr());
 								return;
 							}
 //							user.update(b, isp);
@@ -103,32 +99,28 @@ public class Checker14 extends AbstractChecker<UserList<UserListSummary>> {
 		return userlist;
 	}
 
-	public void report(UserList<UserListSummary> map) {
-		System.out.println("ユーザID\tプロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数");
-		map.values().stream()
+	@Override
+	public void report() {
+		System.out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tIPアドレス\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数");
+		userlist.values().stream()
 			.forEach(user -> {
 				user.getSites().forEach(site -> {
-					System.out.println(
-							new StringBuilder(user.getUserId())
-							.append("\t")
-							.append(site.getProjId())
-							.append("\t")
-							.append(site.getSiteName())
-							.append("\t")
-							.append(site.getProjDelFlag())
-							.append("\t")
-							.append(site.getSiteDelFlag())
-							.append("\t")
-							.append(user.getUserDelFlag())
-							.append("\t")
-							.append(user.getValidFlag())
-							.append("\t")
-							.append(site.getFirstDate())
-							.append("\t")
-							.append(site.getLastDate())
-							.append("\t")
-							.append(site.getCount())
-							);
+					site.getAddress().forEach(addr -> {
+						System.out.println(
+								new StringBuilder(user.getUserId())
+								.append("\t").append(site.getCountry())
+								.append("\t").append(site.getProjId())
+								.append("\t").append(site.getSiteName())
+								.append("\t").append(addr)
+								.append("\t").append(site.getProjDelFlag())
+								.append("\t").append(site.getSiteDelFlag())
+								.append("\t").append(user.getUserDelFlag())
+								.append("\t").append(user.getValidFlag())
+								.append("\t").append(site.getFirstDate())
+								.append("\t").append(site.getLastDate())
+								.append("\t").append(site.getCount())
+								);
+					});
 			});
 		});
 	}

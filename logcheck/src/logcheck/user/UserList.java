@@ -46,7 +46,7 @@ public class UserList<E extends IspList> extends LinkedHashMap<String, UserListB
 			+ " and s.site_id = g.site_id"
 // 未利用ユーザを確認する時点ですでに無効になっているとエラーになるための処置　->エラーにしなければよいか?
 //			+ " and l.valid_flg = '1'"
-			+ " and g.site_gip != '非固定'"
+//			+ " and g.site_gip != '非固定'"
 			+ " and g.site_gip != '追加不要'"
 			+ " order by"
 			+ "  p.delete_flag"
@@ -87,6 +87,10 @@ public class UserList<E extends IspList> extends LinkedHashMap<String, UserListB
 				String siteDelFlag = rs.getString(6);
 				String userDelFlag = rs.getString(7);
 				String validFlag = rs.getString(8);
+
+				if ("非固定".equals(siteIp)) {
+					siteIp = "0.0.0.0";
+				}
 
 				UserListBean<E> b = this.get(userId);
 				if (b == null) {

@@ -6,11 +6,13 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+//import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -18,6 +20,7 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 
 import logcheck.annotations.WithElaps;
+import logcheck.util.net.NetAddr;
 
 /*
  * アクセスログのソースIPに一致するISP名/企業名を取得し、国別にISP名/企業名と出力ログ数を出力する
@@ -27,9 +30,12 @@ import logcheck.annotations.WithElaps;
  */
 public abstract class AbstractChecker<T> implements Callable<T> {
 
-	@Inject protected Logger log;
+	@Inject private Logger log;
 
 	private Stream<String> stream;
+
+	protected final Set<String> userErrs = new TreeSet<>(); 
+	protected final Set<NetAddr> addrErrs = new TreeSet<>(); 
 
 	/*
 			Pattern.compile(""),
@@ -48,13 +54,13 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 			Pattern.compile(" authentication failed for Primary/\\w+  from NSSDC_LDAP"),
 			Pattern.compile("Login failed \\(NSSDC_LDAP\\).  Reason: LDAP Server"),			// 後： authentication failed for Primary/Z06290  from NSSDC_LDAP
 			Pattern.compile("Login failed.  Reason: IP Denied"),							// 前："Testing Source IP realm restrictions failed for \\w+/NSSDC-Auth1 *"
-			Pattern.compile("Primary authentication failed for [\\S ]+ from \\S+"),			
-			Pattern.compile("Testing Certificate realm restrictions failed for [\\w\\.]*/NSSDC-Auth(1|2)(\\(MAC\\))? *"),
-			Pattern.compile("Testing Certificate realm restrictions failed for [\\w\\.]*/NSSDC-Auth(1|2)(\\(MAC\\))? , with certificate '[\\w ,=-]+' *"),
+			Pattern.compile("Primary authentication failed for [\\S ]+ from \\S+"),
+			Pattern.compile("Testing Certificate realm restrictions failed for [\\w\\. ]*/NSSDC-Auth(1|2)(\\(MAC\\))? *"),
+			Pattern.compile("Testing Certificate realm restrictions failed for [\\w\\. ]*/NSSDC-Auth(1|2)(\\(MAC\\))? , with certificate '[\\w ,=-]+' *"),
 			Pattern.compile("Testing Password realm restrictions failed for [\\S ]+ , with certificate '[\\w ,=-]+' *"),
 			Pattern.compile("Testing Source IP realm restrictions failed for \\w+/NSSDC-Auth1 *"),	// 後："Login failed.  Reason: IP Denied"
 			Pattern.compile("The X\\.509 certificate for .+; Detail: 'certificate revoked' "),
-			Pattern.compile("TLS handshake failed - client issued alert 'untrusted or unknown certificate'"),	// 
+			Pattern.compile("TLS handshake failed - client issued alert 'untrusted or unknown certificate'"),
 	};
 	protected static final Pattern[] INFO_PATTERNS = {
 			Pattern.compile("Active user '\\S+' in realm 'NSSDC-Auth(1|2)(\\(MAC\\))?' is deleted since user does not qualify reevaluated policies"),
@@ -94,95 +100,99 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 
 	protected AbstractChecker() { }
 
-	private Stream<String> getStream() {
-		return stream;
-	}
-	private void setStream(Stream<String> stream) {
-		this.stream = stream;
-	}
+//	private Stream<String> getStream() {
+//		return stream;
+//	}
+//	private void setStream(Stream<String> stream) {
+//		this.stream = stream;
+//	}
 
 	private T run(InputStream is) throws Exception {
 //		System.err.println("checking from InputStream:");
 		log.info("checking from InputStream:");
-		long time = System.currentTimeMillis();
+//		long time = System.currentTimeMillis();
 
-		T map = run2(new BufferedReader(new InputStreamReader(is)).lines());
+		this.stream = new BufferedReader(new InputStreamReader(is)).lines();
+		T map = run2();
 
-		System.err.println();
+//		System.err.println();
 //		System.err.println("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
-		log.info("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
+//		log.info("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
 		return map;
 	}
 	private T run(String file) throws Exception {
 //		System.err.println("checking from file=" + file + ":");
 		log.info("checking from file=" + file + ":");
-		long time = System.currentTimeMillis();
+//		long time = System.currentTimeMillis();
 
-		T map = run2(Files.lines(Paths.get(file), StandardCharsets.UTF_8));
+		this.stream = Files.lines(Paths.get(file), StandardCharsets.UTF_8);
+		T map = run2();
 
-		System.err.println();
+//		System.err.println();
 //		System.err.println("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
-		log.info("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
+//		log.info("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
 		return map;
 	}
-	private T run2(Stream<String> stream) throws Exception {
-		setStream(stream);
+	private T run2() throws Exception {
+//		setStream(stream);
 
 		ExecutorService exec = null;
-		ChecherProgress p = null;
+//		CheckProgress p = null;
 		T map = null;
 		try {
 			exec = Executors.newFixedThreadPool(2);
-			Future<T> f = exec.submit(this);
+			CheckProgress p = new CheckProgress();
 
-			p = new ChecherProgress();
+			Future<T> f1 = exec.submit(this);
 			exec.execute(p);
 
-			map = f.get();
+			map = f1.get();
 
 			p.stopRequest();
-			exec.awaitTermination(10, TimeUnit.SECONDS);
 		}
-		catch (InterruptedException ex) { }
+//		catch (Exception ex) { }
 		finally {
 			exec.shutdown();
 		}
 		return map;
 	}
 
-	@Override
-	@WithElaps
+	protected abstract T call(Stream<String> stream) throws Exception;
+	protected abstract void report();
+
+	@Override @WithElaps
 	public T call() throws Exception {
-		Stream<String> stream = getStream();
+//		Stream<String> stream = getStream();
 		return call(stream);
 	}
 
-	protected abstract T call(Stream<String> stream) throws Exception;
-	protected abstract void report(T map);
-
 	// 将来的にサブクラス外からの呼び出しを考慮してpublicとする
+	@WithElaps
 	public void start(String[] argv, int offset) throws Exception {
 		if (argv.length <= offset) {
-			T map = run(System.in);
-			report(map);
+			/*T map = */run(System.in);
+			//report();
 		}
 		else {
 			for (int ix = offset; ix < argv.length; ix++ ) {
-				T map = run(argv[ix]);
-				report(map);
+				/*T map = */run(argv[ix]);
+				//report();
 			}
 		}
+		addrErrs.forEach(addr -> log.warning("unknown ip: addr=" + addr));
+		userErrs.forEach(userId -> log.warning("not found user: userid=" + userId));
+		report();
 	}
 
-	private class ChecherProgress implements Runnable {
+	private class CheckProgress implements Runnable {
 		
 		private boolean stopRequest = false;
 
 		public void run() {
 			while (!stopRequest) {
-				System.err.print(".");
 				try {
 					Thread.sleep(1000);
+					System.err.print(".");
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 //					e.printStackTrace();
@@ -192,7 +202,7 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 		}
 		
 		public void stopRequest() {
-			System.err.println();
+//			System.err.println();
 			stopRequest = true;
 		}
 	}

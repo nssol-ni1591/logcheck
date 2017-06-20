@@ -155,6 +155,11 @@ public class NetAddr implements Comparable<NetAddr> {
 
 	public boolean within(NetAddr another) {
 		int[] addr = another.getNetworkAddr();
+		/* 多分、0.0.0.0 => 非固定 のチェックは行わなくても大丈夫
+		if (addr[0] == 0 && addr[1] == 0 && addr[2] == 0 && addr[3] == 0) {
+			return false;
+		}
+		*/
 		for (int ix = 0; ix < 4; ix++) {
 			if (addr[ix] == netaddr[ix]) { }
 			else if (addr[ix] < netaddr[ix]) {
@@ -184,8 +189,8 @@ public class NetAddr implements Comparable<NetAddr> {
 		return mask;
 	}
 	public String toStringRange() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("(");
+		StringBuilder sb = new StringBuilder(toString());
+		sb.append(" (");
 		sb.append(netaddr[0]).append(".").append(netaddr[1]).append(".").append(netaddr[2]).append(".").append(netaddr[3]);
 		sb.append("-");
 		sb.append(brdaddr[0]).append(".").append(brdaddr[1]).append(".").append(brdaddr[2]).append(".").append(brdaddr[3]);
@@ -197,6 +202,11 @@ public class NetAddr implements Comparable<NetAddr> {
 		sb.append(srcaddr[0]).append(".").append(srcaddr[1]).append(".").append(srcaddr[2]).append(".").append(srcaddr[3]);
 		sb.append("/").append(mask);
 		return sb.toString();
+	}
+
+	public static void main(String...argv) {
+		NetAddr addr = new NetAddr("0.0.0.0");
+		System.out.println(addr.toStringRange());
 	}
 
 }

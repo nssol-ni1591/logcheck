@@ -28,6 +28,10 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
+//	@Inject private Logger log;
+
+	private final Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> map = new TreeMap<>();
+
 	private static final Pattern IP_RANGE_PATTERN = Pattern.compile("Testing Source IP realm restrictions failed for /NSSDC-Auth1 *");
 
 	public Checker12 init(String knownfile, String magfile) throws Exception {
@@ -41,8 +45,8 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 		return IP_RANGE_PATTERN.matcher(b.getMsg()).matches();
 	}
 */
+	@Override
 	public Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> call(Stream<String> stream) throws Exception {
-		Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
@@ -83,29 +87,26 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 
 					} else {
 //						System.err.println("unknown ip: addr=" + addr);
-						log.warning("unknown ip: addr=" + addr);
+//						log.warning("unknown ip: addr=" + addr);
+						addrErrs.add(b.getAddr());
 					}
 				});
 		return map;
 	}
 
-	public void report(Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> map) {
+	@Override
+	public void report() {
 		System.out.println("国\tISP/プロジェクト\tアドレス\t初回日時\t最終日時\tログ数");
 		map.forEach((country, ispmap) -> {
 			ispmap.forEach((isp, addrmap) -> {
 				addrmap.forEach((addr, msg) -> {
 					System.out.println(
 							new StringBuilder(country)
-									.append("\t")
-									.append(isp)
-									.append("\t")
-									.append(addr)
-									.append("\t")
-									.append(msg.getFirstDate())
-									.append("\t")
-									.append(msg.getLastDate())
-									.append("\t")
-									.append(msg.getCount()));
+									.append("\t").append(isp)
+									.append("\t").append(addr)
+									.append("\t").append(msg.getFirstDate())
+									.append("\t").append(msg.getLastDate())
+									.append("\t").append(msg.getCount()));
 				});
 			});
 		});

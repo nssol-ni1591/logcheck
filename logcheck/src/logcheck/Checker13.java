@@ -30,6 +30,10 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
+//	@Inject private Logger log;
+
+	private final Map<String, Map<Isp, List<AccessLogBean>>> map = new TreeMap<>();
+
 	private static final Pattern IP_RANGE_PATTERN = Pattern.compile("Testing Source IP realm restrictions failed for /NSSDC-Auth1 *");
 
 	public Checker13 init(String knownfile, String magfile) throws Exception {
@@ -43,8 +47,8 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 		return IP_RANGE_PATTERN.matcher(b.getMsg()).matches();
 	}
 */
+	@Override
 	public Map<String, Map<Isp, List<AccessLogBean>>> call(Stream<String> stream) throws Exception {
-		Map<String, Map<Isp, List<AccessLogBean>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
@@ -87,25 +91,24 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 
 					} else {
 //						System.err.println("unknown ip: addr=" + addr);
-						log.warning("unknown ip: addr=" + addr);
+//						log.warning("unknown ip: addr=" + addr);
+						addrErrs.add(b.getAddr());
 					}
 				});
 		return map;
 	}
 
-	public void report(Map<String, Map<Isp, List<AccessLogBean>>> map) {
+	@Override
+	public void report() {
 		System.out.println("国\tISP/プロジェクト\tアドレス\t日時");
 		map.forEach((country, ispmap) -> {
 			ispmap.forEach((isp, addrmap) -> {
 				addrmap.forEach((msg) -> {
 					System.out.println(
 							new StringBuilder(country)
-									.append("\t")
-									.append(isp)
-									.append("\t")
-									.append(msg.getAddr())
-									.append("\t")
-									.append(msg.getDate())
+									.append("\t").append(isp)
+									.append("\t").append(msg.getAddr())
+									.append("\t").append(msg.getDate())
 									);
 				});
 			});

@@ -30,6 +30,8 @@ public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 	@Inject private MagList maglist;
 	@Inject private SdcList sdclist;
 
+	private Set<FwLogSummary> list = new TreeSet<>();
+
 	public Checker21 init(String knownfile, String magfile, String sdcfile) throws Exception {
 		this.knownlist.load(knownfile);
 		this.maglist.load(magfile);
@@ -54,8 +56,9 @@ public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 		isp = new IspList(addr.toString(), "unknown");
 		return isp;
 	}
+
+	@Override
 	public Set<FwLogSummary> call(Stream<String> stream) throws Exception {
-		Set<FwLogSummary> list = new TreeSet<>();
 		stream//.parallel()			parallelでは java.util.ConcurrentModificationException が発生
 				.filter(FwLog::test)
 				.map(FwLog::parse)
@@ -79,30 +82,22 @@ public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 		return list;
 	}
 
-	public void report(Set<FwLogSummary> map) {
+	@Override
+	public void report() {
 		System.out.println("出現日時\t最終日時\t接続元国\t接続元名\t接続元IP\t接続先国\t接続先名\t接続先IP\t接続先ポート\tログ数");
 
-		map.forEach(s -> {
+		list.forEach(s -> {
 			System.out.println(
 					new StringBuilder(s.getFirstDate() == null ? "" : s.getFirstDate())
-					.append("\t")
-					.append(s.getLastDate())
-					.append("\t")
-					.append(s.getSrcIsp().getCountry())
-					.append("\t")
-					.append(s.getSrcIsp().getName())
-					.append("\t")
-					.append(s.getSrcAddr())
-					.append("\t")
-					.append(s.getDstIsp().getCountry())
-					.append("\t")
-					.append(s.getDstIsp().getName())
-					.append("\t")
-					.append(s.getDstAddr())
-					.append("\t")
-					.append(s.getDstPort())
-					.append("\t")
-					.append(s.getCount())
+					.append("\t").append(s.getLastDate())
+					.append("\t").append(s.getSrcIsp().getCountry())
+					.append("\t").append(s.getSrcIsp().getName())
+					.append("\t").append(s.getSrcAddr())
+					.append("\t").append(s.getDstIsp().getCountry())
+					.append("\t").append(s.getDstIsp().getName())
+					.append("\t").append(s.getDstAddr())
+					.append("\t").append(s.getDstPort())
+					.append("\t").append(s.getCount())
 					);
 		});
 	}
