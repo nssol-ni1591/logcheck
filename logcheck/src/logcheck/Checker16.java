@@ -33,7 +33,10 @@ public class Checker16 extends Checker14 {
 		map.values().stream()
 			// ツール実行時点で証明書が無効ならば、利用状況を確認する必要がないので対象外にする
 //			.filter(user -> user.sumCount() == 0 && "1".equals(user.getValidFlag()))
-			.filter(user -> user.getSites().stream().mapToInt(site -> site.getCount()).sum() == 0 && "1".equals(user.getValidFlag()))
+			.filter(user -> user.getSites().stream().mapToInt(site -> 
+					site.getCount()).sum() == 0
+					&& "1".equals(user.getValidFlag())
+					)
 			.forEach(user -> {
 				user.getSites().forEach(site -> {
 					System.out.println(

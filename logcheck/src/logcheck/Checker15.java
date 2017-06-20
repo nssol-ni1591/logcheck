@@ -8,7 +8,7 @@ import org.jboss.weld.environment.se.WeldContainer;
 
 /*
  * 未利用ユーザ検索：
- * 
+ * ユーザID、ISP/プロジェクト、拠点名のみを出力する
  */
 public class Checker15 extends Checker14 {
 
@@ -20,10 +20,17 @@ public class Checker15 extends Checker14 {
 		Map<String, Map<String, String>> projmap = new TreeMap<>(); 
 		userlist.values().stream()
 //				.filter(user -> user.sumCount() == 0 && "0".equals(user.getUserDelFlag()))
-				.filter(user -> user.getSites().stream().mapToInt(site -> site.getCount()).sum() == 0 && "0".equals(user.getUserDelFlag()))
+				.filter(user -> user.getSites().stream().mapToInt(site -> 
+						site.getCount()).sum() == 0
+						&& "1".equals(user.getValidFlag())
+						&& "0".equals(user.getUserDelFlag())
+						)
 				.forEach(user -> {
 					user.getSites().stream()
-							.filter(site -> "0".equals(site.getProjDelFlag()) && "0".equals(site.getSiteDelFlag()))
+							.filter(site ->
+									"0".equals(site.getProjDelFlag())
+									&& "0".equals(site.getSiteDelFlag())
+									)
 							.forEach(site -> {
 								String projId = site.getProjId();
 								String siteName = site.getSiteName();
