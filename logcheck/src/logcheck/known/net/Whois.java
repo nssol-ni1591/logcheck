@@ -29,36 +29,36 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 	private static final Pattern[] PTN_NETADDRS = {
 			Pattern.compile("% Information related to '(\\d+\\.\\d+\\.\\d+\\.\\d+ - \\d+\\.\\d+\\.\\d+\\.\\d+)'"),
 			Pattern.compile("inetnum: +([\\d+\\.\\d+/\\d+]+)"),
-//			Pattern.compile("a. \\[Network Number\\] +(\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+)"),
 			Pattern.compile("\\w?\\.? ?\\[Network Number\\] +(\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+)"),
 			Pattern.compile("CIDR: +(\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+)"),
 			Pattern.compile("network:IP-Network:(\\d+\\.\\d+\\.\\d+\\.\\d+/\\d+)"),
 			Pattern.compile("CIDR: +([\\d+\\./, ]+)"),
 			Pattern.compile("IPv4 Address +: (\\d+\\.\\d+\\.\\d+\\.\\d+ - \\d+\\.\\d+\\.\\d+\\.\\d+) \\([/\\d]*\\)"),
 			Pattern.compile(" *Netblock: +([\\d+\\./]+)"),
+			Pattern.compile("[Aa]uth-?[Aa]rea[=:]([\\d+\\./]+)"),
 	};
 	private static final Pattern[] PTN_NAMES = {
 			Pattern.compile("descr: +reassign to \"([\\S ]+)\""),
 			Pattern.compile("descr: +([\\S ]+)"),
-			Pattern.compile("netname: +([\\S ]+)"),
-			Pattern.compile("org-name: +([\\S ]+)"),
-			Pattern.compile("OrgName: +([\\S ]+)"),
-//			Pattern.compile("g. \\[Organization\\] +([\\S ]+)"),
+//			Pattern.compile("netname: +([\\S ]+)"),
+			Pattern.compile("[Oo]rg-?[Nn]ame: *([\\S ]+)"),
+//			Pattern.compile("OrgName: +([\\S ]+)"),
+//			Pattern.compile("[\\w\\.\\[: ]*Organization[\\w\\]: ]*([\\S ]+)"),
 			Pattern.compile("\\w?\\.? ?\\[Organization\\] +([\\S ]+)"),
 			Pattern.compile("owner: +([\\S ]+)"),
 			Pattern.compile("network:Organization[\\S]*:([\\S ]+)"),
 			Pattern.compile("network:Org-Name:([\\S ]+)"),
 			Pattern.compile("Organization Name +: ([\\S ]+)"),
-			Pattern.compile(" *Netname: +([\\S ]+)"),
+			Pattern.compile(" *[Nn]etname: +([\\S ]+)"),
 	};
 	private static final Pattern[] PTN_COUNTRIES = {
-			Pattern.compile("country: +(\\w\\w)"),
-			Pattern.compile("Country: +(\\w\\w)"),
+			Pattern.compile("[Cc]ountry: +(\\w\\w)"),
+//			Pattern.compile("Country: +(\\w\\w)"),
 			Pattern.compile("network:Country-Code:(\\w\\w)"),
 			Pattern.compile("\\[ (\\w+) database provides .*"),		// JPNIC
 			Pattern.compile("(\\w+) is not an ISP .*"),				// KRNIC
 			Pattern.compile("# (\\w+) WHOIS data and services .*"),	// ARIN
-			Pattern.compile("network:Country-Code:(\\w+)"),
+//			Pattern.compile("network:Country-Code:(\\w+)"),
 	};
 
 	//@Inject private Logger log;
@@ -131,13 +131,13 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 				if (addrs.isEmpty() && name == null) {
 					isp = null;
 				}
-				else if (addrs.isEmpty()) {
-					isp.addAddress(new NetAddr(addr.toString() + "/32"));
-				}
 				else if (name == null) {
 					final KnownListIsp isp2 = new KnownListIsp(addr.toString(), country);
 					isp.getAddress().forEach(a -> isp2.addAddress(a));
 					isp = isp2;
+				}
+				else {
+					isp.addAddress(new NetAddr(addr.toString() + "/32"));
 				}
 			}
 		}
@@ -179,7 +179,8 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 							name = tmp;
 						}
 						else if (name.contains("Inc.") || name.contains("INC.")
-								|| name.contains("LTD.")
+								|| name.contains("LTD.") 
+								|| name.contains("Limited") 
 								|| name.contains("Corporation")
 								|| name.contains("Company")
 								|| name.contains("Telecom")
@@ -241,27 +242,28 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 				http.disconnect();
 			}
 		}
-/*
-		if (netaddr == null && name == null) {
-			log.info("addr=" + addr + ", isp=[" + netaddr + "," + name + "," + country + "]");
-			netaddr = addr.toString() + "/32";
-			name = netaddr;
-		}
-		else if (netaddr == null) {
-			log.info("addr=" + addr + ", isp=[" + netaddr + "," + name + "," + country + "]");
-			netaddr = addr.toString() + "/32";
-		}
-		else if (name == null) {
-			log.info("addr=" + addr + ", isp=[" + netaddr + "," + name + "," + country + "]");
-			name = addr.toString();
-		}
-*/
+
 		if (name == null) { }
 		else if (name.contains("DOCOMO")) {
 			name = "NTT DOCOMO, INC.";
 		}
 		else if (name.contains("GPRS/3G")) {
 			name = "Realmove Company Limited.";
+		}
+		else if (name.startsWith("CNC Group CHINA169")) {
+			name = "CNCGROUP China169 Backbone.";
+		}
+		else if (name.startsWith("Deutsche Telekom AG")) {
+			name = "Deutsche Telekom AG";
+		}
+		else if (name.startsWith("Asahi Net")) {
+			name = "Asahi Net Inc.";
+		}
+		else if (name.startsWith("Amazon")) {
+			name = "Amazon Technologies Inc.";
+		}
+		else if (name.startsWith("AT&T Wi-Fi Services")) {
+			name = "AT&T Wi-Fi Services.";
 		}
 
 		if ("route for Vodafone DSL customers".equals(name)) {
