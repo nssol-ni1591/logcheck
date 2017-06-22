@@ -64,8 +64,12 @@ public class Checker14 extends AbstractChecker<UserList<UserListSummary>> {
 					if (user == null) {
 //						log.warning("not found user: userid=" + userId);
 						userErrs.add(userId);
-						return;
-					} 
+//						return;
+						
+						// ログに存在するが、SSLテーブルに存在しない場合： 不正な状態を検知することができるようにuserlistに追加する
+						user = new UserListBean<UserListSummary>(userId, "-1", "2");
+						userlist.put(userId, user);
+					}
 
 					UserListSummary site = user.getSite(b.getAddr());
 					if (site == null) {

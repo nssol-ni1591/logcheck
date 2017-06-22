@@ -32,8 +32,8 @@ public class UserListSummary extends IspList implements Summary {
 	public UserListSummary(MagListIsp isp) {
 		super(isp.getProjId(), "利用申請");
 		this.siteName = isp.getSiteName();
-		this.projDelFlag = "-";
-		this.siteDelFlag = "-";
+		this.projDelFlag = "-1";
+		this.siteDelFlag = "-1";
 		isp.getAddress().forEach(addr -> addAddress(addr));
 	}
 
