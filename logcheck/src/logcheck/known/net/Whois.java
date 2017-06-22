@@ -119,6 +119,12 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 		if (isp.getName() == null || isp.getAddress().isEmpty()) {
 			System.err.println();
 			log.info("retry search. addr=" + addr);
+			
+			// sleep ...
+			try {
+				Thread.sleep(10 * 1000);
+			}
+			catch (InterruptedException ex) { }
 			isp = search(addr);
 
 			if (isp.getName() == null || isp.getAddress().isEmpty()) {
