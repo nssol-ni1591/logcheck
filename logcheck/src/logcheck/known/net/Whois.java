@@ -66,18 +66,6 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 
 	@PostConstruct
 	public void init() {
-		// 初期データの登録　=> TSVファイルから取得
-		/*
-//		put(new NetAddr(""), new KnownListIsp("", ""));
-		put(new NetAddr("127.0.0.0/8"), new KnownListIsp("SPECIAL-IPV4-LOOPBACK-IANA-RESERVED", "プライベート"));
-		put(new NetAddr("10.0.0.0/8"), new KnownListIsp("PRIVATE-ADDRESS-A_BLK-RFC1918-IANA-RESERVED", "プライベート"));
-		put(new NetAddr("172.16.0.0/12"), new KnownListIsp("PRIVATE-ADDRESS-B_BLK-RFC1918-IANA-RESERVED", "プライベート"));
-		put(new NetAddr("192.168.0.0/16"), new KnownListIsp("PRIVATE-ADDRESS-C_BLK-RFC1918-IANA-RESERVED", "プライベート"));
-
-		put(new NetAddr("70.62.16.0/20"), new KnownListIsp("Time Warner Cable Internet LLC", "US"));
-//		put(new NetAddr("65.192.0.0/11"), new KnownListIsp("CI Communications Services, Inc. d/b/a Verizon Business", "US"));
-//		put(new NetAddr("54.221.0.0 - 54.221.255.255"), new KnownListIsp("Amazon.com, Inc.", "US"));
-		*/
 	}
 
 	public String parse(Pattern[] ptns, String s) {
