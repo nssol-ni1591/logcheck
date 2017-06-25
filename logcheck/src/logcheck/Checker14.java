@@ -67,7 +67,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListSummary>> {
 //						return;
 						
 						// ログに存在するが、SSLテーブルに存在しない場合： 不正な状態を検知することができるようにuserlistに追加する
-						user = new UserListBean<UserListSummary>(userId, "-1", "2");
+						user = new UserListBean<UserListSummary>(userId, "-1", "-1");
 						userlist.put(userId, user);
 					}
 
