@@ -1,6 +1,5 @@
 package logcheck.user.db;
 
-import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
 import logcheck.annotations.WithElaps;
-import logcheck.isp.IspList;
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
 import logcheck.user.UserListSummary;
@@ -18,7 +16,7 @@ import logcheck.util.net.NetAddr;
 /*
  * VPNクライアント証明書が発行されているユーザの一覧を取得する
  */
-public class DbUserList<E extends IspList> extends LinkedHashMap<String, UserListBean<E>> implements UserList<E> {
+public class DbUserList extends LinkedHashMap<String, UserListBean> implements UserList {
 
 	private static final long serialVersionUID = 1L;
 	private static Logger log = Logger.getLogger(DbUserList.class.getName());
@@ -62,12 +60,12 @@ public class DbUserList<E extends IspList> extends LinkedHashMap<String, UserLis
 		super(4000);
 	}
 
-	public DbUserList<E> load(Class<E> clazz) throws Exception {
-		return load(SQL_ACTIVE_CERTIFICATION_ZUSER, clazz);
+	public UserList load() throws Exception {
+		return load(SQL_ACTIVE_CERTIFICATION_ZUSER);
 	}
 
 	@WithElaps
-	public DbUserList<E> load(String sql, Class<E> clazz) throws Exception {
+	public UserList load(String sql) throws Exception {
 		// Oracle JDBC Driverのロード
 		//Class.forName("oracle.jdbc.driver.OracleDriver");
 
@@ -95,20 +93,15 @@ public class DbUserList<E extends IspList> extends LinkedHashMap<String, UserLis
 					siteIp = "0.0.0.0";
 				}
 
-				UserListBean<E> b = this.get(userId);
+				UserListBean b = this.get(userId);
 				if (b == null) {
-					b = new UserListBean<>(userId, userDelFlag, validFlag);
+					b = new UserListBean(userId, userDelFlag, validFlag);
 					this.put(userId, b);
 				}
 				NetAddr siteAddr = new NetAddr(siteIp);
-				E site = b.getSite(projId, siteName);
+				UserListSummary site = b.getSite(projId, siteName);
 				if (site == null) {
-//					site = new UserListSummary(projId, siteName, siteAddr, projDelFlag, siteDelFlag);
-					Class<?>[] types = { String.class, String.class, NetAddr.class, String.class, String.class };
-					Object[] args = { projId, siteName, siteAddr, projDelFlag, siteDelFlag };
-					Constructor<E> c = clazz.getConstructor(types);
-					site = c.newInstance(args);
-
+					site = new UserListSummary(projId, siteName, siteAddr, projDelFlag, siteDelFlag);
 					b.addSite(site);
 				}
 				else {
@@ -122,9 +115,9 @@ public class DbUserList<E extends IspList> extends LinkedHashMap<String, UserLis
 
 	public static void main(String[] args) {
 		System.out.println("start UserList.main ...");
-		DbUserList<UserListSummary> map = new DbUserList<>();
+		DbUserList map = new DbUserList();
 		try {
-			map.load(UserListSummary.class);
+			map.load();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -132,7 +125,7 @@ public class DbUserList<E extends IspList> extends LinkedHashMap<String, UserLis
 
 		int ix = 0;
 		for (String userId : map.keySet()) {
-			UserListBean<UserListSummary> b = map.get(userId);
+			UserListBean b = map.get(userId);
 			String userDel = "0".equals(b.getUserDelFlag()) ? " " : "*";
 //			String siteDel = b.isDelFlag() ? "*" : " ";
 //			String siteDel = b.getSites().stream().filter(site -> site.isDelFlag()).findFirst().isPresent() ? "*" : " ";

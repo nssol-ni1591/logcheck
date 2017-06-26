@@ -7,19 +7,19 @@ import java.util.Set;
 import logcheck.isp.IspList;
 import logcheck.util.net.NetAddr;
 
-public class UserListBean<E extends IspList> {
+public class UserListBean {
 
 	private final String userId;
 	private final String userDelFlag;
 	private final String validFlag;
 
-	private Set<E> list;
+	private Set<UserListSummary> sites;
 
 	public UserListBean(String userId, String userDelFlag, String validFlag) {
 		this.userId = userId;
 		this.userDelFlag = userDelFlag;
 		this.validFlag = validFlag;
-		this.list = new HashSet<>();
+		this.sites = new HashSet<>();
 	}
 
 	public String getUserId() {
@@ -32,60 +32,26 @@ public class UserListBean<E extends IspList> {
 		return validFlag;
 	}
 
-	public Set<E> getSites() {
-		return list;
+	public Set<UserListSummary> getSites() {
+		return sites;
 	}
-	public void addSite(E site) {
-		list.add(site);
+	public void addSite(UserListSummary site) {
+		sites.add(site);
 	}
-	public E getSite(NetAddr addr) {
-		Optional<E> rc = list.stream()
-/*
-				.filter(site -> {
-					return site.getAddress().stream().filter(net -> net.within(addr)).findFirst().isPresent();
-				})
-*/
+	public UserListSummary getSite(NetAddr addr) {
+		Optional<UserListSummary> rc = sites.stream()
 				.filter(site -> site.getAddress().stream().anyMatch(net -> net.within(addr)))
 				.findFirst();
 		return rc.isPresent() ? rc.get() : null;
 	}
-	public E getSite(String projId, String name) {
-		Optional<E> rc = list.stream()
+	public UserListSummary getSite(String projId, String name) {
+		Optional<UserListSummary> rc = sites.stream()
 				.filter(site -> site.getCountry().equals(projId) && site.getName().equals(name))
 				.findFirst();
 		return rc.isPresent() ? rc.get() : null;
 	}
-/*
-	public boolean isDelFlag() {
-		for (E site : list) {
-			if (!site.isDelFlag()) {
-				return false;
-			}
-		}
-		return true;
-	}
-*/
-/*
-	public void update(AccessLogBean b, UserListSummary site) {
-		site.update(b.getDate());
-	}
-	public void update(AccessLogBean b, IspList isp) {
-		UserListSummary site = new UserListSummary(isp);
-		addSite(site);
-		site.update(b.getDate());
-	}
-	public void update(AccessLogBean b, MagListIsp isp) {
-		UserListSummary site = new UserListSummary(isp);
-		addSite(site);
-		site.update(b.getDate());
-	}
-*/
-/*
-	public int sumCount() {
-		return list.stream().mapToInt(site -> site.getCount()).sum();
-	}
-*/
+
 	public String toString() {
-		return String.format("userId=%s, del=%s, site=%s", userId, userDelFlag, list);
+		return String.format("userId=%s, del=%s, site=%s", userId, userDelFlag, sites);
 	}
 }

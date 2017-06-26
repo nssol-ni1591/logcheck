@@ -27,11 +27,11 @@ import logcheck.user.UserListSummary;
  * 
  */
 @UseChecker14
-public class Checker14 extends AbstractChecker<UserList<UserListSummary>> {
+public class Checker14 extends AbstractChecker<UserList> {
 
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
-	@Inject protected UserList<UserListSummary> userlist;
+	@Inject protected UserList userlist;
 
 	@Inject private Logger log;
 
@@ -40,13 +40,12 @@ public class Checker14 extends AbstractChecker<UserList<UserListSummary>> {
 	public Checker14 init(String knownfile) throws Exception {
 		this.knownlist.load(knownfile);
 		this.maglist.load();
-//		this.userlist.load();
-		this.userlist.load(UserListSummary.class);
+		this.userlist.load();
 		return this;
 	}
 
 	@Override
-	public UserList<UserListSummary> call(Stream<String> stream) throws Exception {
+	public UserList call(Stream<String> stream) throws Exception {
 		stream//.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
@@ -60,14 +59,14 @@ public class Checker14 extends AbstractChecker<UserList<UserListSummary>> {
 						userId = m.group(1);
 					}
 
-					UserListBean<UserListSummary> user = userlist.get(userId);
+					UserListBean user = userlist.get(userId);
 					if (user == null) {
 //						log.warning("not found user: userid=" + userId);
 						userErrs.add(userId);
 //						return;
-						
+
 						// ログに存在するが、SSLテーブルに存在しない場合： 不正な状態を検知することができるようにuserlistに追加する
-						user = new UserListBean<UserListSummary>(userId, "-1", "-1");
+						user = new UserListBean(userId, "-1", "-1");
 						userlist.put(userId, user);
 					}
 

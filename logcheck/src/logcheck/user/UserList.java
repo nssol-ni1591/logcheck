@@ -2,16 +2,14 @@ package logcheck.user;
 
 import java.util.Map;
 
-import logcheck.isp.IspList;
-
 /*
  * VPNクライアント証明書が発行されているユーザの一覧を取得する
  */
-public interface UserList<E extends IspList> extends Map<String, UserListBean<E>> {
+public interface UserList extends Map<String, UserListBean> {
 
-	UserList<E> load(Class<E> clazz) throws Exception;
+	UserList load() throws Exception;
 
-	UserList<E> load(String sql, Class<E> clazz) throws Exception;
+	UserList load(String sql) throws Exception;
 
 //	UserListBean<E> get(String userId);
 
