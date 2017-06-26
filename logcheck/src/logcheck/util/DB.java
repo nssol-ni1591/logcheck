@@ -24,6 +24,8 @@ public class DB {
 		String username = props.getProperty("username", "masterinfo");
 		String password = props.getProperty("password", "masterinfo");
 
+		host = System.getProperty("jdbc.connect.host", host);
+
 		String url = new StringBuilder("jdbc:oracle:thin:@")
 				.append(host)
 				.append(":")
