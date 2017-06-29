@@ -25,7 +25,7 @@ public class DbMagList extends LinkedHashMap<String, MagListIsp> implements MagL
 	private static final long serialVersionUID = 1L;
 
 	public static String SQL_ALL_GIP = 
-			"select p.prj_id, p.prj_name, s.site_name, g.site_gip"
+			"select p.prj_id, p.prj_name, s.site_name, g.site_gip, p.delete_flag, s.delete_flag"
 			+ " from mst_project p, sas_prj_site_info s, sas_site_gip g"
 			+ " where p.prj_row_id = s.prj_row_id and s.site_id = g.site_id"
 			+ " and g.site_gip != '非固定'"
@@ -97,9 +97,12 @@ public class DbMagList extends LinkedHashMap<String, MagListIsp> implements MagL
 				String projName = rs.getString(2);
 				String projSite = rs.getString(3);
 				String magIp = rs.getString(4);
+				// 追加：未利用ユーザ検索
+				String projDelFlag = rs.getString(5);
+				String siteDelFlag = rs.getString(6);
 
 				if (magIp.split("\\.").length == 4) {
-					MagListBean b = new MagListBean(projId, projName, projSite, magIp);
+					MagListBean b = new MagListBean(projId, projName, projSite, magIp, projDelFlag, siteDelFlag);
 
 					MagListIsp mp = this.get(b.getProjId());
 					if (mp == null) {

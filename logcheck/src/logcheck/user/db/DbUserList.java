@@ -6,72 +6,78 @@ import java.sql.ResultSet;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
+import javax.enterprise.inject.Alternative;
+
 import logcheck.annotations.WithElaps;
-import logcheck.user.UserList;
+import logcheck.site.SiteListBean;
+import logcheck.site.SiteListBeanImpl;
 import logcheck.user.UserListBean;
 import logcheck.user.UserListSummary;
+import logcheck.user.UserList;
 import logcheck.util.DB;
-import logcheck.util.net.NetAddr;
 
 /*
  * VPNクライアント証明書が発行されているユーザの一覧を取得する
  */
-public class DbUserList extends LinkedHashMap<String, UserListBean> implements UserList {
+@Alternative
+public class DbUserList extends LinkedHashMap<String, UserListBean> implements UserList<UserListBean> {
 
 	private static final long serialVersionUID = 1L;
 	private static Logger log = Logger.getLogger(DbUserList.class.getName());
 /*
-	public static String SQL_ACTIVE_USER = 
-			"select prj.prj_id, site.site_name, site_user.user_id"
-			+ " from mst_project prj, sas_prj_site_info site, sas_prj_site_user site_user"
-			+ "　where prj.delete_flag = '0'"
-			+ " and prj.prj_row_id = site.prj_row_id"
-			+ "　and site.site_type_cd = '02'"
-			+ " and site.site_id = site_user.site_id"
-			+ " and site.delete_flag = '0'"
-			+ "　and site_user.delete_flag = '0'";
-*/
-	public static String SQL_ACTIVE_CERTIFICATION_ZUSER = 
-			"select l.user_id , p.prj_id, s.site_name, g.site_gip, p.delete_flag,　s.delete_flag, u.delete_flag, l.valid_flg"
-//			"select l.user_id , p.prj_id, s.site_name, g.site_gip, s.site_type_cd, s.connect_type_cd, p.delete_flag,　s.delete_flag, u.delete_flag, l.valid_flg"
-//			"select l.user_id , p.prj_id, s.site_name"
-			+ " from mst_project p, sas_prj_site_info s, sas_prj_site_user u, user_ssl_info l, sas_site_gip g"
-			+ " where l.user_id like 'Z%'"
+	public static String SQL_ZUSER = 
+			"select u.site_id, u.user_id, u.delete_flag, l.valid_flg"
+			+ " from sas_prj_site_user u, user_ssl_info l"
+			+ " where u.user_id like 'Z%'"
 //	証明書が有効なユーザに関する情報を取得する。その際、過去のPRJは考慮しない
-//			+ " and p.delete_flag = '0'"
-//			+ " and s.delete_flag = '0'"
 //			+ " and u.delete_flag = '0'"
-			+ " and p.prj_row_id = s.prj_row_id"
-			+ " and s.site_id = u.site_id"
 			+ " and u.user_id = l.user_id"
-			+ " and s.site_id = g.site_id"
-// 未利用ユーザを確認する時点ですでに無効になっているとエラーになるための処置　->エラーにしなければよいか?
-//			+ " and l.valid_flg = '1'"
-//			+ " and g.site_gip != '非固定'"
-			+ " and g.site_gip != '追加不要'"
 			+ " order by"
-			+ "  p.delete_flag"
-			+ ", s.delete_flag"
-			+ ", u.delete_flag"
-			+ ", l.user_id"
+			+ "  u.delete_flag"
+			+ ", u.user_id"
 	;
+*/
+	public static String SQL_ZUSER = 
+			"select p.prj_id, p.delete_flag, s.site_id, s.site_name, s.delete_flag, g.site_gip"
+					+ " , u.user_id, u.delete_flag, l.valid_flg"
+					+ " from mst_project p"
+					+ " , sas_prj_site_info s left outer join sas_site_gip  g on s.site_id = g.site_id"
+//					+ " , sas_prj_site_user u left outer join user_ssl_info l on u.user_id = l.user_id"
+					+ " , sas_prj_site_user u, user_ssl_info l"
+					+ " where p.prj_row_id = s.prj_row_id"
+					+ " and s.site_id = u.site_id"
+					+ " and u.user_id = l.user_id"
+					+ " and u.user_id like 'Z%'"
+//					+ " and u.user_id like 'Z00005'"
+//					+ " order by prj_id"
+					;
 
 	public DbUserList() {
 		super(4000);
 	}
-
-	public UserList load() throws Exception {
-		return load(SQL_ACTIVE_CERTIFICATION_ZUSER);
+	/*
+	@PostConstruct
+	private void init() {
+		// かっこ悪いけど ... いい方法があれば教えて
+		if (sitelist == null) {
+			sitelist = new SiteList();
+		}
+		try {
+			sitelist.load();
+		}
+		catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+	*/
+	public DbUserList load() throws Exception {
+		return load(SQL_ZUSER);
 	}
 
 	@WithElaps
-	public UserList load(String sql) throws Exception {
-		// Oracle JDBC Driverのロード
-		//Class.forName("oracle.jdbc.driver.OracleDriver");
-
+	public DbUserList load(String sql) throws Exception {
+		sql = SQL_ZUSER;
 		try (	// Oracleに接続
-				//Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@172.31.247.137:1521/sdcdb01", "masterinfo", "masterinfo");
-				//Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@172.31.247.137:1521:sdcdb011", "masterinfo", "masterinfo");
 				Connection conn = DB.createConnection();
 				// ステートメントを作成
 				PreparedStatement stmt = conn.prepareStatement(sql);
@@ -80,41 +86,46 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 			ResultSet rs = stmt.executeQuery();
 			// 問合せ結果の表示
 			while (rs.next()) {
-				String userId = rs.getString(1);
-				String projId = rs.getString(2);
-				String siteName = rs.getString(3);
-				String siteIp = rs.getString(4);
-				String projDelFlag = rs.getString(5);
-				String siteDelFlag = rs.getString(6);
-				String userDelFlag = rs.getString(7);
-				String validFlag = rs.getString(8);
+				String projId = rs.getString(1);
+				String projDelFlag = rs.getString(2);
 
-				if ("非固定".equals(siteIp)) {
-					siteIp = "0.0.0.0";
+				String siteId = rs.getString(3);
+				String siteName = rs.getString(4);
+				String siteDelFlag = rs.getString(5);
+				String globalIp = rs.getString(6);
+
+				String userId = rs.getString(7);
+				String userDelFlag = rs.getString(8);
+				String validFlag = rs.getString(9);
+
+				UserListBean bean = this.get(userId);
+				if (bean == null) {
+					bean = new UserListBean(userId, userDelFlag, validFlag);
+					this.put(userId, bean);
 				}
 
-				UserListBean b = this.get(userId);
-				if (b == null) {
-					b = new UserListBean(userId, userDelFlag, validFlag);
-					this.put(userId, b);
+				if (globalIp == null
+						|| "非固定".equals(globalIp)
+						|| "追加不要".equals(globalIp)) {
+					globalIp = "0.0.0.0";	// IPアドレスとしては不正なので一致しない for 専用線、ISP経由
 				}
-				NetAddr siteAddr = new NetAddr(siteIp);
-				UserListSummary site = b.getSite(projId, siteName);
-				if (site == null) {
-					site = new UserListSummary(projId, siteName, siteAddr, projDelFlag, siteDelFlag);
-					b.addSite(site);
+
+//				UserListSummary summary = bean.getSite(new NetAddr(globalIp));
+				UserListSummary summary = bean.getSite(siteId);
+				if (summary == null) {
+					SiteListBean site = new SiteListBeanImpl(siteId, siteName, siteDelFlag, projId, projDelFlag);
+					summary = new UserListSummary(site);
+					bean.addSite(summary);
 				}
-				else {
-					site.addAddress(siteAddr);
-				}
-				log.fine(b.toString());		// デバックmainでは使用不可
+				summary.addAddress(globalIp);
+				log.fine(bean.toString());
 			}
 		}
 		return this;
 	}
 
 	public static void main(String[] args) {
-		System.out.println("start UserList.main ...");
+		System.out.println("start DbUserList.main ...");
 		DbUserList map = new DbUserList();
 		try {
 			map.load();
@@ -124,17 +135,17 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 		}
 
 		int ix = 0;
+		int iy = 0;
 		for (String userId : map.keySet()) {
 			UserListBean b = map.get(userId);
-			String userDel = "0".equals(b.getUserDelFlag()) ? " " : "*";
-//			String siteDel = b.isDelFlag() ? "*" : " ";
-//			String siteDel = b.getSites().stream().filter(site -> site.isDelFlag()).findFirst().isPresent() ? "*" : " ";
-			String siteDel = b.getSites().stream().allMatch(site -> site.isDelFlag()) ? "*" : " ";
-			System.out.println(userDel + siteDel + " " + b);
-			ix += 1;
+			for (UserListSummary sum : b.getSites()) {
+				System.out.println("userId=" + userId + " (" + b.getValidFlag() + "), sum=[" + sum + "]");
+				ix += 1;
+			}
+			iy += 1;
 		}
-		System.out.println("ix=" + ix);
-		System.out.println("UserList.main ... end");
+		System.out.println("user.count=" + iy + ", gip.count=" + ix);
+		System.out.println("DbUserList.main ... end");
 	}
 
 }

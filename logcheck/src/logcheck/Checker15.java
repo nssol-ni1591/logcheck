@@ -69,7 +69,7 @@ public class Checker15 extends Checker14 {
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
 			Checker15 application = container.instance().select(Checker15.class).get();
-			application.init(argv[0]).start(argv, 1);
+			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace(System.err);

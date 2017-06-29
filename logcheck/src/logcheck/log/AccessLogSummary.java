@@ -4,7 +4,7 @@ import logcheck.isp.Isp;
 import logcheck.util.Summary;
 import logcheck.util.net.NetAddr;
 
-public class AccessLogSummary implements Comparable<AccessLogSummary>, Summary {
+public class AccessLogSummary implements Comparable<AccessLogSummary>, Summary<AccessLogBean> {
 
 	private final NetAddr addr;
 	private final String usrId;
@@ -89,6 +89,7 @@ public class AccessLogSummary implements Comparable<AccessLogSummary>, Summary {
 		this.detail = detail;
 	}
 
+	@Override
 	public synchronized void update(AccessLogBean b) {
 		String date = b.getDate();
 		if (firstDate.compareTo(date) > 0) {
@@ -103,6 +104,9 @@ public class AccessLogSummary implements Comparable<AccessLogSummary>, Summary {
 		}
 		this.count += 1;
 	}
+//	public void update(String date) {
+//		this.lastDate = date;
+//	}
 	public void addCount() {
 		this.count += 1;
 	}

@@ -27,4 +27,5 @@ public class IspMap<V> extends IspBean<TreeMap<NetAddr, V>> {
 	public Collection<V> values() {
 		return getRef().values();
 	}
+
 }

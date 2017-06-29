@@ -4,7 +4,7 @@ import logcheck.isp.Isp;
 import logcheck.util.Summary;
 import logcheck.util.net.NetAddr;
 
-public class FwLogSummary implements Comparable<FwLogSummary>, Summary {
+public class FwLogSummary implements Comparable<FwLogSummary>, Summary<FwLogBean> {
 
 	private String firstDate;
 	private final String lastDate;

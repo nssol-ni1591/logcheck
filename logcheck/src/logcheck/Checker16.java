@@ -3,8 +3,8 @@ package logcheck;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
+import logcheck.user.UserListBean;
 import logcheck.user.UserList;
-import logcheck.user.UserListSummary;
 
 /*
  * 未利用ユーザ検索：
@@ -28,7 +28,7 @@ public class Checker16 extends Checker14 {
 	 * とのことなので、効率は悪いが、Excelで並び替え想定なのでソートは必要なし。各削除フラムの情報も出力する。
 	 * @see logcheck.Checker14#report(logcheck.user.UserList)
 	 */
-	public void report(UserList<UserListSummary> map) {
+	public void report(UserList<UserListBean> map) {
 		System.out.println("ユーザID\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除");
 		map.values().stream()
 			// ツール実行時点で証明書が無効ならば、利用状況を確認する必要がないので対象外にする
@@ -61,7 +61,7 @@ public class Checker16 extends Checker14 {
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
 			Checker16 application = container.instance().select(Checker16.class).get();
-			application.init(argv[0]).start(argv, 1);
+			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace(System.err);

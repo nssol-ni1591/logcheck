@@ -7,8 +7,11 @@
 		<!-- 
 		<class>logcheck.mag.tsv.TsvMagList</class>
 		<class>logcheck.known.tsv.TsvKnownList</class>
+		<class>logcheck.user.db.DbUserList</class>
+		<class>logcheck.user.ssl.SSLUserList</class>
 		 -->
 		<class>logcheck.mag.db.DbMagList</class>
 		<class>logcheck.known.net.Whois</class>
+		<class>logcheck.user.ssl.SSLUserList</class>
 	</alternatives>
 </beans>

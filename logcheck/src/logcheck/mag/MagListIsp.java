@@ -6,24 +6,18 @@ public class MagListIsp extends IspList {
 
 	private final String projName;
 	private final String siteName;
-/*
-	public MagListIsp(String projId) {
-		super(projId, "利用申請");
-		this.siteName = "";
-	}
-*/
+	// 追加：未利用ユーザ検索
+	private final String projDelFlag;
+	private final String siteDelFlag;
+
 	public MagListIsp(MagListBean b) {
 		super(b.getProjId(), "利用申請");
 		this.projName = b.getProjName();
 		this.siteName = b.getSiteName();
+		this.projDelFlag = b.getProjDelFlag();
+		this.siteDelFlag = b.getSiteDelFlag();
 	}
-/*
-	public MagListIsp(String projId, String siteName) {
-		super(projId, "利用申請");
-		this.projName = "";
-		this.siteName = siteName;
-	}
-*/
+
 	public String getProjId() {
 		return super.getName();
 	}
@@ -32,6 +26,12 @@ public class MagListIsp extends IspList {
 	}
 	public String getSiteName() {
 		return siteName;
+	}
+	public String getProjDelFlag() {
+		return projDelFlag;
+	}
+	public String getSiteDelFlag() {
+		return siteDelFlag;
 	}
 
 }

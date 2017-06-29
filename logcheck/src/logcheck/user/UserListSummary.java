@@ -1,65 +1,31 @@
 package logcheck.user;
 
+import java.util.Set;
+
 import logcheck.isp.IspList;
 import logcheck.mag.MagListIsp;
+import logcheck.site.SiteListBean;
+import logcheck.site.SiteListKnownIsp;
+import logcheck.site.SiteListMagIsp;
 import logcheck.util.Summary;
 import logcheck.util.net.NetAddr;
 
-public class UserListSummary extends IspList implements Summary {
+public class UserListSummary implements Summary<String> {
 
-	private final String siteName;
-	private final String projDelFlag;
-	private final String siteDelFlag;
+	private final SiteListBean site;
 
 	private String firstDate = "";
 	private String lastDate = "";
-	private int count;
+	private int count = 0;
 
-	public UserListSummary(String projId, String siteName, NetAddr siteAddr, String projDelFlag, String siteDelFlag) {
-		super(projId, "利用申請");
-		this.siteName = siteName;
-		this.projDelFlag = projDelFlag;
-		this.siteDelFlag = siteDelFlag;
-		super.addAddress(siteAddr);
-	}
-	public UserListSummary(IspList isp) {
-		super(isp.getName(), isp.getCountry());
-		this.siteName = "-";
-		this.projDelFlag = "-";
-		this.siteDelFlag = "-";
-		isp.getAddress().forEach(addr -> addAddress(addr));
+	public UserListSummary(SiteListBean site) {
+		this.site = site;
 	}
 	public UserListSummary(MagListIsp isp) {
-		super(isp.getProjId(), "利用申請");
-		this.siteName = isp.getSiteName();
-		this.projDelFlag = "-1";
-		this.siteDelFlag = "-1";
-		isp.getAddress().forEach(addr -> addAddress(addr));
+		this.site = new SiteListMagIsp(isp);
 	}
-
-	public String getCountry() {
-		return super.getCountry();
-	}
-	public String getProjId() {
-		return super.getName();
-	}
-	public String getSiteName() {
-		return siteName;
-	}
-	public String getProjDelFlag() {
-		return projDelFlag;
-	}
-	public String getSiteDelFlag() {
-		return siteDelFlag;
-	}
-	public boolean isDelFlag() {
-		if (!projDelFlag.equals("0")) {
-			return true;
-		}
-		if (!siteDelFlag.equals("0")) {
-			return true;
-		}
-		return false;
+	public UserListSummary(IspList isp) {
+		this.site = new SiteListKnownIsp(isp);
 	}
 
 	public String getFirstDate() {
@@ -72,6 +38,41 @@ public class UserListSummary extends IspList implements Summary {
 	public int getCount() {
 		return count;
 	}
+
+	public String getCountry() {
+		return "利用申請";
+	}
+	public String getProjId() {
+//		return site == null ? null : site.getProjId();
+		return site.getProjId();
+	}
+	public String getSiteId() {
+		return site.getSiteId();
+	}
+	public String getSiteName() {
+//		return site == null ? null : site.getSiteName();
+		return site.getSiteName();
+	}
+	public String getProjDelFlag() {
+//		return site == null ? "_" : site.getProjDelFlag();
+		return site.getProjDelFlag();
+	}
+	public String getSiteDelFlag() {
+//		return site == null ? "_" : site.getSiteDelFlag();
+		return site.getSiteDelFlag();
+	}
+
+	public Set<NetAddr> getAddress() {
+//		return site == null ? new HashSet<>() : site.getAddress();
+		return site.getAddress();
+	}
+	public void addAddress(String addr) {
+		site.addAddress(addr);
+	}
+	public boolean within(NetAddr addr) {
+//		return site == null ? false : site.getAddress().stream().anyMatch(net -> net.within(addr));
+		return site.getAddress().stream().anyMatch(net -> net.within(addr));
+	}
 	public void update(String date) {
 		lastDate = date;
 		if ("".equals(firstDate)) {
@@ -80,8 +81,13 @@ public class UserListSummary extends IspList implements Summary {
 		count += 1;
 	}
 
+	@Override
 	public String toString() {
-		return String.format("proj=%s site=%s, del=%s%s addr=%s", getProjId(), getSiteName(), projDelFlag, siteDelFlag, getAddress());
+		return String.format("proj=%s, site=%s, del=%s%s, addr=%s",
+				getProjId(), getSiteName(), getProjDelFlag(), getSiteDelFlag(),
+//				site == null ? "[]" : site.getAddress()
+				site.getAddress()
+				);
 	}
 
 }
