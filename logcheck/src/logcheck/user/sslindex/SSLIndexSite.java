@@ -5,60 +5,62 @@ import logcheck.mag.MagListIsp;
 import logcheck.util.Summary;
 import logcheck.util.net.NetAddr;
 
-public class SSLIndexSite implements Summary<String> {
+public class SSLIndexSite extends Summary<IspList> /*implements Summary<String>*/ {
 
-	private final IspList isp;
+//	private final IspList isp;
 
-	private String firstDate = "";
-	private String lastDate = "";
-	private int count;
+//	private String firstDate = "";
+//	private String lastDate = "";
+//	private int count;
 
 	public SSLIndexSite(IspList isp) {
-		this.isp = isp;
-		this.count = 0;
+		super(isp);
+//		this.isp = isp;
+//		this.count = 0;
 	}
 
 	public IspList getIsp() {
-		return isp;
+//		return isp;
+		return getRef();
 	}
 
-	public String getFirstDate() {
-		return firstDate;
-	}
-	public String getLastDate() {
-		return lastDate;
-	}
-	@Override
-	public int getCount() {
-		return count;
-	}
+//	public String getFirstDate() {
+//		return firstDate;
+//	}
+//	public String getLastDate() {
+//		return lastDate;
+//	}
+//	@Override
+//	public int getCount() {
+//		return count;
+//	}
 
 	public String getCountry() {
-		return isp.getCountry();
+		return getRef().getCountry();
 	}
 	public String getProjId() {
-		return isp.getName();
+		return getRef().getName();
 	}
 	public String getSiteName() {
-		return isp instanceof MagListIsp ? ((MagListIsp)isp).getSiteName() : "-";
+		return getRef() instanceof MagListIsp ? ((MagListIsp)getRef()).getSiteName() : "-";
 	}
 	public String getProjDelFlag() {
-		return isp instanceof MagListIsp ? ((MagListIsp)isp).getProjDelFlag() : "-1";
+		return getRef() instanceof MagListIsp ? ((MagListIsp)getRef()).getProjDelFlag() : "-1";
 	}
 	public String getSiteDelFlag() {
-		return isp instanceof MagListIsp ? ((MagListIsp)isp).getSiteDelFlag() : "-1";
+		return getRef() instanceof MagListIsp ? ((MagListIsp)getRef()).getSiteDelFlag() : "-1";
 	}
 
 	public boolean within(NetAddr addr) {
-		return isp.getAddress().stream().anyMatch(net -> net.within(addr));
+		return getRef().getAddress().stream().anyMatch(net -> net.within(addr));
 	}
-	public void update(String date) {
-		lastDate = date;
-		if ("".equals(firstDate)) {
-			firstDate = date;
-		}
-		count += 1;
-	}
+//	public void update(String date) {
+//		lastDate = date;
+//		if ("".equals(firstDate)) {
+//			firstDate = date;
+//		}
+//		count += 1;
+//	}
 	public boolean isDelFlag() {
 		if (!"0".equals(getProjDelFlag())) {
 			return true;
@@ -71,7 +73,7 @@ public class SSLIndexSite implements Summary<String> {
 
 	public String toString() {
 		return String.format("proj=%s site=%s, del=%s%s addr=%s",
-				getProjId(), getSiteName(), getProjDelFlag(), getSiteDelFlag(), isp.getAddress());
+				getProjId(), getSiteName(), getProjDelFlag(), getSiteDelFlag(), getRef().getAddress());
 	}
 
 }

@@ -76,7 +76,8 @@ public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 						list.add(sum);
 					}
 					else {
-						sum.update(b);
+//						sum.update(b);
+						sum.update(b.getDate());
 					}
 				});
 		return list;

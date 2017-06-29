@@ -10,84 +10,52 @@ import logcheck.site.SiteListMagIsp;
 import logcheck.util.Summary;
 import logcheck.util.net.NetAddr;
 
-public class UserListSite implements Summary<String> {
-
-	private final SiteListBean site;
-
-	private String firstDate = "";
-	private String lastDate = "";
-	private int count = 0;
+public class UserListSite extends Summary<SiteListBean> {
 
 	public UserListSite(SiteListBean site) {
-		this.site = site;
+		super(site);
 	}
 	public UserListSite(MagListIsp isp) {
-		this.site = new SiteListMagIsp(isp);
+		super(new SiteListMagIsp(isp));
 	}
 	public UserListSite(IspList isp) {
-		this.site = new SiteListKnownIsp(isp);
-	}
-
-	public String getFirstDate() {
-		return firstDate;
-	}
-	public String getLastDate() {
-		return lastDate;
-	}
-	@Override
-	public int getCount() {
-		return count;
-	}
-	@Override
-	public void update(String date) {
-		lastDate = date;
-		if ("".equals(firstDate)) {
-			firstDate = date;
-		}
-		count += 1;
+		super(new SiteListKnownIsp(isp));
 	}
 
 	public String getCountry() {
-		return site.getCountry();
+		return getRef().getCountry();
 	}
 	public String getProjId() {
-//		return site == null ? null : site.getProjId();
-		return site.getProjId();
+		return getRef().getProjId();
 	}
 	public String getSiteId() {
-		return site.getSiteId();
+		return getRef().getSiteId();
 	}
 	public String getSiteName() {
-//		return site == null ? null : site.getSiteName();
-		return site.getSiteName();
+		return getRef().getSiteName();
 	}
 	public String getProjDelFlag() {
-//		return site == null ? "_" : site.getProjDelFlag();
-		return site.getProjDelFlag();
+		return getRef().getProjDelFlag();
 	}
 	public String getSiteDelFlag() {
-//		return site == null ? "_" : site.getSiteDelFlag();
-		return site.getSiteDelFlag();
+		return getRef().getSiteDelFlag();
 	}
 
 	public Set<NetAddr> getAddress() {
-//		return site == null ? new HashSet<>() : site.getAddress();
-		return site.getAddress();
+		return getRef().getAddress();
 	}
 	public void addAddress(String addr) {
-		site.addAddress(addr);
+		getRef().addAddress(addr);
 	}
 	public boolean within(NetAddr addr) {
-//		return site == null ? false : site.getAddress().stream().anyMatch(net -> net.within(addr));
-		return site.getAddress().stream().anyMatch(net -> net.within(addr));
+		return getRef().getAddress().stream().anyMatch(net -> net.within(addr));
 	}
 
 	@Override
 	public String toString() {
 		return String.format("proj=%s, site=%s, del=%s%s, addr=%s",
 				getProjId(), getSiteName(), getProjDelFlag(), getSiteDelFlag(),
-//				site == null ? "[]" : site.getAddress()
-				site.getAddress()
+				getRef().getAddress()
 				);
 	}
 
