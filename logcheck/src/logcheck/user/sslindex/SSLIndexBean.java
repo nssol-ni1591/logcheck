@@ -1,7 +1,5 @@
 package logcheck.user.sslindex;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
@@ -10,7 +8,8 @@ import javax.inject.Inject;
 public class SSLIndexBean {
 
 	private final String flag;
-	private final LocalDateTime expire;
+//	private final LocalDateTime expire;
+	private final String expire;
 	private final String revoce;
 	private final String serial;
 	private final String filename;
@@ -18,7 +17,7 @@ public class SSLIndexBean {
 
 	@Inject private Logger log;
 
-	private static final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyMMddHHmmss");
+	//private static final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyMMddHHmmss");
 
 	public SSLIndexBean(String flag
 			, String expire
@@ -28,8 +27,10 @@ public class SSLIndexBean {
 			, String userId
 			) {
 		this.flag = "V".equals(flag) ? "1" : "0";
-		this.expire = LocalDateTime.parse(expire.substring(0, expire.length() - 1), format);
-		this.revoce = revoce; //LocalDateTime.parse("".equals(revoce) ? "" : revoce.substring(0, revoce.length() - 1), format);
+//		this.expire = LocalDateTime.parse(expire.substring(0, expire.length() - 1), format);
+//		this.revoce = "".equals(revoce) ? "" : LocalDateTime.parse(revoce.substring(0, revoce.length() - 1), format);
+		this.expire = expire;
+		this.revoce = revoce;
 		this.serial = serial;
 		this.filename = filename;
 		this.userId = userId;
@@ -42,11 +43,13 @@ public class SSLIndexBean {
 	public String getFlag() {
 		return flag;
 	}
-	public LocalDateTime getExpire() {
+	public String getExpire() {
 		return expire;
+//		return "".equals(expire) ? null : LocalDateTime.parse(expire.substring(0, expire.length() - 1), format);
 	}
 	public String getRevoce() {
 		return revoce;
+//		return "".equals(revoce) ? null : LocalDateTime.parse(revoce.substring(0, revoce.length() - 1), format);
 	}
 	public String getSerial() {
 		return serial;

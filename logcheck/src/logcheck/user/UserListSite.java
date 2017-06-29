@@ -38,9 +38,17 @@ public class UserListSite implements Summary<String> {
 	public int getCount() {
 		return count;
 	}
+	@Override
+	public void update(String date) {
+		lastDate = date;
+		if ("".equals(firstDate)) {
+			firstDate = date;
+		}
+		count += 1;
+	}
 
 	public String getCountry() {
-		return "利用申請";
+		return site.getCountry();
 	}
 	public String getProjId() {
 //		return site == null ? null : site.getProjId();
@@ -72,13 +80,6 @@ public class UserListSite implements Summary<String> {
 	public boolean within(NetAddr addr) {
 //		return site == null ? false : site.getAddress().stream().anyMatch(net -> net.within(addr));
 		return site.getAddress().stream().anyMatch(net -> net.within(addr));
-	}
-	public void update(String date) {
-		lastDate = date;
-		if ("".equals(firstDate)) {
-			firstDate = date;
-		}
-		count += 1;
 	}
 
 	@Override

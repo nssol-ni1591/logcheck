@@ -139,7 +139,7 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 							String userDelFlag = rs.getString(3);
 
 							if (bean == null) {
-								bean = new UserListBean(b.getUserId(), userDelFlag, b.getFlag());
+								bean = new UserListBean(b, userDelFlag);
 								this.put(b.getUserId(), bean);
 							}
 

@@ -66,7 +66,7 @@ public class DbMagList extends LinkedHashMap<String, MagListIsp> implements MagL
 	}
 
 	/*
-	 * tsvファイル方式斧互換性のためのメソッド定義
+	 * tsvファイル方式の互換性のためのメソッド定義
 	 * 引数のmagfileは無視される
 	 * @see logcheck.mag.MagList#load()
 	 */

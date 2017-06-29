@@ -1,5 +1,7 @@
 package logcheck.user;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -12,13 +14,28 @@ public class UserListBean implements Comparable<UserListBean> {
 	private final String userId;
 	private final String userDelFlag;
 	private String validFlag;
+	private String expire;
+	private String revoce;
 
 	private final Set<UserListSite> sites;
 
+	private static final DateTimeFormatter format1 = DateTimeFormatter.ofPattern("yyMMddHHmmss");
+	private static final DateTimeFormatter format2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+	public UserListBean(SSLIndexBean b, String userDelFlag) {
+		this.userId = b.getUserId();
+		this.userDelFlag = userDelFlag;
+		this.validFlag = b.getFlag();
+		this.expire = b.getExpire();
+		this.revoce = b.getRevoce();
+		this.sites = new HashSet<>();
+	}
 	public UserListBean(String userId, String userDelFlag, String validFlag) {
 		this.userId = userId;
 		this.userDelFlag = userDelFlag;
 		this.validFlag = validFlag;
+		this.expire = "";
+		this.revoce = "";
 		this.sites = new HashSet<>();
 	}
 
@@ -30,6 +47,20 @@ public class UserListBean implements Comparable<UserListBean> {
 	}
 	public String getValidFlag() {
 		return validFlag;
+	}
+	public String getExpire() {
+		if ("".equals(expire)) {
+			return "";
+		}
+		LocalDateTime d = LocalDateTime.parse(expire.substring(0, expire.length() - 1), format1);
+		return d.format(format2);
+	}
+	public String getRevoce() {
+		if ("".equals(revoce)) {
+			return "";
+		}
+		LocalDateTime d = LocalDateTime.parse(revoce.substring(0, revoce.length() - 1), format1);
+		return d.format(format2);
 	}
 
 	public Set<UserListSite> getSites() {
@@ -59,6 +90,8 @@ public class UserListBean implements Comparable<UserListBean> {
 	}
 	public void update(SSLIndexBean b) {
 		validFlag = b.getFlag();
+		expire = b.getExpire();
+		revoce = b.getRevoce();
 	}
 
 	public String toString() {

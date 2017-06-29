@@ -21,6 +21,7 @@ public interface SiteListBean {
 	default String getProjDelFlag() {
 		return "-1";
 	}
+
 	default String getCountry() {
 		return "-";
 	}

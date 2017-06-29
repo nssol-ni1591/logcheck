@@ -93,7 +93,6 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 						}
 					}
 					else {
-//						user.update(b, site);
 						site.update(b.getDate());
 					}
 				});
@@ -126,10 +125,10 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 				});
 		});
 		*/
-		System.out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数");
+		System.out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数\t失効日時");
 		userlist.values().stream()
-				.forEach(user -> {
-					user.getSites().forEach(site -> {
+			.forEach(user -> {
+				user.getSites().forEach(site -> {
 						System.out.println(
 								new StringBuilder(user.getUserId())
 										.append("\t").append(site.getCountry())
@@ -141,7 +140,9 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 										.append("\t").append(user.getValidFlag())
 										.append("\t").append(site.getFirstDate())
 										.append("\t").append(site.getLastDate())
-										.append("\t").append(site.getCount()));
+										.append("\t").append(site.getCount())
+										.append("\t").append(user.getRevoce())
+								);
 					});
 				});
 	}
