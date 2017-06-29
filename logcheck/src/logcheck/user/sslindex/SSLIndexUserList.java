@@ -18,6 +18,7 @@ public class SSLIndexUserList extends HashMap<String, SSLIndexUser> implements U
 
 	private static final long serialVersionUID = 1L;
 
+// 正規化表現ではうまく処理できないのでTSV形式ということもありsplitで処理する
 //	public static String PATTERN = "(\\w)\t(\\w+)\t(\\w*)\t(\\w+)\t(\\w*)\t/C=JP/ST=TOKYO/L=CHUOU-KU/O=sdc/OU=nssol/CN=(\\w+)";
 //	public static String PATTERN = "(\\w)\t(\\w+)\t(\\w+)?\t(\\w+)\t(\\w+)\t(\\S+)";
 

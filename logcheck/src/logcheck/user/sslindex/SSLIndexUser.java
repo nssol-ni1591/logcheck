@@ -7,10 +7,8 @@ import logcheck.util.net.NetAddr;
 
 public class SSLIndexUser extends LinkedHashSet<SSLIndexSite> {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+
 	private final String userId;
 	private final String flag;
 
