@@ -11,6 +11,6 @@ public interface UserList<E> extends Map<String, E> {
 
 	UserList<E> load(String sql) throws Exception;
 
-//	E get(String userId);
+	E get(Object userId);
 
 }
