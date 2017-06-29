@@ -13,7 +13,7 @@ public class UserListBean implements Comparable<UserListBean> {
 	private final String userDelFlag;
 	private String validFlag;
 
-	private final Set<UserListSummary> sites;
+	private final Set<UserListSite> sites;
 
 	public UserListBean(String userId, String userDelFlag, String validFlag) {
 		this.userId = userId;
@@ -32,27 +32,27 @@ public class UserListBean implements Comparable<UserListBean> {
 		return validFlag;
 	}
 
-	public Set<UserListSummary> getSites() {
+	public Set<UserListSite> getSites() {
 		return sites;
 	}
-	public void addSite(UserListSummary site) {
+	public void addSite(UserListSite site) {
 		sites.add(site);
 	}
 
-	public UserListSummary getSite(String siteId) {
-		Optional<UserListSummary> rc = sites.stream()
+	public UserListSite getSite(String siteId) {
+		Optional<UserListSite> rc = sites.stream()
 				.filter(site -> siteId.equals(site.getSiteId()))
 				.findFirst();
 		return rc.isPresent() ? rc.get() : null;
 	}
-	public UserListSummary getSite(NetAddr addr) {
-		Optional<UserListSummary> rc = sites.stream()
+	public UserListSite getSite(NetAddr addr) {
+		Optional<UserListSite> rc = sites.stream()
 				.filter(site -> site.getAddress().stream().anyMatch(net -> net.within(addr)))
 				.findFirst();
 		return rc.isPresent() ? rc.get() : null;
 	}
-	public UserListSummary getSite(String projId, String siteName) {
-		Optional<UserListSummary> rc = sites.stream()
+	public UserListSite getSite(String projId, String siteName) {
+		Optional<UserListSite> rc = sites.stream()
 				.filter(site -> site.getProjId().equals(projId) && site.getSiteName().equals(siteName))
 				.findFirst();
 		return rc.isPresent() ? rc.get() : null;

@@ -20,7 +20,7 @@ import javax.sql.rowset.Predicate;
 import logcheck.annotations.WithElaps;
 import logcheck.site.SiteList;
 import logcheck.site.SiteListBean;
-import logcheck.user.UserListSummary;
+import logcheck.user.UserListSite;
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
 import logcheck.user.sslindex.SSLIndexBean;
@@ -143,10 +143,10 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 								this.put(b.getUserId(), bean);
 							}
 
-							SiteListBean site = sitelist.get(siteId);
-							if (site != null) {
-								UserListSummary summary = new UserListSummary(site);
-								bean.addSite(summary);
+							SiteListBean siteBean = sitelist.get(siteId);
+							if (siteBean != null) {
+								UserListSite site = new UserListSite(siteBean);
+								bean.addSite(site);
 //								log.info(site.toString());
 							}
 							else {
@@ -162,7 +162,7 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 
 				}
 				else {
-//					log.warning("(SSLインデックス): summary=" + summary);
+//					log.warning("(SSLインデックス): site=" + site);
 					bean.update(b);
 				}
 			});
@@ -215,7 +215,7 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 		int iy = 0;
 		for (String userId : map.keySet()) {
 			UserListBean b = map.get(userId);
-			for (UserListSummary sum : b.getSites()) {
+			for (UserListSite sum : b.getSites()) {
 				System.out.println("userId=" + userId + " (" + b.getValidFlag() + "), sum=[" + sum + "]");
 				ix += 1;
 			}

@@ -12,7 +12,7 @@ import logcheck.annotations.WithElaps;
 import logcheck.site.SiteListBean;
 import logcheck.site.SiteListBeanImpl;
 import logcheck.user.UserListBean;
-import logcheck.user.UserListSummary;
+import logcheck.user.UserListSite;
 import logcheck.user.UserList;
 import logcheck.util.DB;
 
@@ -110,14 +110,14 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 					globalIp = "0.0.0.0";	// IPアドレスとしては不正なので一致しない for 専用線、ISP経由
 				}
 
-//				UserListSummary summary = bean.getSite(new NetAddr(globalIp));
-				UserListSummary summary = bean.getSite(siteId);
-				if (summary == null) {
-					SiteListBean site = new SiteListBeanImpl(siteId, siteName, siteDelFlag, projId, projDelFlag);
-					summary = new UserListSummary(site);
-					bean.addSite(summary);
+//				UserListSummary site = bean.getSite(new NetAddr(globalIp));
+				UserListSite site = bean.getSite(siteId);
+				if (site == null) {
+					SiteListBean siteBean = new SiteListBeanImpl(siteId, siteName, siteDelFlag, projId, projDelFlag);
+					site = new UserListSite(siteBean);
+					bean.addSite(site);
 				}
-				summary.addAddress(globalIp);
+				site.addAddress(globalIp);
 				log.fine(bean.toString());
 			}
 		}
@@ -138,7 +138,7 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 		int iy = 0;
 		for (String userId : map.keySet()) {
 			UserListBean b = map.get(userId);
-			for (UserListSummary sum : b.getSites()) {
+			for (UserListSite sum : b.getSites()) {
 				System.out.println("userId=" + userId + " (" + b.getValidFlag() + "), sum=[" + sum + "]");
 				ix += 1;
 			}

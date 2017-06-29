@@ -10,7 +10,7 @@ import logcheck.site.SiteListMagIsp;
 import logcheck.util.Summary;
 import logcheck.util.net.NetAddr;
 
-public class UserListSummary implements Summary<String> {
+public class UserListSite implements Summary<String> {
 
 	private final SiteListBean site;
 
@@ -18,13 +18,13 @@ public class UserListSummary implements Summary<String> {
 	private String lastDate = "";
 	private int count = 0;
 
-	public UserListSummary(SiteListBean site) {
+	public UserListSite(SiteListBean site) {
 		this.site = site;
 	}
-	public UserListSummary(MagListIsp isp) {
+	public UserListSite(MagListIsp isp) {
 		this.site = new SiteListMagIsp(isp);
 	}
-	public UserListSummary(IspList isp) {
+	public UserListSite(IspList isp) {
 		this.site = new SiteListKnownIsp(isp);
 	}
 

@@ -18,7 +18,7 @@ import logcheck.log.AccessLog;
 import logcheck.mag.MagList;
 import logcheck.mag.MagListIsp;
 import logcheck.user.UserListBean;
-import logcheck.user.UserListSummary;
+import logcheck.user.UserListSite;
 import logcheck.user.UserList;
 
 /*
@@ -70,8 +70,8 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 						userlist.put(userId, user);
 					}
 
-					UserListSummary summary = user.getSite(b.getAddr());
-					if (summary == null) {
+					UserListSite site = user.getSite(b.getAddr());
+					if (site == null) {
 						// DBには
 						MagListIsp magisp = maglist.get(b.getAddr());
 						if (magisp == null) {
@@ -80,21 +80,21 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 								addrErrs.add(b.getAddr());
 								return;
 							}
-							summary = new UserListSummary(isp);
-							user.addSite(summary);
-							summary.update(b.getDate());
+							site = new UserListSite(isp);
+							user.addSite(site);
+							site.update(b.getDate());
 							log.config(String.format("user=%s, isp=%s", user, isp));
 						}
 						else {
-							summary = new UserListSummary(magisp);
-							user.addSite(summary);
-							summary.update(b.getDate());
+							site = new UserListSite(magisp);
+							user.addSite(site);
+							site.update(b.getDate());
 							log.config(String.format("user=%s, magisp=%s", user, magisp));
 						}
 					}
 					else {
 //						user.update(b, site);
-						summary.update(b.getDate());
+						site.update(b.getDate());
 					}
 				});
 		return userlist;
