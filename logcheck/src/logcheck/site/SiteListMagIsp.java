@@ -5,7 +5,7 @@ import java.util.Set;
 import logcheck.mag.MagListIsp;
 import logcheck.util.net.NetAddr;
 
-public class SiteListMagIsp implements SiteListBean {
+public class SiteListMagIsp implements SiteListIsp {
 
 	private final MagListIsp isp;
 

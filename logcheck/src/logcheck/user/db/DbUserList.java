@@ -9,8 +9,8 @@ import java.util.logging.Logger;
 import javax.enterprise.inject.Alternative;
 
 import logcheck.annotations.WithElaps;
-import logcheck.site.SiteListBean;
-import logcheck.site.SiteListBeanImpl;
+import logcheck.site.SiteListIsp;
+import logcheck.site.SiteListIspImpl;
 import logcheck.user.UserListBean;
 import logcheck.user.UserListSite;
 import logcheck.user.UserList;
@@ -113,7 +113,7 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 //				UserListSummary site = bean.getSite(new NetAddr(globalIp));
 				UserListSite site = bean.getSite(siteId);
 				if (site == null) {
-					SiteListBean siteBean = new SiteListBeanImpl(siteId, siteName, siteDelFlag, projId, projDelFlag);
+					SiteListIsp siteBean = new SiteListIspImpl(siteId, siteName, siteDelFlag, projId, projDelFlag);
 					site = new UserListSite(siteBean);
 					bean.addSite(site);
 				}
@@ -124,7 +124,7 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 		return this;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] argv) {
 		System.out.println("start DbUserList.main ...");
 		DbUserList map = new DbUserList();
 		try {

@@ -19,7 +19,8 @@ import javax.sql.rowset.Predicate;
 
 import logcheck.annotations.WithElaps;
 import logcheck.site.SiteList;
-import logcheck.site.SiteListBean;
+import logcheck.site.SiteListIsp;
+import logcheck.site.db.DbSiteList;
 import logcheck.user.UserListSite;
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
@@ -55,10 +56,10 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 	private void init() {
 		// かっこ悪いけど ... いい方法があれば教えて
 		if (sitelist == null) {
-			sitelist = new SiteList();
+			sitelist = new DbSiteList();
 		}
 		try {
-			sitelist.load();
+			sitelist.load(null);
 		}
 		catch (Exception ex) {
 			throw new RuntimeException(ex);
@@ -143,7 +144,7 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 								this.put(b.getUserId(), bean);
 							}
 
-							SiteListBean siteBean = sitelist.get(siteId);
+							SiteListIsp siteBean = sitelist.get(siteId);
 							if (siteBean != null) {
 								UserListSite site = new UserListSite(siteBean);
 								bean.addSite(site);

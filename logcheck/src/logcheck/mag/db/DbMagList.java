@@ -122,7 +122,7 @@ public class DbMagList extends LinkedHashMap<String, MagListIsp> implements MagL
 		return this;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] argv) {
 		System.out.println("start DbMagList.main ...");
 		DbMagList map = new DbMagList();
 		try {

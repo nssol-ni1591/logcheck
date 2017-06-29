@@ -5,7 +5,7 @@ import java.util.Set;
 import logcheck.isp.IspList;
 import logcheck.util.net.NetAddr;
 
-public class SiteListKnownIsp implements SiteListBean {
+public class SiteListKnownIsp implements SiteListIsp {
 
 	private final IspList isp;
 
@@ -37,4 +37,5 @@ public class SiteListKnownIsp implements SiteListBean {
 	public String toString() {
 		return String.format("siteId=%s, projId=%s, del=%s%s", getSiteId(), getProjId(), getSiteDelFlag(), getProjDelFlag());
 	}
+
 }

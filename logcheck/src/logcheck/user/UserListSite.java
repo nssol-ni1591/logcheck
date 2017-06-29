@@ -4,15 +4,15 @@ import java.util.Set;
 
 import logcheck.isp.IspList;
 import logcheck.mag.MagListIsp;
-import logcheck.site.SiteListBean;
+import logcheck.site.SiteListIsp;
 import logcheck.site.SiteListKnownIsp;
 import logcheck.site.SiteListMagIsp;
 import logcheck.util.Summary;
 import logcheck.util.net.NetAddr;
 
-public class UserListSite extends Summary<SiteListBean> {
+public class UserListSite extends Summary<SiteListIsp> {
 
-	public UserListSite(SiteListBean site) {
+	public UserListSite(SiteListIsp site) {
 		super(site);
 	}
 	public UserListSite(MagListIsp isp) {
