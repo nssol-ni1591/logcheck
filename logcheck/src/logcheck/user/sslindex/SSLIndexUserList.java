@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 
 import logcheck.annotations.WithElaps;
+import logcheck.site.SiteList;
 import logcheck.user.UserList;
 
 //@Alternative
@@ -26,13 +27,13 @@ public class SSLIndexUserList extends HashMap<String, SSLIndexUser> implements U
 		super(5000);
 	}
 
-	@Override
-	public UserList<SSLIndexUser> load() throws IOException {
-		throw new IllegalArgumentException("must file");
-	}
+//	@Override
+//	public UserList<SSLIndexUser> load() throws IOException {
+//		throw new IllegalArgumentException("must file");
+//	}
 
 	@Override @WithElaps
-	public SSLIndexUserList load(String file) throws IOException {
+	public SSLIndexUserList load(String file, SiteList sitelist) throws IOException {
 		Files.lines(Paths.get(file), Charset.forName("utf-8"))
 				.filter(s -> test(s))
 				.map(s -> parse(s))
@@ -119,7 +120,7 @@ public class SSLIndexUserList extends HashMap<String, SSLIndexUser> implements U
 		System.out.println("start SSLUserList.main ...");
 		SSLIndexUserList map = new SSLIndexUserList();
 		try {
-			map = new SSLIndexUserList().load(argv[0]);
+			map = new SSLIndexUserList().load(argv[0], null);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

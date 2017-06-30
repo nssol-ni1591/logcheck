@@ -10,9 +10,7 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Alternative;
-import javax.inject.Inject;
 import javax.sql.RowSet;
 import javax.sql.rowset.FilteredRowSet;
 import javax.sql.rowset.Predicate;
@@ -46,12 +44,12 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 //			+ " order by"
 //			+ ", u.user_id"
 	;
-	@Inject private SiteList sitelist;
+//	@Inject private SiteList sitelist;
 
 	public SSLUserList() {
 		super(4000);
 	}
-
+/*
 	@PostConstruct
 	private void init() {
 		// かっこ悪いけど ... いい方法があれば教えて
@@ -65,7 +63,7 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 			throw new RuntimeException(ex);
 		}
 	}
-
+*/
 	private FilteredRowSet getRowSet(String sql) throws Exception {
 		try ( // Oracleに接続
 				Connection conn = DB.createConnection();
@@ -119,7 +117,7 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 	}
 
 	@WithElaps
-	public SSLUserList load(String file) throws Exception {
+	public SSLUserList load(String file, SiteList sitelist) throws Exception {
 		FilteredRowSet rs = getRowSet(SQL_ZUSER);
 
 		Files.lines(Paths.get(file), Charset.forName("utf-8"))
@@ -151,7 +149,7 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 //								log.info(site.toString());
 							}
 							else {
-								log.warning("site is null: siteId=" + siteId + ", bean=" + bean);
+								log.warning("site is null: siteId=" + siteId + ", bean=[" + bean + "]");
 							}
 //							log.info(bean.toString());
 						}
@@ -204,8 +202,8 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 		System.out.println("start SSLUserList.main ...");
 		SSLUserList map = new SSLUserList();
 		try {
-			map.init();
-			map.load(argv[0]);
+//			map.init();
+			map.load(argv[0], new DbSiteList().load(null));
 		}
 		catch (Exception e) {
 			// TODO Auto-generated catch block

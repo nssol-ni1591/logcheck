@@ -15,8 +15,7 @@ import logcheck.annotations.UseChecker14;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
-import logcheck.mag.MagList;
-import logcheck.mag.MagListIsp;
+import logcheck.site.SiteList;
 import logcheck.user.UserListBean;
 import logcheck.user.UserListSite;
 import logcheck.user.UserList;
@@ -30,7 +29,8 @@ import logcheck.user.UserList;
 public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 	@Inject private KnownList knownlist;
-	@Inject private MagList maglist;
+//	@Inject private MagList maglist;
+	@Inject private SiteList sitelist;
 	@Inject protected UserList<UserListBean> userlist;
 
 	@Inject private Logger log;
@@ -39,8 +39,9 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 	public Checker14 init(String knownfile, String sslindex) throws Exception {
 		this.knownlist.load(knownfile);
-		this.maglist.load();
-		this.userlist.load(sslindex);
+//		this.maglist.load();
+		this.sitelist.load(null);
+		this.userlist.load(sslindex, sitelist);
 		return this;
 	}
 
@@ -73,7 +74,8 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 					UserListSite site = user.getSite(b.getAddr());
 					if (site == null) {
 						// DBには
-						MagListIsp magisp = maglist.get(b.getAddr());
+//						MagListIsp magisp = maglist.get(b.getAddr());
+						IspList magisp = sitelist.get(b.getAddr());
 						if (magisp == null) {
 							IspList isp = knownlist.get(b.getAddr());
 							if (isp == null) {
@@ -148,6 +150,11 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 	}
 
 	public static void main(String... argv) {
+
+		System.setProperty("proxySet" , "true");
+		System.setProperty("proxyHost", "proxy.ns-sol.co.jp");
+		System.setProperty("proxyPort", "8000");
+
 		if (argv.length < 1) {
 			System.err.println("usage: java logcheck.Checker14 knownlist [accesslog...]");
 			System.exit(1);

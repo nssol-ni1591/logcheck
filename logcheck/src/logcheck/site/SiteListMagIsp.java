@@ -2,6 +2,7 @@ package logcheck.site;
 
 import java.util.Set;
 
+import logcheck.isp.IspList;
 import logcheck.mag.MagListIsp;
 import logcheck.util.net.NetAddr;
 
@@ -11,6 +12,9 @@ public class SiteListMagIsp implements SiteListIsp {
 
 	public SiteListMagIsp(MagListIsp isp) {
 		this.isp = isp;
+	}
+	public SiteListMagIsp(IspList isp) {
+		this.isp = (MagListIsp)isp;
 	}
 
 	@Override
@@ -46,8 +50,4 @@ public class SiteListMagIsp implements SiteListIsp {
 		isp.addAddress(addr);
 	}
 
-	@Override
-	public String toString() {
-		return String.format("siteId=%s, projId=%s, del=%s%s", getSiteId(), getProjId(), getSiteDelFlag(), getProjDelFlag());
-	}
 }

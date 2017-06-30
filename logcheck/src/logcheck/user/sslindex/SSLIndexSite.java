@@ -1,11 +1,10 @@
 package logcheck.user.sslindex;
 
-import logcheck.isp.IspList;
-import logcheck.mag.MagListIsp;
+import logcheck.site.SiteListIsp;
 import logcheck.util.Summary;
 import logcheck.util.net.NetAddr;
 
-public class SSLIndexSite extends Summary<IspList> /*implements Summary<String>*/ {
+public class SSLIndexSite extends Summary<SiteListIsp> /*implements Summary<String>*/ {
 
 //	private final IspList isp;
 
@@ -13,13 +12,13 @@ public class SSLIndexSite extends Summary<IspList> /*implements Summary<String>*
 //	private String lastDate = "";
 //	private int count;
 
-	public SSLIndexSite(IspList isp) {
+	public SSLIndexSite(SiteListIsp isp) {
 		super(isp);
 //		this.isp = isp;
 //		this.count = 0;
 	}
 
-	public IspList getIsp() {
+	public SiteListIsp getIsp() {
 //		return isp;
 		return getRef();
 	}
@@ -42,13 +41,16 @@ public class SSLIndexSite extends Summary<IspList> /*implements Summary<String>*
 		return getRef().getName();
 	}
 	public String getSiteName() {
-		return getRef() instanceof MagListIsp ? ((MagListIsp)getRef()).getSiteName() : "-";
+//		return getRef() instanceof MagListIsp ? ((MagListIsp)getRef()).getSiteName() : "-";
+		return getRef().getSiteName();
 	}
 	public String getProjDelFlag() {
-		return getRef() instanceof MagListIsp ? ((MagListIsp)getRef()).getProjDelFlag() : "-1";
+//		return getRef() instanceof MagListIsp ? ((MagListIsp)getRef()).getProjDelFlag() : "-1";
+		return getRef().getProjDelFlag();
 	}
 	public String getSiteDelFlag() {
-		return getRef() instanceof MagListIsp ? ((MagListIsp)getRef()).getSiteDelFlag() : "-1";
+//		return getRef() instanceof MagListIsp ? ((MagListIsp)getRef()).getSiteDelFlag() : "-1";
+		return getRef().getSiteDelFlag();
 	}
 
 	public boolean within(NetAddr addr) {

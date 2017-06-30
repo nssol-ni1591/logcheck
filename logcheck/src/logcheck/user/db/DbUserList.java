@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import javax.enterprise.inject.Alternative;
 
 import logcheck.annotations.WithElaps;
+import logcheck.site.SiteList;
 import logcheck.site.SiteListIsp;
 import logcheck.site.SiteListIspImpl;
 import logcheck.user.UserListBean;
@@ -55,28 +56,14 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 	public DbUserList() {
 		super(4000);
 	}
-	/*
-	@PostConstruct
-	private void init() {
-		// かっこ悪いけど ... いい方法があれば教えて
-		if (sitelist == null) {
-			sitelist = new SiteList();
-		}
-		try {
-			sitelist.load();
-		}
-		catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
-	}
-	*/
-	public DbUserList load() throws Exception {
-		return load(SQL_ZUSER);
-	}
+
+//	public DbUserList load() throws Exception {
+//		return load(SQL_ZUSER);
+//	}
 
 	@WithElaps
-	public DbUserList load(String sql) throws Exception {
-		sql = SQL_ZUSER;
+	public DbUserList load(String file, SiteList sitelist) throws Exception {
+		String sql = SQL_ZUSER;
 		try (	// Oracleに接続
 				Connection conn = DB.createConnection();
 				// ステートメントを作成
@@ -128,7 +115,7 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 		System.out.println("start DbUserList.main ...");
 		DbUserList map = new DbUserList();
 		try {
-			map.load();
+			map.load(null, null);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -8,6 +8,13 @@ public class SiteListIspImpl extends IspList implements SiteListIsp {
 	private final String siteDelFlag;
 	private final String projDelFlag;
 
+	public SiteListIspImpl(String siteName, String projId) {
+		super(siteName, projId);
+		this.siteName = siteName;
+		// tsvファイルに登録されている拠点は正常とであると仮定する
+		this.siteDelFlag = "0";
+		this.projDelFlag = "0";
+	}
 	public SiteListIspImpl(String siteId, String siteName, String siteDelFlag, String projId, String projDelFlag) {
 		super(siteId, projId);
 		this.siteName = siteName;

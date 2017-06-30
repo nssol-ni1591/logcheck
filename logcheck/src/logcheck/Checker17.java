@@ -13,8 +13,9 @@ import org.jboss.weld.environment.se.WeldContainer;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
-import logcheck.mag.MagList;
-import logcheck.mag.MagListIsp;
+import logcheck.site.SiteList;
+import logcheck.site.SiteListKnownIsp;
+import logcheck.site.SiteListMagIsp;
 import logcheck.user.UserList;
 import logcheck.user.sslindex.SSLIndexSite;
 import logcheck.user.sslindex.SSLIndexUser;
@@ -27,7 +28,8 @@ import logcheck.user.sslindex.SSLIndexUser;
 public class Checker17 extends AbstractChecker<UserList<SSLIndexUser>> {
 
 	@Inject private KnownList knownlist;
-	@Inject private MagList maglist;
+//	@Inject private MagList maglist;
+	@Inject private SiteList sitelist;
 	@Inject private UserList<SSLIndexUser> userlist;
 //	@Inject private SSLUserList userlist;
 
@@ -37,8 +39,8 @@ public class Checker17 extends AbstractChecker<UserList<SSLIndexUser>> {
 
 	public Checker17 init(String knownfile, String sslindexfile) throws Exception {
 		this.knownlist.load(knownfile);
-		this.maglist.load();
-		this.userlist.load(sslindexfile);
+		this.sitelist.load(null);
+		this.userlist.load(sslindexfile, sitelist);
 		return this;
 	}
 
@@ -66,20 +68,21 @@ public class Checker17 extends AbstractChecker<UserList<SSLIndexUser>> {
 
 					SSLIndexSite site = user.get(b.getAddr());
 					if (site == null) {
-						MagListIsp magisp = maglist.get(b.getAddr());
+//						MagListIsp magisp = maglist.get(b.getAddr());
+						IspList magisp = sitelist.get(b.getAddr());
 						if (magisp == null) {
 							IspList isp = knownlist.get(b.getAddr());
 							if (isp == null) {
 								addrErrs.add(b.getAddr());
 								return;
 							}
-							site = new SSLIndexSite(isp);
+							site = new SSLIndexSite(new SiteListKnownIsp(isp));
 							user.add(site);
 							site.update(b.getDate());
 							log.config(String.format("user=%s, isp=%s", user, isp));
 						}
 						else {
-							site = new SSLIndexSite(magisp);
+							site = new SSLIndexSite(new SiteListMagIsp(magisp));
 							user.add(site);
 							site.update(b.getDate());
 							log.config(String.format("user=%s, magisp=%s", user, magisp));
