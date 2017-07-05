@@ -27,7 +27,8 @@ public class SiteListMagIsp implements SiteListIsp {
 	}
 	@Override
 	public String getProjId() {
-		return isp.getProjId();
+//		return isp.getProjId();
+		return isp.getName();
 	}
 	@Override
 	public String getProjDelFlag() {
