@@ -5,9 +5,9 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import logcheck.isp.IspList;
+import logcheck.isp.IspListImpl;
 
-public class SdcListIsp extends IspList {
+public class SdcListIsp extends IspListImpl {
 
 	@Inject private Logger log;
 

@@ -1,8 +1,8 @@
 package logcheck.site;
 
-import logcheck.isp.IspList;
+import logcheck.isp.IspListImpl;
 
-public class SiteListIspImpl extends IspList implements SiteListIsp {
+public class SiteListIspImpl extends IspListImpl implements SiteListIsp {
 
 	private final String siteId;
 	private final String siteName;

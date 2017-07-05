@@ -13,6 +13,7 @@ import org.jboss.weld.environment.se.WeldContainer;
 import logcheck.fw.FwLog;
 import logcheck.fw.FwLogSummary;
 import logcheck.isp.IspList;
+import logcheck.isp.IspListImpl;
 import logcheck.known.KnownList;
 import logcheck.mag.MagList;
 import logcheck.sdc.SdcList;
@@ -53,7 +54,7 @@ public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 			return isp;
 		}
 
-		isp = new IspList(addr.toString(), "unknown");
+		isp = new IspListImpl(addr.toString(), "unknown");
 		return isp;
 	}
 
