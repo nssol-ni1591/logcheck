@@ -14,14 +14,7 @@ public class MagListImpl implements MagList {
 	
 	private MagListImpl() {
 	}
-/*
-	@Override
-	public MagList load() {
-		// 通常はload(String file)が使用される
-		// SiteList#load(String file)が呼ばれているはず
-		return null;
-	}
-*/
+
 	@Override
 	public MagList load(String file) throws Exception {
 		// TODO Auto-generated method stub

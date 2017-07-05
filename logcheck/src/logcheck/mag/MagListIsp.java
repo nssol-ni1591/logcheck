@@ -12,12 +12,8 @@ public class MagListIsp extends SiteListIspImpl implements SiteListIsp {
 		super(siteName, projId);
 	}
 
-	public String getName() {
-		return super.getSiteId();
-	}
+//	public String getName() {
+//		return super.getSiteId();
+//	}
 
 }
-/*
-public interface MagListIsp {
-}
-*/

@@ -38,7 +38,7 @@ public class FwLogSummary extends Summary<FwLogBean> implements Comparable<FwLog
 		this.dstPort = bean.getDstPort();
 		this.srcIsp = srcIsp;
 		this.dstIsp = dstIsp;
-// callされた時点で1回目のログがあるため
+// callされた時点で1回目のログがあるため初期値を1にする
 //		this.count = 1;
 		super.addCount();
 	}
