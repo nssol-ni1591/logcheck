@@ -15,11 +15,10 @@ import logcheck.annotations.UseChecker14;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
-import logcheck.mag.MagList;
-import logcheck.mag.MagListIsp;
-import logcheck.user.UserList;
+import logcheck.site.SiteList;
 import logcheck.user.UserListBean;
-import logcheck.user.UserListSummary;
+import logcheck.user.UserListSite;
+import logcheck.user.UserList;
 
 /*
  * ユーザの利用状況を取得する：
@@ -27,26 +26,27 @@ import logcheck.user.UserListSummary;
  * 
  */
 @UseChecker14
-public class Checker14 extends AbstractChecker<UserList<UserListSummary>> {
+public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 	@Inject private KnownList knownlist;
-	@Inject private MagList maglist;
-	@Inject protected UserList<UserListSummary> userlist;
+//	@Inject private MagList maglist;
+	@Inject private SiteList sitelist;
+	@Inject protected UserList<UserListBean> userlist;
 
 	@Inject private Logger log;
 
 	private static final Pattern AUTH_PATTERN = Pattern.compile("Certificate realm restrictions successfully passed for [\\S ]+ , with certificate 'CN=(Z\\w+), [\\S ]+'");
 
-	public Checker14 init(String knownfile) throws Exception {
+	public Checker14 init(String knownfile, String sslindex) throws Exception {
 		this.knownlist.load(knownfile);
-		this.maglist.load();
-//		this.userlist.load();
-		this.userlist.load(UserListSummary.class);
+//		this.maglist.load();
+		this.sitelist.load(null);
+		this.userlist.load(sslindex, sitelist);
 		return this;
 	}
 
 	@Override
-	public UserList<UserListSummary> call(Stream<String> stream) throws Exception {
+	public UserList<UserListBean> call(Stream<String> stream) throws Exception {
 		stream//.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
@@ -60,43 +60,41 @@ public class Checker14 extends AbstractChecker<UserList<UserListSummary>> {
 						userId = m.group(1);
 					}
 
-					UserListBean<UserListSummary> user = userlist.get(userId);
+					UserListBean user = userlist.get(userId);
 					if (user == null) {
 //						log.warning("not found user: userid=" + userId);
 						userErrs.add(userId);
 //						return;
-						
+
 						// ログに存在するが、SSLテーブルに存在しない場合： 不正な状態を検知することができるようにuserlistに追加する
-						user = new UserListBean<UserListSummary>(userId, "-1", "-1");
+						user = new UserListBean(userId, "-1", "-1");
 						userlist.put(userId, user);
 					}
 
-					UserListSummary site = user.getSite(b.getAddr());
+					UserListSite site = user.getSite(b.getAddr());
 					if (site == null) {
-						MagListIsp magisp = maglist.get(b.getAddr());
+						// DBには
+//						MagListIsp magisp = maglist.get(b.getAddr());
+						IspList magisp = sitelist.get(b.getAddr());
 						if (magisp == null) {
 							IspList isp = knownlist.get(b.getAddr());
 							if (isp == null) {
-//								log.warning("unknown ip: addr=" + addr);
 								addrErrs.add(b.getAddr());
 								return;
 							}
-//							user.update(b, isp);
-							site = new UserListSummary(isp);
+							site = new UserListSite(isp);
 							user.addSite(site);
 							site.update(b.getDate());
 							log.config(String.format("user=%s, isp=%s", user, isp));
 						}
 						else {
-//							user.update(b, magisp);
-							site = new UserListSummary(magisp);
+							site = new UserListSite(magisp);
 							user.addSite(site);
 							site.update(b.getDate());
 							log.config(String.format("user=%s, magisp=%s", user, magisp));
 						}
 					}
 					else {
-//						user.update(b, site);
 						site.update(b.getDate());
 					}
 				});
@@ -105,31 +103,58 @@ public class Checker14 extends AbstractChecker<UserList<UserListSummary>> {
 
 	@Override
 	public void report() {
+		/*
+		// アドレスを出力してはいけない。拠点ごとに回数を取得しているのに、アドレスを出力すると、回数は実際の値のアドレスう数の倍になる
 		System.out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tIPアドレス\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数");
+		userlist.values().stream()
+		.forEach(user -> {
+			user.getSites().forEach(site -> {
+				site.getAddress().forEach(addr -> {
+					System.out.println(
+							new StringBuilder(user.getUserId())
+							.append("\t").append(site.getCountry())
+							.append("\t").append(site.getProjId())
+							.append("\t").append(site.getSiteName())
+							.append("\t").append(addr)
+							.append("\t").append(site.getProjDelFlag())
+							.append("\t").append(site.getSiteDelFlag())
+							.append("\t").append(user.getUserDelFlag())
+							.append("\t").append(user.getValidFlag())
+							.append("\t").append(site.getFirstDate())
+							.append("\t").append(site.getLastDate())
+							.append("\t").append(site.getCount())
+							);
+				});
+		});
+		*/
+		System.out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数\t失効日時");
 		userlist.values().stream()
 			.forEach(user -> {
 				user.getSites().forEach(site -> {
-					site.getAddress().forEach(addr -> {
 						System.out.println(
 								new StringBuilder(user.getUserId())
-								.append("\t").append(site.getCountry())
-								.append("\t").append(site.getProjId())
-								.append("\t").append(site.getSiteName())
-								.append("\t").append(addr)
-								.append("\t").append(site.getProjDelFlag())
-								.append("\t").append(site.getSiteDelFlag())
-								.append("\t").append(user.getUserDelFlag())
-								.append("\t").append(user.getValidFlag())
-								.append("\t").append(site.getFirstDate())
-								.append("\t").append(site.getLastDate())
-								.append("\t").append(site.getCount())
+										.append("\t").append(site.getCountry())
+										.append("\t").append(site.getProjId())
+										.append("\t").append(site.getSiteName())
+										.append("\t").append(site.getProjDelFlag())
+										.append("\t").append(site.getSiteDelFlag())
+										.append("\t").append(user.getUserDelFlag())
+										.append("\t").append(user.getValidFlag())
+										.append("\t").append(site.getFirstDate())
+										.append("\t").append(site.getLastDate())
+										.append("\t").append(site.getCount())
+										.append("\t").append(user.getRevoce())
 								);
 					});
-			});
-		});
+				});
 	}
 
 	public static void main(String... argv) {
+
+		System.setProperty("proxySet" , "true");
+		System.setProperty("proxyHost", "proxy.ns-sol.co.jp");
+		System.setProperty("proxyPort", "8000");
+
 		if (argv.length < 1) {
 			System.err.println("usage: java logcheck.Checker14 knownlist [accesslog...]");
 			System.exit(1);
@@ -142,7 +167,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListSummary>> {
 			Checker14 application = container.instance().select(Checker14.class, new AnnotationLiteral<UseChecker14>(){
 				private static final long serialVersionUID = 1L;
 			}).get();
-			application.init(argv[0]).start(argv, 1);
+			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace(System.err);

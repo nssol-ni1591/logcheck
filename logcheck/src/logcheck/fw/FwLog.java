@@ -99,7 +99,8 @@ public class FwLog {
 								map.put(b,  summary);
 							}
 							else {
-								summary.update(b);
+//								summary.update(b);
+								summary.update(b.getDate());
 							}
 						});
 			}

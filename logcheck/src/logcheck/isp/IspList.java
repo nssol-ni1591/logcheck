@@ -17,4 +17,8 @@ public class IspList extends IspBean<Set<NetAddr>> implements Isp {
 	public void addAddress(NetAddr addr) {
 		getRef().add(addr);
 	}
+	public void addAddress(String addr) {
+		addAddress(new NetAddr(addr));
+	}
+
 }

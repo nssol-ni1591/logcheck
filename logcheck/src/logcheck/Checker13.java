@@ -106,7 +106,7 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 				addrmap.forEach((msg) -> {
 					System.out.println(
 							new StringBuilder(country)
-									.append("\t").append(isp)
+									.append("\t").append(isp.getName())
 									.append("\t").append(msg.getAddr())
 									.append("\t").append(msg.getDate())
 									);

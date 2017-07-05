@@ -1,61 +1,62 @@
-package logcheck.mag.tsv;
+package logcheck.site.tsv;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.enterprise.inject.Alternative;
-import javax.inject.Inject;
 
 import logcheck.annotations.WithElaps;
-import logcheck.mag.MagList;
 import logcheck.mag.MagListBean;
-import logcheck.mag.MagListIsp;
-import logcheck.util.net.NetAddr;
+import logcheck.site.SiteList;
+import logcheck.site.SiteListIsp;
+import logcheck.site.SiteListIspImpl;
 
+/*
+ * 以前の TsvMagListクラス
+ */
 @Alternative
-public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
+public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteList {
 
-	@Inject private Logger log;
+	//@Inject private Logger log;
+	private static Logger log = Logger.getLogger(TsvSiteList.class.getName());
 
 	private static final long serialVersionUID = 1L;
 
 	public static String PATTERN = "(PRJ_[\\w_]+)\t(.+)\t(.+)\t([\\d\\.～\\/]+)\t([\\d+\\.\\d+\\.\\d+\\.\\d+]+)\t([\\d+\\.\\d+\\.\\d+\\.\\d+]+)";
 
-	public TsvMagList() {
+	public TsvSiteList() {
 		super(200);
 	}
 
 	/*
 	 * 引数のIPアドレスを含むCompanyを取得する
 	 */
-	public MagListIsp get(NetAddr addr) {
-		Optional<MagListIsp> rc = values().stream().filter(isp -> {
+	/*
+	public SiteListIsp get(NetAddr addr) {
+		Optional<SiteListIsp> rc = values().stream().filter(isp -> {
 			return isp.getAddress().stream().filter(net -> net.within(addr)).findFirst().isPresent();
 		}).findFirst();
 		return rc.isPresent() ? rc.get() : null;
 	}
-
+	*/
 	@WithElaps
-	public TsvMagList load(String file) throws IOException {
+	public SiteList load(String file) throws IOException {
 		Files.lines(Paths.get(file), Charset.forName("MS932"))
 				.filter(s -> test(s))
 				.map(s -> parse(s))
 				.forEach(b -> {
-					MagListIsp mp = this.get(b.getProjId());
-					if (mp == null) {
-//						mp = new MagListIsp(b.getProjId());
-						mp = new MagListIsp(b);
-						this.put(b.getProjId(), mp);
+					SiteListIsp site = this.get(b.getProjId());
+					if (site == null) {
+						site = new SiteListIspImpl(b.getSiteName(), b.getProjId());
+						this.put(b.getProjId(), site);
 					}
-					NetAddr addr = new NetAddr(b.getMagIp());
-					mp.addAddress(addr);
+					site.addAddress(b.getMagIp());
 				});
 		return this;
 	}
@@ -118,16 +119,16 @@ public class TsvMagList extends HashMap<String, MagListIsp> implements MagList {
 
 	public static void main(String... argv) {
 		System.out.println("start TsvMagList.main ...");
-		TsvMagList map = new TsvMagList();
+		TsvSiteList map = new TsvSiteList();
 		try {
-			map = new TsvMagList().load(argv[0]);
+			map.load(argv[0]);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		for (String name : map.keySet()) {
-			MagListIsp c = map.get(name);
+			SiteListIsp c = map.get(name);
 			System.out.println(name + "=" + c.getAddress());
 		}
 		System.out.println("TsvMagList.main ... end");

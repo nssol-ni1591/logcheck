@@ -1,15 +1,16 @@
 package logcheck.mag;
 
+import logcheck.isp.IspList;
 import logcheck.util.net.NetAddr;
 
 public interface MagList {
 
-	public MagListIsp get(NetAddr addr);
+	MagList load(String file) throws Exception;
 
-	public MagList load(String file) throws Exception;
-
-	default public MagList load() throws Exception {
-		throw new IllegalArgumentException("not override");
-	}
+	// MagListには必須だが、SiteListには必須ではないので、MagListに定義する
+	IspList get(NetAddr addr);
+//	default MagListIsp get(NetAddr addr) {
+//		return null;
+//	}
 
 }

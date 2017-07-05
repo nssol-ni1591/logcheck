@@ -1,37 +1,19 @@
 package logcheck.mag;
 
-import logcheck.isp.IspList;
+import logcheck.site.SiteListIsp;
+import logcheck.site.SiteListIspImpl;
 
-public class MagListIsp extends IspList {
+/*
+ * MagListIspはIspListを継承しないといけないのでinterfaceにすることはできない
+ */
+public class MagListIsp extends SiteListIspImpl implements SiteListIsp {
 
-	private final String projName;
-	private final String siteName;
-/*
-	public MagListIsp(String projId) {
-		super(projId, "利用申請");
-		this.siteName = "";
+	private MagListIsp(String siteName, String projId) {
+		super(siteName, projId);
 	}
-*/
-	public MagListIsp(MagListBean b) {
-		super(b.getProjId(), "利用申請");
-		this.projName = b.getProjName();
-		this.siteName = b.getSiteName();
-	}
-/*
-	public MagListIsp(String projId, String siteName) {
-		super(projId, "利用申請");
-		this.projName = "";
-		this.siteName = siteName;
-	}
-*/
-	public String getProjId() {
-		return super.getName();
-	}
-	public String getProjName() {
-		return projName;
-	}
-	public String getSiteName() {
-		return siteName;
-	}
+
+//	public String getName() {
+//		return super.getSiteId();
+//	}
 
 }

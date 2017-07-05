@@ -73,10 +73,12 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 
 	@Override
 	public Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> call(Stream<String> stream) throws Exception {
-		stream.parallel()
+		stream//.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
 				.forEach(b -> {
+//					log.info(b.toString());
+
 					String pattern = getPattern(b);
 
 					NetAddr addr = b.getAddr();
@@ -125,7 +127,8 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 							msg.update(b);
 						}
 
-					} else {
+					}
+					else {
 //						System.err.println("unknown ip: addr=" + addr);
 //						log.warning("unknown ip: addr=" + addr);
 						addrErrs.add(b.getAddr());

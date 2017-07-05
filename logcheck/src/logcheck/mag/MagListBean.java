@@ -10,28 +10,33 @@ public class MagListBean {
 	private final String projId;
 	private final String projName;
 	private final String siteName;
-//	private final String projIp;
 	private final String magIp;
-	
+	// 追加：未利用ユーザ検索
+	private final String projDelFlag;
+	private final String siteDelFlag;
+
 	@Inject private Logger log;
 
-	public MagListBean(String projId, String projName, String siteName, String magIp) {
+	// for DB
+	public MagListBean(String projId, String projName, String siteName, String magIp, String projDelFlag, String siteDelFlag) {
 		this.projId = projId;
 		this.projName = projName;
 		this.siteName = siteName;
-//		this.projIp = null;
 		this.magIp = magIp;
+		this.projDelFlag = projDelFlag;
+		this.siteDelFlag = siteDelFlag;
 	}
-//	public MagListBean(String projId, String projName, String projSite, String projIp, String magIp, String magMask) {
+	// for Tsv
 	public MagListBean(String projId, String projName, String siteName, String magIp, String magMask) {
 		this.projId = projId;
 		this.projName = projName;
 		this.siteName = siteName;
-//		this.projIp = projIp;
 		if (magIp.contains("/")) {
 			throw new IllegalArgumentException("magIp contains \"/\"");
 		}
 		this.magIp = magIp + "/" + magMask;
+		this.projDelFlag = "-1";
+		this.siteDelFlag = "-1";
 	}
 
 	@PostConstruct
@@ -48,16 +53,18 @@ public class MagListBean {
 	public String getSiteName() {
 		return siteName;
 	}
-	/*
-	public String getProjIp() {
-		return projIp;
-	}
-	*/
 	public String getMagIp() {
 		return magIp;
+	}
+	public String getProjDelFlag() {
+		return projDelFlag;
+	}
+	public String getSiteDelFlag() {
+		return siteDelFlag;
 	}
 
 	public String toString() {
 		return String.format("projId=%s, magIp=%s", projId, magIp);
 	}
+
 }

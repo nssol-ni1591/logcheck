@@ -54,11 +54,11 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 	private static final Pattern[] PTN_COUNTRIES = {
 			Pattern.compile("[Cc]ountry: +(\\w\\w)"),
 //			Pattern.compile("Country: +(\\w\\w)"),
-			Pattern.compile("network:Country-Code:(\\w\\w)"),
+//			Pattern.compile("network:Country-Code:(\\w\\w)"),
 			Pattern.compile("\\[ (\\w+) database provides .*"),		// JPNIC
 			Pattern.compile("(\\w+) is not an ISP .*"),				// KRNIC
 			Pattern.compile("# (\\w+) WHOIS data and services .*"),	// ARIN
-//			Pattern.compile("network:Country-Code:(\\w+)"),
+			Pattern.compile("network:Country-Code:(\\w+)"),			// USA というパターンもあるので
 	};
 
 	//@Inject private Logger log;
@@ -103,24 +103,28 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 			return rc.get();
 		}
 
-		KnownListIsp isp = search(addr);
+		// json: http://wq.apnic.net/whois-search/query?searchtext=182.171.83.197
+
+		KnownListIsp isp = search("http://whois.threet.co.jp/?key=", addr);
+//		KnownListIsp isp = search("http://wq.apnic.net/whois-search/query?searchtext=", addr);
 		if (isp.getName() == null || isp.getAddress().isEmpty()) {
 			System.err.println();
 			log.info("retry search. addr=" + addr);
 			
 			// sleep ...
 			try {
-				Thread.sleep(10 * 1000);
+				Thread.sleep(2 * 1000);
 			}
 			catch (InterruptedException ex) { }
-			isp = search(addr);
+
+			isp = search("http://lacnic.net/cgi-bin/lacnic/whois?query=", addr);
 
 			if (isp.getName() == null || isp.getAddress().isEmpty()) {
 				Set<NetAddr> addrs = isp.getAddress();
 				String name = isp.getName();
 				String country = isp.getCountry();
 
-				log.info("addr=" + addr + ", isp=[" + name + ", C=" + country + ", NET=" + addrs + "]");
+				log.warning("addr=" + addr + ", isp=[" + name + ", C=" + country + ", NET=" + addrs + "]");
 
 				if (addrs.isEmpty() && name == null) {
 					isp = null;
@@ -144,7 +148,7 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 		return isp;
 	}
 
-	public KnownListIsp search(NetAddr addr) {
+	public KnownListIsp search(String site, NetAddr addr) {
 		String netaddr = null;
 		String name = null;
 		String country = null;
@@ -153,7 +157,11 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 		URL url = null;
 		HttpURLConnection http = null;
 		try  {
-			url = new URL("http://whois.threet.co.jp/?key=" + addr);
+			url = new URL(site + addr);
+//			url = new URL("http://whois.threet.co.jp/?key=" + addr);
+//			url = new URL("https://www.whois.com/whois/" + addr);
+//			url = new URL("https://lab.syncer.jp/api/15/" + addr);
+//			url = new URL("http://lacnic.net/cgi-bin/lacnic/whois?query=" + addr);
 
 			http = (HttpURLConnection)url.openConnection();
 			http.setRequestMethod("GET");
@@ -161,8 +169,27 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 
 			// サーバーからのレスポンスを取得してパースする
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(http.getInputStream()))) {
+
 				String s;
 				while((s = reader.readLine()) != null) {
+
+//					System.out.println(s);
+/*
+					try {
+						ScriptEngineManager manager = new ScriptEngineManager();
+						ScriptEngine engine = manager.getEngineByName("JavaScript");
+						// ScriptEngine の eval に JSON を渡す時は、括弧で囲まないと例外が発生します。eval はセキュリティ的には好ましくないので、安全であることが不明なデータを扱うことは想定していません。
+						// 外部ネットワークと連携するプログラムで使用しないでください。
+						Object obj = engine.eval(String.format("%s", s));
+						// Rhino は、jdk1.6,7までの JavaScript エンジン。jdk1.8は「jdk.nashorn.api.scripting.NashornScriptEngine」
+						Map<String, Object> map = jsonToMap(obj,
+								engine.getClass().getName().equals("com.sun.script.javascript.RhinoScriptEngine"));
+
+						System.out.println(map);
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+*/
 					String tmp = parse(PTN_NETADDRS, s);
 					if (tmp != null) {
 						netaddr = tmp;
@@ -325,10 +352,10 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 
 	public static void main(String... argv) {
 
-		System.setProperty("proxySet", "true");
+		System.setProperty("proxySet" , "true");
 		System.setProperty("proxyHost", "proxy.ns-sol.co.jp");
 		System.setProperty("proxyPort", "8000");
-/*
+
 		NetAddr[] addrs = {
 //				new ClientAddr(""),
 //				new ClientAddr(""),
@@ -336,9 +363,10 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 //				new ClientAddr(""),
 //				new ClientAddr(""),
 //				new ClientAddr(""),
-//				new ClientAddr(""),
-//				new ClientAddr(""),
 
+				new ClientAddr("61.204.36.71"),
+//				new ClientAddr("202.248.61.202"),
+/*
 				new ClientAddr("210.1.29.82"),
 				new ClientAddr("182.232.195.22"),
 				new ClientAddr("203.87.156.92"),
@@ -362,12 +390,23 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 				new ClientAddr("79.191.82.167"),
 				new ClientAddr("219.90.84.2"),
 				new ClientAddr("122.2.36.229"),
-		};
 */
+		};
+
 		try {
 			Whois f = new Whois();
 			f.init();
 			f.load(argv[0]);
+
+			for (NetAddr addr : addrs) {
+				KnownListIsp isp = f.get(addr);
+				if (isp == null) {
+					System.out.println("addr=" + addr + ", isp=null");
+				}
+				else {
+					System.out.println("addr=" + addr + ", isp=[" + isp + ", C=" + isp.getCountry() +", NET=" + isp.getAddress() + "]");
+				}
+			}
 
 			for (int ix = 1; ix < argv.length; ix++) {
 				String addr = argv[ix];
