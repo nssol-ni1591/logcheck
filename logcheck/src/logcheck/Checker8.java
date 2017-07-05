@@ -151,7 +151,7 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 						msgmap.forEach((pattern, msg) -> {
 							System.out.println(
 									new StringBuilder(country)
-											.append("\t").append(isp)
+											.append("\t").append(isp.getName())
 											.append("\t").append(addr)
 											.append("\t").append(id)
 											.append("\t").append(pattern)

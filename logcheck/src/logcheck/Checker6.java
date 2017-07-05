@@ -119,7 +119,7 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 					return addrmap.values().stream().mapToInt(c -> c.intValue()).sum();
 				}).sum();
 				int sum21 = msgmap.get(INFO_SUMMARY_MSG) == null ? 0 : msgmap.get(INFO_SUMMARY_MSG).values().stream().mapToInt(c -> c.intValue()).sum();
-				System.out.println(new StringBuilder().append("\t").append(isp).append(" : ").append(sum2 - sum21).append(" / ").append(sum2).append(" => ").append((sum2 - sum21) * 100 / sum2).append("%"));
+				System.out.println(new StringBuilder().append("\t").append(isp.getName()).append(" : ").append(sum2 - sum21).append(" / ").append(sum2).append(" => ").append((sum2 - sum21) * 100 / sum2).append("%"));
 
 				msgmap.forEach((msg, addrmap) -> {
 					int sum3 = addrmap.values().stream().mapToInt(c -> c.intValue()).sum();

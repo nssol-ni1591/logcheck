@@ -102,7 +102,7 @@ public class Checker5 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 
 			map.get(country).forEach((isp, msgmap) -> {
 				int sum2 = msgmap.values().stream().mapToInt(c -> c.intValue()).sum();
-				System.out.println("\t" + isp + " : " + sum2);
+				System.out.println("\t" + isp.getName() + " : " + sum2);
 
 				msgmap.keySet().forEach(msg -> {
 					System.out.println(new StringBuilder().append("\t\t[ ").append(msg).append(" ] : ").append(msgmap.get(msg)));
