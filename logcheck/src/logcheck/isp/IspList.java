@@ -14,4 +14,8 @@ public interface IspList extends Isp {
 		addAddress(new NetAddr(addr));
 	}
 
+	default boolean within(NetAddr addr) {
+		return getAddress().stream().anyMatch(net -> net.within(addr));
+	}
+
 }

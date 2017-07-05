@@ -8,13 +8,14 @@ import logcheck.util.net.NetAddr;
 
 public class SiteListMagIsp implements SiteListIsp {
 
-	private final MagListIsp isp;
+//	private final MagListIsp isp;
+	private final SiteListIsp isp;
 
 	public SiteListMagIsp(MagListIsp isp) {
 		this.isp = isp;
 	}
 	public SiteListMagIsp(IspList isp) {
-		this.isp = (MagListIsp)isp;
+		this.isp = (SiteListIsp)isp;
 	}
 
 	@Override

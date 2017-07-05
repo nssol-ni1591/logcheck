@@ -50,7 +50,8 @@ public class TsvKnownList extends HashMap<NetAddr, KnownListIsp> implements Know
 					return isp.getAddress().stream().anyMatch(net -> net.within(addr));
 				})
 */
-				.filter(isp -> isp.getAddress().stream().anyMatch(net -> net.within(addr)))
+//				.filter(isp -> isp.getAddress().stream().anyMatch(net -> net.within(addr)))
+				.filter(isp -> isp.within(addr))
 				.findFirst();
 		return rc.isPresent() ? rc.get() : null;
 	}

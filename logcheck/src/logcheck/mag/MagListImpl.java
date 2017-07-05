@@ -24,7 +24,8 @@ public class MagListImpl implements MagList {
 	@Override
 	public MagListIsp get(NetAddr addr) {
 		Optional<SiteListIsp> rc = sitelist.values().stream()
-				.filter(isp -> isp.getAddress().stream().anyMatch(net -> net.within(addr)))
+//				.filter(isp -> isp.getAddress().stream().anyMatch(net -> net.within(addr)))
+				.filter(isp -> isp.within(addr))
 				.findFirst();
 		return rc.isPresent() ? (MagListIsp)rc.get() : null;
 	}

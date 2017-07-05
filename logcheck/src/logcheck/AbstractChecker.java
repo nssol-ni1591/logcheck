@@ -65,6 +65,7 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 	protected static final Pattern[] INFO_PATTERNS = {
 			Pattern.compile("Active user '\\S+' in realm 'NSSDC-Auth(1|2)(\\(MAC\\))?' is deleted since user does not qualify reevaluated policies"),
 			Pattern.compile("Agent login succeeded for \\S+/NSSDC-Auth(1|2)(\\(MAC\\))? from [\\d\\.]+ with Junos-Pulse/[\\d\\.]+ \\([\\w\\. ]+\\) Pulse/[\\d\\.]+\\."),
+			Pattern.compile("Agent login succeeded for \\S+/NSSDC-Auth(1|2)(\\(MAC\\))? from [\\d\\.]+ with Pulse-Secure/[\\d\\.]+ \\([\\w\\. ]+\\) Pulse/[\\d\\.]+\\."),
 			Pattern.compile("Certificate realm restrictions successfully passed for [\\S ]+ , with certificate '[\\S ]+'"),
 			Pattern.compile("Closed connection to [\\d\\.]+ after \\d+ seconds, with -?\\d+ bytes read and -?\\d+ bytes written "),
 			Pattern.compile("CRL checking started for certificate '[\\S ]+' issued by [\\S ]+"),
@@ -80,6 +81,7 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 			Pattern.compile("Remote address for user \\S+/NSSDC-Auth(1|2)(\\(MAC\\))? changed from [\\d\\.]+ to [\\d\\.]+\\."),
 			Pattern.compile("Session for user \\w+ on host [\\d\\.]+ has been terminated\\."),
 			Pattern.compile("Session resumed from user agent 'Junos-Pulse/[\\d\\.]+ \\([\\w\\. ]+\\) Pulse/[\\d\\.]+'"),
+			Pattern.compile("Session resumed from user agent 'Pulse-Secure/[\\d\\.]+ \\([\\w\\. ]+\\) Pulse/[\\d\\.]+'"),
 			Pattern.compile("Session timed out for \\S+/NSSDC-Auth(1|2)(\\(MAC\\))? \\(session:\\d+\\) due to inactivity \\(last access at [\\d:]+ [\\d/]+\\)\\. Idle session identified after user request\\."),
 			Pattern.compile("Session timed out for \\S+/NSSDC-Auth(1|2)(\\(MAC\\))? \\(session:\\d+\\) due to inactivity \\(last access at [\\d:]+ [\\d/]+\\)\\. Idle session identified during routine system scan\\."),
 			Pattern.compile("Source IP realm restrictions successfully passed for [\\S ]+ "),

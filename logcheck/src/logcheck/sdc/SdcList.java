@@ -26,7 +26,8 @@ public class SdcList extends LinkedHashMap<String, SdcListIsp> {
 
 	public SdcListIsp get(NetAddr addr) {
 		Optional<SdcListIsp> rc = values().stream().filter(isp -> {
-			return isp.getAddress().stream().filter(net -> net.within(addr)).findFirst().isPresent();
+//			return isp.getAddress().stream().filter(net -> net.within(addr)).findFirst().isPresent();
+			return isp.within(addr);
 		}).findFirst();
 		return rc.isPresent() ? rc.get() : null;
 	}

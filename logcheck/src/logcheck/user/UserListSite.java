@@ -48,7 +48,8 @@ public class UserListSite extends Summary<SiteListIsp> {
 		getRef().addAddress(addr);
 	}
 	public boolean within(NetAddr addr) {
-		return getRef().getAddress().stream().anyMatch(net -> net.within(addr));
+//		return getRef().getAddress().stream().anyMatch(net -> net.within(addr));
+		return getRef().within(addr);
 	}
 
 	@Override

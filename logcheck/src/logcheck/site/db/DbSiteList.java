@@ -41,6 +41,7 @@ public class DbSiteList extends LinkedHashMap<String, SiteListIsp> implements Si
 			+ " from mst_project p"
 			+ " , masterinfo.sas_prj_site_info s left outer join masterinfo.sas_site_gip g on s.site_id = g.site_id"
 			+ " where p.prj_row_id = s.prj_row_id"
+			+ " order by p.delete_flag, s.delete_flag"
 	;
 
 	public DbSiteList() {

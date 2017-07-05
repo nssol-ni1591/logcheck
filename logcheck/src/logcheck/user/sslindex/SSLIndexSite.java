@@ -54,7 +54,8 @@ public class SSLIndexSite extends Summary<SiteListIsp> /*implements Summary<Stri
 	}
 
 	public boolean within(NetAddr addr) {
-		return getRef().getAddress().stream().anyMatch(net -> net.within(addr));
+//		return getRef().getAddress().stream().anyMatch(net -> net.within(addr));
+		return getRef().within(addr);
 	}
 //	public void update(String date) {
 //		lastDate = date;

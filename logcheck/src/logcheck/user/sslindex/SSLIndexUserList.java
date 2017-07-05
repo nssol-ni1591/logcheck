@@ -27,11 +27,6 @@ public class SSLIndexUserList extends HashMap<String, SSLIndexUser> implements U
 		super(5000);
 	}
 
-//	@Override
-//	public UserList<SSLIndexUser> load() throws IOException {
-//		throw new IllegalArgumentException("must file");
-//	}
-
 	@Override @WithElaps
 	public SSLIndexUserList load(String file, SiteList sitelist) throws IOException {
 		Files.lines(Paths.get(file), Charset.forName("utf-8"))
