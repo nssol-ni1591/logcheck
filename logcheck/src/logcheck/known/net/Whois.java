@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,7 +22,8 @@ import logcheck.util.net.ClientAddr;
 import logcheck.util.net.NetAddr;
 
 @Alternative
-public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implements KnownList {
+//public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implements KnownList {
+public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 
 	private static final long serialVersionUID = 1L;
 
@@ -95,11 +96,15 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 	 */
 	@Override
 	public KnownListIsp get(NetAddr addr) {
-		Optional<KnownListIsp> rc = this.keySet().stream()
-				.filter(a -> a.within(addr))
-				.map(a -> super.get(a))
+//		Optional<KnownListIsp> rc = this.keySet().stream()
+//				.filter(net -> net.within(addr))
+//				.map(net -> super.get(net))
+//				.findFirst();
+		Optional<KnownListIsp> rc = this.stream()
+				.filter(isp -> isp.within(addr))
 				.findFirst();
 		if (rc != null && rc.isPresent()) {
+//			log.info("hit cache: addr=" + addr);
 			return rc.get();
 		}
 
@@ -141,14 +146,15 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 		}
 
 		if (isp != null) {
-			for (NetAddr net : isp.getAddress()) {
-				put(net, isp);
-			}
+//			for (NetAddr net : isp.getAddress()) {
+//				put(net, isp);
+//			}
+			add(isp);
 		}
 		return isp;
 	}
 
-	public KnownListIsp search(String site, NetAddr addr) {
+	private KnownListIsp search(String site, NetAddr addr) {
 		String netaddr = null;
 		String name = null;
 		String country = null;
@@ -157,6 +163,8 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 		URL url = null;
 		HttpURLConnection http = null;
 		try  {
+//			log.info("request: url=" + site + addr);
+
 			url = new URL(site + addr);
 //			url = new URL("http://whois.threet.co.jp/?key=" + addr);
 //			url = new URL("https://www.whois.com/whois/" + addr);
@@ -346,7 +354,8 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 	@Override
 	public KnownList load(String file) throws IOException {
 		KnownList list = new TsvKnownList().load(file);
-		list.forEach((key, value) -> put(key, value));
+//		list.forEach((key, value) -> put(key, value));
+		list.forEach(value -> add(value));
 		return this;
 	}
 
@@ -365,7 +374,10 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 //				new ClientAddr(""),
 
 				new ClientAddr("61.204.36.71"),
-//				new ClientAddr("202.248.61.202"),
+				new ClientAddr("202.248.61.202"),
+				new ClientAddr("61.204.36.81"),
+				new ClientAddr("202.248.61.202"),
+				new ClientAddr("61.204.36.71"),
 /*
 				new ClientAddr("210.1.29.82"),
 				new ClientAddr("182.232.195.22"),
