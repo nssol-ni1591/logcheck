@@ -60,10 +60,10 @@ public class Checker15 extends Checker14 {
 	}
 
 	public static void main(String... argv) {
-
-		System.setProperty("proxySet" , "true");
-		System.setProperty("proxyHost", "proxy.ns-sol.co.jp");
-		System.setProperty("proxyPort", "8000");
+// このメインは、ログ収集サーバ上でも呼ばれるため、プロキシーの設定を行ってはいけない
+//		System.setProperty("proxySet" , "true");
+//		System.setProperty("proxyHost", "proxy.ns-sol.co.jp");
+//		System.setProperty("proxyPort", "8000");
 
 		if (argv.length < 2) {
 			System.err.println("usage: java logcheck.Checker15 knownlist sslindex [accesslog...]");
