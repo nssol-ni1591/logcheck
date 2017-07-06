@@ -31,16 +31,15 @@ public class Checker17 extends AbstractChecker<UserList<SSLIndexUser>> {
 //	@Inject private MagList maglist;
 	@Inject private SiteList sitelist;
 	@Inject private UserList<SSLIndexUser> userlist;
-//	@Inject private SSLUserList userlist;
 
 	@Inject private Logger log;
 
 	private static final Pattern AUTH_PATTERN = Pattern.compile("Certificate realm restrictions successfully passed for [\\S ]+ , with certificate 'CN=(Z\\w+), [\\S ]+'");
 
-	public Checker17 init(String knownfile, String sslindexfile) throws Exception {
+	public Checker17 init(String knownfile, String sslindex) throws Exception {
 		this.knownlist.load(knownfile);
 		this.sitelist.load(null);
-		this.userlist.load(sslindexfile, sitelist);
+		this.userlist.load(sslindex, sitelist);
 		return this;
 	}
 
@@ -62,7 +61,7 @@ public class Checker17 extends AbstractChecker<UserList<SSLIndexUser>> {
 						userErrs.add(userId);
 
 						// ログに存在するが、SSLテーブルに存在しない場合： 不正な状態を検知することができるようにuserlistに追加する
-						user = new SSLIndexUser(userId, " ");
+						user = new SSLIndexUser(userId, "-1", "");
 						userlist.put(userId, user);
 					}
 
@@ -97,7 +96,7 @@ public class Checker17 extends AbstractChecker<UserList<SSLIndexUser>> {
 
 	@Override
 	public void report() {
-		System.out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\t有効\t初回日時\t最終日時\t回数");
+		System.out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数\t失効日時");
 		userlist.values().stream()
 			.forEach(user -> {
 				if (user.isEmpty()) {
@@ -108,10 +107,12 @@ public class Checker17 extends AbstractChecker<UserList<SSLIndexUser>> {
 							.append("\t").append("-")
 							.append("\t").append("-1")
 							.append("\t").append("-1")
-							.append("\t").append("R".equals(user.getFlag()) ? "0" : ("V".equals(user.getFlag()) ? "1" : "-1"))
+							.append("\t").append("-1")
+							.append("\t").append(user.getValidFlag())
 							.append("\t").append("")
 							.append("\t").append("")
 							.append("\t").append("0")
+							.append("\t").append(user.getRevoce())
 							);
 				}
 				else {
@@ -121,14 +122,14 @@ public class Checker17 extends AbstractChecker<UserList<SSLIndexUser>> {
 								.append("\t").append(site.getCountry())
 								.append("\t").append(site.getProjId())
 								.append("\t").append(site.getSiteName())
-//								.append("\t").append(addr)
 								.append("\t").append(site.getProjDelFlag())
 								.append("\t").append(site.getSiteDelFlag())
-//								.append("\t").append(user.getUserDelFlag())
-								.append("\t").append("R".equals(user.getFlag()) ? "0" : ("V".equals(user.getFlag()) ? "1" : "-1"))
+								.append("\t").append("-1")
+								.append("\t").append(user.getValidFlag())
 								.append("\t").append(site.getFirstDate())
 								.append("\t").append(site.getLastDate())
 								.append("\t").append(site.getCount())
+								.append("\t").append(user.getRevoce())
 								);
 					});
 				}
@@ -136,6 +137,11 @@ public class Checker17 extends AbstractChecker<UserList<SSLIndexUser>> {
 	}
 
 	public static void main(String... argv) {
+
+		System.setProperty("proxySet" , "true");
+		System.setProperty("proxyHost", "proxy.ns-sol.co.jp");
+		System.setProperty("proxyPort", "8000");
+
 		if (argv.length < 2) {
 			System.err.println("usage: java logcheck.Checker14 knownlist sslindex [accesslog...]");
 			System.exit(1);

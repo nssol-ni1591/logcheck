@@ -35,7 +35,7 @@ public class SSLIndexUserList extends HashMap<String, SSLIndexUser> implements U
 				.forEach(b -> {
 					SSLIndexUser user = this.get(b.getUserId());
 					if (user == null) {
-						user = new SSLIndexUser(b.getUserId(), b.getFlag());
+						user = new SSLIndexUser(b.getUserId(), b.getFlag(), b.getRevoce());
 						this.put(b.getUserId(), user);
 					}
 					// 基本的にindex.txtは時系列に並んでいるようなので、同一エントリが生じたときは更新する。で問題ないはず
