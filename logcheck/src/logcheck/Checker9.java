@@ -34,7 +34,7 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 	@Inject private Logger log;
 
 	private String select;
-	private final List<AccessLogSummary> list = new Vector<>(1000000);
+//	private final List<AccessLogSummary> list = new Vector<>(1000000);
 
 	private static final Pattern[] ALL_PATTERNS;
 	static {
@@ -65,6 +65,7 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 	}
 
 	public List<AccessLogSummary> call(Stream<String> stream) throws Exception {
+		final List<AccessLogSummary> list = new Vector<>(1000000);
 		stream//.parallel()
 				.filter(AccessLog::test)
 				.filter(s -> select.startsWith("-") || s.startsWith(select))
@@ -89,7 +90,7 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 		return list;
 	}
 
-	public void report() {
+	public void report(final List<AccessLogSummary> list) {
 		System.out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\tロール\tメッセージ");
 		list.forEach(msg -> {
 			System.out.println(

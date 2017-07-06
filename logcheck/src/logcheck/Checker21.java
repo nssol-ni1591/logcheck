@@ -31,7 +31,7 @@ public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 	@Inject private MagList maglist;
 	@Inject private SdcList sdclist;
 
-	private Set<FwLogSummary> list = new TreeSet<>();
+//	private Set<FwLogSummary> list = new TreeSet<>();
 
 	public Checker21 init(String knownfile, String magfile, String sdcfile) throws Exception {
 		this.knownlist.load(knownfile);
@@ -60,6 +60,7 @@ public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 
 	@Override
 	public Set<FwLogSummary> call(Stream<String> stream) throws Exception {
+		final Set<FwLogSummary> list = new TreeSet<>();
 		stream//.parallel()			// parallelでは java.util.ConcurrentModificationException が発生
 				.filter(FwLog::test)
 				.map(FwLog::parse)
@@ -85,7 +86,7 @@ public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 	}
 
 	@Override
-	public void report() {
+	public void report(final Set<FwLogSummary> list) {
 		System.out.println("出現日時\t最終日時\t接続元国\t接続元名\t接続元IP\t接続先国\t接続先名\t接続先IP\t接続先ポート\tログ数");
 
 		list.forEach(s -> {

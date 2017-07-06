@@ -30,7 +30,7 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-	private final Map<String, Map<Isp, List<AccessLogBean>>> map = new TreeMap<>();
+//	private final Map<String, Map<Isp, List<AccessLogBean>>> map = new TreeMap<>();
 
 	private static final Pattern IP_RANGE_PATTERN = Pattern.compile("Testing Source IP realm restrictions failed for /NSSDC-Auth1 *");
 
@@ -42,6 +42,7 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 
 	@Override
 	public Map<String, Map<Isp, List<AccessLogBean>>> call(Stream<String> stream) throws Exception {
+		final Map<String, Map<Isp, List<AccessLogBean>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
@@ -79,7 +80,7 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 	}
 
 	@Override
-	public void report() {
+	public void report(final Map<String, Map<Isp, List<AccessLogBean>>> map) {
 		System.out.println("国\tISP/プロジェクト\tアドレス\t日時");
 		map.forEach((country, ispmap) -> {
 			ispmap.forEach((isp, addrmap) -> {

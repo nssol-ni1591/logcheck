@@ -35,7 +35,8 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 	@Inject private Logger log;
 
-	private static final Pattern AUTH_PATTERN = Pattern.compile("Certificate realm restrictions successfully passed for [\\S ]+ , with certificate 'CN=(Z\\w+), [\\S ]+'");
+	private static final Pattern AUTH_PATTERN = 
+			Pattern.compile("Certificate realm restrictions successfully passed for [\\S ]+ , with certificate 'CN=(Z\\w+), [\\S ]+'");
 
 	public Checker14 init(String knownfile, String sslindex) throws Exception {
 		this.knownlist.load(knownfile);
@@ -96,7 +97,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 	}
 
 	@Override
-	public void report() {
+	public void report(final UserList<UserListBean> list) {
 		// アドレスを出力してはいけない。拠点ごとに回数を取得しているのに、アドレスを出力すると、回数は実際の値のアドレス数の倍になる
 		System.out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数\t失効日時");
 		userlist.values().stream()

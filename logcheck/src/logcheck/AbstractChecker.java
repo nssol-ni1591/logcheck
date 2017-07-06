@@ -138,7 +138,7 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 	}
 
 	protected abstract T call(Stream<String> stream) throws Exception;
-	protected abstract void report();
+	protected abstract void report(final T map);
 
 	@Override @WithElaps
 	public T call() throws Exception {
@@ -148,19 +148,18 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 	// 将来的にサブクラス外からの呼び出しを考慮してpublicとする
 	@WithElaps
 	public void start(String[] argv, int offset) throws Exception {
+		T map = null;
 		if (argv.length <= offset) {
-			// T map = run(System.in);
-			run(System.in);
+			map = run(System.in);
 		}
 		else {
 			for (int ix = offset; ix < argv.length; ix++ ) {
-				//T map = run(argv[ix]);
-				run(argv[ix]);
+				map = run(argv[ix]);
 			}
 		}
 		addrErrs.forEach(addr -> log.warning("unknown ip: addr=" + addr));
 		userErrs.forEach(userId -> log.warning("not found user: userid=" + userId));
-		report();
+		report(map);
 	}
 
 	private class CheckProgress implements Runnable {
