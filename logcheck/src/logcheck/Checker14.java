@@ -52,9 +52,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 				.map(AccessLog::parse)
 				.filter(b -> AUTH_PATTERN.matcher(b.getMsg()).matches())
 				.forEach(b -> {
-//					NetAddr addr = b.getAddr();
 					String userId = null;
-
 					Matcher m = AUTH_PATTERN.matcher("   " + b.getMsg()); // 1文字目が欠ける対策
 					if (m.find(1)) {
 						userId = m.group(1);
@@ -73,7 +71,6 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 					UserListSite site = user.getSite(b.getAddr());
 					if (site == null) {
-						// DBには
 //						MagListIsp magisp = maglist.get(b.getAddr());
 						IspList magisp = sitelist.get(b.getAddr());
 						if (magisp == null) {
@@ -103,30 +100,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 	@Override
 	public void report() {
-		/*
-		// アドレスを出力してはいけない。拠点ごとに回数を取得しているのに、アドレスを出力すると、回数は実際の値のアドレスう数の倍になる
-		System.out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tIPアドレス\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数");
-		userlist.values().stream()
-		.forEach(user -> {
-			user.getSites().forEach(site -> {
-				site.getAddress().forEach(addr -> {
-					System.out.println(
-							new StringBuilder(user.getUserId())
-							.append("\t").append(site.getCountry())
-							.append("\t").append(site.getProjId())
-							.append("\t").append(site.getSiteName())
-							.append("\t").append(addr)
-							.append("\t").append(site.getProjDelFlag())
-							.append("\t").append(site.getSiteDelFlag())
-							.append("\t").append(user.getUserDelFlag())
-							.append("\t").append(user.getValidFlag())
-							.append("\t").append(site.getFirstDate())
-							.append("\t").append(site.getLastDate())
-							.append("\t").append(site.getCount())
-							);
-				});
-		});
-		*/
+		// アドレスを出力してはいけない。拠点ごとに回数を取得しているのに、アドレスを出力すると、回数は実際の値のアドレス数の倍になる
 		System.out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数\t失効日時");
 		userlist.values().stream()
 			.forEach(user -> {
@@ -155,8 +129,8 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 		System.setProperty("proxyHost", "proxy.ns-sol.co.jp");
 		System.setProperty("proxyPort", "8000");
 
-		if (argv.length < 1) {
-			System.err.println("usage: java logcheck.Checker14 knownlist [accesslog...]");
+		if (argv.length < 2) {
+			System.err.println("usage: java logcheck.Checker14 knownlist sslindex [accesslog...]");
 			System.exit(1);
 		}
 

@@ -52,8 +52,13 @@ public class Checker16 extends Checker14 {
 	}
 
 	public static void main(String... argv) {
-		if (argv.length < 1) {
-			System.err.println("usage: java logcheck.Checker16 knownlist [accesslog...]");
+
+		System.setProperty("proxySet" , "true");
+		System.setProperty("proxyHost", "proxy.ns-sol.co.jp");
+		System.setProperty("proxyPort", "8000");
+
+		if (argv.length < 2) {
+			System.err.println("usage: java logcheck.Checker16 knownlist sslindex [accesslog...]");
 			System.exit(1);
 		}
 
