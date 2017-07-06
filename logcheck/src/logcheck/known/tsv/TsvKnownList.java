@@ -14,7 +14,6 @@ import javax.enterprise.inject.Alternative;
 
 import logcheck.annotations.WithElaps;
 import logcheck.known.KnownList;
-import logcheck.known.KnownListBean;
 import logcheck.known.KnownListIsp;
 import logcheck.util.net.NetAddr;
 
@@ -65,7 +64,7 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 		return this;
 	}
 
-	private static KnownListBean parse(String s) {
+	private static TsvKnownListBean parse(String s) {
 		String addr = null;
 		String name = null;
 		String country = null;
@@ -87,7 +86,7 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 		if (m.find(3)) {
 			country = m.group(3);
 		}
-		return new KnownListBean(addr, name, country);
+		return new TsvKnownListBean(addr, name, country);
 	}
 	private static boolean test(String s) {
 		if (s.startsWith("#")) {
