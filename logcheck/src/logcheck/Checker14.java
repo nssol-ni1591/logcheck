@@ -15,7 +15,9 @@ import logcheck.annotations.UseChecker14;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
+import logcheck.mag.MagListIsp;
 import logcheck.site.SiteList;
+import logcheck.site.SiteListIsp;
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
 import logcheck.user.UserListSite;
@@ -73,6 +75,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 					if (site == null) {
 //						MagListIsp magisp = maglist.get(b.getAddr());
 						IspList magisp = sitelist.get(b.getAddr());
+//						SiteListIsp magisp = maglist.get(b.getAddr());
 						if (magisp == null) {
 							IspList isp = knownlist.get(b.getAddr());
 							if (isp == null) {
@@ -142,10 +145,10 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 	}
 
 	public static void main(String... argv) {
-
-		System.setProperty("proxySet" , "true");
-		System.setProperty("proxyHost", "proxy.ns-sol.co.jp");
-		System.setProperty("proxyPort", "8000");
+// このメインは、ログ収集サーバ上でも呼ばれるため、プロキシーの設定を行ってはいけない
+//		System.setProperty("proxySet" , "true");
+//		System.setProperty("proxyHost", "proxy.ns-sol.co.jp");
+//		System.setProperty("proxyPort", "8000");
 
 		if (argv.length < 2) {
 			System.err.println("usage: java logcheck.Checker14 knownlist sslindex [accesslog...]");
