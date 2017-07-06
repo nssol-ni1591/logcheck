@@ -5,13 +5,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
-import logcheck.annotations.UseChecker14;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
@@ -25,8 +23,7 @@ import logcheck.user.UserListSite;
  * 
  * 
  */
-@UseChecker14
-public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
+public class Checker18 extends AbstractChecker<UserList<UserListBean>> {
 
 	@Inject private KnownList knownlist;
 //	@Inject private MagList maglist;
@@ -37,9 +34,8 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 	private static final Pattern AUTH_PATTERN = Pattern.compile("Certificate realm restrictions successfully passed for [\\S ]+ , with certificate 'CN=(Z\\w+), [\\S ]+'");
 
-	public Checker14 init(String knownfile, String sslindex) throws Exception {
+	public Checker18 init(String knownfile, String sslindex) throws Exception {
 		this.knownlist.load(knownfile);
-//		this.maglist.load();
 		this.sitelist.load(null);
 		this.userlist.load(sslindex, sitelist);
 		return this;
@@ -51,6 +47,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
 				.filter(b -> AUTH_PATTERN.matcher(b.getMsg()).matches())
+//				.filter(b -> b.getId().startsWith("Z"))
 				.forEach(b -> {
 					String userId = null;
 					Matcher m = AUTH_PATTERN.matcher("   " + b.getMsg()); // 1文字目が欠ける対策
@@ -60,9 +57,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 					UserListBean user = userlist.get(userId);
 					if (user == null) {
-//						log.warning("not found user: userid=" + userId);
 						userErrs.add(userId);
-//						return;
 
 						// ログに存在するが、SSLテーブルに存在しない場合： 不正な状態を検知することができるようにuserlistに追加する
 						user = new UserListBean(userId, "-1", "-1");
@@ -100,7 +95,6 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 	@Override
 	public void report() {
-		// アドレスを出力してはいけない。拠点ごとに回数を取得しているのに、アドレスを出力すると、回数は実際の値のアドレス数の倍になる
 		System.out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数\t失効日時");
 		userlist.values().stream()
 			.forEach(user -> {
@@ -148,17 +142,14 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 		System.setProperty("proxyPort", "8000");
 
 		if (argv.length < 2) {
-			System.err.println("usage: java logcheck.Checker14 knownlist sslindex [accesslog...]");
+			System.err.println("usage: java logcheck.Checker18 knownlist sslindex [accesslog...]");
 			System.exit(1);
 		}
 
 		int rc = 0;
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-//			Checker14 application = container.instance().select(Checker14.class).get();
-			Checker14 application = container.instance().select(Checker14.class, new AnnotationLiteral<UseChecker14>(){
-				private static final long serialVersionUID = 1L;
-			}).get();
+			Checker18 application = container.instance().select(Checker18.class).get();
 			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {
