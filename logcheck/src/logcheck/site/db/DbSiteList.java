@@ -55,10 +55,7 @@ public class DbSiteList extends LinkedHashMap<String, SiteListIsp> implements Si
 
 		// Oracle JDBC Driverのロード
 		//Class.forName("oracle.jdbc.driver.OracleDriver");
-
 		try (	// Oracleに接続
-				//Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@172.31.247.137:1521/sdcdb01", "masterinfo", "masterinfo");
-				//Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@172.31.247.137:1521:sdcdb011", "masterinfo", "masterinfo");
 				Connection conn = DB.createConnection();
 				// ステートメントを作成
 				PreparedStatement stmt = conn.prepareStatement(sql);

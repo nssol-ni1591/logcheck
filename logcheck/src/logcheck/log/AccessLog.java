@@ -45,13 +45,11 @@ public class AccessLog {
 
 	public static boolean test(String s) {
 		if (s.startsWith("#")) {
-//			System.err.println("SKIP: \"" + s + "\"");
 			return false;
 		}
 
 		String[] array = s.split(" - ");
 		if (array.length < 4) {
-//			System.err.println("ERROR: \"" + s + "\"");
 			log.warning("(AccessLog): \"" + s + "\"");
 			return false;
 		}
@@ -60,7 +58,6 @@ public class AccessLog {
 		Matcher m = p.matcher(array[2]);
 		boolean rc = m.matches();
 		if (!rc) {
-//			System.err.println("ERROR: \"" + s + "\"");
 			log.warning("(AccessLog): \"" + s + "\"");
 		}
 		return rc;

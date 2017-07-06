@@ -3,10 +3,8 @@ package logcheck.user;
 import java.util.Set;
 
 import logcheck.isp.IspList;
-import logcheck.mag.MagListIsp;
 import logcheck.site.SiteListIsp;
 import logcheck.site.SiteListKnownIsp;
-import logcheck.site.SiteListMagIsp;
 import logcheck.util.Summary;
 import logcheck.util.net.NetAddr;
 
@@ -14,9 +12,6 @@ public class UserListSite extends Summary<SiteListIsp> {
 
 	public UserListSite(SiteListIsp site) {
 		super(site);
-	}
-	public UserListSite(MagListIsp isp) {
-		super(new SiteListMagIsp(isp));
 	}
 	public UserListSite(IspList isp) {
 		super(new SiteListKnownIsp(isp));
@@ -48,7 +43,6 @@ public class UserListSite extends Summary<SiteListIsp> {
 		getRef().addAddress(addr);
 	}
 	public boolean within(NetAddr addr) {
-//		return getRef().getAddress().stream().anyMatch(net -> net.within(addr));
 		return getRef().within(addr);
 	}
 

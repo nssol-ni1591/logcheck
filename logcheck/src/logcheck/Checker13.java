@@ -30,8 +30,6 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-//	@Inject private Logger log;
-
 	private final Map<String, Map<Isp, List<AccessLogBean>>> map = new TreeMap<>();
 
 	private static final Pattern IP_RANGE_PATTERN = Pattern.compile("Testing Source IP realm restrictions failed for /NSSDC-Auth1 *");
@@ -41,18 +39,12 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 		this.maglist.load(magfile);
 		return this;
 	}
-/*
-	public static boolean test(AccessLogBean b) {
-		// メッセージにIPアドレスなどが含まれるログは、それ以外の部分を比較対象とするための前処理
-		return IP_RANGE_PATTERN.matcher(b.getMsg()).matches();
-	}
-*/
+
 	@Override
 	public Map<String, Map<Isp, List<AccessLogBean>>> call(Stream<String> stream) throws Exception {
 		stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
-//				.filter(Checker13::test)
 				.filter(b -> IP_RANGE_PATTERN.matcher(b.getMsg()).matches())
 				.forEach(b -> {
 					NetAddr addr = b.getAddr();
@@ -64,7 +56,6 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 					if (isp != null) {
 						Map<Isp, List<AccessLogBean>> ispmap;
 						List<AccessLogBean> addrmap;
-//						AccessLogBean msg;
 
 						ispmap = map.get(isp.getCountry());
 						if (ispmap == null) {
@@ -74,24 +65,13 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 
 						addrmap = ispmap.get(isp);
 						if (addrmap == null) {
-//							addrmap = new TreeMap<>();
 							addrmap = new ArrayList<AccessLogBean>();
 							ispmap.put(isp, addrmap);
 						}
 
 						addrmap.add(b);
-//						msg = addrmap.get(addr);
-//						if (msg == null) {
-//							msg = new AccessLogSummary(b, IP_RANGE_PATTERN.toString());
-//							addrmap.put(addr, msg);
-//						}
-//						else {
-//							msg.update(b);
-//						}
-
-					} else {
-//						System.err.println("unknown ip: addr=" + addr);
-//						log.warning("unknown ip: addr=" + addr);
+					}
+					else {
 						addrErrs.add(b.getAddr());
 					}
 				});

@@ -9,8 +9,6 @@ import logcheck.site.SiteList;
  */
 public interface UserList<E> extends Map<String, E> {
 
-//	UserList<E> load() throws Exception;
-
 	UserList<E> load(String sql, SiteList sitelist) throws Exception;
 
 	E get(Object userId);

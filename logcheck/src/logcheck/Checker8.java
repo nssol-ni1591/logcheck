@@ -66,7 +66,6 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 			// failed が含まれないメッセージは集約する
 			return INFO_SUMMARY_MSG;
 		}
-//		System.err.println("ERROR: \"" + b.getMsg() + "\"");
 		log.warning("(Pattern): \"" + b.getMsg() + "\"");
 		return b.getMsg();
 	}
@@ -77,10 +76,7 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
 				.forEach(b -> {
-//					log.info(b.toString());
-
 					String pattern = getPattern(b);
-
 					NetAddr addr = b.getAddr();
 					IspList isp = maglist.get(addr);
 					if (isp == null) {
@@ -129,8 +125,6 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 
 					}
 					else {
-//						System.err.println("unknown ip: addr=" + addr);
-//						log.warning("unknown ip: addr=" + addr);
 						addrErrs.add(b.getAddr());
 					}
 				});
@@ -141,13 +135,9 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 	public void report() {
 		System.out.println("国\tISP/プロジェクト\tアドレス\tユーザID\tメッセージ\tロール\t初回日時\t最終日時\tログ数");
 		map.forEach((country, ispmap) -> {
-
 			ispmap.forEach((isp, addrmap) -> {
-
 				addrmap.forEach((addr, idmap) -> {
-
 					idmap.forEach((id, msgmap) -> {
-
 						msgmap.forEach((pattern, msg) -> {
 							System.out.println(
 									new StringBuilder(country)
@@ -159,7 +149,6 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 											.append("\t").append(msg.getFirstDate())
 											.append("\t").append(msg.getLastDate())
 											.append("\t").append(msg.getCount())
-//											.append("\t").append(sumIspLog)
 											);
 						});
 					});
@@ -178,12 +167,6 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
 			//Checker8 application = container.instance().select(Checker8.class).get();
-			/*
-			@SuppressWarnings("serial")
-			Checker8 application = (Checker8) container.instance().select(new AnnotationLiteral<UseChecker8>(){
-				private static final long serialVersionUID = 1L;
-			}).get();
-			*/
 			Checker8 application = container.instance().select(Checker8.class, new AnnotationLiteral<UseChecker8>(){
 				private static final long serialVersionUID = 1L;
 			}).get();

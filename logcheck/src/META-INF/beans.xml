@@ -20,6 +20,6 @@
 		 -->
 		<class>logcheck.known.net.Whois</class>
 		<class>logcheck.site.db.DbSiteList</class>
-		<class>logcheck.user.sslindex.SSLIndexUserList</class>
+		<class>logcheck.user.ssl.SSLUserList</class>
 	</alternatives>
 </beans>

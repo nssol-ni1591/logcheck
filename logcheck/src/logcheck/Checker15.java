@@ -12,14 +12,11 @@ import org.jboss.weld.environment.se.WeldContainer;
  */
 public class Checker15 extends Checker14 {
 
-//	@Inject private Logger log;
-
 	@Override
 	public void report() {
 		// 出力用コレクションに作り直す
 		Map<String, Map<String, String>> projmap = new TreeMap<>(); 
 		userlist.values().stream()
-//				.filter(user -> user.sumCount() == 0 && "0".equals(user.getUserDelFlag()))
 				.filter(user -> user.getSites().stream().mapToInt(site -> 
 						site.getCount()).sum() == 0
 						&& "1".equals(user.getValidFlag())
@@ -60,11 +57,6 @@ public class Checker15 extends Checker14 {
 	}
 
 	public static void main(String... argv) {
-// このメインは、ログ収集サーバ上でも呼ばれるため、プロキシーの設定を行ってはいけない
-//		System.setProperty("proxySet" , "true");
-//		System.setProperty("proxyHost", "proxy.ns-sol.co.jp");
-//		System.setProperty("proxyPort", "8000");
-
 		if (argv.length < 2) {
 			System.err.println("usage: java logcheck.Checker15 knownlist sslindex [accesslog...]");
 			System.exit(1);

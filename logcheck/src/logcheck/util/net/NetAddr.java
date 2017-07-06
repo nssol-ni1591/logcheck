@@ -11,7 +11,7 @@ public class NetAddr implements Comparable<NetAddr> {
 		srcaddr = addr(src);
 		netaddr = addr(net);
 		brdaddr = addr(brd);
-//		mask = 0;
+
 		int mask = 0;
 		for (int ix = 0; ix < 4; ix++) {
 			switch (brdaddr[ix] - netaddr[ix]) {
@@ -29,7 +29,6 @@ public class NetAddr implements Comparable<NetAddr> {
 		this.mask = mask;
 	}
 	public NetAddr(String addr) {
-//		srcaddr = new int[4];
 		netaddr = new int[4];
 		brdaddr = new int[4];
 
@@ -37,21 +36,14 @@ public class NetAddr implements Comparable<NetAddr> {
 		if (s0.length != 1 && s0.length != 2) {
 			throw new IllegalArgumentException("netaddr error: " + addr);
 		}
-		/*
-		String[] s1 = s0[0].split("\\.");
-		if (s1.length != 4) {
-			throw new IllegalArgumentException("ip error: " + s0[0] + ", len=" + s1.length);
-		}
-		*/
+
 		srcaddr = addr(s0[0]);
 
 		for (int ix = 0; ix < 4; ix++) {
-//			srcaddr[ix] = Integer.parseInt(s1[ix]);
 			netaddr[ix] = srcaddr[ix];
 			brdaddr[ix] = srcaddr[ix];
 		}
 
-		//mask = s0.length == 1 ? 32 : Byte.parseByte(s0[1]);
 		if (s0.length < 2) {
 			mask = 32;
 		}
@@ -64,12 +56,7 @@ public class NetAddr implements Comparable<NetAddr> {
 				int tmp_mask = 0;
 				for (int ix = 0; ix < 4; ix++) {
 					int m = Integer.parseInt(s2[ix]);
-					/*
-					while (m > 0) {
-						m = m / 2;
-						++tmp_mask;
-					}
-					*/
+
 					switch (m) {
 					case 0:		tmp_mask += 0 ; break;
 					case 127:	tmp_mask += 1 ; break;

@@ -60,7 +60,7 @@ public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 
 	@Override
 	public Set<FwLogSummary> call(Stream<String> stream) throws Exception {
-		stream//.parallel()			parallelでは java.util.ConcurrentModificationException が発生
+		stream//.parallel()			// parallelでは java.util.ConcurrentModificationException が発生
 				.filter(FwLog::test)
 				.map(FwLog::parse)
 				.forEach(b -> {

@@ -13,8 +13,6 @@ import logcheck.user.UserList;
  */
 public class Checker16 extends Checker14 {
 
-//	@Inject private Logger log;
-
 	/*
 	 * from 上野さん  (2017/05/26 (金) 15:03)
 	 * 上野です。お疲れ様です。
@@ -32,7 +30,6 @@ public class Checker16 extends Checker14 {
 		System.out.println("ユーザID\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除");
 		map.values().stream()
 			// ツール実行時点で証明書が無効ならば、利用状況を確認する必要がないので対象外にする
-//			.filter(user -> user.sumCount() == 0 && "1".equals(user.getValidFlag()))
 			.filter(user -> user.getSites().stream().mapToInt(site -> 
 					site.getCount()).sum() == 0
 					&& "1".equals(user.getValidFlag())
@@ -52,11 +49,6 @@ public class Checker16 extends Checker14 {
 	}
 
 	public static void main(String... argv) {
-// このメインは、ログ収集サーバ上でも呼ばれるため、プロキシーの設定を行ってはいけない
-//		System.setProperty("proxySet" , "true");
-//		System.setProperty("proxyHost", "proxy.ns-sol.co.jp");
-//		System.setProperty("proxyPort", "8000");
-
 		if (argv.length < 2) {
 			System.err.println("usage: java logcheck.Checker16 knownlist sslindex [accesslog...]");
 			System.exit(1);

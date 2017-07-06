@@ -35,8 +35,6 @@ public class DB {
 				.toString();
 
 		Class.forName("oracle.jdbc.driver.OracleDriver");
-		//Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@172.31.247.137:1521/sdcdb01", "masterinfo", "masterinfo");
-		//return DriverManager.getConnection("jdbc:oracle:thin:@172.31.247.137:1521:sdcdb011", "masterinfo", "masterinfo");
 		return DriverManager.getConnection(url, username, password);
 	}
 

@@ -24,7 +24,6 @@ public class SSLIndexUserList extends HashMap<String, UserListBean> implements U
 
 // 正規化表現ではうまく処理できないのでTSV形式ということもありsplitで処理する
 //	public static String PATTERN = "(\\w)\t(\\w+)\t(\\w*)\t(\\w+)\t(\\w*)\t/C=JP/ST=TOKYO/L=CHUOU-KU/O=sdc/OU=nssol/CN=(\\w+)";
-//	public static String PATTERN = "(\\w)\t(\\w+)\t(\\w+)?\t(\\w+)\t(\\w+)\t(\\S+)";
 
 	public SSLIndexUserList() {
 		super(5000);
@@ -39,13 +38,11 @@ public class SSLIndexUserList extends HashMap<String, UserListBean> implements U
 				.forEach(b -> {
 					UserListBean bean = this.get(b.getUserId());
 					if (bean == null) {
-//						user = new UserListBean(b.getUserId(), b.getFlag(), b.getRevoce());
 						bean = new UserListBean(b, "-1");
 						this.put(b.getUserId(), bean);
 					}
 					// 基本的にindex.txtは時系列に並んでいるようなので、同一エントリが生じたときは更新する。で問題ないはず
 					else {
-//						log.warning("(SSLインデックス): user=" + user);
 						bean.update(b);
 					}
 				});

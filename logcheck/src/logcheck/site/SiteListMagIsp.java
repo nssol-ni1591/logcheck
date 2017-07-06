@@ -7,15 +7,11 @@ import logcheck.util.net.NetAddr;
 
 public class SiteListMagIsp implements SiteListIsp {
 
-//	private final MagListIsp isp;
 	private final SiteListIsp isp;
 
 	public SiteListMagIsp(MagListIsp isp) {
 		this.isp = isp;
 	}
-//	public SiteListMagIsp(IspList isp) {
-//		this.isp = (SiteListIsp)isp;
-//	}
 
 	@Override
 	public String getSiteName() {
@@ -27,7 +23,6 @@ public class SiteListMagIsp implements SiteListIsp {
 	}
 	@Override
 	public String getProjId() {
-//		return isp.getProjId();
 		return isp.getName();
 	}
 	@Override

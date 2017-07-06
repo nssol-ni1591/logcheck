@@ -102,44 +102,23 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 
 	protected AbstractChecker() { }
 
-//	private Stream<String> getStream() {
-//		return stream;
-//	}
-//	private void setStream(Stream<String> stream) {
-//		this.stream = stream;
-//	}
-
 	private T run(InputStream is) throws Exception {
-//		System.err.println("checking from InputStream:");
 		log.info("checking from InputStream:");
-//		long time = System.currentTimeMillis();
 
 		this.stream = new BufferedReader(new InputStreamReader(is)).lines();
 		T map = run2();
-
-//		System.err.println();
-//		System.err.println("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
-//		log.info("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
 		return map;
 	}
 	private T run(String file) throws Exception {
-//		System.err.println("checking from file=" + file + ":");
 		log.info("checking from file=" + file + ":");
-//		long time = System.currentTimeMillis();
 
 		this.stream = Files.lines(Paths.get(file), StandardCharsets.UTF_8);
 		T map = run2();
-
-//		System.err.println();
-//		System.err.println("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
-//		log.info("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
 		return map;
 	}
 	private T run2() throws Exception {
-//		setStream(stream);
 
 		ExecutorService exec = null;
-//		CheckProgress p = null;
 		T map = null;
 		try {
 			exec = Executors.newFixedThreadPool(2);
@@ -152,7 +131,6 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 
 			p.stopRequest();
 		}
-//		catch (Exception ex) { }
 		finally {
 			exec.shutdown();
 		}
@@ -164,7 +142,6 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 
 	@Override @WithElaps
 	public T call() throws Exception {
-//		Stream<String> stream = getStream();
 		return call(stream);
 	}
 
@@ -172,13 +149,13 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 	@WithElaps
 	public void start(String[] argv, int offset) throws Exception {
 		if (argv.length <= offset) {
-			/*T map = */run(System.in);
-			//report();
+			// T map = run(System.in);
+			run(System.in);
 		}
 		else {
 			for (int ix = offset; ix < argv.length; ix++ ) {
-				/*T map = */run(argv[ix]);
-				//report();
+				//T map = run(argv[ix]);
+				run(argv[ix]);
 			}
 		}
 		addrErrs.forEach(addr -> log.warning("unknown ip: addr=" + addr));
@@ -197,14 +174,12 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 					System.err.print(".");
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
-//					e.printStackTrace();
+					// e.printStackTrace();
 				}
 			}
-//			System.err.println();	// このタイミングでは、call()スレッドが終了しているので間に合わない
 		}
 		
 		public void stopRequest() {
-//			System.err.println();
 			stopRequest = true;
 		}
 	}

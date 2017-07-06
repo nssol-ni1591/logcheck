@@ -44,13 +44,6 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 	 */
 	public KnownListIsp get(NetAddr addr) {
 		Optional<KnownListIsp> rc = this.stream()
-/*
-				.filter(isp -> {
-//					return isp.getAddress().stream().filter(net -> net.within(addr)).findFirst().isPresent();
-					return isp.getAddress().stream().anyMatch(net -> net.within(addr));
-				})
-*/
-//				.filter(isp -> isp.getAddress().stream().anyMatch(net -> net.within(addr)))
 				.filter(isp -> isp.within(addr))
 				.findFirst();
 		return rc.isPresent() ? rc.get() : null;
@@ -62,12 +55,9 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 				.filter(TsvKnownList::test)
 				.map(TsvKnownList::parse)
 				.forEach(b -> {
-//					KnownListIsp isp = get(b.getName());
 					KnownListIsp isp = get(new NetAddr(b.getAddr()));
 					if (isp == null) {
 						isp = new KnownListIsp(b.getName(), b.getCountry());
-//						put(b.getName(), isp);
-//						put(new NetAddr(b.getAddr()), isp);
 						add(isp);
 					}
 					isp.addAddress(new NetAddr(b.getAddr()));
@@ -108,7 +98,6 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 		Matcher m = p.matcher(s);
 		boolean rc = m.find();
 		if (!rc) {
-//			System.err.println("WARNING(KNOWN): " + s);
 			log.warning("(既知ISP_IPアドレス): s=\"" + s + "\"");
 		}
 		return rc;
@@ -124,9 +113,6 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 			e.printStackTrace();
 		}
 
-//		for (String name : map.keySet()) {
-//		for (NetAddr addr : map.keySet()) {
-//			KnownListIsp n = map.get(addr);
 		for (KnownListIsp n : map) {
 			System.out.println(n.getCountry() + "\t" + n + "\t" + n.getAddress());
 			System.out.print("\t");
@@ -135,4 +121,5 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 		}
 		System.out.println("IspList.main ... end");
 	}
+
 }

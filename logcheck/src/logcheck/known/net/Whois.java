@@ -12,7 +12,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Alternative;
 
 import logcheck.known.KnownList;
@@ -22,7 +21,6 @@ import logcheck.util.net.ClientAddr;
 import logcheck.util.net.NetAddr;
 
 @Alternative
-//public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implements KnownList {
 public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 
 	private static final long serialVersionUID = 1L;
@@ -41,10 +39,7 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 	private static final Pattern[] PTN_NAMES = {
 			Pattern.compile("descr: +reassign to \"([\\S ]+)\""),
 			Pattern.compile("descr: +([\\S ]+)"),
-//			Pattern.compile("netname: +([\\S ]+)"),
 			Pattern.compile("[Oo]rg-?[Nn]ame: *([\\S ]+)"),
-//			Pattern.compile("OrgName: +([\\S ]+)"),
-//			Pattern.compile("[\\w\\.\\[: ]*Organization[\\w\\]: ]*([\\S ]+)"),
 			Pattern.compile("\\w?\\.? ?\\[Organization\\] +([\\S ]+)"),
 			Pattern.compile("owner: +([\\S ]+)"),
 			Pattern.compile("network:Organization[\\S]*:([\\S ]+)"),
@@ -54,8 +49,6 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 	};
 	private static final Pattern[] PTN_COUNTRIES = {
 			Pattern.compile("[Cc]ountry: +(\\w\\w)"),
-//			Pattern.compile("Country: +(\\w\\w)"),
-//			Pattern.compile("network:Country-Code:(\\w\\w)"),
 			Pattern.compile("\\[ (\\w+) database provides .*"),		// JPNIC
 			Pattern.compile("(\\w+) is not an ISP .*"),				// KRNIC
 			Pattern.compile("# (\\w+) WHOIS data and services .*"),	// ARIN
@@ -64,10 +57,6 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 
 	//@Inject private Logger log;
 	private static Logger log = Logger.getLogger(Whois.class.getName());
-
-	@PostConstruct
-	public void init() {
-	}
 
 	public String parse(Pattern[] ptns, String s) {
 		for (Pattern p : ptns) {
@@ -96,22 +85,16 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 	 */
 	@Override
 	public KnownListIsp get(NetAddr addr) {
-//		Optional<KnownListIsp> rc = this.keySet().stream()
-//				.filter(net -> net.within(addr))
-//				.map(net -> super.get(net))
-//				.findFirst();
 		Optional<KnownListIsp> rc = this.stream()
 				.filter(isp -> isp.within(addr))
 				.findFirst();
 		if (rc != null && rc.isPresent()) {
-//			log.info("hit cache: addr=" + addr);
 			return rc.get();
 		}
 
 		// json: http://wq.apnic.net/whois-search/query?searchtext=182.171.83.197
 
 		KnownListIsp isp = search("http://whois.threet.co.jp/?key=", addr);
-//		KnownListIsp isp = search("http://wq.apnic.net/whois-search/query?searchtext=", addr);
 		if (isp.getName() == null || isp.getAddress().isEmpty()) {
 			System.err.println();
 			log.info("retry search. addr=" + addr);
@@ -146,9 +129,6 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 		}
 
 		if (isp != null) {
-//			for (NetAddr net : isp.getAddress()) {
-//				put(net, isp);
-//			}
 			add(isp);
 		}
 		return isp;
@@ -163,13 +143,7 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 		URL url = null;
 		HttpURLConnection http = null;
 		try  {
-//			log.info("request: url=" + site + addr);
-
 			url = new URL(site + addr);
-//			url = new URL("http://whois.threet.co.jp/?key=" + addr);
-//			url = new URL("https://www.whois.com/whois/" + addr);
-//			url = new URL("https://lab.syncer.jp/api/15/" + addr);
-//			url = new URL("http://lacnic.net/cgi-bin/lacnic/whois?query=" + addr);
 
 			http = (HttpURLConnection)url.openConnection();
 			http.setRequestMethod("GET");
@@ -180,24 +154,6 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 
 				String s;
 				while((s = reader.readLine()) != null) {
-
-//					System.out.println(s);
-/*
-					try {
-						ScriptEngineManager manager = new ScriptEngineManager();
-						ScriptEngine engine = manager.getEngineByName("JavaScript");
-						// ScriptEngine の eval に JSON を渡す時は、括弧で囲まないと例外が発生します。eval はセキュリティ的には好ましくないので、安全であることが不明なデータを扱うことは想定していません。
-						// 外部ネットワークと連携するプログラムで使用しないでください。
-						Object obj = engine.eval(String.format("%s", s));
-						// Rhino は、jdk1.6,7までの JavaScript エンジン。jdk1.8は「jdk.nashorn.api.scripting.NashornScriptEngine」
-						Map<String, Object> map = jsonToMap(obj,
-								engine.getClass().getName().equals("com.sun.script.javascript.RhinoScriptEngine"));
-
-						System.out.println(map);
-					} catch (Exception ex) {
-						ex.printStackTrace();
-					}
-*/
 					String tmp = parse(PTN_NETADDRS, s);
 					if (tmp != null) {
 						netaddr = tmp;
@@ -354,7 +310,6 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 	@Override
 	public KnownList load(String file) throws IOException {
 		KnownList list = new TsvKnownList().load(file);
-//		list.forEach((key, value) -> put(key, value));
 		list.forEach(value -> add(value));
 		return this;
 	}
@@ -407,7 +362,6 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 
 		try {
 			Whois f = new Whois();
-			f.init();
 			f.load(argv[0]);
 
 			for (NetAddr addr : addrs) {

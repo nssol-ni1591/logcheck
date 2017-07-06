@@ -72,7 +72,6 @@ public class FwLog {
 
 	public static boolean test(String s) {
 		if (s.startsWith("#")) {
-//			System.err.println("SKIP: \"" + s + "\"");
 			log.warning("(FwLog): \"" + s + "\"");
 			return false;
 		}
@@ -99,7 +98,6 @@ public class FwLog {
 								map.put(b,  summary);
 							}
 							else {
-//								summary.update(b);
 								summary.update(b.getDate());
 							}
 						});

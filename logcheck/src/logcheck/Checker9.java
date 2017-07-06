@@ -60,7 +60,6 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 		if (rc.isPresent()) {
 			return rc.get();
 		}
-//		System.err.println("ERROR: \"" + b.getMsg() + "\"");
 		log.warning("(Pattern): \"" + b.getMsg() + "\"");
 		return b.getMsg();
 	}
@@ -82,9 +81,8 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 					if (isp != null) {
 						AccessLogSummary msg = new AccessLogSummary(b, pattern, isp);
 						list.add(msg);
-					} else {
-//						System.err.println("unknown ip: addr=" + addr);
-//						log.warning("unknown ip: addr=" + addr);
+					}
+					else {
 						addrErrs.add(b.getAddr());
 					}
 				});

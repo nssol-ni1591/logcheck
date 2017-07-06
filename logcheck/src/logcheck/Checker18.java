@@ -47,7 +47,6 @@ public class Checker18 extends AbstractChecker<UserList<UserListBean>> {
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
 				.filter(b -> AUTH_PATTERN.matcher(b.getMsg()).matches())
-//				.filter(b -> b.getId().startsWith("Z"))
 				.forEach(b -> {
 					String userId = null;
 					Matcher m = AUTH_PATTERN.matcher("   " + b.getMsg()); // 1文字目が欠ける対策
@@ -66,7 +65,6 @@ public class Checker18 extends AbstractChecker<UserList<UserListBean>> {
 
 					UserListSite site = user.getSite(b.getAddr());
 					if (site == null) {
-//						MagListIsp magisp = maglist.get(b.getAddr());
 						IspList magisp = sitelist.get(b.getAddr());
 						if (magisp == null) {
 							IspList isp = knownlist.get(b.getAddr());
@@ -136,11 +134,6 @@ public class Checker18 extends AbstractChecker<UserList<UserListBean>> {
 	}
 
 	public static void main(String... argv) {
-// このメインは、ログ収集サーバ上でも呼ばれるため、プロキシーの設定を行ってはいけない
-//		System.setProperty("proxySet" , "true");
-//		System.setProperty("proxyHost", "proxy.ns-sol.co.jp");
-//		System.setProperty("proxyPort", "8000");
-
 		if (argv.length < 2) {
 			System.err.println("usage: java logcheck.Checker18 knownlist sslindex [accesslog...]");
 			System.exit(1);

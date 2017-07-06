@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 import javax.enterprise.inject.Alternative;
 
 import logcheck.annotations.WithElaps;
-import logcheck.mag.MagListBean;
 import logcheck.site.SiteList;
 import logcheck.site.SiteListIsp;
 import logcheck.site.SiteListIspImpl;
@@ -34,17 +33,6 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 		super(200);
 	}
 
-	/*
-	 * 引数のIPアドレスを含むCompanyを取得する
-	 */
-	/*
-	public SiteListIsp get(NetAddr addr) {
-		Optional<SiteListIsp> rc = values().stream().filter(isp -> {
-			return isp.getAddress().stream().filter(net -> net.within(addr)).findFirst().isPresent();
-		}).findFirst();
-		return rc.isPresent() ? rc.get() : null;
-	}
-	*/
 	@WithElaps
 	public SiteList load(String file) throws IOException {
 		Files.lines(Paths.get(file), Charset.forName("MS932"))
@@ -61,11 +49,10 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 		return this;
 	}
 
-	private MagListBean parse(String s) {
+	private TsvSiteListBean parse(String s) {
 		String projId = null;
 		String projName = null;
 		String siteName = null;
-//		String projIp = null;
 		String magIp = null;
 		String magMask = null;
 
@@ -88,8 +75,7 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 		if (array.length > 6) {
 			magMask = array[6];
 		}
-//		return new MagListBean(projId, projName, projSite, projIp, magIp, magMask);
-		return new MagListBean(projId, projName, siteName, magIp, magMask);
+		return new TsvSiteListBean(projId, projName, siteName, magIp, magMask);
 	}
 	private boolean test(String s) {
 		if (s.startsWith("#")) {
@@ -103,7 +89,6 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 		Matcher m = p.matcher(s);
 		boolean rc = m.find();
 		if (!rc) {
-//			System.err.println("WARNING(MAG): " + s.trim());
 			log.warning("(インターネット経由接続先): s=\"" + s.trim() + "\"");
 		}
 

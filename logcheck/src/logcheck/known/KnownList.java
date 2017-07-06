@@ -15,7 +15,6 @@ import logcheck.util.net.NetAddr;
  * 今のHashMapでは、Hash地の値により、どちらが取得されるか判断付かない。
  */
 public interface KnownList extends Set<KnownListIsp> {
-//public interface KnownList extends Map<NetAddr, KnownListIsp> {
 
 	KnownListIsp get(NetAddr addr);
 

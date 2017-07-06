@@ -49,17 +49,12 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 					+ " and s.site_id = u.site_id"
 					+ " and u.user_id = l.user_id"
 					+ " and u.user_id like 'Z%'"
-//					+ " and u.user_id like 'Z00005'"
 					+ " order by u.delete_flag, s.delete_flag, s.delete_flag"
 					;
 
 	public DbUserList() {
 		super(4000);
 	}
-
-//	public DbUserList load() throws Exception {
-//		return load(SQL_ZUSER);
-//	}
 
 	@WithElaps
 	public DbUserList load(String file, SiteList sitelist) throws Exception {
