@@ -50,7 +50,7 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 					+ " and u.user_id = l.user_id"
 					+ " and u.user_id like 'Z%'"
 //					+ " and u.user_id like 'Z00005'"
-//					+ " order by prj_id"
+					+ " order by u.delete_flag, s.delete_flag, s.delete_flag"
 					;
 
 	public DbUserList() {

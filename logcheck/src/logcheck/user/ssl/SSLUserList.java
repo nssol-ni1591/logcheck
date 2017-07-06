@@ -112,10 +112,6 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 		return rc;
 	}
 
-	public SSLUserList load() throws Exception {
-		throw new IllegalArgumentException("must file");
-	}
-
 	@WithElaps
 	public SSLUserList load(String file, SiteList sitelist) throws Exception {
 		FilteredRowSet rs = getRowSet(SQL_ZUSER);
