@@ -22,6 +22,8 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 		this.usrId = log.getId();
 		this.isp = null;
 		this.roles = log.getRoles();
+		// クラス生成時に1回呼び出されているので
+		super.addCount();
 	}
 	public AccessLogSummary(AccessLogBean log, String pattern, Isp isp) {
 		super(pattern, log.getDate());
@@ -29,6 +31,8 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 		this.usrId = log.getId();
 		this.isp = isp;
 		this.roles = log.getRoles();
+		// クラス生成時に1回呼び出されているので
+		super.addCount();
 	}
 
 	public NetAddr getAddr() {
