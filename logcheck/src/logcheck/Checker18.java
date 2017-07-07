@@ -10,10 +10,11 @@ import javax.inject.Inject;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
-import logcheck.isp.IspList;
 import logcheck.known.KnownList;
+import logcheck.known.KnownListIsp;
 import logcheck.log.AccessLog;
 import logcheck.site.SiteList;
+import logcheck.site.SiteListIsp;
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
 import logcheck.user.UserListSite;
@@ -66,9 +67,11 @@ public class Checker18 extends AbstractChecker<UserList<UserListBean>> {
 
 					UserListSite site = user.getSite(b.getAddr());
 					if (site == null) {
-						IspList magisp = sitelist.get(b.getAddr());
+//						IspList magisp = sitelist.get(b.getAddr());
+						SiteListIsp magisp = sitelist.get(b.getAddr());
 						if (magisp == null) {
-							IspList isp = knownlist.get(b.getAddr());
+//							IspList isp = knownlist.get(b.getAddr());
+							KnownListIsp isp = knownlist.get(b.getAddr());
 							if (isp == null) {
 								addrErrs.add(b.getAddr());
 								return;

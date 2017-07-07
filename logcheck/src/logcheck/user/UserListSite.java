@@ -2,7 +2,7 @@ package logcheck.user;
 
 import java.util.Set;
 
-import logcheck.isp.IspList;
+import logcheck.known.KnownListIsp;
 import logcheck.site.SiteListIsp;
 import logcheck.site.SiteListKnownIsp;
 import logcheck.util.Summary;
@@ -13,7 +13,7 @@ public class UserListSite extends Summary<SiteListIsp> {
 	public UserListSite(SiteListIsp site) {
 		super(site);
 	}
-	public UserListSite(IspList isp) {
+	public UserListSite(KnownListIsp isp) {
 		super(new SiteListKnownIsp(isp));
 	}
 
