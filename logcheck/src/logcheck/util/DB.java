@@ -10,6 +10,9 @@ import java.util.Properties;
 
 public class DB {
 
+	private DB () {
+	}
+
 	public static Connection createConnection() throws ClassNotFoundException, SQLException, IOException {
 
 		Properties props = new Properties();

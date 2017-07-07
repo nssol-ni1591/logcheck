@@ -50,7 +50,7 @@ public class DbSiteList extends LinkedHashMap<String, SiteListIsp> implements Si
 
 	@Override @WithElaps
 	public SiteList load(String file) throws Exception {
-
+		// 引数のfileは使用しない
 		String sql = SQL_ALL_SITE;
 
 		// Oracle JDBC Driverのロード
