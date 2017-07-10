@@ -228,9 +228,13 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 			}
 		}
 
+		// 複数の名称で登録されている組織名、もしくは、分かりづらい組織名の置換
 		if (name == null) { }
 		else if (name.contains("DOCOMO")) {
 			name = "NTT DOCOMO, INC.";
+		}
+		else if (name.startsWith("Asahi Net")) {
+			name = "Asahi Net Inc.";
 		}
 		else if (name.contains("GPRS/3G")) {
 			name = "Realmove Company Limited.";
@@ -238,11 +242,8 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 		else if (name.startsWith("CNC Group CHINA169")) {
 			name = "CNCGROUP China169 Backbone.";
 		}
-		else if (name.startsWith("Deutsche Telekom AG")) {
-			name = "Deutsche Telekom AG";
-		}
-		else if (name.startsWith("Asahi Net")) {
-			name = "Asahi Net Inc.";
+		else if (name.startsWith("DigitalOcean")) {
+			name = "Digital Ocean, Inc.";
 		}
 		else if (name.startsWith("Amazon")) {
 			name = "Amazon Technologies Inc.";
@@ -250,8 +251,10 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 		else if (name.startsWith("AT&T Wi-Fi Services")) {
 			name = "AT&T Wi-Fi Services.";
 		}
-
-		if ("route for Vodafone DSL customers".equals(name)) {
+		else if (name.startsWith("Deutsche Telekom AG")) {
+			name = "Deutsche Telekom AG";
+		}
+		else if (name.equals("route for Vodafone DSL customers")) {
 			name = "Vodafone customers";
 		}
 
@@ -279,6 +282,7 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 		KnownListIsp isp = new KnownListIsp(name, country);
 
 		if (netaddr == null) {
+			// アドレス範囲が取得できなかった場合は、グルーピングのキーとして呼び出し元で接続元IPアドれガスが設定される
 			return isp;
 		}
 
@@ -322,12 +326,6 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 
 		NetAddr[] addrs = {
 //				new ClientAddr(""),
-//				new ClientAddr(""),
-//				new ClientAddr(""),
-//				new ClientAddr(""),
-//				new ClientAddr(""),
-//				new ClientAddr(""),
-
 				new ClientAddr("61.204.36.71"),
 				new ClientAddr("202.248.61.202"),
 				new ClientAddr("61.204.36.81"),
