@@ -38,4 +38,13 @@ public class SiteListKnownIsp implements SiteListIsp {
 		return String.format("siteId=%s, projId=%s, del=%s%s", getSiteId(), getProjId(), getSiteDelFlag(), getProjDelFlag());
 	}
 
+	@Override
+	public String getSiteDelFlag() {
+		return "0";
+	}
+	@Override
+	public String getProjDelFlag() {
+		return "0";
+	}
+
 }

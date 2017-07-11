@@ -39,7 +39,7 @@ public class DbSiteList extends LinkedHashMap<String, SiteListIsp> implements Si
 	public static String SQL_ALL_SITE = 
 			"select s.site_id, s.site_name, s.delete_flag, p.prj_id, p.delete_flag, g.site_gip"
 			+ " from mst_project p"
-			+ " , masterinfo.sas_prj_site_info s left outer join masterinfo.sas_site_gip g on s.site_id = g.site_id"
+			+ " , sas_prj_site_info s left outer join sas_site_gip g on s.site_id = g.site_id"
 			+ " where p.prj_row_id = s.prj_row_id"
 			+ " order by p.delete_flag, s.delete_flag"
 	;
