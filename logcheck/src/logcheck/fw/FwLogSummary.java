@@ -12,41 +12,27 @@ public class FwLogSummary extends Summary<FwLogBean> implements Comparable<FwLog
 	private final NetAddr dstAddr;
 	private final int dstPort;
 
-//	private String firstDate;
-//	private final String lastDate;
-//	private int count;
-
 	public FwLogSummary(FwLogBean bean) {
 		super(null, bean.getDate());
-//		this.firstDate = bean.getDate();
-//		this.lastDate = bean.getDate();
 		this.dstPort = bean.getDstPort();
 		this.srcAddr = bean.getSrcIp();
 		this.dstAddr = bean.getDstIp();
 		this.srcIsp = null;
 		this.dstIsp = null;
-// callされた時点で1回目のログがあるため
-//		this.count = 1;
+		// callされた時点で1回目のログがあるため初期値を1にする
 		super.addCount();
 	}
 	public FwLogSummary(FwLogBean bean, Isp srcIsp, Isp dstIsp) {
 		super(null, bean.getDate());
-//		this.firstDate = bean.getDate();
-//		this.lastDate = bean.getDate();
 		this.srcAddr = bean.getSrcIp();
 		this.dstAddr = bean.getDstIp();
 		this.dstPort = bean.getDstPort();
 		this.srcIsp = srcIsp;
 		this.dstIsp = dstIsp;
 // callされた時点で1回目のログがあるため初期値を1にする
-//		this.count = 1;
 		super.addCount();
 	}
 
-//	public FwLogBean getBean() {
-//		return bean;
-//	}
-	// fwログは順番が逆のため
 	public String getFirstDate() {
 		return super.getLastDate();
 	}
@@ -68,15 +54,6 @@ public class FwLogSummary extends Summary<FwLogBean> implements Comparable<FwLog
 	public int getDstPort() {
 		return dstPort;
 	}
-//	@Override
-//	public int getCount() {
-//		return count;
-//	}
-
-//	public synchronized void update(FwLogBean bean) {
-//		firstDate = bean.getDate();
-//		count += 1;
-//	}
 
 	public int compareTo(FwLogSummary summary) {
 		// TODO Auto-generated method stub

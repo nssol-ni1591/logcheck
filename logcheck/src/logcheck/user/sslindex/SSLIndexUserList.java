@@ -7,12 +7,15 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import javax.enterprise.inject.Alternative;
+
 import logcheck.annotations.WithElaps;
 import logcheck.site.SiteList;
 import logcheck.user.UserList;
+import logcheck.user.UserListBean;
 
-//@Alternative
-public class SSLIndexUserList extends HashMap<String, SSLIndexUser> implements UserList<SSLIndexUser> {
+@Alternative
+public class SSLIndexUserList extends HashMap<String, UserListBean> implements UserList<UserListBean> {
 
 //	@Inject private Logger log;
 	private static Logger log = Logger.getLogger(SSLIndexUserList.class.getName());
@@ -21,32 +24,27 @@ public class SSLIndexUserList extends HashMap<String, SSLIndexUser> implements U
 
 // 正規化表現ではうまく処理できないのでTSV形式ということもありsplitで処理する
 //	public static String PATTERN = "(\\w)\t(\\w+)\t(\\w*)\t(\\w+)\t(\\w*)\t/C=JP/ST=TOKYO/L=CHUOU-KU/O=sdc/OU=nssol/CN=(\\w+)";
-//	public static String PATTERN = "(\\w)\t(\\w+)\t(\\w+)?\t(\\w+)\t(\\w+)\t(\\S+)";
 
 	public SSLIndexUserList() {
 		super(5000);
 	}
-
-//	@Override
-//	public UserList<SSLIndexUser> load() throws IOException {
-//		throw new IllegalArgumentException("must file");
-//	}
 
 	@Override @WithElaps
 	public SSLIndexUserList load(String file, SiteList sitelist) throws IOException {
 		Files.lines(Paths.get(file), Charset.forName("utf-8"))
 				.filter(s -> test(s))
 				.map(s -> parse(s))
+				.filter(b -> b.getUserId().startsWith("Z"))
 				.forEach(b -> {
-					SSLIndexUser user = this.get(b.getUserId());
-					if (user == null) {
-						user = new SSLIndexUser(b.getUserId(), b.getFlag());
-						this.put(b.getUserId(), user);
+					UserListBean bean = this.get(b.getUserId());
+					if (bean == null) {
+						bean = new UserListBean(b, "-1");
+						this.put(b.getUserId(), bean);
 					}
 					// 基本的にindex.txtは時系列に並んでいるようなので、同一エントリが生じたときは更新する。で問題ないはず
-//					else {
-//						log.warning("(SSLインデックス): user=" + user);
-//					}
+					else {
+						bean.update(b);
+					}
 				});
 		return this;
 	}
@@ -127,7 +125,7 @@ public class SSLIndexUserList extends HashMap<String, SSLIndexUser> implements U
 		}
 
 		for (String name : map.keySet()) {
-			SSLIndexUser user = map.get(name);
+			UserListBean user = map.get(name);
 			System.out.println(user);
 		}
 		System.out.println("SSLUserList.main ... end");

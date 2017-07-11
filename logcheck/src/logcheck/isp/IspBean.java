@@ -33,7 +33,6 @@ public class IspBean<E> implements Comparable<IspBean<E>> {
 	}
 
 	public String toString() {
-//		return name + ("".equals(country) ? "" : " (" + country + ")");
 		return name;
 	}
 	public String toStringWithAddress() {

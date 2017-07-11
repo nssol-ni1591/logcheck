@@ -27,7 +27,7 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-	private Map<String, Map<IspList, Map<NetAddr, Map<AccessLogSummary, Integer>>>> map = new TreeMap<>();
+//	private Map<String, Map<IspList, Map<NetAddr, Map<AccessLogSummary, Integer>>>> map = new TreeMap<>();
 
 	private static final Pattern[] FAIL_PATTERNS_ALL;
 	static {
@@ -43,7 +43,9 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 	}
 
 	@Override
-	public Map<String, Map<IspList, Map<NetAddr, Map<AccessLogSummary, Integer>>>> call(Stream<String> stream) throws Exception {
+	public Map<String, Map<IspList, Map<NetAddr, Map<AccessLogSummary, Integer>>>> call(Stream<String> stream)
+			throws Exception {
+		final Map<String, Map<IspList, Map<NetAddr, Map<AccessLogSummary, Integer>>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
@@ -106,7 +108,7 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 	}
 
 	@Override
-	public void report() {
+	public void report(final Map<String, Map<IspList, Map<NetAddr, Map<AccessLogSummary, Integer>>>> map) {
 		System.out.println("国\tISP/プロジェクト\tアドレス\tメッセージ\t初回日時\t最終日時\tログ数\tISP合計");
 		map.forEach((country, ispmap) -> {
 
@@ -120,7 +122,7 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 					msgmap.forEach((msg, count) -> {
 						System.out.println(
 								new StringBuilder("".equals(country) ? "<MAGLIST>" : country)
-								.append("\t").append(isp)
+								.append("\t").append(isp.getName())
 								.append("\t").append(addr)
 								.append("\t").append(msg.getPattern())
 								.append("\t").append(msg.getFirstDate())

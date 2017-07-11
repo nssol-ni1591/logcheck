@@ -1,11 +1,11 @@
-package logcheck.known;
+package logcheck.known.tsv;
 
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-public class KnownListBean {
+public class TsvKnownListBean {
 
 	private final String addr;
 	private final String name;
@@ -13,7 +13,7 @@ public class KnownListBean {
 	
 	@Inject private Logger log;
 
-	public KnownListBean(String addr, String name, String country) {
+	public TsvKnownListBean(String addr, String name, String country) {
 		this.addr = addr;
 		this.name = name;
 		this.country = country;

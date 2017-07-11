@@ -36,7 +36,7 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 
 	@Inject private Logger log;
 
-	private Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> map = new TreeMap<>();
+//	private Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> map = new TreeMap<>();
 
 	public Checker8 init(String knownfile, String magfile) throws Exception {
 		this.knownlist.load(knownfile);
@@ -66,21 +66,19 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 			// failed が含まれないメッセージは集約する
 			return INFO_SUMMARY_MSG;
 		}
-//		System.err.println("ERROR: \"" + b.getMsg() + "\"");
 		log.warning("(Pattern): \"" + b.getMsg() + "\"");
 		return b.getMsg();
 	}
 
 	@Override
-	public Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> call(Stream<String> stream) throws Exception {
+	public Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> call(Stream<String> stream)
+			throws Exception {
+		final Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> map = new TreeMap<>();
 		stream//.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
 				.forEach(b -> {
-//					log.info(b.toString());
-
 					String pattern = getPattern(b);
-
 					NetAddr addr = b.getAddr();
 					IspList isp = maglist.get(addr);
 					if (isp == null) {
@@ -129,8 +127,6 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 
 					}
 					else {
-//						System.err.println("unknown ip: addr=" + addr);
-//						log.warning("unknown ip: addr=" + addr);
 						addrErrs.add(b.getAddr());
 					}
 				});
@@ -138,20 +134,16 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 	}
 
 	@Override
-	public void report() {
+	public void report(final Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> map) {
 		System.out.println("国\tISP/プロジェクト\tアドレス\tユーザID\tメッセージ\tロール\t初回日時\t最終日時\tログ数");
 		map.forEach((country, ispmap) -> {
-
 			ispmap.forEach((isp, addrmap) -> {
-
 				addrmap.forEach((addr, idmap) -> {
-
 					idmap.forEach((id, msgmap) -> {
-
 						msgmap.forEach((pattern, msg) -> {
 							System.out.println(
 									new StringBuilder(country)
-											.append("\t").append(isp)
+											.append("\t").append(isp.getName())
 											.append("\t").append(addr)
 											.append("\t").append(id)
 											.append("\t").append(pattern)
@@ -159,7 +151,6 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 											.append("\t").append(msg.getFirstDate())
 											.append("\t").append(msg.getLastDate())
 											.append("\t").append(msg.getCount())
-//											.append("\t").append(sumIspLog)
 											);
 						});
 					});
@@ -178,12 +169,6 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
 			//Checker8 application = container.instance().select(Checker8.class).get();
-			/*
-			@SuppressWarnings("serial")
-			Checker8 application = (Checker8) container.instance().select(new AnnotationLiteral<UseChecker8>(){
-				private static final long serialVersionUID = 1L;
-			}).get();
-			*/
 			Checker8 application = container.instance().select(Checker8.class, new AnnotationLiteral<UseChecker8>(){
 				private static final long serialVersionUID = 1L;
 			}).get();

@@ -1,7 +1,7 @@
 package logcheck.known;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.Set;
 
 import logcheck.util.net.NetAddr;
 
@@ -14,7 +14,7 @@ import logcheck.util.net.NetAddr;
  * IPアドレスから取得される接続元はISP名ではなく企業名を取得したい。
  * 今のHashMapでは、Hash地の値により、どちらが取得されるか判断付かない。
  */
-public interface KnownList extends Map<NetAddr, KnownListIsp> {
+public interface KnownList extends Set<KnownListIsp> {
 
 	KnownListIsp get(NetAddr addr);
 

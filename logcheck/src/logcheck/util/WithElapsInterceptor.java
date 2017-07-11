@@ -33,7 +33,6 @@ public class WithElapsInterceptor {
 		String classAndMethod = ic.getTarget().getClass().getSuperclass().getName() + "#" + ic.getMethod().getName();
 
 		// メソッド開始前のログ
-//		System.err.println("start " + classAndMethod + ".");
 		log.info("start " + classAndMethod + ".");
 
 		Object rc = null;
@@ -47,15 +46,14 @@ public class WithElapsInterceptor {
 			// 例外のログを出したら、例外はそのまま再スローする。
 			// トランザクションインターセプターの内部で処理されるので、
 			// ここでは根本例外が出る。
-//			System.err.println(ex);
 			log.log(Level.SEVERE, "logcheck", ex);
 			throw ex;
 		}
 
 		// メソッド終了後のログ
-//		System.err.println("end " + classAndMethod + ". (elaps=" + time + " ms)");
 		System.err.println();
 		log.info("end " + classAndMethod + "... elaps=" + time + " ms");
 		return rc;
 	}
+
 }

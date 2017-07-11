@@ -41,29 +41,15 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 			+ " where u.user_id like 'Z%'"
 //	証明書が有効なユーザに関する情報を取得する。その際、過去のPRJは考慮しない
 //			+ " and u.delete_flag = '0'"
+//	ユーザIDは一意で決定するので、orderを指定する必要はない
 //			+ " order by"
 //			+ ", u.user_id"
 	;
-//	@Inject private SiteList sitelist;
 
 	public SSLUserList() {
 		super(4000);
 	}
-/*
-	@PostConstruct
-	private void init() {
-		// かっこ悪いけど ... いい方法があれば教えて
-		if (sitelist == null) {
-			sitelist = new DbSiteList();
-		}
-		try {
-			sitelist.load(null);
-		}
-		catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
-	}
-*/
+
 	private FilteredRowSet getRowSet(String sql) throws Exception {
 		try ( // Oracleに接続
 				Connection conn = DB.createConnection();
@@ -106,14 +92,9 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 		}
 		// 対象をZユーザに絞る
 		if (!s.contains("/CN=Z")) {
-//			log.warning("(SSL not Z): s=\"" + s.trim() + "\"");
 			rc = false;
 		}
 		return rc;
-	}
-
-	public SSLUserList load() throws Exception {
-		throw new IllegalArgumentException("must file");
 	}
 
 	@WithElaps
@@ -124,15 +105,15 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 			.filter(s -> test(s))
 			.map(s -> parse(s))
 			.forEach(b -> {
+				boolean status = false;
 				UserListBean bean = this.get(b.getUserId());
 				if (bean == null) {
-//					log.info(b.toString());
 					try {
-//						rs.first();
 						rs.beforeFirst();
 						rs.setFilter(new SelectUser(b.getUserId()));
 
 						while (rs.next()) {
+							status = true;
 							String siteId = rs.getString(1);
 //							String userId = rs.getString(2);
 							String userDelFlag = rs.getString(3);
@@ -146,12 +127,17 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 							if (siteBean != null) {
 								UserListSite site = new UserListSite(siteBean);
 								bean.addSite(site);
-//								log.info(site.toString());
 							}
 							else {
 								log.warning("site is null: siteId=" + siteId + ", bean=[" + bean + "]");
 							}
-//							log.info(bean.toString());
+						}
+						if (!status) {
+							// sslindexに存在するが、SSLテーブルに存在しない場合： 
+							// 不正な状態を検知することができるように削除フラグ"-1"でuserlistに追加する
+							log.warning("user_id not found: sslindex=[" + b + "]");
+							bean = new UserListBean(b, "-1");
+							this.put(b.getUserId(), bean);
 						}
 					}
 					catch (SQLException e) {
@@ -161,7 +147,6 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 
 				}
 				else {
-//					log.warning("(SSLインデックス): site=" + site);
 					bean.update(b);
 				}
 			});
@@ -202,7 +187,6 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 		System.out.println("start SSLUserList.main ...");
 		SSLUserList map = new SSLUserList();
 		try {
-//			map.init();
 			map.load(argv[0], new DbSiteList().load(null));
 		}
 		catch (Exception e) {

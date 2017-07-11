@@ -28,9 +28,7 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-//	@Inject private Logger log;
-
-	private final Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> map = new TreeMap<>();
+//	private final Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> map = new TreeMap<>();
 
 	private static final Pattern IP_RANGE_PATTERN = Pattern.compile("Testing Source IP realm restrictions failed for /NSSDC-Auth1 *");
 
@@ -39,18 +37,13 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 		this.maglist.load(magfile);
 		return this;
 	}
-/*
-	public static boolean test(AccessLogBean b) {
-		// メッセージにIPアドレスなどが含まれるログは、それ以外の部分を比較対象とするための前処理
-		return IP_RANGE_PATTERN.matcher(b.getMsg()).matches();
-	}
-*/
+
 	@Override
 	public Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> call(Stream<String> stream) throws Exception {
+		final Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
-//				.filter(Checker12::test)
 				.filter(b -> IP_RANGE_PATTERN.matcher(b.getMsg()).matches())
 				.forEach(b -> {
 					NetAddr addr = b.getAddr();
@@ -85,9 +78,8 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 							msg.update(b);
 						}
 
-					} else {
-//						System.err.println("unknown ip: addr=" + addr);
-//						log.warning("unknown ip: addr=" + addr);
+					}
+					else {
 						addrErrs.add(b.getAddr());
 					}
 				});
@@ -95,7 +87,7 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 	}
 
 	@Override
-	public void report() {
+	public void report(final Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> map) {
 		System.out.println("国\tISP/プロジェクト\tアドレス\t初回日時\t最終日時\tログ数");
 		map.forEach((country, ispmap) -> {
 			ispmap.forEach((isp, addrmap) -> {

@@ -31,9 +31,7 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-//	@Inject private Logger log;
-
-	private final List<AccessLogSummary> list = new Vector<>(1000);
+//	private final List<AccessLogSummary> list = new Vector<>(1000);
 
 	private static final Pattern[] AUTH_PATTERNS = {
 			Pattern.compile("Primary authentication successful for [\\S ]+ from [\\d\\.]+"),
@@ -47,23 +45,13 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 		this.maglist.load(magfile);
 		return this;
 	}
-/*
-	public static boolean test(AccessLogBean b) {
-		// メッセージにIPアドレスなどが含まれるログは、それ以外の部分を比較対象とするための前処理
-		return Stream.of(AUTH_PATTERNS)
-				.filter(p -> p.matcher(b.getMsg()).matches())
-				.map(p -> p.toString())
-				.findFirst()
-				.isPresent();
-	
-	}
-*/
+
 	@Override
 	public List<AccessLogSummary> call(Stream<String> stream) throws IOException {
+		final List<AccessLogSummary> list = new Vector<>(1000);
 		stream//.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
-//				.filter(Checker10::test)
 				.filter(b -> Stream.of(AUTH_PATTERNS)
 						// 正規化表現に一致するメッセージのみを処理対象にする
 						.anyMatch(p -> p.matcher(b.getMsg()).matches())
@@ -118,7 +106,6 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 								}
 								else if (msg.getAddr().equals(b.getAddr()) && msg.getId().equals(b.getId())) {
 									// アドレスもユーザIDも一致している場合
-									// list.remove(ix);
 									msg.setReason("パスワードの入力ミス：");
 									msg.setDetail(b.getDate() + " に認証成功");
 								}
@@ -141,8 +128,6 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 						}
 					}
 					else {
-//						System.err.println("unknown ip: addr=" + addr);
-//						log.warning("unknown ip: addr=" + addr);
 						addrErrs.add(b.getAddr());
 					}
 				});
@@ -160,7 +145,7 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 	}
 
 	@Override
-	public void report() {
+	public void report(final List<AccessLogSummary> list) {
 		System.out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\t参考ユーザID\tエラー回数\t想定される原因\t詳細");
 		list.forEach(msg -> {
 			System.out.println(
@@ -171,7 +156,6 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 					.append("\t").append(msg.getId())
 					.append("\t").append(msg.getAfterUsrId())
 					.append("\t").append(msg.getCount())
-//					.append("\t").append(msg.getPattern())
 					.append("\t").append(msg.getReason())
 					.append("\t").append(msg.getDetail())
 					);

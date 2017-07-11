@@ -1,19 +1,11 @@
 package logcheck.mag;
 
 import logcheck.site.SiteListIsp;
-import logcheck.site.SiteListIspImpl;
 
 /*
  * MagListIspはIspListを継承しないといけないのでinterfaceにすることはできない
+ * ⇒20170705版で解消
  */
-public class MagListIsp extends SiteListIspImpl implements SiteListIsp {
-
-	private MagListIsp(String siteName, String projId) {
-		super(siteName, projId);
-	}
-
-//	public String getName() {
-//		return super.getSiteId();
-//	}
+public interface MagListIsp extends SiteListIsp {
 
 }

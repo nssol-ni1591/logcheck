@@ -1,11 +1,11 @@
-package logcheck.mag;
+package logcheck.site.tsv;
 
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-public class MagListBean {
+public class TsvSiteListBean {
 
 	private final String projId;
 	private final String projName;
@@ -18,7 +18,8 @@ public class MagListBean {
 	@Inject private Logger log;
 
 	// for DB
-	public MagListBean(String projId, String projName, String siteName, String magIp, String projDelFlag, String siteDelFlag) {
+	public TsvSiteListBean(String projId, String projName, String siteName, String magIp,
+			String projDelFlag, String siteDelFlag) {
 		this.projId = projId;
 		this.projName = projName;
 		this.siteName = siteName;
@@ -27,7 +28,7 @@ public class MagListBean {
 		this.siteDelFlag = siteDelFlag;
 	}
 	// for Tsv
-	public MagListBean(String projId, String projName, String siteName, String magIp, String magMask) {
+	public TsvSiteListBean(String projId, String projName, String siteName, String magIp, String magMask) {
 		this.projId = projId;
 		this.projName = projName;
 		this.siteName = siteName;

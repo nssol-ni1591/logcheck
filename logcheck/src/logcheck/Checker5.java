@@ -25,7 +25,7 @@ public class Checker5 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-	private Map<String, Map<IspList, Map<String, Integer>>> map = new TreeMap<>();
+//	private Map<String, Map<IspList, Map<String, Integer>>> map = new TreeMap<>();
 
 	private static final Pattern[] FAIL_PATTERNS_ALL;
 	static {
@@ -42,6 +42,7 @@ public class Checker5 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 
 	@Override
 	public Map<String, Map<IspList, Map<String, Integer>>> call(Stream<String> stream) throws Exception {
+		final Map<String, Map<IspList, Map<String, Integer>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
@@ -91,7 +92,7 @@ public class Checker5 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 	}
 
 	@Override
-	public void report() {
+	public void report(final Map<String, Map<IspList, Map<String, Integer>>> map) {
 		map.keySet().forEach(country -> {
 			System.out.println();
 
@@ -102,7 +103,7 @@ public class Checker5 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 
 			map.get(country).forEach((isp, msgmap) -> {
 				int sum2 = msgmap.values().stream().mapToInt(c -> c.intValue()).sum();
-				System.out.println("\t" + isp + " : " + sum2);
+				System.out.println("\t" + isp.getName() + " : " + sum2);
 
 				msgmap.keySet().forEach(msg -> {
 					System.out.println(new StringBuilder().append("\t\t[ ").append(msg).append(" ] : ").append(msgmap.get(msg)));

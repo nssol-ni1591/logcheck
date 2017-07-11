@@ -10,42 +10,41 @@ import javax.inject.Inject;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
-import logcheck.isp.IspList;
 import logcheck.known.KnownList;
+import logcheck.known.KnownListIsp;
 import logcheck.log.AccessLog;
 import logcheck.site.SiteList;
-import logcheck.site.SiteListKnownIsp;
-import logcheck.site.SiteListMagIsp;
+import logcheck.site.SiteListIsp;
 import logcheck.user.UserList;
-import logcheck.user.sslindex.SSLIndexSite;
-import logcheck.user.sslindex.SSLIndexUser;
+import logcheck.user.UserListBean;
+import logcheck.user.UserListSite;
 
 /*
  * ユーザの利用状況を取得する：
  * 
  * 
  */
-public class Checker17 extends AbstractChecker<UserList<SSLIndexUser>> {
+public class Checker18 extends AbstractChecker<UserList<UserListBean>> {
 
 	@Inject private KnownList knownlist;
 //	@Inject private MagList maglist;
 	@Inject private SiteList sitelist;
-	@Inject private UserList<SSLIndexUser> userlist;
-//	@Inject private SSLUserList userlist;
+	@Inject protected UserList<UserListBean> userlist;
 
 	@Inject private Logger log;
 
-	private static final Pattern AUTH_PATTERN = Pattern.compile("Certificate realm restrictions successfully passed for [\\S ]+ , with certificate 'CN=(Z\\w+), [\\S ]+'");
+	private static final Pattern AUTH_PATTERN = 
+			Pattern.compile("Certificate realm restrictions successfully passed for [\\S ]+ , with certificate 'CN=(Z\\w+), [\\S ]+'");
 
-	public Checker17 init(String knownfile, String sslindexfile) throws Exception {
+	public Checker18 init(String knownfile, String sslindex) throws Exception {
 		this.knownlist.load(knownfile);
 		this.sitelist.load(null);
-		this.userlist.load(sslindexfile, sitelist);
+		this.userlist.load(sslindex, sitelist);
 		return this;
 	}
 
 	@Override
-	public UserList<SSLIndexUser> call(Stream<String> stream) throws Exception {
+	public UserList<UserListBean> call(Stream<String> stream) throws Exception {
 		stream//.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
@@ -57,33 +56,34 @@ public class Checker17 extends AbstractChecker<UserList<SSLIndexUser>> {
 						userId = m.group(1);
 					}
 
-					SSLIndexUser user = userlist.get(userId);
+					UserListBean user = userlist.get(userId);
 					if (user == null) {
 						userErrs.add(userId);
 
 						// ログに存在するが、SSLテーブルに存在しない場合： 不正な状態を検知することができるようにuserlistに追加する
-						user = new SSLIndexUser(userId, " ");
+						user = new UserListBean(userId, "-1", "-1");
 						userlist.put(userId, user);
 					}
 
-					SSLIndexSite site = user.get(b.getAddr());
+					UserListSite site = user.getSite(b.getAddr());
 					if (site == null) {
-//						MagListIsp magisp = maglist.get(b.getAddr());
-						IspList magisp = sitelist.get(b.getAddr());
+//						IspList magisp = sitelist.get(b.getAddr());
+						SiteListIsp magisp = sitelist.get(b.getAddr());
 						if (magisp == null) {
-							IspList isp = knownlist.get(b.getAddr());
+//							IspList isp = knownlist.get(b.getAddr());
+							KnownListIsp isp = knownlist.get(b.getAddr());
 							if (isp == null) {
 								addrErrs.add(b.getAddr());
 								return;
 							}
-							site = new SSLIndexSite(new SiteListKnownIsp(isp));
-							user.add(site);
+							site = new UserListSite(isp);
+							user.addSite(site);
 							site.update(b.getDate());
 							log.config(String.format("user=%s, isp=%s", user, isp));
 						}
 						else {
-							site = new SSLIndexSite(new SiteListMagIsp(magisp));
-							user.add(site);
+							site = new UserListSite(magisp);
+							user.addSite(site);
 							site.update(b.getDate());
 							log.config(String.format("user=%s, magisp=%s", user, magisp));
 						}
@@ -96,11 +96,11 @@ public class Checker17 extends AbstractChecker<UserList<SSLIndexUser>> {
 	}
 
 	@Override
-	public void report() {
-		System.out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\t有効\t初回日時\t最終日時\t回数");
+	public void report(final UserList<UserListBean> list) {
+		System.out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数\t失効日時");
 		userlist.values().stream()
 			.forEach(user -> {
-				if (user.isEmpty()) {
+				if (user.getSites().isEmpty()) {
 					System.out.println(
 							new StringBuilder(user.getUserId())
 							.append("\t").append("-")
@@ -108,27 +108,29 @@ public class Checker17 extends AbstractChecker<UserList<SSLIndexUser>> {
 							.append("\t").append("-")
 							.append("\t").append("-1")
 							.append("\t").append("-1")
-							.append("\t").append("R".equals(user.getFlag()) ? "0" : ("V".equals(user.getFlag()) ? "1" : "-1"))
+							.append("\t").append(user.getUserDelFlag())
+							.append("\t").append(user.getValidFlag())
 							.append("\t").append("")
 							.append("\t").append("")
 							.append("\t").append("0")
+							.append("\t").append(user.getRevoce())
 							);
 				}
 				else {
-					user.stream().forEach(site -> {
+					user.getSites().forEach(site -> {
 						System.out.println(
 								new StringBuilder(user.getUserId())
 								.append("\t").append(site.getCountry())
 								.append("\t").append(site.getProjId())
 								.append("\t").append(site.getSiteName())
-//								.append("\t").append(addr)
 								.append("\t").append(site.getProjDelFlag())
 								.append("\t").append(site.getSiteDelFlag())
-//								.append("\t").append(user.getUserDelFlag())
-								.append("\t").append("R".equals(user.getFlag()) ? "0" : ("V".equals(user.getFlag()) ? "1" : "-1"))
+								.append("\t").append(user.getUserDelFlag())
+								.append("\t").append(user.getValidFlag())
 								.append("\t").append(site.getFirstDate())
 								.append("\t").append(site.getLastDate())
 								.append("\t").append(site.getCount())
+								.append("\t").append(user.getRevoce())
 								);
 					});
 				}
@@ -137,19 +139,14 @@ public class Checker17 extends AbstractChecker<UserList<SSLIndexUser>> {
 
 	public static void main(String... argv) {
 		if (argv.length < 2) {
-			System.err.println("usage: java logcheck.Checker14 knownlist sslindex [accesslog...]");
+			System.err.println("usage: java logcheck.Checker18 knownlist sslindex [accesslog...]");
 			System.exit(1);
 		}
 
 		int rc = 0;
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-			Checker17 application = container.instance().select(Checker17.class).get();
-			/*
-			Checker17 application = container.instance().select(Checker17.class, new AnnotationLiteral<UseChecker14>(){
-				private static final long serialVersionUID = 1L;
-			}).get();
-			*/
+			Checker18 application = container.instance().select(Checker18.class).get();
 			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {

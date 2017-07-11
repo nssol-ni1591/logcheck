@@ -5,14 +5,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Alternative;
 
 import logcheck.known.KnownList;
@@ -22,7 +21,7 @@ import logcheck.util.net.ClientAddr;
 import logcheck.util.net.NetAddr;
 
 @Alternative
-public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implements KnownList {
+public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 
 	private static final long serialVersionUID = 1L;
 
@@ -40,10 +39,7 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 	private static final Pattern[] PTN_NAMES = {
 			Pattern.compile("descr: +reassign to \"([\\S ]+)\""),
 			Pattern.compile("descr: +([\\S ]+)"),
-//			Pattern.compile("netname: +([\\S ]+)"),
 			Pattern.compile("[Oo]rg-?[Nn]ame: *([\\S ]+)"),
-//			Pattern.compile("OrgName: +([\\S ]+)"),
-//			Pattern.compile("[\\w\\.\\[: ]*Organization[\\w\\]: ]*([\\S ]+)"),
 			Pattern.compile("\\w?\\.? ?\\[Organization\\] +([\\S ]+)"),
 			Pattern.compile("owner: +([\\S ]+)"),
 			Pattern.compile("network:Organization[\\S]*:([\\S ]+)"),
@@ -53,8 +49,6 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 	};
 	private static final Pattern[] PTN_COUNTRIES = {
 			Pattern.compile("[Cc]ountry: +(\\w\\w)"),
-//			Pattern.compile("Country: +(\\w\\w)"),
-//			Pattern.compile("network:Country-Code:(\\w\\w)"),
 			Pattern.compile("\\[ (\\w+) database provides .*"),		// JPNIC
 			Pattern.compile("(\\w+) is not an ISP .*"),				// KRNIC
 			Pattern.compile("# (\\w+) WHOIS data and services .*"),	// ARIN
@@ -63,10 +57,6 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 
 	//@Inject private Logger log;
 	private static Logger log = Logger.getLogger(Whois.class.getName());
-
-	@PostConstruct
-	public void init() {
-	}
 
 	public String parse(Pattern[] ptns, String s) {
 		for (Pattern p : ptns) {
@@ -95,9 +85,8 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 	 */
 	@Override
 	public KnownListIsp get(NetAddr addr) {
-		Optional<KnownListIsp> rc = this.keySet().stream()
-				.filter(a -> a.within(addr))
-				.map(a -> super.get(a))
+		Optional<KnownListIsp> rc = this.stream()
+				.filter(isp -> isp.within(addr))
 				.findFirst();
 		if (rc != null && rc.isPresent()) {
 			return rc.get();
@@ -106,7 +95,6 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 		// json: http://wq.apnic.net/whois-search/query?searchtext=182.171.83.197
 
 		KnownListIsp isp = search("http://whois.threet.co.jp/?key=", addr);
-//		KnownListIsp isp = search("http://wq.apnic.net/whois-search/query?searchtext=", addr);
 		if (isp.getName() == null || isp.getAddress().isEmpty()) {
 			System.err.println();
 			log.info("retry search. addr=" + addr);
@@ -141,14 +129,12 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 		}
 
 		if (isp != null) {
-			for (NetAddr net : isp.getAddress()) {
-				put(net, isp);
-			}
+			add(isp);
 		}
 		return isp;
 	}
 
-	public KnownListIsp search(String site, NetAddr addr) {
+	private KnownListIsp search(String site, NetAddr addr) {
 		String netaddr = null;
 		String name = null;
 		String country = null;
@@ -158,10 +144,6 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 		HttpURLConnection http = null;
 		try  {
 			url = new URL(site + addr);
-//			url = new URL("http://whois.threet.co.jp/?key=" + addr);
-//			url = new URL("https://www.whois.com/whois/" + addr);
-//			url = new URL("https://lab.syncer.jp/api/15/" + addr);
-//			url = new URL("http://lacnic.net/cgi-bin/lacnic/whois?query=" + addr);
 
 			http = (HttpURLConnection)url.openConnection();
 			http.setRequestMethod("GET");
@@ -172,24 +154,6 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 
 				String s;
 				while((s = reader.readLine()) != null) {
-
-//					System.out.println(s);
-/*
-					try {
-						ScriptEngineManager manager = new ScriptEngineManager();
-						ScriptEngine engine = manager.getEngineByName("JavaScript");
-						// ScriptEngine の eval に JSON を渡す時は、括弧で囲まないと例外が発生します。eval はセキュリティ的には好ましくないので、安全であることが不明なデータを扱うことは想定していません。
-						// 外部ネットワークと連携するプログラムで使用しないでください。
-						Object obj = engine.eval(String.format("%s", s));
-						// Rhino は、jdk1.6,7までの JavaScript エンジン。jdk1.8は「jdk.nashorn.api.scripting.NashornScriptEngine」
-						Map<String, Object> map = jsonToMap(obj,
-								engine.getClass().getName().equals("com.sun.script.javascript.RhinoScriptEngine"));
-
-						System.out.println(map);
-					} catch (Exception ex) {
-						ex.printStackTrace();
-					}
-*/
 					String tmp = parse(PTN_NETADDRS, s);
 					if (tmp != null) {
 						netaddr = tmp;
@@ -264,9 +228,13 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 			}
 		}
 
+		// 複数の名称で登録されている組織名、もしくは、分かりづらい組織名の置換
 		if (name == null) { }
 		else if (name.contains("DOCOMO")) {
 			name = "NTT DOCOMO, INC.";
+		}
+		else if (name.startsWith("Asahi Net")) {
+			name = "Asahi Net Inc.";
 		}
 		else if (name.contains("GPRS/3G")) {
 			name = "Realmove Company Limited.";
@@ -274,11 +242,8 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 		else if (name.startsWith("CNC Group CHINA169")) {
 			name = "CNCGROUP China169 Backbone.";
 		}
-		else if (name.startsWith("Deutsche Telekom AG")) {
-			name = "Deutsche Telekom AG";
-		}
-		else if (name.startsWith("Asahi Net")) {
-			name = "Asahi Net Inc.";
+		else if (name.startsWith("DigitalOcean")) {
+			name = "Digital Ocean, Inc.";
 		}
 		else if (name.startsWith("Amazon")) {
 			name = "Amazon Technologies Inc.";
@@ -286,8 +251,10 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 		else if (name.startsWith("AT&T Wi-Fi Services")) {
 			name = "AT&T Wi-Fi Services.";
 		}
-
-		if ("route for Vodafone DSL customers".equals(name)) {
+		else if (name.startsWith("Deutsche Telekom AG")) {
+			name = "Deutsche Telekom AG";
+		}
+		else if (name.equals("route for Vodafone DSL customers")) {
 			name = "Vodafone customers";
 		}
 
@@ -315,6 +282,7 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 		KnownListIsp isp = new KnownListIsp(name, country);
 
 		if (netaddr == null) {
+			// アドレス範囲が取得できなかった場合は、グルーピングのキーとして呼び出し元で接続元IPアドれガスが設定される
 			return isp;
 		}
 
@@ -346,7 +314,7 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 	@Override
 	public KnownList load(String file) throws IOException {
 		KnownList list = new TsvKnownList().load(file);
-		list.forEach((key, value) -> put(key, value));
+		list.forEach(value -> add(value));
 		return this;
 	}
 
@@ -358,14 +326,11 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 
 		NetAddr[] addrs = {
 //				new ClientAddr(""),
-//				new ClientAddr(""),
-//				new ClientAddr(""),
-//				new ClientAddr(""),
-//				new ClientAddr(""),
-//				new ClientAddr(""),
-
 				new ClientAddr("61.204.36.71"),
-//				new ClientAddr("202.248.61.202"),
+				new ClientAddr("202.248.61.202"),
+				new ClientAddr("61.204.36.81"),
+				new ClientAddr("202.248.61.202"),
+				new ClientAddr("61.204.36.71"),
 /*
 				new ClientAddr("210.1.29.82"),
 				new ClientAddr("182.232.195.22"),
@@ -395,7 +360,6 @@ public class Whois extends ConcurrentSkipListMap<NetAddr, KnownListIsp> implemen
 
 		try {
 			Whois f = new Whois();
-			f.init();
 			f.load(argv[0]);
 
 			for (NetAddr addr : addrs) {

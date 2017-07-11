@@ -78,7 +78,7 @@ public class UserListBean implements Comparable<UserListBean> {
 	}
 	public UserListSite getSite(NetAddr addr) {
 		Optional<UserListSite> rc = sites.stream()
-				.filter(site -> site.getAddress().stream().anyMatch(net -> net.within(addr)))
+				.filter(site -> site.within(addr))
 				.findFirst();
 		return rc.isPresent() ? rc.get() : null;
 	}

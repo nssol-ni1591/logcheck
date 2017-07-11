@@ -19,7 +19,6 @@ public class FwLogBean implements Comparable<FwLogBean> {
 		this.srcport = srcport == null ? 0 : Integer.parseInt(srcport);
 		this.dstip = new ClientAddr(dstip);
 		this.dstport = dstport == null ? 0 : Integer.parseInt(dstport);
-		//System.err.print(this);
 	}
 
 	public String getDate() {
@@ -56,11 +55,9 @@ public class FwLogBean implements Comparable<FwLogBean> {
 		if (rc != 0) {
 			return rc;
 		}
-		//return dstport - bean.getDstPort();
 		return 0;
 	}
 	public String toString() {
-		//return String.format("date=%s, srcip=%s, dstip=%s, dstport=%d", date, srcip, dstip, dstport);
 		return String.format("srcip=%s, dstip=%s, dstport=%d", srcip, dstip, dstport);
 	}
 }

@@ -65,6 +65,7 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 	protected static final Pattern[] INFO_PATTERNS = {
 			Pattern.compile("Active user '\\S+' in realm 'NSSDC-Auth(1|2)(\\(MAC\\))?' is deleted since user does not qualify reevaluated policies"),
 			Pattern.compile("Agent login succeeded for \\S+/NSSDC-Auth(1|2)(\\(MAC\\))? from [\\d\\.]+ with Junos-Pulse/[\\d\\.]+ \\([\\w\\. ]+\\) Pulse/[\\d\\.]+\\."),
+			Pattern.compile("Agent login succeeded for \\S+/NSSDC-Auth(1|2)(\\(MAC\\))? from [\\d\\.]+ with Pulse-Secure/[\\d\\.]+ \\([\\w\\. ]+\\) Pulse/[\\d\\.]+\\."),
 			Pattern.compile("Certificate realm restrictions successfully passed for [\\S ]+ , with certificate '[\\S ]+'"),
 			Pattern.compile("Closed connection to [\\d\\.]+ after \\d+ seconds, with -?\\d+ bytes read and -?\\d+ bytes written "),
 			Pattern.compile("CRL checking started for certificate '[\\S ]+' issued by [\\S ]+"),
@@ -80,6 +81,7 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 			Pattern.compile("Remote address for user \\S+/NSSDC-Auth(1|2)(\\(MAC\\))? changed from [\\d\\.]+ to [\\d\\.]+\\."),
 			Pattern.compile("Session for user \\w+ on host [\\d\\.]+ has been terminated\\."),
 			Pattern.compile("Session resumed from user agent 'Junos-Pulse/[\\d\\.]+ \\([\\w\\. ]+\\) Pulse/[\\d\\.]+'"),
+			Pattern.compile("Session resumed from user agent 'Pulse-Secure/[\\d\\.]+ \\([\\w\\. ]+\\) Pulse/[\\d\\.]+'"),
 			Pattern.compile("Session timed out for \\S+/NSSDC-Auth(1|2)(\\(MAC\\))? \\(session:\\d+\\) due to inactivity \\(last access at [\\d:]+ [\\d/]+\\)\\. Idle session identified after user request\\."),
 			Pattern.compile("Session timed out for \\S+/NSSDC-Auth(1|2)(\\(MAC\\))? \\(session:\\d+\\) due to inactivity \\(last access at [\\d:]+ [\\d/]+\\)\\. Idle session identified during routine system scan\\."),
 			Pattern.compile("Source IP realm restrictions successfully passed for [\\S ]+ "),
@@ -100,44 +102,23 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 
 	protected AbstractChecker() { }
 
-//	private Stream<String> getStream() {
-//		return stream;
-//	}
-//	private void setStream(Stream<String> stream) {
-//		this.stream = stream;
-//	}
-
 	private T run(InputStream is) throws Exception {
-//		System.err.println("checking from InputStream:");
 		log.info("checking from InputStream:");
-//		long time = System.currentTimeMillis();
 
 		this.stream = new BufferedReader(new InputStreamReader(is)).lines();
 		T map = run2();
-
-//		System.err.println();
-//		System.err.println("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
-//		log.info("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
 		return map;
 	}
 	private T run(String file) throws Exception {
-//		System.err.println("checking from file=" + file + ":");
 		log.info("checking from file=" + file + ":");
-//		long time = System.currentTimeMillis();
 
 		this.stream = Files.lines(Paths.get(file), StandardCharsets.UTF_8);
 		T map = run2();
-
-//		System.err.println();
-//		System.err.println("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
-//		log.info("check end ... elaps=" + (System.currentTimeMillis() - time) + " ms");
 		return map;
 	}
 	private T run2() throws Exception {
-//		setStream(stream);
 
 		ExecutorService exec = null;
-//		CheckProgress p = null;
 		T map = null;
 		try {
 			exec = Executors.newFixedThreadPool(2);
@@ -150,7 +131,6 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 
 			p.stopRequest();
 		}
-//		catch (Exception ex) { }
 		finally {
 			exec.shutdown();
 		}
@@ -158,30 +138,28 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 	}
 
 	protected abstract T call(Stream<String> stream) throws Exception;
-	protected abstract void report();
+	protected abstract void report(final T map);
 
 	@Override @WithElaps
 	public T call() throws Exception {
-//		Stream<String> stream = getStream();
 		return call(stream);
 	}
 
 	// 将来的にサブクラス外からの呼び出しを考慮してpublicとする
 	@WithElaps
 	public void start(String[] argv, int offset) throws Exception {
+		T map = null;
 		if (argv.length <= offset) {
-			/*T map = */run(System.in);
-			//report();
+			map = run(System.in);
 		}
 		else {
 			for (int ix = offset; ix < argv.length; ix++ ) {
-				/*T map = */run(argv[ix]);
-				//report();
+				map = run(argv[ix]);
 			}
 		}
 		addrErrs.forEach(addr -> log.warning("unknown ip: addr=" + addr));
 		userErrs.forEach(userId -> log.warning("not found user: userid=" + userId));
-		report();
+		report(map);
 	}
 
 	private class CheckProgress implements Runnable {
@@ -195,14 +173,12 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 					System.err.print(".");
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
-//					e.printStackTrace();
+					// e.printStackTrace();
 				}
 			}
-//			System.err.println();	// このタイミングでは、call()スレッドが終了しているので間に合わない
 		}
 		
 		public void stopRequest() {
-//			System.err.println();
 			stopRequest = true;
 		}
 	}

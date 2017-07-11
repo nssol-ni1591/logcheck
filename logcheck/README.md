@@ -1,3 +1,5 @@
+[20170705]
+・IspListのinterface化
 [20170629a]
 ・MagListとSiteListの統合化
 　　・一部のクラス名を変更する

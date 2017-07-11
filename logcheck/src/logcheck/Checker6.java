@@ -25,7 +25,7 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-	private Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> map = new TreeMap<>();
+//	private Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> map = new TreeMap<>();
 
 	private static final Pattern[] FAIL_PATTERNS_ALL;
 	static {
@@ -42,6 +42,7 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 
 	@Override
 	public Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> call(Stream<String> stream) throws Exception {
+		final Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
@@ -100,7 +101,7 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 	}
 
 	@Override
-	public void report() {
+	public void report(final Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> map) {
 		System.out.println();
 		map.forEach((country, ispmap) -> {
 			int sum = ispmap.values().stream().mapToInt(msgmap -> {
@@ -119,7 +120,7 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 					return addrmap.values().stream().mapToInt(c -> c.intValue()).sum();
 				}).sum();
 				int sum21 = msgmap.get(INFO_SUMMARY_MSG) == null ? 0 : msgmap.get(INFO_SUMMARY_MSG).values().stream().mapToInt(c -> c.intValue()).sum();
-				System.out.println(new StringBuilder().append("\t").append(isp).append(" : ").append(sum2 - sum21).append(" / ").append(sum2).append(" => ").append((sum2 - sum21) * 100 / sum2).append("%"));
+				System.out.println(new StringBuilder().append("\t").append(isp.getName()).append(" : ").append(sum2 - sum21).append(" / ").append(sum2).append(" => ").append((sum2 - sum21) * 100 / sum2).append("%"));
 
 				msgmap.forEach((msg, addrmap) -> {
 					int sum3 = addrmap.values().stream().mapToInt(c -> c.intValue()).sum();

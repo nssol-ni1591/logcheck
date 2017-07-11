@@ -34,7 +34,7 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 	@Inject private Logger log;
 
 	private String select;
-	private final List<AccessLogSummary> list = new Vector<>(1000000);
+//	private final List<AccessLogSummary> list = new Vector<>(1000000);
 
 	private static final Pattern[] ALL_PATTERNS;
 	static {
@@ -60,12 +60,12 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 		if (rc.isPresent()) {
 			return rc.get();
 		}
-//		System.err.println("ERROR: \"" + b.getMsg() + "\"");
 		log.warning("(Pattern): \"" + b.getMsg() + "\"");
 		return b.getMsg();
 	}
 
 	public List<AccessLogSummary> call(Stream<String> stream) throws Exception {
+		final List<AccessLogSummary> list = new Vector<>(1000000);
 		stream//.parallel()
 				.filter(AccessLog::test)
 				.filter(s -> select.startsWith("-") || s.startsWith(select))
@@ -82,16 +82,15 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 					if (isp != null) {
 						AccessLogSummary msg = new AccessLogSummary(b, pattern, isp);
 						list.add(msg);
-					} else {
-//						System.err.println("unknown ip: addr=" + addr);
-//						log.warning("unknown ip: addr=" + addr);
+					}
+					else {
 						addrErrs.add(b.getAddr());
 					}
 				});
 		return list;
 	}
 
-	public void report() {
+	public void report(final List<AccessLogSummary> list) {
 		System.out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\tロール\tメッセージ");
 		list.forEach(msg -> {
 			System.out.println(

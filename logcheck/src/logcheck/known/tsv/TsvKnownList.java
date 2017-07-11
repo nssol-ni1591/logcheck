@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -14,7 +14,6 @@ import javax.enterprise.inject.Alternative;
 
 import logcheck.annotations.WithElaps;
 import logcheck.known.KnownList;
-import logcheck.known.KnownListBean;
 import logcheck.known.KnownListIsp;
 import logcheck.util.net.NetAddr;
 
@@ -28,7 +27,7 @@ import logcheck.util.net.NetAddr;
  * 今のHashMapでは、Hash地の値により、どちらが取得されるか判断付かない。
  */
 @Alternative
-public class TsvKnownList extends HashMap<NetAddr, KnownListIsp> implements KnownList {
+public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownList {
 
 	private static Logger log = Logger.getLogger(TsvKnownList.class.getName());
 	private static final long serialVersionUID = 1L;
@@ -43,14 +42,8 @@ public class TsvKnownList extends HashMap<NetAddr, KnownListIsp> implements Know
 	 * 引数のIPアドレスを含むISPを取得する
 	 */
 	public KnownListIsp get(NetAddr addr) {
-		Optional<KnownListIsp> rc = values().stream()
-/*
-				.filter(isp -> {
-//					return isp.getAddress().stream().filter(net -> net.within(addr)).findFirst().isPresent();
-					return isp.getAddress().stream().anyMatch(net -> net.within(addr));
-				})
-*/
-				.filter(isp -> isp.getAddress().stream().anyMatch(net -> net.within(addr)))
+		Optional<KnownListIsp> rc = this.stream()
+				.filter(isp -> isp.within(addr))
 				.findFirst();
 		return rc.isPresent() ? rc.get() : null;
 	}
@@ -61,19 +54,17 @@ public class TsvKnownList extends HashMap<NetAddr, KnownListIsp> implements Know
 				.filter(TsvKnownList::test)
 				.map(TsvKnownList::parse)
 				.forEach(b -> {
-//					KnownListIsp isp = get(b.getName());
 					KnownListIsp isp = get(new NetAddr(b.getAddr()));
 					if (isp == null) {
 						isp = new KnownListIsp(b.getName(), b.getCountry());
-//						put(b.getName(), isp);
-						put(new NetAddr(b.getAddr()), isp);
+						add(isp);
 					}
 					isp.addAddress(new NetAddr(b.getAddr()));
 				});
 		return this;
 	}
 
-	private static KnownListBean parse(String s) {
+	private static TsvKnownListBean parse(String s) {
 		String addr = null;
 		String name = null;
 		String country = null;
@@ -95,7 +86,7 @@ public class TsvKnownList extends HashMap<NetAddr, KnownListIsp> implements Know
 		if (m.find(3)) {
 			country = m.group(3);
 		}
-		return new KnownListBean(addr, name, country);
+		return new TsvKnownListBean(addr, name, country);
 	}
 	private static boolean test(String s) {
 		if (s.startsWith("#")) {
@@ -106,7 +97,6 @@ public class TsvKnownList extends HashMap<NetAddr, KnownListIsp> implements Know
 		Matcher m = p.matcher(s);
 		boolean rc = m.find();
 		if (!rc) {
-//			System.err.println("WARNING(KNOWN): " + s);
 			log.warning("(既知ISP_IPアドレス): s=\"" + s + "\"");
 		}
 		return rc;
@@ -122,9 +112,7 @@ public class TsvKnownList extends HashMap<NetAddr, KnownListIsp> implements Know
 			e.printStackTrace();
 		}
 
-//		for (String name : map.keySet()) {
-		for (NetAddr addr : map.keySet()) {
-			KnownListIsp n = map.get(addr);
+		for (KnownListIsp n : map) {
 			System.out.println(n.getCountry() + "\t" + n + "\t" + n.getAddress());
 			System.out.print("\t");
 			n.getAddress().forEach(s -> System.out.printf("[%s]", s.toStringRange()));
@@ -132,4 +120,5 @@ public class TsvKnownList extends HashMap<NetAddr, KnownListIsp> implements Know
 		}
 		System.out.println("IspList.main ... end");
 	}
+
 }

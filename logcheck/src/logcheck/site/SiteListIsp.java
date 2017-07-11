@@ -2,9 +2,10 @@ package logcheck.site;
 
 import java.util.Set;
 
+import logcheck.isp.IspList;
 import logcheck.util.net.NetAddr;
 
-public interface SiteListIsp {
+public interface SiteListIsp extends IspList {
 
 	default String getSiteId() {
 		return null;
@@ -12,25 +13,32 @@ public interface SiteListIsp {
 	default String getSiteName() {
 		return "-";
 	}
-	default String getSiteDelFlag() {
-		return "-1";
-	}
-	default String getProjId() {
-		return "-";
-	}
-	default String getProjDelFlag() {
-		return "-1";
-	}
+	String getSiteDelFlag();
+	String getProjId();
+	String getProjDelFlag();
 
-	default String getCountry() {
-		return "-";
-	}
-	default String getName() {
-		return "-";
-	}
+//	default String getSiteDelFlag() {
+//		return "-1";
+//	}
+//	default String getProjId() {
+//		return "-";
+//	}
+//	default String getProjDelFlag() {
+//		return "-1";
+//	}
 
-	Set<NetAddr> getAddress();
+//	default String getCountry() {
+//		return "-";
+//	}
+//	default String getName() {
+//		return "-";
+//	}
 
-	void addAddress(String addr);
+	default Set<NetAddr> getAddress() {
+		throw new IllegalArgumentException("don't use");
+	}
+	default void addAddress(NetAddr addr) {
+		throw new IllegalArgumentException("don't use");
+	}
 
 }

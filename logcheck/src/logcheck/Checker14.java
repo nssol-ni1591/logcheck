@@ -12,13 +12,14 @@ import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
 import logcheck.annotations.UseChecker14;
-import logcheck.isp.IspList;
 import logcheck.known.KnownList;
+import logcheck.known.KnownListIsp;
 import logcheck.log.AccessLog;
 import logcheck.site.SiteList;
+import logcheck.site.SiteListIsp;
+import logcheck.user.UserList;
 import logcheck.user.UserListBean;
 import logcheck.user.UserListSite;
-import logcheck.user.UserList;
 
 /*
  * ユーザの利用状況を取得する：
@@ -35,7 +36,8 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 	@Inject private Logger log;
 
-	private static final Pattern AUTH_PATTERN = Pattern.compile("Certificate realm restrictions successfully passed for [\\S ]+ , with certificate 'CN=(Z\\w+), [\\S ]+'");
+	private static final Pattern AUTH_PATTERN = 
+			Pattern.compile("Certificate realm restrictions successfully passed for [\\S ]+ , with certificate 'CN=(Z\\w+), [\\S ]+'");
 
 	public Checker14 init(String knownfile, String sslindex) throws Exception {
 		this.knownlist.load(knownfile);
@@ -52,9 +54,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 				.map(AccessLog::parse)
 				.filter(b -> AUTH_PATTERN.matcher(b.getMsg()).matches())
 				.forEach(b -> {
-//					NetAddr addr = b.getAddr();
 					String userId = null;
-
 					Matcher m = AUTH_PATTERN.matcher("   " + b.getMsg()); // 1文字目が欠ける対策
 					if (m.find(1)) {
 						userId = m.group(1);
@@ -62,9 +62,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 					UserListBean user = userlist.get(userId);
 					if (user == null) {
-//						log.warning("not found user: userid=" + userId);
 						userErrs.add(userId);
-//						return;
 
 						// ログに存在するが、SSLテーブルに存在しない場合： 不正な状態を検知することができるようにuserlistに追加する
 						user = new UserListBean(userId, "-1", "-1");
@@ -73,11 +71,11 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 					UserListSite site = user.getSite(b.getAddr());
 					if (site == null) {
-						// DBには
-//						MagListIsp magisp = maglist.get(b.getAddr());
-						IspList magisp = sitelist.get(b.getAddr());
+//						IspList magisp = sitelist.get(b.getAddr());
+						SiteListIsp magisp = sitelist.get(b.getAddr());
 						if (magisp == null) {
-							IspList isp = knownlist.get(b.getAddr());
+//							IspList isp = knownlist.get(b.getAddr());
+							KnownListIsp isp = knownlist.get(b.getAddr());
 							if (isp == null) {
 								addrErrs.add(b.getAddr());
 								return;
@@ -102,61 +100,51 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 	}
 
 	@Override
-	public void report() {
-		/*
-		// アドレスを出力してはいけない。拠点ごとに回数を取得しているのに、アドレスを出力すると、回数は実際の値のアドレスう数の倍になる
-		System.out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tIPアドレス\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数");
-		userlist.values().stream()
-		.forEach(user -> {
-			user.getSites().forEach(site -> {
-				site.getAddress().forEach(addr -> {
-					System.out.println(
-							new StringBuilder(user.getUserId())
-							.append("\t").append(site.getCountry())
-							.append("\t").append(site.getProjId())
-							.append("\t").append(site.getSiteName())
-							.append("\t").append(addr)
-							.append("\t").append(site.getProjDelFlag())
-							.append("\t").append(site.getSiteDelFlag())
-							.append("\t").append(user.getUserDelFlag())
-							.append("\t").append(user.getValidFlag())
-							.append("\t").append(site.getFirstDate())
-							.append("\t").append(site.getLastDate())
-							.append("\t").append(site.getCount())
-							);
-				});
-		});
-		*/
+	public void report(final UserList<UserListBean> list) {
+		// アドレスを出力してはいけない。拠点ごとに回数を取得しているのに、アドレスを出力すると、回数は実際の値のアドレス数の倍になる
 		System.out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数\t失効日時");
 		userlist.values().stream()
 			.forEach(user -> {
-				user.getSites().forEach(site -> {
+				if (user.getSites().isEmpty()) {
+					System.out.println(
+							new StringBuilder(user.getUserId())
+							.append("\t").append("-")
+							.append("\t").append("-")
+							.append("\t").append("-")
+							.append("\t").append("-1")
+							.append("\t").append("-1")
+							.append("\t").append(user.getUserDelFlag())
+							.append("\t").append(user.getValidFlag())
+							.append("\t").append("")
+							.append("\t").append("")
+							.append("\t").append("0")
+							.append("\t").append(user.getRevoce())
+							);
+				}
+				else {
+					user.getSites().forEach(site -> {
 						System.out.println(
 								new StringBuilder(user.getUserId())
-										.append("\t").append(site.getCountry())
-										.append("\t").append(site.getProjId())
-										.append("\t").append(site.getSiteName())
-										.append("\t").append(site.getProjDelFlag())
-										.append("\t").append(site.getSiteDelFlag())
-										.append("\t").append(user.getUserDelFlag())
-										.append("\t").append(user.getValidFlag())
-										.append("\t").append(site.getFirstDate())
-										.append("\t").append(site.getLastDate())
-										.append("\t").append(site.getCount())
-										.append("\t").append(user.getRevoce())
+								.append("\t").append(site.getCountry())
+								.append("\t").append(site.getProjId())
+								.append("\t").append(site.getSiteName())
+								.append("\t").append(site.getProjDelFlag())
+								.append("\t").append(site.getSiteDelFlag())
+								.append("\t").append(user.getUserDelFlag())
+								.append("\t").append(user.getValidFlag())
+								.append("\t").append(site.getFirstDate())
+								.append("\t").append(site.getLastDate())
+								.append("\t").append(site.getCount())
+								.append("\t").append(user.getRevoce())
 								);
 					});
-				});
+				}
+			});
 	}
 
 	public static void main(String... argv) {
-
-		System.setProperty("proxySet" , "true");
-		System.setProperty("proxyHost", "proxy.ns-sol.co.jp");
-		System.setProperty("proxyPort", "8000");
-
-		if (argv.length < 1) {
-			System.err.println("usage: java logcheck.Checker14 knownlist [accesslog...]");
+		if (argv.length < 2) {
+			System.err.println("usage: java logcheck.Checker14 knownlist sslindex [accesslog...]");
 			System.exit(1);
 		}
 

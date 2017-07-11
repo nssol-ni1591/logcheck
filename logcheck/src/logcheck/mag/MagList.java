@@ -9,8 +9,5 @@ public interface MagList {
 
 	// MagListには必須だが、SiteListには必須ではないので、MagListに定義する
 	IspList get(NetAddr addr);
-//	default MagListIsp get(NetAddr addr) {
-//		return null;
-//	}
 
 }

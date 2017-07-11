@@ -26,7 +26,6 @@ public class AccessLogBean {
 		if (msg == null) {
 			throw new IllegalArgumentException("msg is null [date=" + date + ", ip=" + ip + "]");
 		}
-		//System.err.print(this);
 	}
 
 	public String getDate() {
@@ -51,4 +50,5 @@ public class AccessLogBean {
 	public String toString() {
 		return String.format("date=%s, roles=%s, msg=%s", date, roles, msg);
 	}
+
 }

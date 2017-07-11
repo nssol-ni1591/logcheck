@@ -6,20 +6,20 @@ import java.util.TreeMap;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
+import logcheck.user.UserList;
+import logcheck.user.UserListBean;
+
 /*
  * 未利用ユーザ検索：
  * ユーザID、ISP/プロジェクト、拠点名のみを出力する
  */
 public class Checker15 extends Checker14 {
 
-//	@Inject private Logger log;
-
 	@Override
-	public void report() {
+	public void report(final UserList<UserListBean> list) {
 		// 出力用コレクションに作り直す
 		Map<String, Map<String, String>> projmap = new TreeMap<>(); 
 		userlist.values().stream()
-//				.filter(user -> user.sumCount() == 0 && "0".equals(user.getUserDelFlag()))
 				.filter(user -> user.getSites().stream().mapToInt(site -> 
 						site.getCount()).sum() == 0
 						&& "1".equals(user.getValidFlag())
@@ -60,8 +60,8 @@ public class Checker15 extends Checker14 {
 	}
 
 	public static void main(String... argv) {
-		if (argv.length < 1) {
-			System.err.println("usage: java logcheck.Checker15 knownlist [accesslog...]");
+		if (argv.length < 2) {
+			System.err.println("usage: java logcheck.Checker15 knownlist sslindex [accesslog...]");
 			System.exit(1);
 		}
 

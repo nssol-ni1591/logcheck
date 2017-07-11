@@ -1,24 +1,21 @@
 package logcheck.isp;
 
 import java.util.Set;
-import java.util.TreeSet;
 
 import logcheck.util.net.NetAddr;
 
-public class IspList extends IspBean<Set<NetAddr>> implements Isp {
+public interface IspList extends Isp {
 
-	public IspList(String name, String country) {
-		super(name, country, new TreeSet<NetAddr>());
-	}
+	Set<NetAddr> getAddress();
 
-	public Set<NetAddr> getAddress() {
-		return getRef();
-	}
-	public void addAddress(NetAddr addr) {
-		getRef().add(addr);
-	}
-	public void addAddress(String addr) {
+	void addAddress(NetAddr addr);
+
+	default void addAddress(String addr) {
 		addAddress(new NetAddr(addr));
+	}
+
+	default boolean within(NetAddr addr) {
+		return getAddress().stream().anyMatch(net -> net.within(addr));
 	}
 
 }
