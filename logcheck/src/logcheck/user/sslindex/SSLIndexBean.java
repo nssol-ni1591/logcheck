@@ -56,7 +56,8 @@ public class SSLIndexBean {
 
 	@Override
 	public String toString() {
-		return "user=" + userId + ", flag=" + flag + ", expire=" + expire;
+//		return "user=" + userId + ", flag=" + flag + ", expire=" + expire + ", revoce=" + revoce;
+		return "user=" + userId + ", flag=" + flag;
 	}
 
 }
