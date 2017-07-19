@@ -94,6 +94,10 @@ public class UserListBean implements Comparable<UserListBean> {
 		revoce = b.getRevoce();
 	}
 
+	public int getTotal() {
+		return sites.stream().mapToInt(site -> site.getCount()).sum();
+	}
+
 	public String toString() {
 		return String.format("userId=%s, del=%s, site=%s", userId, userDelFlag, sites);
 	}
