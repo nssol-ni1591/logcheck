@@ -95,15 +95,15 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 		// json: http://wq.apnic.net/whois-search/query?searchtext=182.171.83.197
 
 		KnownListIsp isp = search("http://whois.threet.co.jp/?key=", addr);
-		if (isp.getName() == null || isp.getAddress().isEmpty()) {
+		if (isp == null || isp.getName() == null || isp.getAddress().isEmpty()) {
 			System.err.println();
 			log.info("retry search. addr=" + addr);
-			
-			// sleep ...
-			try {
-				Thread.sleep(2 * 1000);
-			}
-			catch (InterruptedException ex) { }
+
+			// sleep ... 接続先が異なるのでsleepは行わない
+//			try {
+//				Thread.sleep(2 * 1000);
+//			}
+//			catch (InterruptedException ex) { }
 
 			isp = search("http://lacnic.net/cgi-bin/lacnic/whois?query=", addr);
 
@@ -219,7 +219,7 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 			if (url != null) {
 				log.severe("url=" + url.toString());
 			}
-			e.printStackTrace();
+//			e.printStackTrace();
 			return null;
 		}
 		finally {
