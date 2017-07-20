@@ -15,6 +15,7 @@ import logcheck.known.KnownListIsp;
 import logcheck.log.AccessLog;
 import logcheck.site.SiteList;
 import logcheck.site.SiteListIsp;
+import logcheck.site.SiteListIspImpl;
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
 import logcheck.user.UserListSite;
@@ -61,7 +62,8 @@ public class Checker18 extends AbstractChecker<UserList<UserListBean>> {
 						userErrs.add(userId);
 
 						// ログに存在するが、SSLテーブルに存在しない場合： 不正な状態を検知することができるようにuserlistに追加する
-						user = new UserListBean(userId, "-1", "-1");
+//						user = new UserListBean(userId, "-1", "-1");
+						user = new UserListBean(userId, "-1");
 						userlist.put(userId, user);
 					}
 
@@ -82,7 +84,13 @@ public class Checker18 extends AbstractChecker<UserList<UserListBean>> {
 							log.config(String.format("user=%s, isp=%s", user, isp));
 						}
 						else {
-							site = new UserListSite(magisp);
+//							site = new UserListSite(magisp, "-1");
+							if (b.getRoles() == null || b.getRoles().length < 2) {
+								site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[0]), "-1");
+							}
+							else {
+								site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[1]), "-1");
+							}
 							user.addSite(site);
 							site.update(b.getDate());
 							log.config(String.format("user=%s, magisp=%s", user, magisp));
@@ -108,7 +116,8 @@ public class Checker18 extends AbstractChecker<UserList<UserListBean>> {
 							.append("\t").append("-")
 							.append("\t").append("-1")
 							.append("\t").append("-1")
-							.append("\t").append(user.getUserDelFlag())
+//							.append("\t").append(user.getUserDelFlag())
+							.append("\t").append("-1")
 							.append("\t").append(user.getValidFlag())
 							.append("\t").append("")
 							.append("\t").append("")
@@ -125,7 +134,8 @@ public class Checker18 extends AbstractChecker<UserList<UserListBean>> {
 								.append("\t").append(site.getSiteName())
 								.append("\t").append(site.getProjDelFlag())
 								.append("\t").append(site.getSiteDelFlag())
-								.append("\t").append(user.getUserDelFlag())
+//								.append("\t").append(user.getUserDelFlag())
+								.append("\t").append(site.getUserDelFlag())
 								.append("\t").append(user.getValidFlag())
 								.append("\t").append(site.getFirstDate())
 								.append("\t").append(site.getLastDate())

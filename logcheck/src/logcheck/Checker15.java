@@ -20,10 +20,11 @@ public class Checker15 extends Checker14 {
 		// 出力用コレクションに作り直す
 		Map<String, Map<String, String>> projmap = new TreeMap<>(); 
 		userlist.values().stream()
-				.filter(user -> user.getSites().stream().mapToInt(site -> 
-						site.getCount()).sum() == 0
+				.filter(user -> user.getSites().stream()
+						.filter(site -> "0".equals(site.getUserDelFlag()))
+						.mapToInt(site -> site.getCount()).sum() == 0
 						&& "1".equals(user.getValidFlag())
-						&& "0".equals(user.getUserDelFlag())
+//						&& "0".equals(site.getUserDelFlag())
 						)
 				.forEach(user -> {
 					user.getSites().stream()

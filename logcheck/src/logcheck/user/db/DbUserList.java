@@ -82,7 +82,8 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 
 				UserListBean bean = this.get(userId);
 				if (bean == null) {
-					bean = new UserListBean(userId, userDelFlag, validFlag);
+//					bean = new UserListBean(userId, userDelFlag, validFlag);
+					bean = new UserListBean(userId, validFlag);
 					this.put(userId, bean);
 				}
 
@@ -96,7 +97,7 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 				UserListSite site = bean.getSite(siteId);
 				if (site == null) {
 					SiteListIsp siteBean = new SiteListIspImpl(siteId, siteName, siteDelFlag, projId, projDelFlag);
-					site = new UserListSite(siteBean);
+					site = new UserListSite(siteBean, userDelFlag);
 					bean.addSite(site);
 				}
 				site.addAddress(globalIp);

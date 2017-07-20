@@ -38,7 +38,8 @@ public class SSLIndexUserList extends HashMap<String, UserListBean> implements U
 				.forEach(b -> {
 					UserListBean bean = this.get(b.getUserId());
 					if (bean == null) {
-						bean = new UserListBean(b, "-1");
+//						bean = new UserListBean(b, "-1");
+						bean = new UserListBean(b);
 						this.put(b.getUserId(), bean);
 					}
 					// 基本的にindex.txtは時系列に並んでいるようなので、同一エントリが生じたときは更新する。で問題ないはず
