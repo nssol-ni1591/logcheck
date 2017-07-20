@@ -94,7 +94,7 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 				addrmap.forEach((addr, msg) -> {
 					System.out.println(
 							new StringBuilder(country)
-									.append("\t").append(isp)
+									.append("\t").append(isp.getName())
 									.append("\t").append(addr)
 									.append("\t").append(msg.getFirstDate())
 									.append("\t").append(msg.getLastDate())
