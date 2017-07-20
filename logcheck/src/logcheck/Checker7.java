@@ -1,5 +1,6 @@
 package logcheck;
 
+import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -108,7 +109,9 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 	}
 
 	@Override
-	public void report(final Map<String, Map<IspList, Map<NetAddr, Map<AccessLogSummary, Integer>>>> map) {
+	public void report(final PrintWriter out, 
+			final Map<String, Map<IspList, Map<NetAddr, Map<AccessLogSummary, Integer>>>> map)
+	{
 		System.out.println("国\tISP/プロジェクト\tアドレス\tメッセージ\t初回日時\t最終日時\tログ数\tISP合計");
 		map.forEach((country, ispmap) -> {
 
@@ -120,8 +123,7 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 				addrmap.forEach((addr, msgmap) -> {
 
 					msgmap.forEach((msg, count) -> {
-						System.out.println(
-								new StringBuilder("".equals(country) ? "<MAGLIST>" : country)
+						System.out.println(new StringBuilder("".equals(country) ? "<MAGLIST>" : country)
 								.append("\t").append(isp.getName())
 								.append("\t").append(addr)
 								.append("\t").append(msg.getPattern())

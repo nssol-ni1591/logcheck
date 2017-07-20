@@ -1,5 +1,6 @@
 package logcheck;
 
+import java.io.PrintWriter;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -104,13 +105,12 @@ public class Checker18 extends AbstractChecker<UserList<UserListBean>> {
 	}
 
 	@Override
-	public void report(final UserList<UserListBean> list) {
-		System.out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数\t失効日時");
+	public void report(final PrintWriter out, final UserList<UserListBean> list) {
+		out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数\t失効日時");
 		userlist.values().stream()
 			.forEach(user -> {
 				if (user.getSites().isEmpty()) {
-					System.out.println(
-							new StringBuilder(user.getUserId())
+					out.println(new StringBuilder(user.getUserId())
 							.append("\t").append("-")
 							.append("\t").append("-")
 							.append("\t").append("-")
@@ -127,8 +127,7 @@ public class Checker18 extends AbstractChecker<UserList<UserListBean>> {
 				}
 				else {
 					user.getSites().forEach(site -> {
-						System.out.println(
-								new StringBuilder(user.getUserId())
+						out.println(new StringBuilder(user.getUserId())
 								.append("\t").append(site.getCountry())
 								.append("\t").append(site.getProjId())
 								.append("\t").append(site.getSiteName())

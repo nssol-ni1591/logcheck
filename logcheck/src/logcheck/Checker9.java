@@ -1,5 +1,6 @@
 package logcheck;
 
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
@@ -90,11 +91,10 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 		return list;
 	}
 
-	public void report(final List<AccessLogSummary> list) {
-		System.out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\tロール\tメッセージ");
+	public void report(final PrintWriter out, final List<AccessLogSummary> list) {
+		out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\tロール\tメッセージ");
 		list.forEach(msg -> {
-			System.out.println(
-					new StringBuilder(msg.getFirstDate())
+			out.println(new StringBuilder(msg.getFirstDate())
 					.append("\t").append(msg.getIsp().getCountry())
 					.append("\t").append(msg.getIsp().getName())
 					.append("\t").append(msg.getAddr())

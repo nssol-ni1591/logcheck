@@ -1,5 +1,6 @@
 package logcheck;
 
+import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -101,7 +102,7 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 	}
 
 	@Override
-	public void report(final Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> map) {
+	public void report(final PrintWriter out, final Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> map) {
 		System.out.println();
 		map.forEach((country, ispmap) -> {
 			int sum = ispmap.values().stream().mapToInt(msgmap -> {

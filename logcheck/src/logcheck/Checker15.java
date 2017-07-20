@@ -1,5 +1,6 @@
 package logcheck;
 
+import java.io.PrintWriter;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -16,7 +17,7 @@ import logcheck.user.UserListBean;
 public class Checker15 extends Checker14 {
 
 	@Override
-	public void report(final UserList<UserListBean> list) {
+	public void report(final PrintWriter out, final UserList<UserListBean> list) {
 		// 出力用コレクションに作り直す
 		Map<String, Map<String, String>> projmap = new TreeMap<>(); 
 		userlist.values().stream()
@@ -48,11 +49,10 @@ public class Checker15 extends Checker14 {
 							});
 				});
 		
-		System.out.println("ユーザID\tISP/プロジェクトID\t拠点名");
+		out.println("ユーザID\tISP/プロジェクトID\t拠点名");
 		projmap.forEach((projId, sitemap) -> {
 			sitemap.forEach((sitename, userId) -> {
-				System.out.println(
-						new StringBuilder(userId)
+				out.println(new StringBuilder(userId)
 						.append("\t").append(projId)
 						.append("\t").append(sitename)
 						);

@@ -1,5 +1,7 @@
 package logcheck;
 
+import java.io.PrintWriter;
+
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
@@ -26,8 +28,9 @@ public class Checker16 extends Checker14 {
 	 * とのことなので、効率は悪いが、Excelで並び替え想定なのでソートは必要なし。各削除フラムの情報も出力する。
 	 * @see logcheck.Checker14#report(logcheck.user.UserList)
 	 */
-	public void report(final UserList<UserListBean> map) {
-		System.out.println("ユーザID\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除");
+	@Override
+	public void report(final PrintWriter out, final UserList<UserListBean> map) {
+		out.println("ユーザID\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除");
 		map.values().stream()
 			// ツール実行時点で証明書が無効ならば、利用状況を確認する必要がないので対象外にする
 			.filter(user -> user.getSites().stream().mapToInt(site -> 
@@ -36,7 +39,7 @@ public class Checker16 extends Checker14 {
 					)
 			.forEach(user -> {
 				user.getSites().forEach(site -> {
-					System.out.println(
+					out.println(
 							new StringBuilder(user.getUserId())
 							.append("\t").append(site.getProjId())
 							.append("\t").append(site.getSiteName())
