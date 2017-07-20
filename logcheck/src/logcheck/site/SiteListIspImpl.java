@@ -9,6 +9,7 @@ public class SiteListIspImpl extends IspListImpl implements SiteListIsp {
 	private final String siteDelFlag;
 	private final String projDelFlag;
 
+	// for TsvSiteList
 	public SiteListIspImpl(String siteName, String projId) {
 		super(projId, "利用申請");
 		this.siteId = "";
@@ -23,6 +24,13 @@ public class SiteListIspImpl extends IspListImpl implements SiteListIsp {
 		this.siteName = siteName;
 		this.siteDelFlag = siteDelFlag;
 		this.projDelFlag = projDelFlag;
+	}
+	public SiteListIspImpl(SiteListIsp site, String projId) {
+		super(projId, "利用申請");
+		this.siteId = site.getSiteId();
+		this.siteName = "*" + site.getSiteName();	//ログ解析時のクラス生成であることを示すため
+		this.siteDelFlag = site.getSiteDelFlag();
+		this.projDelFlag = site.getProjDelFlag();
 	}
 
 	@Override
