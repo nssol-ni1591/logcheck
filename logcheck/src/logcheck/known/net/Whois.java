@@ -114,7 +114,7 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 				String name = isp.getName();
 				String country = isp.getCountry();
 
-				log.warning("addr=" + addr + ", isp=[" + name + ", C=" + country + ", NET=" + addrs + "]");
+				log.warning("(既知ISP_IPアドレス):addr=" + addr + ", isp=[" + name + ", C=" + country + ", NET=" + addrs + "]");
 
 				if (addrs.isEmpty() && name == null) {
 					isp = null;
