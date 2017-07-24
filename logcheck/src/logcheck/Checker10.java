@@ -1,6 +1,7 @@
 package logcheck;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Vector;
 import java.util.regex.Pattern;
@@ -145,11 +146,10 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 	}
 
 	@Override
-	public void report(final List<AccessLogSummary> list) {
-		System.out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\t参考ユーザID\tエラー回数\t想定される原因\t詳細");
+	public void report(final PrintWriter out, final List<AccessLogSummary> list) {
+		out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\t参考ユーザID\tエラー回数\t想定される原因\t詳細");
 		list.forEach(msg -> {
-			System.out.println(
-					new StringBuilder(msg.getFirstDate())
+			out.println(new StringBuilder(msg.getFirstDate())
 					.append("\t").append(msg.getIsp().getCountry())
 					.append("\t").append(msg.getIsp().getName())
 					.append("\t").append(msg.getAddr())

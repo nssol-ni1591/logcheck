@@ -1,7 +1,7 @@
 package logcheck;
 
+import java.io.PrintWriter;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -17,6 +17,7 @@ import logcheck.known.KnownListIsp;
 import logcheck.log.AccessLog;
 import logcheck.site.SiteList;
 import logcheck.site.SiteListIsp;
+import logcheck.site.SiteListIspImpl;
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
 import logcheck.user.UserListSite;
@@ -37,7 +38,9 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 	@Inject private Logger log;
 
 	private static final Pattern AUTH_PATTERN = 
-			Pattern.compile("Certificate realm restrictions successfully passed for [\\S ]+ , with certificate 'CN=(Z\\w+), [\\S ]+'");
+//			Pattern.compile("Certificate realm restrictions successfully passed for [\\S ]+ , with certificate 'CN=(Z\\w+), [\\S ]+'")
+			Pattern.compile("VPN Tunneling: Session started for user with IPv4 address ([\\w\\.]+), hostname ([\\S]+)")
+			;
 
 	public Checker14 init(String knownfile, String sslindex) throws Exception {
 		this.knownlist.load(knownfile);
@@ -53,22 +56,26 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
 				.filter(b -> AUTH_PATTERN.matcher(b.getMsg()).matches())
+				.filter(b -> b.getId().startsWith("Z"))
 				.forEach(b -> {
 					String userId = null;
-					Matcher m = AUTH_PATTERN.matcher("   " + b.getMsg()); // 1文字目が欠ける対策
-					if (m.find(1)) {
-						userId = m.group(1);
-					}
+//					Matcher m = AUTH_PATTERN.matcher("   " + b.getMsg()); // 1文字目が欠ける対策
+//					if (m.find(1)) {
+//						userId = m.group(1);
+//					}
+					userId = b.getId();
 
 					UserListBean user = userlist.get(userId);
 					if (user == null) {
 						userErrs.add(userId);
 
-						// ログに存在するが、SSLテーブルに存在しない場合： 不正な状態を検知することができるようにuserlistに追加する
-						user = new UserListBean(userId, "-1", "-1");
+						// ログに存在するがリストに存在しない場合： 不正な状態を検知することができるようにuserlistに追加する
+//						user = new UserListBean(userId, "-1", "-1");
+						user = new UserListBean(userId, "-1");
 						userlist.put(userId, user);
 					}
 
+//					UserListSite site = user.getSite(b.getAddr(), b.getRoles());
 					UserListSite site = user.getSite(b.getAddr());
 					if (site == null) {
 //						IspList magisp = sitelist.get(b.getAddr());
@@ -80,13 +87,21 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 								addrErrs.add(b.getAddr());
 								return;
 							}
-							site = new UserListSite(isp);
+							site = new UserListSite(isp/*, "0"*/);
 							user.addSite(site);
 							site.update(b.getDate());
 							log.config(String.format("user=%s, isp=%s", user, isp));
 						}
 						else {
-							site = new UserListSite(magisp);
+//							site = new UserListSite(magisp, magisp.getSiteDelFlag());
+//							site = new UserListSite(magisp);
+							if (b.getRoles() == null || b.getRoles().length < 2) {
+								site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[0]), "-1");
+							}
+							else {
+								site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[1]), "-1");
+							}
+							site.addAddress(b.getAddr().toString());
 							user.addSite(site);
 							site.update(b.getDate());
 							log.config(String.format("user=%s, magisp=%s", user, magisp));
@@ -100,42 +115,45 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 	}
 
 	@Override
-	public void report(final UserList<UserListBean> list) {
+	public void report(final PrintWriter out, final UserList<UserListBean> list) {
 		// アドレスを出力してはいけない。拠点ごとに回数を取得しているのに、アドレスを出力すると、回数は実際の値のアドレス数の倍になる
-		System.out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t回数\t失効日時");
+		out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t接続回数\t失効日時\tユーザ回数");
 		userlist.values().stream()
 			.forEach(user -> {
 				if (user.getSites().isEmpty()) {
-					System.out.println(
-							new StringBuilder(user.getUserId())
+					out.println(new StringBuilder(user.getUserId())
 							.append("\t").append("-")
 							.append("\t").append("-")
 							.append("\t").append("-")
 							.append("\t").append("-1")
 							.append("\t").append("-1")
-							.append("\t").append(user.getUserDelFlag())
+//							.append("\t").append(user.getUserDelFlag())
+							.append("\t").append("-1")
 							.append("\t").append(user.getValidFlag())
 							.append("\t").append("")
 							.append("\t").append("")
 							.append("\t").append("0")
 							.append("\t").append(user.getRevoce())
+							.append("\t").append("0")
 							);
 				}
 				else {
 					user.getSites().forEach(site -> {
-						System.out.println(
+						out.println(
 								new StringBuilder(user.getUserId())
 								.append("\t").append(site.getCountry())
 								.append("\t").append(site.getProjId())
 								.append("\t").append(site.getSiteName())
 								.append("\t").append(site.getProjDelFlag())
 								.append("\t").append(site.getSiteDelFlag())
-								.append("\t").append(user.getUserDelFlag())
+//								.append("\t").append(user.getUserDelFlag())
+								.append("\t").append(site.getUserDelFlag())
 								.append("\t").append(user.getValidFlag())
 								.append("\t").append(site.getFirstDate())
 								.append("\t").append(site.getLastDate())
 								.append("\t").append(site.getCount())
 								.append("\t").append(user.getRevoce())
+								.append("\t").append(user.getTotal())
 								);
 					});
 				}

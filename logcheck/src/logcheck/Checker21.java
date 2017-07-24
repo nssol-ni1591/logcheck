@@ -1,5 +1,6 @@
 package logcheck;
 
+import java.io.PrintWriter;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
@@ -86,12 +87,10 @@ public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 	}
 
 	@Override
-	public void report(final Set<FwLogSummary> list) {
-		System.out.println("出現日時\t最終日時\t接続元国\t接続元名\t接続元IP\t接続先国\t接続先名\t接続先IP\t接続先ポート\tログ数");
-
+	public void report(final PrintWriter out, final Set<FwLogSummary> list) {
+		out.println("出現日時\t最終日時\t接続元国\t接続元名\t接続元IP\t接続先国\t接続先名\t接続先IP\t接続先ポート\tログ数");
 		list.forEach(s -> {
-			System.out.println(
-					new StringBuilder(s.getFirstDate() == null ? "" : s.getFirstDate())
+			out.println(new StringBuilder(s.getFirstDate() == null ? "" : s.getFirstDate())
 					.append("\t").append(s.getLastDate())
 					.append("\t").append(s.getSrcIsp().getCountry())
 					.append("\t").append(s.getSrcIsp().getName())

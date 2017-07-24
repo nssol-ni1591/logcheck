@@ -10,7 +10,7 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 	private final String usrId;
 	private final Isp isp;
 
-	private String roles;
+	private String[] roles;
 	
 	private String afterUsrId = "";		// 直後の同じIPアドレスからの認証正常ログのユーザID
 	private String reason = "";
@@ -47,7 +47,7 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 	public Isp getIsp() {
 		return isp;
 	}
-	public String getRoles() {
+	public String[] getRoles() {
 		return roles;
 	}
 

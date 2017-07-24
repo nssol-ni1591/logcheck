@@ -10,9 +10,11 @@ public interface SiteListIsp extends IspList {
 	default String getSiteId() {
 		return null;
 	}
-	default String getSiteName() {
-		return "-";
-	}
+//	default String getSiteName() {
+//		return "-";
+//	}
+
+	String getSiteName();
 	String getSiteDelFlag();
 	String getProjId();
 	String getProjDelFlag();

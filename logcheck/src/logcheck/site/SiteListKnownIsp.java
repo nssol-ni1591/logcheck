@@ -18,6 +18,10 @@ public class SiteListKnownIsp implements SiteListIsp {
 		return isp.getName();
 	}
 	@Override
+	public String getSiteName() {
+		return "*ISP経由接続";
+	}
+	@Override
 	public String getCountry() {
 		return isp.getCountry();
 	}

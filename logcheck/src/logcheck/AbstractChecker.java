@@ -3,6 +3,7 @@ package logcheck;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -138,7 +139,7 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 	}
 
 	protected abstract T call(Stream<String> stream) throws Exception;
-	protected abstract void report(final T map);
+	protected abstract void report(final PrintWriter out, final T map);
 
 	@Override @WithElaps
 	public T call() throws Exception {
@@ -159,7 +160,16 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 		}
 		addrErrs.forEach(addr -> log.warning("unknown ip: addr=" + addr));
 		userErrs.forEach(userId -> log.warning("not found user: userid=" + userId));
-		report(map);
+
+		String crlf = System.getProperty("line.separator");
+		System.setProperty("line.separator", "\r\n");
+
+		try (PrintWriter out = new PrintWriter(System.out))
+		{
+			report(out, map);
+			out.flush();
+		}
+		System.setProperty("line.separator", crlf);
 	}
 
 	private class CheckProgress implements Runnable {

@@ -48,7 +48,7 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 			Pattern.compile(" *[Nn]etname: +([\\S ]+)"),
 	};
 	private static final Pattern[] PTN_COUNTRIES = {
-			Pattern.compile("[Cc]ountry: +(\\w\\w)"),
+			Pattern.compile("[Cc]ountry: +(\\w\\w).*"),
 			Pattern.compile("\\[ (\\w+) database provides .*"),		// JPNIC
 			Pattern.compile("(\\w+) is not an ISP .*"),				// KRNIC
 			Pattern.compile("# (\\w+) WHOIS data and services .*"),	// ARIN
@@ -95,24 +95,26 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 		// json: http://wq.apnic.net/whois-search/query?searchtext=182.171.83.197
 
 		KnownListIsp isp = search("http://whois.threet.co.jp/?key=", addr);
-		if (isp.getName() == null || isp.getAddress().isEmpty()) {
+//		KnownListIsp isp = search("http://lacnic.net/cgi-bin/lacnic/whois?query=", addr);
+//		KnownListIsp isp = search("http://wq.apnic.net/whois-search/static/search.html?query=", addr);
+		if (isp == null || isp.getName() == null || isp.getAddress().isEmpty()) {
 			System.err.println();
 			log.info("retry search. addr=" + addr);
-			
-			// sleep ...
-			try {
-				Thread.sleep(2 * 1000);
-			}
-			catch (InterruptedException ex) { }
+
+			// sleep ... 接続先が異なるのでsleepは行わない
+//			try {
+//				Thread.sleep(2 * 1000);
+//			}
+//			catch (InterruptedException ex) { }
 
 			isp = search("http://lacnic.net/cgi-bin/lacnic/whois?query=", addr);
-
-			if (isp.getName() == null || isp.getAddress().isEmpty()) {
+//			isp = search("http://whois.threet.co.jp/?key=", addr);
+			if (isp == null || isp.getName() == null || isp.getAddress().isEmpty()) {
 				Set<NetAddr> addrs = isp.getAddress();
 				String name = isp.getName();
 				String country = isp.getCountry();
 
-				log.warning("addr=" + addr + ", isp=[" + name + ", C=" + country + ", NET=" + addrs + "]");
+				log.warning("(既知ISP_IPアドレス):addr=" + addr + ", isp=[" + name + ", C=" + country + ", NET=" + addrs + "]");
 
 				if (addrs.isEmpty() && name == null) {
 					isp = null;
@@ -219,7 +221,7 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 			if (url != null) {
 				log.severe("url=" + url.toString());
 			}
-			e.printStackTrace();
+//			e.printStackTrace();
 			return null;
 		}
 		finally {
@@ -326,6 +328,9 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 
 		NetAddr[] addrs = {
 //				new ClientAddr(""),
+//				new ClientAddr(""),
+//				new ClientAddr(""),
+				new ClientAddr("62.173.40.229"),
 				new ClientAddr("61.204.36.71"),
 				new ClientAddr("202.248.61.202"),
 				new ClientAddr("61.204.36.81"),

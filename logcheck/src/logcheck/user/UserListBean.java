@@ -2,7 +2,7 @@ package logcheck.user;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -12,7 +12,7 @@ import logcheck.util.net.NetAddr;
 public class UserListBean implements Comparable<UserListBean> {
 
 	private final String userId;
-	private final String userDelFlag;
+//	private final String userDelFlag;
 	private String validFlag;
 	private String expire;
 	private String revoce;
@@ -22,29 +22,31 @@ public class UserListBean implements Comparable<UserListBean> {
 	private static final DateTimeFormatter format1 = DateTimeFormatter.ofPattern("yyMMddHHmmss");
 	private static final DateTimeFormatter format2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-	public UserListBean(SSLIndexBean b, String userDelFlag) {
+//	public UserListBean(SSLIndexBean b, String userDelFlag) {
+	public UserListBean(SSLIndexBean b) {
 		this.userId = b.getUserId();
-		this.userDelFlag = userDelFlag;
+//		this.userDelFlag = userDelFlag;
 		this.validFlag = b.getFlag();
 		this.expire = b.getExpire();
 		this.revoce = b.getRevoce();
-		this.sites = new HashSet<>();
+		this.sites = new LinkedHashSet<>();
 	}
-	public UserListBean(String userId, String userDelFlag, String validFlag) {
+//	public UserListBean(String userId, String userDelFlag, String validFlag) {
+	public UserListBean(String userId, String validFlag) {
 		this.userId = userId;
-		this.userDelFlag = userDelFlag;
+//		this.userDelFlag = userDelFlag;
 		this.validFlag = validFlag;
 		this.expire = "";
 		this.revoce = "";
-		this.sites = new HashSet<>();
+		this.sites = new LinkedHashSet<>();
 	}
 
 	public String getUserId() {
 		return userId;
 	}
-	public String getUserDelFlag() {
-		return userDelFlag;
-	}
+//	public String getUserDelFlag() {
+//		return userDelFlag;
+//	}
 	public String getValidFlag() {
 		return validFlag;
 	}
@@ -82,20 +84,50 @@ public class UserListBean implements Comparable<UserListBean> {
 				.findFirst();
 		return rc.isPresent() ? rc.get() : null;
 	}
-	public UserListSite getSite(String projId, String siteName) {
-		Optional<UserListSite> rc = sites.stream()
-				.filter(site -> site.getProjId().equals(projId) && site.getSiteName().equals(siteName))
-				.findFirst();
-		return rc.isPresent() ? rc.get() : null;
+//	public UserListSite getSite(String projId, String siteName) {
+//	Optional<UserListSite> rc = sites.stream()
+//			.filter(site -> site.getProjId().equals(projId) && site.getSiteName().equals(siteName))
+//			.findFirst();
+//	return rc.isPresent() ? rc.get() : null;
+//}
+//	public UserListSite getSite(String projId) {
+//		Optional<UserListSite> rc = sites.stream()
+//				.filter(site -> site.getProjId().equals(projId))
+//				.findFirst();
+//		return rc.isPresent() ? rc.get() : null;
+//	}
+/*
+	public UserListSite getSite(NetAddr addr, String[] roles) {
+//	public UserListSite getSite(String[] roles) {
+		UserListSite site2 = getSite(addr);
+		if (site2 != null) {
+			return site2;
+		}
+		for (int ix = 0; ix < roles.length; ix++) {
+			final String role = roles[ix];
+			Optional<UserListSite> rc = sites.stream()
+					.filter(site -> site.getProjId().equals(role))
+					.findFirst();
+			if (rc.isPresent()) {
+				return rc.get();
+			}
+		}
+		return null;
 	}
+*/
 	public void update(SSLIndexBean b) {
 		validFlag = b.getFlag();
 		expire = b.getExpire();
 		revoce = b.getRevoce();
 	}
 
+	public int getTotal() {
+		return sites.stream().mapToInt(site -> site.getCount()).sum();
+	}
+
 	public String toString() {
-		return String.format("userId=%s, del=%s, site=%s", userId, userDelFlag, sites);
+//		return String.format("userId=%s, del=%s, site=%s", userId, userDelFlag, sites);
+		return String.format("userId=%s, site=%s", userId, sites);
 	}
 
 	@Override

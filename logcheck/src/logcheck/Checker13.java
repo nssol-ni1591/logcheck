@@ -1,5 +1,6 @@
 package logcheck;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -80,17 +81,16 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 	}
 
 	@Override
-	public void report(final Map<String, Map<Isp, List<AccessLogBean>>> map) {
-		System.out.println("国\tISP/プロジェクト\tアドレス\t日時");
+	public void report(final PrintWriter out, final Map<String, Map<Isp, List<AccessLogBean>>> map) {
+		out.println("国\tISP/プロジェクト\tアドレス\t日時");
 		map.forEach((country, ispmap) -> {
 			ispmap.forEach((isp, addrmap) -> {
 				addrmap.forEach((msg) -> {
-					System.out.println(
-							new StringBuilder(country)
-									.append("\t").append(isp.getName())
-									.append("\t").append(msg.getAddr())
-									.append("\t").append(msg.getDate())
-									);
+					out.println(new StringBuilder(country)
+							.append("\t").append(isp.getName())
+							.append("\t").append(msg.getAddr())
+							.append("\t").append(msg.getDate())
+							);
 				});
 			});
 		});

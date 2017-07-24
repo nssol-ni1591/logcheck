@@ -1,5 +1,6 @@
 package logcheck;
 
+import java.io.PrintWriter;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
@@ -87,18 +88,18 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 	}
 
 	@Override
-	public void report(final Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> map) {
-		System.out.println("国\tISP/プロジェクト\tアドレス\t初回日時\t最終日時\tログ数");
+	public void report(final PrintWriter out, final Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> map) {
+		out.println("国\tISP/プロジェクト\tアドレス\t初回日時\t最終日時\tログ数");
 		map.forEach((country, ispmap) -> {
 			ispmap.forEach((isp, addrmap) -> {
 				addrmap.forEach((addr, msg) -> {
-					System.out.println(
-							new StringBuilder(country)
-									.append("\t").append(isp)
-									.append("\t").append(addr)
-									.append("\t").append(msg.getFirstDate())
-									.append("\t").append(msg.getLastDate())
-									.append("\t").append(msg.getCount()));
+					out.println(new StringBuilder(country)
+							.append("\t").append(isp.getName())
+							.append("\t").append(addr)
+							.append("\t").append(msg.getFirstDate())
+							.append("\t").append(msg.getLastDate())
+							.append("\t").append(msg.getCount())
+							);
 				});
 			});
 		});

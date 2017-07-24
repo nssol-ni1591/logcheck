@@ -16,7 +16,12 @@ public class AccessLogBean {
 		this.date = date;
 		this.host = host;
 		this.ip = ip;
-		this.id = id;
+		if (id.startsWith("z")) {
+			this.id = "Z" + id.substring(1);
+		}
+		else {
+			this.id = id;
+		}
 		this.roles = roles;
 		this.msg = msg;
 
@@ -40,8 +45,15 @@ public class AccessLogBean {
 	public String getId() {
 		return id;
 	}
-	public String getRoles() {
-		return roles;
+	public String[] getRoles() {
+		if (roles == null) {
+			return null;
+		}
+		String[] array = roles.split(","); 
+		for (int ix = 0; ix < array.length; ix++) {
+			array[ix] = array[ix].trim();
+		}
+		return array;
 	}
 	public String getMsg() {
 		return msg;
