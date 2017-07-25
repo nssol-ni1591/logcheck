@@ -56,8 +56,8 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 			Pattern.compile("Login failed \\(NSSDC_LDAP\\).  Reason: LDAP Server"),			// 後： authentication failed for Primary/Z06290  from NSSDC_LDAP
 			Pattern.compile("Login failed.  Reason: IP Denied"),							// 前："Testing Source IP realm restrictions failed for \\w+/NSSDC-Auth1 *"
 			Pattern.compile("Primary authentication failed for [\\S ]+ from \\S+"),
-			Pattern.compile("Testing Certificate realm restrictions failed for [\\w\\. ]*/NSSDC-Auth(1|2)(\\(MAC\\))? *"),
-			Pattern.compile("Testing Certificate realm restrictions failed for [\\w\\. ]*/NSSDC-Auth(1|2)(\\(MAC\\))? , with certificate '[\\w ,=-]+' *"),
+			Pattern.compile("Testing Certificate realm restrictions failed for [\\w\\.@ ]*/NSSDC-Auth(1|2)(\\(MAC\\))? *"),
+			Pattern.compile("Testing Certificate realm restrictions failed for [\\w\\.@ ]*/NSSDC-Auth(1|2)(\\(MAC\\))? , with certificate '[\\w ,=-]+' *"),
 			Pattern.compile("Testing Password realm restrictions failed for [\\S ]+ , with certificate '[\\w ,=-]+' *"),
 			Pattern.compile("Testing Source IP realm restrictions failed for \\w+/NSSDC-Auth1 *"),	// 後："Login failed.  Reason: IP Denied"
 			Pattern.compile("The X\\.509 certificate for .+; Detail: 'certificate revoked' "),
