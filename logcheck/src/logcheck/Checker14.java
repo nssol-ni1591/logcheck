@@ -52,7 +52,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 	@Override
 	public UserList<UserListBean> call(Stream<String> stream) throws Exception {
-		stream//.parallel()
+		stream//.parallel()		// parallel()を使用するとOutOfMemory例外が発生する　=> なぜ?
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
 				.filter(b -> AUTH_PATTERN.matcher(b.getMsg()).matches())

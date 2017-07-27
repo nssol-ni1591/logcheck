@@ -115,7 +115,7 @@ public class UserListBean implements Comparable<UserListBean> {
 		return null;
 	}
 */
-	public void update(SSLIndexBean b) {
+	public synchronized void update(SSLIndexBean b) {
 		validFlag = b.getFlag();
 		expire = b.getExpire();
 		revoce = b.getRevoce();
