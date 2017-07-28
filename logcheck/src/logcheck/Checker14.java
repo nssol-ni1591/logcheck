@@ -1,6 +1,7 @@
 package logcheck;
 
 import java.io.PrintWriter;
+import java.text.Normalizer;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -65,11 +66,15 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 					UserListBean user = userlist.get(userId);
 					if (user == null) {
-						userErrs.add(userId);
+						// ユーザIDに全角英数字で入力する人がいる
+						user = userlist.get(Normalizer.normalize(userId, Normalizer.Form.NFKC));
+						if (user == null) {
+							userErrs.add(userId);
 
-						// ログに存在するがリストに存在しない場合： 不正な状態を検知することができるようにuserlistに追加する
-						user = new UserListBean(userId, "-1");
-						userlist.put(userId, user);
+							// ログに存在するがリストに存在しない場合： 不正な状態を検知することができるようにuserlistに追加する
+							user = new UserListBean(userId, "-1");
+							userlist.put(userId, user);
+						}
 					}
 
 					UserListSite site = user.getSite(b.getAddr());
