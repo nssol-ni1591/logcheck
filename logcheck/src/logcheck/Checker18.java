@@ -2,12 +2,9 @@ package logcheck;
 
 import java.io.PrintWriter;
 
-import javax.enterprise.util.AnnotationLiteral;
-
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
-import logcheck.annotations.UseChecker14;
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
 
@@ -16,7 +13,6 @@ import logcheck.user.UserListBean;
  * Checker14とChecker17の出力を結合した版
  * 
  */
-@UseChecker14
 public class Checker18 extends Checker14 {
 
 	@Override
@@ -83,10 +79,10 @@ public class Checker18 extends Checker14 {
 		int rc = 0;
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-//			Checker14 application = container.instance().select(Checker14.class).get();
-			Checker18 application = container.instance().select(Checker18.class, new AnnotationLiteral<UseChecker14>(){
-				private static final long serialVersionUID = 1L;
-			}).get();
+			Checker18 application = container.instance().select(Checker18.class).get();
+//			Checker18 application = container.instance().select(Checker18.class, new AnnotationLiteral<UseChecker14>(){
+//				private static final long serialVersionUID = 1L;
+//			}).get();
 			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {
