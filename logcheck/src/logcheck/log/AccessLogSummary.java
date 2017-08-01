@@ -16,21 +16,21 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 	private String reason = "";
 	private String detail = "";
 
-	public AccessLogSummary(AccessLogBean log, String pattern) {
-		super(pattern, log.getDate());
-		this.addr = log.getAddr();
-		this.usrId = log.getId();
+	public AccessLogSummary(AccessLogBean b, String pattern) {
+		super(pattern, b.getDate());
+		this.addr = b.getAddr();
+		this.usrId = b.getId();
 		this.isp = null;
-		this.roles = log.getRoles();
+		this.roles = b.getRoles();
 		// クラス生成時に1回呼び出されているので
 		super.addCount();
 	}
-	public AccessLogSummary(AccessLogBean log, String pattern, Isp isp) {
-		super(pattern, log.getDate());
-		this.addr = log.getAddr();
-		this.usrId = log.getId();
+	public AccessLogSummary(AccessLogBean b, String pattern, Isp isp) {
+		super(pattern, b.getDate());
+		this.addr = b.getAddr();
+		this.usrId = b.getId();
 		this.isp = isp;
-		this.roles = log.getRoles();
+		this.roles = b.getRoles();
 		// クラス生成時に1回呼び出されているので
 		super.addCount();
 	}
@@ -48,6 +48,9 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 		return isp;
 	}
 	public String[] getRoles() {
+		if (roles == null) {
+			return new String[] { "" };
+		}
 		return roles;
 	}
 
@@ -72,7 +75,8 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 
 	public synchronized void update(AccessLogBean b) {
 		super.update(b.getDate());
-		if ("".equals(roles)) {
+//		if ("".equals(roles)) {
+		if (b.getRoles() != null) {
 			roles = b.getRoles();
 		}
 	}

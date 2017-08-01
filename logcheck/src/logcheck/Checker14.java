@@ -1,6 +1,7 @@
 package logcheck;
 
 import java.io.PrintWriter;
+import java.text.Normalizer;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -31,7 +32,6 @@ import logcheck.user.UserListSite;
 public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 	@Inject private KnownList knownlist;
-//	@Inject private MagList maglist;
 	@Inject private SiteList sitelist;
 	@Inject protected UserList<UserListBean> userlist;
 
@@ -44,7 +44,6 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 	public Checker14 init(String knownfile, String sslindex) throws Exception {
 		this.knownlist.load(knownfile);
-//		this.maglist.load();
 		this.sitelist.load(null);
 		this.userlist.load(sslindex, sitelist);
 		return this;
@@ -52,7 +51,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 	@Override
 	public UserList<UserListBean> call(Stream<String> stream) throws Exception {
-		stream//.parallel()
+		stream//.parallel()		// parallel()を使用するとOutOfMemory例外が発生する　=> なぜ?
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
 				.filter(b -> AUTH_PATTERN.matcher(b.getMsg()).matches())
@@ -67,21 +66,21 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 					UserListBean user = userlist.get(userId);
 					if (user == null) {
-						userErrs.add(userId);
+						// ユーザIDに全角英数字で入力する人がいる
+						user = userlist.get(Normalizer.normalize(userId, Normalizer.Form.NFKC));
+						if (user == null) {
+							userErrs.add(userId);
 
-						// ログに存在するがリストに存在しない場合： 不正な状態を検知することができるようにuserlistに追加する
-//						user = new UserListBean(userId, "-1", "-1");
-						user = new UserListBean(userId, "-1");
-						userlist.put(userId, user);
+							// ログに存在するがリストに存在しない場合： 不正な状態を検知することができるようにuserlistに追加する
+							user = new UserListBean(userId, "-1");
+							userlist.put(userId, user);
+						}
 					}
 
-//					UserListSite site = user.getSite(b.getAddr(), b.getRoles());
 					UserListSite site = user.getSite(b.getAddr());
 					if (site == null) {
-//						IspList magisp = sitelist.get(b.getAddr());
 						SiteListIsp magisp = sitelist.get(b.getAddr());
 						if (magisp == null) {
-//							IspList isp = knownlist.get(b.getAddr());
 							KnownListIsp isp = knownlist.get(b.getAddr());
 							if (isp == null) {
 								addrErrs.add(b.getAddr());
@@ -93,8 +92,6 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 							log.config(String.format("user=%s, isp=%s", user, isp));
 						}
 						else {
-//							site = new UserListSite(magisp, magisp.getSiteDelFlag());
-//							site = new UserListSite(magisp);
 							if (b.getRoles() == null || b.getRoles().length < 2) {
 								site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[0]), "-1");
 							}
@@ -127,7 +124,6 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 							.append("\t").append("-")
 							.append("\t").append("-1")
 							.append("\t").append("-1")
-//							.append("\t").append(user.getUserDelFlag())
 							.append("\t").append("-1")
 							.append("\t").append(user.getValidFlag())
 							.append("\t").append("")
@@ -139,14 +135,12 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 				}
 				else {
 					user.getSites().forEach(site -> {
-						out.println(
-								new StringBuilder(user.getUserId())
+						out.println(new StringBuilder(user.getUserId())
 								.append("\t").append(site.getCountry())
 								.append("\t").append(site.getProjId())
 								.append("\t").append(site.getSiteName())
 								.append("\t").append(site.getProjDelFlag())
 								.append("\t").append(site.getSiteDelFlag())
-//								.append("\t").append(user.getUserDelFlag())
 								.append("\t").append(site.getUserDelFlag())
 								.append("\t").append(user.getValidFlag())
 								.append("\t").append(site.getFirstDate())

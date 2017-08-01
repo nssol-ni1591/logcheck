@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import javax.enterprise.util.AnnotationLiteral;
@@ -62,6 +63,11 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 		if (rc.isPresent()) {
 			//同一原因で複数出力されるログは識別のため"（）"を付加する
 			return "(" + rc.get() + ")";
+		}
+
+		Pattern ptn = Pattern.compile("VPN Tunneling: Session started for user with IPv4 address [\\d\\.]+, hostname [\\w\\.-]+");
+		if (ptn.matcher(b.getMsg()).matches()) {
+			return ptn.toString();
 		}
 		if (!b.getMsg().contains("failed")) {
 			// failed が含まれないメッセージは集約する
@@ -144,16 +150,18 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 				addrmap.forEach((addr, idmap) -> {
 					idmap.forEach((id, msgmap) -> {
 						msgmap.forEach((pattern, msg) -> {
-							out.println(new StringBuilder(country)
-									.append("\t").append(isp.getName())
-									.append("\t").append(addr)
-									.append("\t").append(id)
-									.append("\t").append(pattern)
-									.append("\t").append(msg.getRoles())
-									.append("\t").append(msg.getFirstDate())
-									.append("\t").append(msg.getLastDate())
-									.append("\t").append(msg.getCount())
-									);
+							Stream.of(msg.getRoles()).forEach(role -> {
+								out.println(new StringBuilder(country)
+										.append("\t").append(isp.getName())
+										.append("\t").append(addr)
+										.append("\t").append(id)
+										.append("\t").append(pattern)
+										.append("\t").append(role)
+										.append("\t").append(msg.getFirstDate())
+										.append("\t").append(msg.getLastDate())
+										.append("\t").append(msg.getCount())	//　rolesの出力数倍になる
+										);
+							});
 						});
 					});
 				});

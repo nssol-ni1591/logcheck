@@ -46,7 +46,7 @@ public class AccessLogBean {
 		return id;
 	}
 	public String[] getRoles() {
-		if (roles == null) {
+		if (roles == null || "".equals(roles)) {
 			return null;
 		}
 		String[] array = roles.split(","); 

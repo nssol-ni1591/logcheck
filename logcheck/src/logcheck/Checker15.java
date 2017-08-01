@@ -25,7 +25,6 @@ public class Checker15 extends Checker14 {
 						.filter(site -> "0".equals(site.getUserDelFlag()))
 						.mapToInt(site -> site.getCount()).sum() == 0
 						&& "1".equals(user.getValidFlag())
-//						&& "0".equals(site.getUserDelFlag())
 						)
 				.forEach(user -> {
 					user.getSites().stream()

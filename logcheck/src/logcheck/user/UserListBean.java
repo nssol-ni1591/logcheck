@@ -12,7 +12,6 @@ import logcheck.util.net.NetAddr;
 public class UserListBean implements Comparable<UserListBean> {
 
 	private final String userId;
-//	private final String userDelFlag;
 	private String validFlag;
 	private String expire;
 	private String revoce;
@@ -22,19 +21,15 @@ public class UserListBean implements Comparable<UserListBean> {
 	private static final DateTimeFormatter format1 = DateTimeFormatter.ofPattern("yyMMddHHmmss");
 	private static final DateTimeFormatter format2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-//	public UserListBean(SSLIndexBean b, String userDelFlag) {
 	public UserListBean(SSLIndexBean b) {
 		this.userId = b.getUserId();
-//		this.userDelFlag = userDelFlag;
 		this.validFlag = b.getFlag();
 		this.expire = b.getExpire();
 		this.revoce = b.getRevoce();
 		this.sites = new LinkedHashSet<>();
 	}
-//	public UserListBean(String userId, String userDelFlag, String validFlag) {
 	public UserListBean(String userId, String validFlag) {
 		this.userId = userId;
-//		this.userDelFlag = userDelFlag;
 		this.validFlag = validFlag;
 		this.expire = "";
 		this.revoce = "";
@@ -44,9 +39,6 @@ public class UserListBean implements Comparable<UserListBean> {
 	public String getUserId() {
 		return userId;
 	}
-//	public String getUserDelFlag() {
-//		return userDelFlag;
-//	}
 	public String getValidFlag() {
 		return validFlag;
 	}
@@ -115,7 +107,7 @@ public class UserListBean implements Comparable<UserListBean> {
 		return null;
 	}
 */
-	public void update(SSLIndexBean b) {
+	public synchronized void update(SSLIndexBean b) {
 		validFlag = b.getFlag();
 		expire = b.getExpire();
 		revoce = b.getRevoce();
@@ -125,8 +117,38 @@ public class UserListBean implements Comparable<UserListBean> {
 		return sites.stream().mapToInt(site -> site.getCount()).sum();
 	}
 
+	public String getProjDelFlag() {
+		return sites.stream().anyMatch(site -> "0".equals(site.getProjDelFlag())) ? "0" : "1";
+	}
+	public String getSiteDelFlag() {
+		return sites.stream().anyMatch(site -> "0".equals(site.getSiteDelFlag())) ? "0" : "1";
+	}
+	public String getUserDelFlag() {
+		return sites.stream().anyMatch(site -> "0".equals(site.getUserDelFlag())) ? "0" : "1";
+	}
+	public String getFirstDate() {
+		String date = "";
+		for (UserListSite site : sites) {
+			if ("".equals(date)) {
+				date = site.getFirstDate();
+			}
+			else if (site.getFirstDate().compareTo(date) < 0) {
+				date = site.getFirstDate();
+			}
+		}
+		return date;
+	}
+	public String getLastDate() {
+		String date = "";
+		for (UserListSite site : sites) {
+			if (site.getLastDate().compareTo(date) > 0) {
+				date = site.getLastDate();
+			}
+		}
+		return date;
+	}
+
 	public String toString() {
-//		return String.format("userId=%s, del=%s, site=%s", userId, userDelFlag, sites);
 		return String.format("userId=%s, site=%s", userId, sites);
 	}
 

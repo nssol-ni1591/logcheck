@@ -45,7 +45,6 @@ public class Checker16 extends Checker14 {
 							.append("\t").append(site.getSiteName())
 							.append("\t").append(site.getProjDelFlag())
 							.append("\t").append(site.getSiteDelFlag())
-//							.append("\t").append(user.getUserDelFlag())
 							.append("\t").append(site.getUserDelFlag())
 							);
 			});

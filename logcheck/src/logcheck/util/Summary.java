@@ -37,7 +37,7 @@ public class Summary<E> {
 		count += 1;
 	}
 
-	public void update(String date) {
+	public synchronized void update(String date) {
 		if ("".equals(firstDate)) {
 			firstDate = date;
 		}
