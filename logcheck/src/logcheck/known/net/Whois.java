@@ -109,7 +109,14 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 
 			isp = search("http://lacnic.net/cgi-bin/lacnic/whois?query=", addr);
 //			isp = search("http://whois.threet.co.jp/?key=", addr);
-			if (isp == null || isp.getName() == null || isp.getAddress().isEmpty()) {
+			if (isp == null) {
+				log.warning("(既知ISP_IPアドレス):addr=" + addr + ", isp=null");
+
+				// 何らかの問題で取得に失敗していてもアクセスし続けるため
+				isp = new KnownListIsp(addr.toString(), "-");
+				isp.addAddress(new NetAddr(addr.toString() + "/32"));
+			}
+			else if (isp.getName() == null || isp.getAddress().isEmpty()) {
 				Set<NetAddr> addrs = isp.getAddress();
 				String name = isp.getName();
 				String country = isp.getCountry();
@@ -117,7 +124,10 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 				log.warning("(既知ISP_IPアドレス):addr=" + addr + ", isp=[" + name + ", C=" + country + ", NET=" + addrs + "]");
 
 				if (addrs.isEmpty() && name == null) {
-					isp = null;
+//					isp = null;
+//					上記と同じ理由で、ispをnullするのはよくない
+					isp = new KnownListIsp(addr.toString(), country == null ? "-" : country);
+					isp.addAddress(new NetAddr(addr.toString() + "/32"));
 				}
 				else if (name == null) {
 					final KnownListIsp isp2 = new KnownListIsp(addr.toString(), country);
@@ -330,6 +340,9 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 //				new ClientAddr(""),
 //				new ClientAddr(""),
 //				new ClientAddr(""),
+				new ClientAddr("119.72.196.172"),
+				new ClientAddr("124.35.68.170"),
+				new ClientAddr("119.224.170.26"),
 				new ClientAddr("62.173.40.229"),
 				new ClientAddr("61.204.36.71"),
 				new ClientAddr("202.248.61.202"),
