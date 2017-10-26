@@ -26,7 +26,7 @@ import logcheck.util.net.NetAddr;
  * なお、コレクションへの登録に際し、送信元アドレス、送信先アドレス、送信先ポートが等しいエントリが存在する場合は、
  * 該当エントリのログ回数の加算、初回日時（ログは新しいログ順で登録されているため）を更新する。
  */
-public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
+public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
@@ -34,7 +34,7 @@ public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 
 //	private Set<FwLogSummary> list = new TreeSet<>();
 
-	public Checker21 init(String knownfile, String magfile, String sdcfile) throws Exception {
+	public Checker50 init(String knownfile, String magfile, String sdcfile) throws Exception {
 		this.knownlist.load(knownfile);
 		this.maglist.load(magfile);
 		this.sdclist.load(sdcfile);
@@ -113,7 +113,7 @@ public class Checker21 extends AbstractChecker<Set<FwLogSummary>> {
 		int rc = 0;
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-			Checker21 application = container.instance().select(Checker21.class).get();
+			Checker50 application = container.instance().select(Checker50.class).get();
 			application.init(argv[0], argv[1], argv[2]).start(argv, 3);
 		}
 		catch (Exception ex) {
