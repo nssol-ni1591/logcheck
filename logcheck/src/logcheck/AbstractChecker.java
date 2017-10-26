@@ -49,6 +49,7 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 			Pattern.compile("Login failed.  Reason: No Certificate"),						// 後："Testing Certificate realm restrictions failed for [\\w\\.]*/NSSDC-Auth(1|2)(\\(MAC\\))? *"
 			Pattern.compile("Login failed.  Reason: No Roles"),								// 単独
 			Pattern.compile("Login failed.  Reason: Revoked Certificate"),					//　後："Testing Certificate realm restrictions failed for [\\w\\.]*/NSSDC-Auth(1|2)(\\(MAC\\))? , with certificate '[\\w ,=-]+' *"
+			Pattern.compile("Login failed.  Reason: Wrong Certificate::unable to get certificate CRL"),	//　2017-10-26追加: 後："Testing Certificate realm restrictions failed for [\\w\\.]*/NSSDC-Auth(1|2)(\\(MAC\\))? , with certificate '[\\w ,=-]+' unable to get certificate CRL"
 			Pattern.compile("Testing Source IP realm restrictions failed for /NSSDC-Auth1 *"),	// 単独or後："Login failed.  Reason: IP Denied"
 	};
 	protected static final Pattern[] FAIL_PATTERNS_DUP = {
@@ -56,11 +57,12 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 			Pattern.compile("Login failed \\(NSSDC_LDAP\\).  Reason: LDAP Server"),			// 後： authentication failed for Primary/Z06290  from NSSDC_LDAP
 			Pattern.compile("Login failed.  Reason: IP Denied"),							// 前："Testing Source IP realm restrictions failed for \\w+/NSSDC-Auth1 *"
 			Pattern.compile("Primary authentication failed for [\\S ]+ from \\S+"),
-			Pattern.compile("Testing Certificate realm restrictions failed for [\\w\\.@ ]*/NSSDC-Auth(1|2)(\\(MAC\\))? *"),
-			Pattern.compile("Testing Certificate realm restrictions failed for [\\w\\.@ ]*/NSSDC-Auth(1|2)(\\(MAC\\))? , with certificate '[\\w ,=-]+' *"),
+			Pattern.compile("Testing Certificate realm restrictions failed for [\\w\\.\\-@ ]*/NSSDC-Auth(1|2)(\\(MAC\\))? *"),
+			Pattern.compile("Testing Certificate realm restrictions failed for [\\w\\.\\-@ ]*/NSSDC-Auth(1|2)(\\(MAC\\))? , with certificate '[\\w ,=-]+' *"),
 			Pattern.compile("Testing Password realm restrictions failed for [\\S ]+ , with certificate '[\\w ,=-]+' *"),
 			Pattern.compile("Testing Source IP realm restrictions failed for \\w+/NSSDC-Auth1 *"),	// 後："Login failed.  Reason: IP Denied"
 			Pattern.compile("The X\\.509 certificate for .+; Detail: 'certificate revoked' "),
+			Pattern.compile("The X\\.509 certificate for .+; Detail: 'unable to get certificate CRL' "),	// 2017-10-26追加
 			Pattern.compile("TLS handshake failed - client issued alert 'untrusted or unknown certificate'"),
 	};
 	protected static final Pattern[] INFO_PATTERNS = {
