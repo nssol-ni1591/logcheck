@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Vector;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -94,13 +95,15 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 	public void report(final PrintWriter out, final List<AccessLogSummary> list) {
 		out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\tロール\tメッセージ");
 		list.forEach(msg -> {
-			out.println(new StringBuilder(msg.getFirstDate())
-					.append("\t").append(msg.getIsp().getCountry())
-					.append("\t").append(msg.getIsp().getName())
-					.append("\t").append(msg.getAddr())
-					.append("\t").append(msg.getId())
-					.append("\t").append(msg.getRoles())
-					.append("\t").append(msg.getPattern())
+			out.println(Stream.of(msg.getFirstDate()
+					, msg.getIsp().getCountry()
+					, msg.getIsp().getName()
+					, msg.getAddr().toString()
+					, msg.getId()
+					, String.join(",", msg.getRoles())
+					, msg.getPattern()
+					)
+					.collect(Collectors.joining("\t"))
 					);
 		});
 	}
