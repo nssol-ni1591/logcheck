@@ -102,6 +102,7 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 			Pattern.compile("\\S+/NSSDC-Auth(1|2)(\\(MAC\\))? logged out from IP \\([\\d\\.]+\\) because user started new session from IP \\([\\d\\.]+\\)\\."),
 	};
 	protected static final String INFO_SUMMARY_MSG = "<><><> Information message summary <><><>";
+	protected static final String DUP_FAILED_MSG = "<><><> Duplicate failed message summary <><><>";
 
 	protected AbstractChecker() { }
 
