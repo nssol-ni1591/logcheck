@@ -31,7 +31,9 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 
 //	private final Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> map = new TreeMap<>();
 
-	private static final Pattern IP_RANGE_PATTERN = Pattern.compile("Testing Source IP realm restrictions failed for /NSSDC-Auth1 *");
+// for 2017-11-18
+//	private static final Pattern IP_RANGE_PATTERN = Pattern.compile("Testing Source IP realm restrictions failed for /NSSDC-Auth *");
+	private static final Pattern IP_RANGE_PATTERN = Pattern.compile("Testing Source IP realm restrictions failed for [\\S ]*/NSSDC-Auth\\d *");
 
 	public Checker12 init(String knownfile, String magfile) throws Exception {
 		this.knownlist.load(knownfile);
