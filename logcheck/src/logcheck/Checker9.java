@@ -36,7 +36,6 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 	@Inject private Logger log;
 
 	private String select;
-//	private final List<AccessLogSummary> list = new Vector<>(1000000);
 
 	private static final Pattern[] ALL_PATTERNS;
 	static {
@@ -126,7 +125,6 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 			application.init(argv[0], argv[1], argv[2]).start(argv, 3);
 		}
 		catch (Exception ex) {
-//			ex.printStackTrace(System.err);
 			rc = 1;
 		}
 		System.exit(rc);

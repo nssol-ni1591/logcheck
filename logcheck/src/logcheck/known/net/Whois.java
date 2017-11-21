@@ -17,7 +17,6 @@ import javax.enterprise.inject.Alternative;
 import logcheck.known.KnownList;
 import logcheck.known.KnownListIsp;
 import logcheck.known.tsv.TsvKnownList;
-import logcheck.util.net.ClientAddr;
 import logcheck.util.net.NetAddr;
 
 @Alternative
@@ -56,7 +55,7 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 	};
 
 	//@Inject private Logger log;
-	private static Logger log = Logger.getLogger(Whois.class.getName());
+	private static final Logger log = Logger.getLogger(Whois.class.getName());
 
 	public String parse(Pattern[] ptns, String s) {
 		for (Pattern p : ptns) {
@@ -88,7 +87,7 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 		Optional<KnownListIsp> rc = this.stream()
 				.filter(isp -> isp.within(addr))
 				.findFirst();
-		if (rc != null && rc.isPresent()) {
+		if (rc.isPresent()) {
 			return rc.get();
 		}
 
@@ -328,83 +327,6 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 		KnownList list = new TsvKnownList().load(file);
 		list.forEach(value -> add(value));
 		return this;
-	}
-
-	public static void main(String... argv) {
-
-		System.setProperty("proxySet" , "true");
-		System.setProperty("proxyHost", "proxy.ns-sol.co.jp");
-		System.setProperty("proxyPort", "8000");
-
-		NetAddr[] addrs = {
-//				new ClientAddr(""),
-//				new ClientAddr(""),
-//				new ClientAddr(""),
-				new ClientAddr("119.72.196.172"),
-				new ClientAddr("124.35.68.170"),
-				new ClientAddr("119.224.170.26"),
-				new ClientAddr("62.173.40.229"),
-				new ClientAddr("61.204.36.71"),
-				new ClientAddr("202.248.61.202"),
-				new ClientAddr("61.204.36.81"),
-				new ClientAddr("202.248.61.202"),
-				new ClientAddr("61.204.36.71"),
-/*
-				new ClientAddr("210.1.29.82"),
-				new ClientAddr("182.232.195.22"),
-				new ClientAddr("203.87.156.92"),
-				new ClientAddr("182.48.105.210"),
-				new ClientAddr("60.251.66.155"),
-				new ClientAddr("52.90.33.223"),
-				new ClientAddr("106.140.52.162"),
-				new ClientAddr("210.173.87.154"),
-
-				new ClientAddr("70.62.31.2"),
-				new ClientAddr("64.134.171.160"),
-				new ClientAddr("110.77.214.76"),
-				new ClientAddr("101.99.14.161"),
-				new ClientAddr("59.153.233.226"),
-				new ClientAddr("117.4.252.36"),
-				new ClientAddr("222.252.17.6"),
-				new ClientAddr("122.2.36.229"),
-				new ClientAddr("93.150.63.11"),
-				new ClientAddr("183.82.120.86"),
-				new ClientAddr("103.40.133.2"),
-				new ClientAddr("79.191.82.167"),
-				new ClientAddr("219.90.84.2"),
-				new ClientAddr("122.2.36.229"),
-*/
-		};
-
-		try {
-			Whois f = new Whois();
-			f.load(argv[0]);
-
-			for (NetAddr addr : addrs) {
-				KnownListIsp isp = f.get(addr);
-				if (isp == null) {
-					System.out.println("addr=" + addr + ", isp=null");
-				}
-				else {
-					System.out.println("addr=" + addr + ", isp=[" + isp + ", C=" + isp.getCountry() +", NET=" + isp.getAddress() + "]");
-				}
-			}
-
-			for (int ix = 1; ix < argv.length; ix++) {
-				String addr = argv[ix];
-				KnownListIsp isp = f.get(new ClientAddr(addr));
-				if (isp == null) {
-					System.out.println("addr=" + addr + ", isp=null");
-				}
-				else {
-					System.out.println("addr=" + addr + ", isp=[" + isp + ", C=" + isp.getCountry() +", NET=" + isp.getAddress() + "]");
-				}
-			}
-//			System.out.println("f=" + f);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 }

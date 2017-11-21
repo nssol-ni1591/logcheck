@@ -32,8 +32,6 @@ public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 	@Inject private MagList maglist;
 	@Inject private SdcList sdclist;
 
-//	private Set<FwLogSummary> list = new TreeSet<>();
-
 	public Checker50 init(String knownfile, String magfile, String sdcfile) throws Exception {
 		this.knownlist.load(knownfile);
 		this.maglist.load(magfile);
@@ -117,7 +115,6 @@ public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 			application.init(argv[0], argv[1], argv[2]).start(argv, 3);
 		}
 		catch (Exception ex) {
-//			ex.printStackTrace(System.err);
 			rc = 1;
 		}
 		System.exit(rc);

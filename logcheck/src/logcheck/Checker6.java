@@ -26,8 +26,6 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-//	private Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> map = new TreeMap<>();
-
 	private static final Pattern[] FAIL_PATTERNS_ALL;
 	static {
 		FAIL_PATTERNS_ALL = new Pattern[FAIL_PATTERNS.length + FAIL_PATTERNS_DUP.length];
@@ -149,7 +147,6 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {
-//			ex.printStackTrace(System.err);
 			rc = 1;
 		}
 		System.exit(rc);

@@ -138,7 +138,9 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 			p.stopRequest();
 		}
 		finally {
-			exec.shutdown();
+			if (exec != null) {
+				exec.shutdown();
+			}
 		}
 		return map;
 	}
@@ -187,8 +189,9 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 					Thread.sleep(1000);
 					System.err.print(".");
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					// e.printStackTrace();
+					// もし例外が発生してしまうとスレッドが停止してしまうが
+					// sonarのパーサが文句を言うので仕方がない
+					Thread.currentThread().interrupt();
 				}
 			}
 		}

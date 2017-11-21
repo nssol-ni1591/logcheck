@@ -1,10 +1,5 @@
 package logcheck.log;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,28 +60,4 @@ public class AccessLog {
 		return rc;
 	}
 
-	public static void main(String... argv) {
-		try {
-			for (String file : argv) {
-				System.out.println("start AccessLog.main ... file=" + file);
-				HashMap<String, AccessLogSummary> map = new HashMap<>();
-				Files.lines(Paths.get(file), StandardCharsets.UTF_8)
-						.filter(AccessLog::test)
-						.map(AccessLog::parse)
-						.forEach(b -> {
-							AccessLogSummary als = map.get(b.getAddr().toString());
-							if (als == null) {
-								als = new AccessLogSummary(b, null);
-								map.put(b.getAddr().toString(), als);
-							}
-							System.out.println("log=" + b);
-						});
-				System.out.println("end AccessLog.main ...");
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("AccessLog.main ... end");
-	}
 }

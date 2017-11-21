@@ -50,8 +50,6 @@ public class Checker24 extends Checker23 {
 			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {
-			// WeldでStrackTraceが出力されるので、ここで出力の必要はない
-			//ex.printStackTrace(System.err);
 			rc = 1;
 		}
 		System.exit(rc);

@@ -127,12 +127,18 @@ public class UserListBean implements Comparable<UserListBean> {
 		return sites.stream().anyMatch(site -> "0".equals(site.getUserDelFlag())) ? "0" : "1";
 	}
 	public String getFirstDate() {
-		String date = "";
+		//String date = "";
+		String date = "9999";
 		for (UserListSite site : sites) {
+			/*
 			if ("".equals(date)) {
 				date = site.getFirstDate();
 			}
 			else if (site.getFirstDate().compareTo(date) < 0) {
+				date = site.getFirstDate();
+			}
+			*/
+			if (site.getFirstDate().compareTo(date) < 0) {
 				date = site.getFirstDate();
 			}
 		}

@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import javax.enterprise.inject.Alternative;
 
@@ -50,8 +51,8 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 
 	@WithElaps
 	public KnownList load(String file) throws IOException {
-		Files.lines(Paths.get(file), Charset.forName("MS932"))
-				.filter(TsvKnownList::test)
+		try (Stream<String> input = Files.lines(Paths.get(file), Charset.forName("MS932"))) {
+			input.filter(TsvKnownList::test)
 				.map(TsvKnownList::parse)
 				.forEach(b -> {
 					KnownListIsp isp = get(new NetAddr(b.getAddr()));
@@ -61,6 +62,7 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 					}
 					isp.addAddress(new NetAddr(b.getAddr()));
 				});
+		}
 		return this;
 	}
 
@@ -100,25 +102,6 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 			log.warning("(既知ISP_IPアドレス): s=\"" + s + "\"");
 		}
 		return rc;
-	}
-
-	public static void main(String... argv) {
-		System.out.println("start IspList.main ...");
-		KnownList map = new TsvKnownList();
-		try {
-			map = new TsvKnownList().load(argv[0]);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		for (KnownListIsp n : map) {
-			System.out.println(n.getCountry() + "\t" + n + "\t" + n.getAddress());
-			System.out.print("\t");
-			n.getAddress().forEach(s -> System.out.printf("[%s]", s.toStringRange()));
-			System.out.println();
-		}
-		System.out.println("IspList.main ... end");
 	}
 
 }

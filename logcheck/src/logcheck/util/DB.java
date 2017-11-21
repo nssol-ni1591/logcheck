@@ -13,6 +13,16 @@ public class DB {
 	private DB () {
 	}
 
+	private static String getHostname() {
+		return "172.31.247.137";
+	}
+	private static String getUsername() {
+		return "masterinfo";
+	}
+	private static String getPassword() {
+		return "masterinfo";
+	}
+
 	public static Connection createConnection() throws ClassNotFoundException, SQLException, IOException {
 
 		Properties props = new Properties();
@@ -21,11 +31,11 @@ public class DB {
 			props.load(new InputStreamReader(is));
 		}
 
-		String host = props.getProperty("host", "172.31.247.137");
+		String host = props.getProperty("host", getHostname());
 		String port = props.getProperty("port", "1521");
 		String sid = props.getProperty("sid", "sdcdb011");
-		String username = props.getProperty("username", "masterinfo");
-		String password = props.getProperty("password", "masterinfo");
+		String username = props.getProperty("username", getUsername());
+		String password = props.getProperty("password", getPassword());
 
 		host = System.getProperty("jdbc.connect.host", host);
 

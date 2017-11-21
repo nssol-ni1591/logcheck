@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import javax.enterprise.inject.Alternative;
 
@@ -18,7 +19,7 @@ import logcheck.user.UserListBean;
 public class SSLIndexUserList extends HashMap<String, UserListBean> implements UserList<UserListBean> {
 
 //	@Inject private Logger log;
-	private static Logger log = Logger.getLogger(SSLIndexUserList.class.getName());
+	private static final Logger log = Logger.getLogger(SSLIndexUserList.class.getName());
 
 	private static final long serialVersionUID = 1L;
 
@@ -31,8 +32,8 @@ public class SSLIndexUserList extends HashMap<String, UserListBean> implements U
 
 	@Override @WithElaps
 	public SSLIndexUserList load(String file, SiteList sitelist) throws IOException {
-		Files.lines(Paths.get(file), Charset.forName("utf-8"))
-				.filter(s -> test(s))
+		try (Stream<String> input = Files.lines(Paths.get(file), Charset.forName("utf-8"))) {
+			input.filter(s -> test(s))
 				.map(s -> parse(s))
 				.filter(b -> b.getUserId().startsWith("Z"))
 				.forEach(b -> {
@@ -47,6 +48,7 @@ public class SSLIndexUserList extends HashMap<String, UserListBean> implements U
 						bean.update(b);
 					}
 				});
+		}
 		return this;
 	}
 
@@ -115,20 +117,4 @@ public class SSLIndexUserList extends HashMap<String, UserListBean> implements U
 		return rc;
 	}
 
-	public static void main(String... argv) {
-		System.out.println("start SSLUserList.main ...");
-		SSLIndexUserList map = new SSLIndexUserList();
-		try {
-			map = new SSLIndexUserList().load(argv[0], null);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		for (String name : map.keySet()) {
-			UserListBean user = map.get(name);
-			System.out.println(user);
-		}
-		System.out.println("SSLUserList.main ... end");
-	}
 }

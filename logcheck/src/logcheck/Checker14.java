@@ -169,7 +169,6 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {
-//			ex.printStackTrace(System.err);
 			rc = 1;
 		}
 		System.exit(rc);

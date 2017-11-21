@@ -8,7 +8,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import javax.enterprise.inject.Alternative;
 import javax.sql.RowSet;
@@ -18,12 +20,12 @@ import javax.sql.rowset.Predicate;
 import logcheck.annotations.WithElaps;
 import logcheck.site.SiteList;
 import logcheck.site.SiteListIsp;
-import logcheck.site.db.DbSiteList;
 import logcheck.user.UserListSite;
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
 import logcheck.user.sslindex.SSLIndexBean;
 import logcheck.util.DB;
+
 import oracle.jdbc.rowset.OracleFilteredRowSet;
 
 /*
@@ -35,7 +37,7 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 	private static final long serialVersionUID = 1L;
 	private static Logger log = Logger.getLogger(SSLUserList.class.getName());
 
-	public static String SQL_ZUSER =
+	public static final String SQL_ZUSER =
 			"select u.site_id, u.user_id, u.delete_flag"
 			+ " from sas_prj_site_user u"
 			+ " where u.user_id like 'Z%'"
@@ -48,21 +50,22 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 	public SSLUserList() {
 		super(4000);
 	}
-
+/*
 	private FilteredRowSet getRowSet(String sql) throws Exception {
 		try ( // Oracleに接続
 				Connection conn = DB.createConnection();
 				// ステートメントを作成
 				PreparedStatement stmt = conn.prepareStatement(sql);
+				ResultSet rs = stmt.executeQuery();
 				)
 		{
-			ResultSet rs = stmt.executeQuery();
-
+			// このメソッド内ではFilteredRowSet frsをclose()しないで、呼出元で使い終わったのちにclose()すること
 			FilteredRowSet frs = new OracleFilteredRowSet();
 			frs.populate(rs);
 			return frs;
 		}
 	}
+*/
 	private SSLIndexBean parse(String s) {
 		String[] array = s.split("\t");
 		String flag = array[0];
@@ -98,65 +101,78 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 
 	@WithElaps
 	public SSLUserList load(String file, SiteList sitelist) throws Exception {
-		FilteredRowSet rs = getRowSet(SQL_ZUSER);
 
-		Files.lines(Paths.get(file), Charset.forName("utf-8"))
-			.filter(s -> test(s))
-			.map(s -> parse(s))
-			.forEach(b -> {
-				boolean status = false;
-				UserListBean bean = this.get(b.getUserId());
-				if (bean == null) {
-					try {
-						rs.beforeFirst();
-						rs.setFilter(new SelectUser(b.getUserId()));
+		try ( // Oracleに接続
+				Connection conn = DB.createConnection();
+				// ステートメントを作成
+				PreparedStatement stmt = conn.prepareStatement(SQL_ZUSER);
+				ResultSet rs = stmt.executeQuery();
+				FilteredRowSet frs = new OracleFilteredRowSet())
+		{
+			// オフラインRowSetを取得
+			frs.populate(rs);
 
-						while (rs.next()) {
-							String siteId = rs.getString(1);
-//							String userId = rs.getString(2);
-							String userDelFlag = rs.getString(3);
+			rs.close();
+			stmt.close();
+			conn.close();
 
-//							if (status) {
-//								log.warning("site already exist: siteId=" + siteId + ", bean=[" + bean + "]");
-//							}
-							status = true;
+			try (Stream<String> input = Files.lines(Paths.get(file), Charset.forName("utf-8")))
+			{
+				input.filter(s -> test(s)).map(s -> parse(s)).forEach(b -> {
+					boolean status = false;
+					UserListBean bean = this.get(b.getUserId());
+					if (bean == null) {
+						try {
+							frs.beforeFirst();
+							frs.setFilter(new SelectUser(b.getUserId()));
 
-							if (bean == null) {
-//								bean = new UserListBean(b, userDelFlag);
+							while (frs.next()) {
+								String siteId = frs.getString(1);
+								// String userId = frs.getString(2);
+								String userDelFlag = frs.getString(3);
+
+								// if (status) {
+								// log.warning("site already exist: siteId=" + siteId + ", bean=[" + bean +
+								// "]");
+								// }
+								status = true;
+
+								if (bean == null) {
+									// bean = new UserListBean(b, userDelFlag);
+									bean = new UserListBean(b);
+									this.put(b.getUserId(), bean);
+								}
+
+								SiteListIsp siteBean = sitelist.get(siteId);
+								if (siteBean != null) {
+									UserListSite site = new UserListSite(siteBean, userDelFlag);
+									bean.addSite(site);
+								} else {
+									log.warning("site is null: siteId=" + siteId + ", bean=[" + bean + "]");
+								}
+
+							}
+							if (!status) {
+								// sslindexに存在するが、SSLテーブルに存在しない場合：
+								// 不正な状態を検知することができるように削除フラグ"-1"でuserlistに追加する
+								log.warning("user_id not found: sslindex=[" + b + "]");
+								// bean = new UserListBean(b, "-1");
 								bean = new UserListBean(b);
 								this.put(b.getUserId(), bean);
 							}
-
-							SiteListIsp siteBean = sitelist.get(siteId);
-							if (siteBean != null) {
-								UserListSite site = new UserListSite(siteBean, userDelFlag);
-								bean.addSite(site);
-							}
-							else {
-								log.warning("site is null: siteId=" + siteId + ", bean=[" + bean + "]");
-							}
-
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							// e.printStackTrace();
+							log.log(Level.SEVERE, "例外", e);
 						}
-						if (!status) {
-							// sslindexに存在するが、SSLテーブルに存在しない場合： 
-							// 不正な状態を検知することができるように削除フラグ"-1"でuserlistに追加する
-							log.warning("user_id not found: sslindex=[" + b + "]");
-//							bean = new UserListBean(b, "-1");
-							bean = new UserListBean(b);
-							this.put(b.getUserId(), bean);
-						}
-					}
-					catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
 
-				}
-				else {
-					// 以前の証明書が失効している場合
-					bean.update(b);
-				}
-			});
+					} else {
+						// 以前の証明書が失効している場合
+						bean.update(b);
+					}
+				});
+			}
+		}
 		return this;
 	}
 
@@ -188,31 +204,6 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 			// TODO Auto-generated method stub
 			return false;
 		}
-	}
-
-	public static void main(String[] argv) {
-		System.out.println("start SSLUserList.main ...");
-		SSLUserList map = new SSLUserList();
-		try {
-			map.load(argv[0], new DbSiteList().load(null));
-		}
-		catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		int ix = 0;
-		int iy = 0;
-		for (String userId : map.keySet()) {
-			UserListBean b = map.get(userId);
-			for (UserListSite sum : b.getSites()) {
-				System.out.println("userId=" + userId + " (" + b.getValidFlag() + "), sum=[" + sum + "]");
-				ix += 1;
-			}
-			iy += 1;
-		}
-		System.out.println("user.count=" + iy + ", gip.count=" + ix);
-		System.out.println("SSLUserList.main ... end");
 	}
 
 }

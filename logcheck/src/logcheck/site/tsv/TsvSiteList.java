@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import javax.enterprise.inject.Alternative;
 
@@ -23,11 +24,11 @@ import logcheck.site.SiteListIspImpl;
 public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteList {
 
 	//@Inject private Logger log;
-	private static Logger log = Logger.getLogger(TsvSiteList.class.getName());
+	private static final Logger log = Logger.getLogger(TsvSiteList.class.getName());
 
 	private static final long serialVersionUID = 1L;
 
-	public static String PATTERN = "(PRJ_[\\w_]+)\t(.+)\t(.+)\t([\\d\\.～\\/]+)\t([\\d+\\.\\d+\\.\\d+\\.\\d+]+)\t([\\d+\\.\\d+\\.\\d+\\.\\d+]+)";
+	public static final String PATTERN = "(PRJ_[\\w_]+)\t(.+)\t(.+)\t([\\d\\.～\\/]+)\t([\\d+\\.\\d+\\.\\d+\\.\\d+]+)\t([\\d+\\.\\d+\\.\\d+\\.\\d+]+)";
 
 	public TsvSiteList() {
 		super(200);
@@ -35,8 +36,8 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 
 	@WithElaps
 	public SiteList load(String file) throws IOException {
-		Files.lines(Paths.get(file), Charset.forName("MS932"))
-				.filter(s -> test(s))
+		try (Stream<String> input = Files.lines(Paths.get(file), Charset.forName("MS932"))) {
+			input.filter(s -> test(s))
 				.map(s -> parse(s))
 				.forEach(b -> {
 					SiteListIsp site = this.get(b.getProjId());
@@ -46,6 +47,7 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 					}
 					site.addAddress(b.getMagIp());
 				});
+		}
 		return this;
 	}
 
@@ -102,20 +104,4 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 		return rc;
 	}
 
-	public static void main(String... argv) {
-		System.out.println("start TsvMagList.main ...");
-		TsvSiteList map = new TsvSiteList();
-		try {
-			map.load(argv[0]);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		for (String name : map.keySet()) {
-			SiteListIsp c = map.get(name);
-			System.out.println(name + "=" + c.getAddress());
-		}
-		System.out.println("TsvMagList.main ... end");
-	}
 }

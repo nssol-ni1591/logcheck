@@ -31,6 +31,7 @@ public class Checker22 extends Checker8 {
 	}
 
 	// ログのメッセージ部分はPatternの正規化表現で集約するため、対象ログが一致したPattern文字列を取得する
+	@Override
 	protected String getPattern(AccessLogBean b) {
 		Optional<String> rc = Stream.of(ALL_PATTERNS)
 				.filter(p -> p.matcher(b.getMsg()).matches())
@@ -56,7 +57,6 @@ public class Checker22 extends Checker8 {
 			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {
-//			ex.printStackTrace(System.err);
 			rc = 1;
 		}
 		System.exit(rc);

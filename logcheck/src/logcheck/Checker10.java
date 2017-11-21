@@ -32,8 +32,6 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-//	private final List<AccessLogSummary> list = new Vector<>(1000);
-
 	private static final Pattern[] AUTH_PATTERNS = {
 			Pattern.compile("Primary authentication successful for [\\S ]+ from [\\d\\.]+"),
 //			Pattern.compile("Primary authentication failed for [\\S ]+ from \\S+"),
@@ -178,7 +176,6 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {
-//			ex.printStackTrace(System.err);
 			rc = 1;
 		}
 		System.exit(rc);

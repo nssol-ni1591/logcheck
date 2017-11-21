@@ -80,32 +80,32 @@ public class NetAddr implements Comparable<NetAddr> {
 		}
 
 		if (mask > 0 && mask <= 8) {
-			netaddr[0] = netaddr[0] & (int)(256 - Math.pow(2, 8 - mask));
+			netaddr[0] = netaddr[0] & (int)(256 - Math.pow(2, (8 - mask)));
 			netaddr[1] = 0;
 			netaddr[2] = 0;
 			netaddr[3] = 0;
-			brdaddr[0] = brdaddr[0] | (int)(Math.pow(2, 8 - mask) - 1);
+			brdaddr[0] = brdaddr[0] | (int)(Math.pow(2, (8 - mask)) - 1);
 			brdaddr[1] = 255;
 			brdaddr[2] = 255;
 			brdaddr[3] = 255;
 		}
 		else if (mask > 8 && mask <= 16) {
-			netaddr[1] = netaddr[1] & (int)(256 - Math.pow(2, 16 - mask));
+			netaddr[1] = netaddr[1] & (int)(256 - Math.pow(2, (16 - mask)));
 			netaddr[2] = 0;
 			netaddr[3] = 0;
-			brdaddr[1] = brdaddr[1] | (int)(Math.pow(2, 16 - mask) - 1);
+			brdaddr[1] = brdaddr[1] | (int)(Math.pow(2, (16 - mask)) - 1);
 			brdaddr[2] = 255;
 			brdaddr[3] = 255;
 		}
 		else if (mask > 16 && mask <= 24) {
-			netaddr[2] = netaddr[2] & (int)(256 - Math.pow(2, 24 - mask));
+			netaddr[2] = netaddr[2] & (int)(256 - Math.pow(2, (24 - mask)));
 			netaddr[3] = 0;
-			brdaddr[2] = brdaddr[2] | (int)(Math.pow(2, 24 - mask) - 1);
+			brdaddr[2] = brdaddr[2] | (int)(Math.pow(2, (24 - mask)) - 1);
 			brdaddr[3] = 255;
 		}
 		else {
-			netaddr[3] = netaddr[3] & (int)(256 - Math.pow(2, 32 - mask));
-			brdaddr[3] = brdaddr[3] | (int)(Math.pow(2, 32 - mask) - 1);
+			netaddr[3] = netaddr[3] & (int)(256 - Math.pow(2, (32 - mask)));
+			brdaddr[3] = brdaddr[3] | (int)(Math.pow(2, (32 - mask)) - 1);
 		}
 	}
 
@@ -136,8 +136,21 @@ public class NetAddr implements Comparable<NetAddr> {
 		}
 		return 0;
 	}
+	/*
 	public boolean equals(NetAddr another) {
 		return compareTo(another) == 0 ? true : false;
+	}
+	*/
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	@Override
+	public boolean equals(Object another) {
+		if (another instanceof NetAddr) {
+			return compareTo((NetAddr)another) == 0 ? true : false;
+		}
+		return super.equals(another);
 	}
 
 	public boolean within(NetAddr another) {
@@ -190,10 +203,10 @@ public class NetAddr implements Comparable<NetAddr> {
 		sb.append("/").append(mask);
 		return sb.toString();
 	}
-
+/*
 	public static void main(String...argv) {
 		NetAddr addr = new NetAddr("0.0.0.0");
 		System.out.println(addr.toStringRange());
 	}
-
+*/
 }
