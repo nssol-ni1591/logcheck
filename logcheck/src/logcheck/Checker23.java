@@ -15,7 +15,7 @@ import javax.inject.Inject;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
-import logcheck.annotations.UseChecker8;
+import logcheck.annotations.UseChecker23;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
@@ -30,6 +30,7 @@ import logcheck.util.net.NetAddr;
  * 利用方法としては、プログラムの出力を直接参照するのではなく、Excelに読み込ませpivotで解析する想定のためTSV形式で出力する。
  * なお、このツールでは、正常系ログは集約を行う。
  */
+@UseChecker23
 public class Checker23 extends AbstractChecker<List<AccessLogSummary>> {
 
 	@Inject protected KnownList knownlist;
@@ -129,15 +130,15 @@ public class Checker23 extends AbstractChecker<List<AccessLogSummary>> {
 
 	public static void main(String... argv) {
 		if (argv.length < 2) {
-			System.err.println("usage: java logcheck.Checker8 knownlist maglist [accesslog...]");
+			System.err.println("usage: java logcheck.Checker23 knownlist maglist [accesslog...]");
 			System.exit(1);
 		}
 
 		int rc = 0;
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-			//Checker8 application = container.instance().select(Checker8.class).get();
-			Checker23 application = container.instance().select(Checker23.class, new AnnotationLiteral<UseChecker8>(){
+			//Checker23 application = container.instance().select(Checker23.class, new AnnotationLiteral<UseChecker23>(){
+			Checker23 application = container.select(Checker23.class, new AnnotationLiteral<UseChecker23>(){
 				private static final long serialVersionUID = 1L;
 			}).get();
 			application.init(argv[0], argv[1]).start(argv, 2);
