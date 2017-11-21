@@ -137,7 +137,6 @@ public class Checker23 extends AbstractChecker<List<AccessLogSummary>> {
 		int rc = 0;
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-			//Checker23 application = container.instance().select(Checker23.class, new AnnotationLiteral<UseChecker23>(){
 			Checker23 application = container.select(Checker23.class, new AnnotationLiteral<UseChecker23>(){
 				private static final long serialVersionUID = 1L;
 			}).get();

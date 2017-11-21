@@ -163,14 +163,13 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 		int rc = 0;
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-//			Checker14 application = container.instance().select(Checker14.class).get();
-			Checker14 application = container.instance().select(Checker14.class, new AnnotationLiteral<UseChecker14>(){
+			Checker14 application = container.select(Checker14.class, new AnnotationLiteral<UseChecker14>(){
 				private static final long serialVersionUID = 1L;
 			}).get();
 			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {
-			ex.printStackTrace(System.err);
+//			ex.printStackTrace(System.err);
 			rc = 1;
 		}
 		System.exit(rc);

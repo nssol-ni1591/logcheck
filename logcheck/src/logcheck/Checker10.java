@@ -174,11 +174,11 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 		int rc = 0;
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-			Checker10 application = container.instance().select(Checker10.class).get();
+			Checker10 application = container.select(Checker10.class).get();
 			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {
-			ex.printStackTrace(System.err);
+//			ex.printStackTrace(System.err);
 			rc = 1;
 		}
 		System.exit(rc);

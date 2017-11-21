@@ -58,14 +58,11 @@ public class Checker17 extends Checker14 {
 		int rc = 0;
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-			Checker17 application = container.instance().select(Checker17.class).get();
-//			Checker17 application = container.instance().select(Checker17.class, new AnnotationLiteral<UseChecker14>(){
-//				private static final long serialVersionUID = 1L;
-//			}).get();
+			Checker17 application = container.select(Checker17.class).get();
 			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {
-			ex.printStackTrace(System.err);
+//			ex.printStackTrace(System.err);
 			rc = 1;
 		}
 		System.exit(rc);

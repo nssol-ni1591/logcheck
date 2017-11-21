@@ -46,7 +46,6 @@ public class Checker24 extends Checker23 {
 		int rc = 0;
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-			//Checker24 application = container.instance().select(Checker24.class).get();
 			Checker24 application = container.select(Checker24.class).get();
 			application.init(argv[0], argv[1]).start(argv, 2);
 		}

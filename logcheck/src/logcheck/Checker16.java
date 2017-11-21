@@ -60,11 +60,11 @@ public class Checker16 extends Checker14 {
 		int rc = 0;
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-			Checker16 application = container.instance().select(Checker16.class).get();
+			Checker16 application = container.select(Checker16.class).get();
 			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {
-			ex.printStackTrace(System.err);
+//			ex.printStackTrace(System.err);
 			rc = 1;
 		}
 		System.exit(rc);

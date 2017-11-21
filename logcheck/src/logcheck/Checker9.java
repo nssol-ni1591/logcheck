@@ -122,11 +122,11 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 		int rc = 0;
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-			Checker9 application = container.instance().select(Checker9.class).get();
+			Checker9 application = container.select(Checker9.class).get();
 			application.init(argv[0], argv[1], argv[2]).start(argv, 3);
 		}
 		catch (Exception ex) {
-			ex.printStackTrace(System.err);
+//			ex.printStackTrace(System.err);
 			rc = 1;
 		}
 		System.exit(rc);

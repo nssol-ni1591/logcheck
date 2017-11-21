@@ -106,11 +106,11 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 		int rc = 0;
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-			Checker13 application = container.instance().select(Checker13.class).get();
+			Checker13 application = container.select(Checker13.class).get();
 			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {
-			ex.printStackTrace(System.err);
+//			ex.printStackTrace(System.err);
 			rc = 1;
 		}
 		System.exit(rc);

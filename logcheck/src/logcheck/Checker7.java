@@ -147,11 +147,11 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 		int rc = 0;
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-			Checker7 application = container.instance().select(Checker7.class).get();
+			Checker7 application = container.select(Checker7.class).get();
 			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {
-			ex.printStackTrace(System.err);
+//			ex.printStackTrace(System.err);
 			rc = 1;
 		}
 		System.exit(rc);

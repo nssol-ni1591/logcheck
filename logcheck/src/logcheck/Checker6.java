@@ -145,11 +145,11 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 		int rc = 0;
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-			Checker6 application = container.instance().select(Checker6.class).get();
+			Checker6 application = container.select(Checker6.class).get();
 			application.init(argv[0], argv[1]).start(argv, 2);
 		}
 		catch (Exception ex) {
-			ex.printStackTrace(System.err);
+//			ex.printStackTrace(System.err);
 			rc = 1;
 		}
 		System.exit(rc);
