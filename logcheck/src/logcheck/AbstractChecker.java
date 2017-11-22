@@ -61,8 +61,8 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 			Pattern.compile("Testing Certificate realm restrictions failed for [\\S ]*/NSSDC-Auth\\d(\\(\\w+\\))? , with certificate '[\\w ,=-]+' *"),
 			Pattern.compile("Testing Password realm restrictions failed for [\\S ]*/NSSDC-Auth\\d(\\(\\w+\\))? *"),
 			Pattern.compile("Testing Password realm restrictions failed for [\\S ]*/NSSDC-Auth\\d(\\(\\w+\\))? , with certificate '[\\w ,=-]+' *"),
-			Pattern.compile("Testing Source IP realm restrictions failed for /NSSDC-Auth1 *"),	// 後："Login failed.  Reason: IP Denied"
-			Pattern.compile("Testing Source IP realm restrictions failed for [\\S ]*/NSSDC-Auth\\d *"),	// 後："Login failed.  Reason: IP Denied"
+//			Pattern.compile("Testing Source IP realm restrictions failed for /NSSDC-Auth1 *"),	// 後："Login failed.  Reason: IP Denied"
+			Pattern.compile("Testing Source IP realm restrictions failed for [\\S ]*/NSSDC-Auth\\d(\\(\\w+\\))? *"),	// 後："Login failed.  Reason: IP Denied"
 			Pattern.compile("The X\\.509 certificate for .+; Detail: 'certificate revoked' "),
 			Pattern.compile("The X\\.509 certificate for .+; Detail: 'unable to get certificate CRL' "),	// 2017-10-26追加
 			Pattern.compile("TLS handshake failed - client issued alert 'untrusted or unknown certificate'"),
