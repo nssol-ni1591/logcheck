@@ -88,7 +88,7 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 
 						count = addrmap.get(addr);
 						if (count == null) {
-							count = new Integer(0);
+							count = Integer.valueOf(0);
 						}
 						count += 1;
 						addrmap.put(addr, count);

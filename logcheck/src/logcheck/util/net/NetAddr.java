@@ -136,11 +136,6 @@ public class NetAddr implements Comparable<NetAddr> {
 		}
 		return 0;
 	}
-	/*
-	public boolean equals(NetAddr another) {
-		return compareTo(another) == 0 ? true : false;
-	}
-	*/
 	@Override
 	public int hashCode() {
 		return super.hashCode();
@@ -197,16 +192,12 @@ public class NetAddr implements Comparable<NetAddr> {
 		sb.append(")");
 		return sb.toString();
 	}
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(srcaddr[0]).append(".").append(srcaddr[1]).append(".").append(srcaddr[2]).append(".").append(srcaddr[3]);
 		sb.append("/").append(mask);
 		return sb.toString();
 	}
-/*
-	public static void main(String...argv) {
-		NetAddr addr = new NetAddr("0.0.0.0");
-		System.out.println(addr.toStringRange());
-	}
-*/
+
 }

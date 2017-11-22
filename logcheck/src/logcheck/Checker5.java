@@ -77,7 +77,7 @@ public class Checker5 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 
 						Integer count = msgmap.get(m);
 						if (count == null) {
-							count = new Integer(0);
+							count = Integer.valueOf(0);
 							msgmap.put(m, count);
 						}
 						count += 1;

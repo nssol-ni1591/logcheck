@@ -33,9 +33,11 @@ public class FwLogSummary extends Summary<FwLogBean> implements Comparable<FwLog
 		super.addCount();
 	}
 
+	@Override
 	public String getFirstDate() {
 		return super.getLastDate();
 	}
+	@Override
 	public String getLastDate() {
 		return super.getFirstDate();
 	}

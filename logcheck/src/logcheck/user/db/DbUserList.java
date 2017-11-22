@@ -25,6 +25,7 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(DbUserList.class.getName());
+	private static final String DEFAULT_IP = "0.0.0.0";
 
 	public static final String SQL_ZUSER = 
 			"select p.prj_id, p.delete_flag, s.site_id, s.site_name, s.delete_flag, g.site_gip"
@@ -38,10 +39,6 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 					+ " and u.user_id like 'Z%'"
 					+ " order by u.delete_flag, s.delete_flag, s.delete_flag"
 					;
-
-	private static String getDefaultIp() {
-		return "0.0.0.0";
-	}
 
 	public DbUserList() {
 		super(4000);
@@ -81,7 +78,7 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 				if (globalIp == null
 						|| "非固定".equals(globalIp)
 						|| "追加不要".equals(globalIp)) {
-					globalIp = getDefaultIp();	// IPアドレスとしては不正なので一致しない for 専用線、ISP経由
+					globalIp = DEFAULT_IP;	// IPアドレスとしては不正なので一致しない for 専用線、ISP経由
 				}
 
 //				UserListSummary site = bean.getSite(new NetAddr(globalIp));

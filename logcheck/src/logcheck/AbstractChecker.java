@@ -13,6 +13,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.logging.Level;
 //import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -116,7 +117,7 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 		return map;
 	}
 	private T run(String file) throws Exception {
-		log.info("checking from file=" + file + ":");
+		log.log(Level.INFO, "checking from file=%s:", file);
 
 		this.stream = Files.lines(Paths.get(file), StandardCharsets.UTF_8);
 		T map = run2();

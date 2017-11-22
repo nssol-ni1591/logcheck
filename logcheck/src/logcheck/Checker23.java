@@ -59,7 +59,6 @@ public class Checker23 extends AbstractChecker<List<AccessLogSummary>> {
 				.map(p -> p.toString())
 				.findFirst();
 		if (rc.isPresent()) {
-			//同一原因で複数出力されるログは識別のため"（）"を付加する
 			return DUP_FAILED_MSG;
 		}
 		/*
@@ -68,8 +67,8 @@ public class Checker23 extends AbstractChecker<List<AccessLogSummary>> {
 			return ptn.toString();
 		}
 		*/
+		// failed が含まれないメッセージは集約する
 		if (!b.getMsg().contains("failed")) {
-			// failed が含まれないメッセージは集約する
 			return INFO_SUMMARY_MSG;
 		}
 		log.warning("(Pattern): \"" + b.getMsg() + "\"");

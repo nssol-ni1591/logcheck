@@ -20,6 +20,7 @@ public class SdcListIsp extends IspListImpl {
 		log.fine(this.toString());
 	}
 
+	@Override
 	public String toString() {
 		return String.format("name=%s, addr=%s", getName(), getAddress());
 	}

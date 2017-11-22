@@ -92,7 +92,7 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 						AccessLogSummary msg = new AccessLogSummary(b, pattern);
 						count = msgmap.get(msg);
 						if (count == null) {
-							count = new Integer(0);
+							count = Integer.valueOf(0);
 						}
 						else {
 							msg.update(b);

@@ -75,7 +75,7 @@ public class Checker3 extends AbstractChecker<Map<String, IspMap<Map<String, Int
 
 						Integer count = client.get(m);
 						if (count == null) {
-							count = new Integer(0);
+							count = Integer.valueOf(0);
 						}
 						count += 1;
 						client.put(m, count);

@@ -89,7 +89,7 @@ public class Checker4 extends AbstractChecker<Map<String ,Map<String, IspMap<Map
 
 						count = msgmap.get(m);
 						if (count == null) {
-							count = new Integer(0);
+							count = Integer.valueOf(0);
 						}
 						count += 1;
 						msgmap.put(m, count);

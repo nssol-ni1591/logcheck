@@ -10,17 +10,21 @@ import java.util.Properties;
 
 public class DB {
 
+	private static final String DEFAULT_HOST = "172.31.247.137";
+	private static final String MASTERINFO_USER = "masterinfo";
+	private static final String MASTERINFO_PASS = "masterinfo";
+
 	private DB () {
 	}
 
 	private static String getHostname() {
-		return "172.31.247.137";
+		return DEFAULT_HOST;
 	}
 	private static String getUsername() {
-		return "masterinfo";
+		return MASTERINFO_USER;
 	}
 	private static String getPassword() {
-		return "masterinfo";
+		return MASTERINFO_PASS;
 	}
 
 	public static Connection createConnection() throws ClassNotFoundException, SQLException, IOException {

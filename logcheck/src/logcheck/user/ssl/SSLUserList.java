@@ -162,7 +162,6 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 							}
 						} catch (SQLException e) {
 							// TODO Auto-generated catch block
-							// e.printStackTrace();
 							log.log(Level.SEVERE, "例外", e);
 						}
 

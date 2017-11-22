@@ -32,62 +32,48 @@ public class MainTest {
 
 	@Test
 	public void test3() {
-//		logcheck.Checker3.main(KNOWNLIST, MAGLIST, ACCESSLOG);
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-//			Checker3 application = container.instance().select(Checker3.class).get();
 			Checker3 application = container.select(Checker3.class).get();
 			application.init(KNOWNLIST, MAGLIST).start(new String[] { ACCESSLOG }, 0);
 		}
 		catch (Exception ex) {
-//			ex.printStackTrace(System.err);
 		}
 	}
 	@Test
 	public void test4() {
-//		logcheck.Checker4.main(KNOWNLIST, MAGLIST, ACCESSLOG);
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-//			Checker4 application = container.instance().select(Checker4.class).get();
 			Checker4 application = container.select(Checker4.class).get();
 			application.init(KNOWNLIST, MAGLIST).start(new String[] { ACCESSLOG }, 0);
 		}
 		catch (Exception ex) {
-//			ex.printStackTrace(System.err);
 		}
 	}
 	@Test
 	public void test5() {
-//		logcheck.Checker5.main(KNOWNLIST, MAGLIST, ACCESSLOG);
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-//			Checker5 application = container.instance().select(Checker5.class).get();
 			Checker5 application = container.select(Checker5.class).get();
 			application.init(KNOWNLIST, MAGLIST).start(new String[] { ACCESSLOG }, 0);
 		}
 		catch (Exception ex) {
-//			ex.printStackTrace(System.err);
 		}
 	}
 	@Test
 	public void test6() {
-//		logcheck.Checker6.main(KNOWNLIST, MAGLIST, ACCESSLOG);
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-//			Checker6 application = container.instance().select(Checker6.class).get();
 			Checker6 application = container.select(Checker6.class).get();
 			application.init(KNOWNLIST, MAGLIST).start(new String[] { ACCESSLOG }, 0);
 		}
 		catch (Exception ex) {
-//			ex.printStackTrace(System.err);
 		}
 	}
 	@Test
 	public void test7() {
-//		logcheck.Checker7.main(KNOWNLIST, MAGLIST, ACCESSLOG);
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
-//			Checker7 application = container.instance().select(Checker7.class).get();
 			Checker7 application = container.select(Checker7.class).get();
 			application.init(KNOWNLIST, MAGLIST).start(new String[] { ACCESSLOG }, 0);
 		}
@@ -268,6 +254,16 @@ public class MainTest {
 		}
 		catch (Exception ex) {
 //			ex.printStackTrace(System.err);
+		}
+	}
+	@Test
+	public void test25() {
+		Weld weld = new Weld();
+		try (WeldContainer container = weld.initialize()) {
+			Checker24 application = container.select(Checker25.class).get();
+			application.init(KNOWNLIST, MAGLIST).start(new String[] { ACCESSLOG }, 0);
+		}
+		catch (Exception ex) {
 		}
 	}
 //	@Test

@@ -19,10 +19,9 @@ import logcheck.log.AccessLogSummary;
 public class Checker24 extends Checker23 {
 
 	@Override
-	public void report(final PrintWriter out, final List<AccessLogSummary> list)
-	{
+	public void report(final PrintWriter out, final List<AccessLogSummary> list) {
 		out.println("発生日時\t発生日\t国\tISP/プロジェクト\tアドレス\tユーザID\tメッセージ\tロール");
-		list.forEach((msg) -> {
+		list.forEach(msg -> 
 			out.println(Stream.of(msg.getFirstDate()
 					, msg.getFirstDate().substring(0, 10)
 					, msg.getIsp().getCountry()
@@ -33,8 +32,8 @@ public class Checker24 extends Checker23 {
 					, String.join(",", msg.getRoles())
 					)
 					.collect(Collectors.joining("\t"))
-					);
-		});
+					)
+				);
 	}
 
 	public static void main(String... argv) {
