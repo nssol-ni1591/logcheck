@@ -80,16 +80,20 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 				 -->
-				<!-- 
 				<executions>
 					<execution>
-						<id>prepare-agent</id>
+						<id>pre-test</id>
 						<goals>
 							<goal>prepare-agent</goal>
 						</goals>
 					</execution>
+					<execution>
+						<id>post-test</id>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
 				</executions>
-				 -->
 			</plugin>
 		</plugins>
 	</build>
