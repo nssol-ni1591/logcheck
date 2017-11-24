@@ -89,12 +89,13 @@ public class Checker25 extends AbstractChecker<List<AccessLogSummary>> {
 					if (isp != null) {
 						AccessLogSummary msg;
 
-//						if (INFO_SUMMARY_MSG.equals(pattern)) {
-//						}
-//						else {
+						if (INFO_SUMMARY_MSG.equals(pattern)) {
+							// 正常系ログは出力しない。でないと、行数が多すぎてExcelに読み込めない
+						}
+						else {
 							msg = new AccessLogSummary(b, pattern, isp);
 							list.add(msg);
-//						}
+						}
 					}
 					else {
 						addrErrs.add(b.getAddr());
