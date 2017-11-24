@@ -43,56 +43,66 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 			Pattern.compile(""),
 	 */
 	protected static final Pattern[] FAIL_PATTERNS = {
+			Pattern.compile("Account disabled by password management on auth server '[\\S]+'"),	// 前：Primary authentication failed for ...
 			Pattern.compile("Host Checker policy 'MAC_Address_Filter' failed on host .+"),	// 単独で発生
 			Pattern.compile("Login failed using auth server (NSSDC_LDAP|SDC-AD) \\([\\w ]+\\).  Reason: Failed"),		// 後："Primary authentication failed for [\\S ]+ from \\S+"
 			Pattern.compile("Login failed using auth server (NSSDC_LDAP|SDC-AD) \\([\\w ]+\\).  Reason: Short Password"),//　後："Testing Password realm restrictions failed for [\\S ]+ , with certificate '[\\w ,=-]+' *"
 			Pattern.compile("Login failed.  Reason: Failed"),								// 単独で発生
+			Pattern.compile("Login failed.  Reason: IP Denied"),							// 前："Testing Source IP realm restrictions failed for \\w+/NSSDC-Auth1 *"
 			Pattern.compile("Login failed.  Reason: No Certificate"),						// 後："Testing Certificate realm restrictions failed for [\\w\\.]*/NSSDC-Auth(1|2)(\\(MAC\\))? *"
 			Pattern.compile("Login failed.  Reason: No Roles"),								// 単独
 			Pattern.compile("Login failed.  Reason: Revoked Certificate"),					//　後："Testing Certificate realm restrictions failed for [\\w\\.]*/NSSDC-Auth(1|2)(\\(MAC\\))? , with certificate '[\\w ,=-]+' *"
 			Pattern.compile("Login failed.  Reason: Wrong Certificate::unable to get certificate CRL"),	//　2017-10-26追加: 後："Testing Certificate realm restrictions failed for [\\w\\.]*/NSSDC-Auth(1|2)(\\(MAC\\))? , with certificate '[\\w ,=-]+' unable to get certificate CRL"
 			Pattern.compile("Login failed \\((NSSDC_LDAP|SDC-AD)\\).  Reason: LDAP Server"),			// 後： authentication failed for Primary/Z06290  from NSSDC_LDAP
-			Pattern.compile("Login failed.  Reason: IP Denied"),							// 前："Testing Source IP realm restrictions failed for \\w+/NSSDC-Auth1 *"
 			Pattern.compile("Could not connect to LDAP server '(NSSDC_LDAP|SDC-AD)': Failed binding to admin DN: \\[\\d+\\] Can't contact LDAP server: [\\d\\.:]+ [\\d\\.:]+"),
 	};
 	protected static final Pattern[] FAIL_PATTERNS_DUP = {
-//			Pattern.compile(" authentication failed for Primary/\\w+  from NSSDC_LDAP"),	// 中途半端なメッセージなので除外
+//			Pattern.compile("Active Directory authentication server '[\\S]+' : Received NTSTATUS code 'STATUS_ACCOUNT_DISABLED' \\."),
+//			Pattern.compile("Active Directory authentication server '[\\S]+' : Received NTSTATUS code 'STATUS_WRONG_PASSWORD' \\."),
+			Pattern.compile("Active Directory authentication server '[\\S]+' : Received NTSTATUS code '[\\w_]+' \\."),
+			Pattern.compile("Authentication failure for AD server '[\\S]+': specified account does not exist"),	// => Login failed using auth server SDC-AD (Active Directory).  Reason: Failed
+			Pattern.compile("Host Checker policies could not be evaluated on host '[\\d\\.]+' address '[\\w\\-]+'."),	// 後：Host Checker policy ...
 			Pattern.compile("Primary authentication failed for [\\S ]+ from \\S+"),
-			Pattern.compile("Testing Certificate realm restrictions failed for [\\S ]*/NSSDC-Auth\\d(\\(\\w+\\))? *"),
-			Pattern.compile("Testing Certificate realm restrictions failed for [\\S ]*/NSSDC-Auth\\d(\\(\\w+\\))? , with certificate '[\\w ,=-]+' *"),
-			Pattern.compile("Testing Password realm restrictions failed for [\\S ]*/NSSDC-Auth\\d(\\(\\w+\\))? *"),
-			Pattern.compile("Testing Password realm restrictions failed for [\\S ]*/NSSDC-Auth\\d(\\(\\w+\\))? , with certificate '[\\w ,=-]+' *"),
+//			Pattern.compile("Testing Certificate realm restrictions failed for [\\S ]*/NSSDC-Auth(1|2\\(MAC\\)|3\\(AD\\)|4\\(AD_MAC\\)) *"),
+//			Pattern.compile("Testing Certificate realm restrictions failed for [\\S ]*/NSSDC-Auth(1|2\\(MAC\\)|3\\(AD\\)|4\\(AD_MAC\\)) , with certificate '[\\w ,=-]+' *"),
+			Pattern.compile("Testing Certificate realm restrictions failed for [\\S ]*/NSSDC-Auth(1|2\\(MAC\\)|3\\(AD\\)|4\\(AD_MAC\\)) (, with certificate '[\\w ,=-]+')? "),
+//			Pattern.compile("Testing Password realm restrictions failed for [\\S ]*/NSSDC-Auth(1|2\\(MAC\\)|3\\(AD\\)|4\\(AD_MAC\\)) *"),
+//			Pattern.compile("Testing Password realm restrictions failed for [\\S ]*/NSSDC-Auth(1|2\\(MAC\\)|3\\(AD\\)|4\\(AD_MAC\\)) , with certificate '[\\w ,=-]+' *"),
+			Pattern.compile("Testing Password realm restrictions failed for [\\S ]*/NSSDC-Auth(1|2\\(MAC\\)|3\\(AD\\)|4\\(AD_MAC\\)) (, with certificate '[\\w ,=-]+')? "),
 //			Pattern.compile("Testing Source IP realm restrictions failed for /NSSDC-Auth1 *"),	// 後："Login failed.  Reason: IP Denied"
-			Pattern.compile("Testing Source IP realm restrictions failed for [\\S ]*/NSSDC-Auth\\d(\\(\\w+\\))? *"),	// 後："Login failed.  Reason: IP Denied"
-			Pattern.compile("The X\\.509 certificate for .+; Detail: 'certificate revoked' "),
-			Pattern.compile("The X\\.509 certificate for .+; Detail: 'unable to get certificate CRL' "),	// 2017-10-26追加
+			Pattern.compile("Testing Source IP realm restrictions failed for [\\S ]*/NSSDC-Auth(1|3|3\\(AD\\)) *"),	// 後："Login failed.  Reason: IP Denied"
+//			Pattern.compile("The X\\.509 certificate for .+; Detail: 'certificate revoked' "),
+//			Pattern.compile("The X\\.509 certificate for .+; Detail: 'unable to get certificate CRL' "),	// 2017-10-26追加
+			Pattern.compile("The X\\.509 certificate for .+; Detail: '[\\w ]+' "),
 			Pattern.compile("TLS handshake failed - client issued alert 'untrusted or unknown certificate'"),
 	};
 	protected static final Pattern[] INFO_PATTERNS = {
-			Pattern.compile("Active user '\\S+' in realm 'NSSDC-Auth(1|2)(\\(MAC\\))?' is deleted since user does not qualify reevaluated policies"),
-			Pattern.compile("Agent login succeeded for \\S+/NSSDC-Auth(1|2)(\\(MAC\\))? from [\\d\\.]+ with Junos-Pulse/[\\d\\.]+ \\([\\w\\. ]+\\) Pulse/[\\d\\.]+\\."),
-			Pattern.compile("Agent login succeeded for \\S+/NSSDC-Auth(1|2)(\\(MAC\\))? from [\\d\\.]+ with Pulse-Secure/[\\d\\.]+ \\([\\w\\. ]+\\) Pulse/[\\d\\.]+\\."),
+			Pattern.compile("Active user '\\S+' in realm 'NSSDC-Auth(1|2\\(MAC\\)|3\\(AD\\)|4\\(AD_MAC\\))' is deleted since user does not qualify reevaluated policies"),
+//			Pattern.compile("Agent login succeeded for \\S+/NSSDC-Auth\\d(\\(MAC\\))? from [\\d\\.]+ with Pulse-Secure/[\\d\\.]+ \\([\\w\\. ]+\\) Pulse/[\\d\\.]+\\."),
+//			Pattern.compile("Agent login succeeded for \\S+/NSSDC-Auth\\d(\\(MAC\\))? from [\\d\\.]+ with Junos-Pulse/[\\d\\.]+ \\([\\w\\. ]+\\) Pulse/[\\d\\.]+\\."),
+			Pattern.compile("Agent login succeeded for \\S+/NSSDC-Auth(1|2\\(MAC\\)|3\\(AD\\)|4\\(AD_MAC\\)) from [\\d\\.]+ with Pulse-Secure/[\\d\\.]+ \\([\\w\\. ]+\\) Pulse/[\\d\\.]+\\."),
+			Pattern.compile("Agent login succeeded for \\S+/NSSDC-Auth(1|2\\(MAC\\)|3\\(AD\\)|4\\(AD_MAC\\)) from [\\d\\.]+ with Junos-Pulse/[\\d\\.]+ \\([\\w\\. ]+\\) Pulse/[\\d\\.]+\\."),
 			Pattern.compile("Certificate realm restrictions successfully passed for [\\S ]+ , with certificate '[\\S ]+'"),
 			Pattern.compile("Closed connection to [\\d\\.]+ after \\d+ seconds, with -?\\d+ bytes read and -?\\d+ bytes written "),
 			Pattern.compile("CRL checking started for certificate '[\\S ]+' issued by [\\S ]+"),
 			Pattern.compile("Host Checker running on host [\\d\\.]+ will exit as the user login timed out\\."),
-			Pattern.compile("Host Checker policy 'MAC_Address_Filter' passed on host '[\\d\\.]*' address '[\\w-]*'  for user '[\\w\\.]+'\\."),
+			Pattern.compile("Host Checker policy 'MAC_Address_Filter' passed on host '[\\d\\.]+' address '[\\w-]*'  for user '[\\S ]+'\\."),
 			Pattern.compile("Host Checker policy 'MAC_Address_Filter' passed on host [\\d\\.]+ ( for user '\\w+')?."),
-			Pattern.compile("Host Checker realm restrictions successfully passed for \\S+/NSSDC-Auth(1|2)(\\(MAC\\))? , with certificate '[\\w ,=-]+'"),
+			Pattern.compile("Host Checker realm restrictions successfully passed for \\S+/NSSDC-Auth(1|2\\(MAC\\)|3\\(AD\\)|4\\(AD_MAC\\)) (, with certificate '[\\w ,=-]+')?"),
 			Pattern.compile("Key Exchange number \\d+ occurred for user with NCIP [\\d\\.]+ "),
-			Pattern.compile("Login succeeded for \\S+/NSSDC-Auth(1|2)(\\(MAC\\))? \\(session:\\d+\\) from [\\d\\.]+\\."),
+			Pattern.compile("Login succeeded for \\S+/NSSDC-Auth(1|2\\(MAC\\)|3\\(AD\\)|4\\(AD_MAC\\)) \\(session:\\d+\\) from [\\d\\.]+\\."),
 			Pattern.compile("Logout from [\\d\\.]+ \\(session:\\d+\\)"),
-			Pattern.compile("Max session timeout for \\S+/NSSDC-Auth(1|2)(\\(MAC\\))? \\(session:\\d+\\)\\."),
+			Pattern.compile("Max session timeout for \\S+/NSSDC-Auth(1|2\\(MAC\\)|3\\(AD\\)|4\\(AD_MAC\\)) \\(session:\\d+\\)\\."),
 			Pattern.compile("Primary authentication successful for [\\S ]+ from [\\d\\.]+"),
-			Pattern.compile("Remote address for user \\S+/NSSDC-Auth(1|2)(\\(MAC\\))? changed from [\\d\\.]+ to [\\d\\.]+\\."),
-			Pattern.compile("Session for user \\w+ on host [\\d\\.]+ has been terminated\\."),
+			Pattern.compile("Remote address for user \\S+/NSSDC-Auth(1|2\\(MAC\\)|3\\(AD\\)|4\\(AD_MAC\\)) changed from [\\d\\.]+ to [\\d\\.]+\\.( Access denied\\.)?"),
+			Pattern.compile("Session for user \\S+ on host [\\d\\.]+ has been terminated\\."),
 			Pattern.compile("Session resumed from user agent 'Junos-Pulse/[\\d\\.]+ \\([\\w\\. ]+\\) Pulse/[\\d\\.]+'"),
 			Pattern.compile("Session resumed from user agent 'Pulse-Secure/[\\d\\.]+ \\([\\w\\. ]+\\) Pulse/[\\d\\.]+'"),
-			Pattern.compile("Session timed out for \\S+/NSSDC-Auth(1|2)(\\(MAC\\))? \\(session:\\d+\\) due to inactivity \\(last access at [\\d:]+ [\\d/]+\\)\\. Idle session identified after user request\\."),
-			Pattern.compile("Session timed out for \\S+/NSSDC-Auth(1|2)(\\(MAC\\))? \\(session:\\d+\\) due to inactivity \\(last access at [\\d:]+ [\\d/]+\\)\\. Idle session identified during routine system scan\\."),
+			Pattern.compile("Session timed out for \\S+/NSSDC-Auth(1|2\\(MAC\\)|3\\(AD\\)|4\\(AD_MAC\\)) \\(session:\\d+\\) due to inactivity \\(last access at [\\d:]+ [\\d/]+\\)\\. Idle session identified after user request\\."),
+			Pattern.compile("Session timed out for \\S+/NSSDC-Auth(1|2\\(MAC\\)|3\\(AD\\)|4\\(AD_MAC\\)) \\(session:\\d+\\) due to inactivity \\(last access at [\\d:]+ [\\d/]+\\)\\. Idle session identified during routine system scan\\."),
 			Pattern.compile("Source IP realm restrictions successfully passed for [\\S ]+ "),
 			Pattern.compile("Source IP realm restrictions successfully passed for [\\S ]+ , with certificate '[\\S ]+'"),
-			Pattern.compile("System process detected a Host Checker time out on host [\\d\\.]+  for user '\\w+'  \\(last update at [\\d-]+ [\\d\\.]+ \\+\\d+ JST\\)\\."),
+			Pattern.compile("System process detected a Host Checker time out on host [\\d\\.]+  for user '\\S+'  \\(last update at [\\d-]+ [\\d\\.]+ \\+\\d+ JST\\)\\."),
 			Pattern.compile("The X\\.509 certificate for '[\\S ]+' issued by [\\S ]+, successfully passed CRL checking"),
 			Pattern.compile("Transport mode switched over to SSL for user with NCIP [\\d\\.]+ "),
 			Pattern.compile("VPN Tunneling: ACL count = \\d+\\."),
@@ -102,7 +112,7 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 			Pattern.compile("VPN Tunneling: User with IP [\\d\\.]+ connected with (ESP|SSL) transport mode\\. "),
 			Pattern.compile("Warning! Number of concurrent users \\(\\d+\\) is nearing the system limit \\(\\d+\\)\\."),
 			Pattern.compile("Warning! Number of concurrent users is nearing the system limit \\(\\d+\\)\\."),
-			Pattern.compile("\\S+/NSSDC-Auth(1|2)(\\(MAC\\))? logged out from IP \\([\\d\\.]+\\) because user started new session from IP \\([\\d\\.]+\\)\\."),
+			Pattern.compile("\\S+/NSSDC-Auth(1|2\\(MAC\\)|3\\(AD\\)|4\\(AD_MAC\\)) logged out from IP \\([\\d\\.]+\\) because user started new session from IP \\([\\d\\.]+\\)\\."),
 	};
 	protected static final String INFO_SUMMARY_MSG = "<><><> Information message summary <><><>";
 	protected static final String DUP_FAILED_MSG = "<><><> Duplicate failed message summary <><><>";
