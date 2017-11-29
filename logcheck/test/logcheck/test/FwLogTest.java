@@ -33,14 +33,29 @@ public class FwLogTest {
 		System.err.println("FwLogTest.load: loading file=" + file);
 
 		Map<FwLogBean, FwLogSummary> map = new TreeMap<>();
-		Files.lines(Paths.get(file), StandardCharsets.UTF_8).filter(FwLog::test).map(FwLog::parse).forEach(b -> {
-			FwLogSummary summary = map.get(b);
-			if (summary == null) {
-				summary = new FwLogSummary(b);
-				map.put(b, summary);
-			} else {
-				summary.update(b.getDate());
-			}
+		Files.lines(Paths.get(file), StandardCharsets.UTF_8)
+			.filter(FwLog::test)
+			.map(FwLog::parse)
+			.forEach(b -> {
+				FwLogSummary prevSummary = null;
+				FwLogSummary summary = map.get(b);
+				if (summary == null) {
+					summary = new FwLogSummary(b);
+					map.put(b, summary);
+				} else {
+					summary.update(b.getDate());
+				}
+
+				summary.getFirstDate();
+				summary.getLastDate();
+				summary.getSrcAddr();
+				summary.getDstAddr();
+				summary.getSrcIsp();
+				summary.getDstIsp();
+				summary.getDstPort();
+				summary.compareTo(prevSummary);
+				summary.toString();
+				prevSummary = summary;
 		});
 		return map;
 	}

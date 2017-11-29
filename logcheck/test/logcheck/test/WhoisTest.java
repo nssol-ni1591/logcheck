@@ -2,6 +2,8 @@ package logcheck.test;
 
 import static org.junit.Assert.assertNotNull;
 
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -12,6 +14,9 @@ import logcheck.util.net.ClientAddr;
 
 
 public class WhoisTest {
+
+	private static WeldContainer container;
+	private static Weld weld;
 
 	private static Whois f;
 
@@ -26,10 +31,13 @@ public class WhoisTest {
 		System.setProperty("proxyHost", "proxy.ns-sol.co.jp");
 		System.setProperty("proxyPort", "8000");
 
-		f = new Whois();
+		weld = new Weld();
+		container = weld.initialize();
+		f = container.select(Whois.class).get();
 	}
 	@AfterClass
 	public static void afterClass() throws Exception {
+		container.close();
 		System.out.println("WhoisTest ... end");
 	}
 

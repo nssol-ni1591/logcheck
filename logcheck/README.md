@@ -1,3 +1,15 @@
+[2017/11/20]
+・Checker25追加：Checker24は削除
+・SonarQubeの指摘事項の修正
+・JUnit対応+カバレッジ取得
+・2017-11-18（IDM更改）に伴う修正
+	LDAPサーバの名称がNSSDC_LDAPからSDC-ADに変更されたことによる修正
+	ユーザ名のパターン追加
+	[Testing Source IP realm restrictions failed...]のパターン追加（ただし意味をなしていないと思う）
+・Checke24追加
+	Checker23を継承するためUserChecker23アノテーションを追加
+・Maven対応
+	（注意）oracleのドライバはローカルのリポジトリに追加
 [2017/10/26]
 ・ログメッセージの追加（2件）
 ・ホスト名に"-"が含まれる場合の対策

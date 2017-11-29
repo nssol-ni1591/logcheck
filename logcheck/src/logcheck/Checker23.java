@@ -110,11 +110,11 @@ public class Checker23 extends AbstractChecker<List<AccessLogSummary>> {
 	}
 
 	@Override
-	public void report(final PrintWriter out, final List<AccessLogSummary> list)
-	{
-		out.println("発生日時\t国\tISP/プロジェクト\tアドレス\tユーザID\tメッセージ\tロール");
-		list.forEach((msg) -> {
+	public void report(final PrintWriter out, final List<AccessLogSummary> list) {
+		out.println("発生日時\t発生日\t国\tISP/プロジェクト\tアドレス\tユーザID\tメッセージ\tロール");
+		list.forEach(msg -> 
 			out.println(Stream.of(msg.getFirstDate()
+					, msg.getFirstDate().substring(0, 10)
 					, msg.getIsp().getCountry()
 					, msg.getIsp().getName()
 					, msg.getAddr().toString()
@@ -123,8 +123,8 @@ public class Checker23 extends AbstractChecker<List<AccessLogSummary>> {
 					, String.join(",", msg.getRoles())
 					)
 					.collect(Collectors.joining("\t"))
-					);
-		});
+					)
+				);
 	}
 
 	public static void main(String... argv) {

@@ -114,7 +114,7 @@ public class Checker5 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 
 	public static void main(String ... argv) {
 		if (argv.length < 2) {
-			System.err.println("usage: java logcheck.Checker4 knownlist maglist [accesslog...]");
+			System.err.println("usage: java logcheck.Checker5 knownlist maglist [accesslog...]");
 			System.exit(1);
 		}
 

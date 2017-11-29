@@ -4,11 +4,14 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import logcheck.known.KnownList;
+import logcheck.known.KnownListIsp;
 import logcheck.known.tsv.TsvKnownList;
 
 /*
@@ -31,20 +34,28 @@ public class TsvKnownListTest {
 		System.out.println("TsvKnownListTest ... end");
 	}
 
+	@Before
+	public void before() {
+	}
+	@After
+	public void after() {
+	}
+
 	@Test
 	public void test01() throws IOException {
+		// TsvKnownList はAlternativeによりWeld環境では使用できない?
 		KnownList map = new TsvKnownList();
-		map = map.load("C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\xls\\既知ISP_IPアドレス一覧.txt");
+		map.load("C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\xls\\既知ISP_IPアドレス一覧.txt");
 		System.out.println("TsvKnownListTest.test01: size=" + map.size());
 		assertFalse(map.isEmpty());
-/*
+
 		for (KnownListIsp n : map) {
 			System.out.println(n.getCountry() + "\t" + n + "\t" + n.getAddress());
 			System.out.print("\t");
 			n.getAddress().forEach(s -> System.out.printf("[%s]", s.toStringRange()));
 			System.out.println();
 		}
-*/
+
 	}
 
 }

@@ -138,7 +138,7 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 
 	public static void main(String... argv) {
 		if (argv.length < 2) {
-			System.err.println("usage: java logcheck.Checker4 knownlist maglist [accesslog...]");
+			System.err.println("usage: java logcheck.Checker7 knownlist maglist [accesslog...]");
 			System.exit(1);
 		}
 

@@ -55,6 +55,8 @@
 						<additionalClasspathElement>C:/Users/NI1591/.m2/repository/logcheck/logcheck/0.0.1-SNAPSHOT/logcheck-0.0.1-SNAPSHOT.jar</additionalClasspathElement>
 						<additionalClasspathElement>C:/Users/NI1591/github.local/logcheck/lib/ojdbc8.jar</additionalClasspathElement>
 					</additionalClasspathElements>
+          <parallel>classes</parallel>
+          <threadCount>6</threadCount>
 				</configuration>
 				 -->
 				<!-- 

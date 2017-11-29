@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedHashSet;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,6 +31,7 @@ import logcheck.util.net.NetAddr;
 @Alternative
 public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownList {
 
+	//@Inject private Logger log;
 	private static Logger log = Logger.getLogger(TsvKnownList.class.getName());
 	private static final long serialVersionUID = 1L;
 
@@ -51,6 +53,7 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 
 	@WithElaps
 	public KnownList load(String file) throws IOException {
+		log.log(Level.INFO, "start load ... file={0}", file);
 		try (Stream<String> input = Files.lines(Paths.get(file), Charset.forName("MS932"))) {
 			input.filter(TsvKnownList::test)
 				.map(TsvKnownList::parse)
@@ -63,6 +66,7 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 					isp.addAddress(new NetAddr(b.getAddr()));
 				});
 		}
+		log.log(Level.INFO, "end load ... size={0}", this.size());
 		return this;
 	}
 
@@ -99,8 +103,10 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 		Matcher m = p.matcher(s);
 		boolean rc = m.find();
 		if (!rc) {
-			log.warning("(既知ISP_IPアドレス): s=\"" + s + "\"");
+			//log.warning("(既知ISP_IPアドレス): s=\"" + s + "\"");
+			log.log(Level.WARNING, "(既知ISP_IPアドレス): s=\"{0}\"", s);
 		}
+		log.log(Level.FINE, "(既知ISP_IPアドレス): s=\"{0}\"", s);
 		return rc;
 	}
 

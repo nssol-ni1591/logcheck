@@ -65,38 +65,7 @@ public class SSLIndexUserList extends HashMap<String, UserListBean> implements U
 
 		return new SSLIndexBean(flag, expire, revoce, serial, filename, userId);
 	}
-	/*
-	private SSLIndexBean parse(String s) {
-		String flag = null;
-		String expire = null;
-		String revoce = null;
-		String serial = null;
-		String filename = null;
-		String userId = null;
 
-		Pattern p = Pattern.compile(PATTERN);
-		Matcher m = p.matcher("   " + s);		// 1文字目が欠ける対策
-		if (m.find(1)) {
-			flag = m.group(1);
-		}
-		if (m.find(2)) {
-			expire = m.group(2);
-		}
-		if (m.find(3)) {
-			revoce = m.group(3);
-		}
-		if (m.find(4)) {
-			serial = m.group(4);
-		}
-		if (m.find(5)) {
-			filename = m.group(5);
-		}
-		if (m.find(6)) {
-			userId = m.group(6);
-		}
-		return new SSLIndexBean(flag, expire, revoce, serial, filename, userId);
-	}
-	*/
 	private boolean test(String s) {
 		boolean rc = false;
 		String[] array = s.split("\t");

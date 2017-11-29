@@ -8,11 +8,13 @@ import java.net.URL;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.enterprise.inject.Alternative;
+import javax.inject.Inject;
 
 import logcheck.known.KnownList;
 import logcheck.known.KnownListIsp;
@@ -22,6 +24,7 @@ import logcheck.util.net.NetAddr;
 @Alternative
 public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 
+	@Inject private Logger log;
 	private static final long serialVersionUID = 1L;
 
 	private static final Pattern[] PTN_NETADDRS = {
@@ -53,9 +56,6 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 			Pattern.compile("# (\\w+) WHOIS data and services .*"),	// ARIN
 			Pattern.compile("network:Country-Code:(\\w+)"),			// USA というパターンもあるので
 	};
-
-	//@Inject private Logger log;
-	private static final Logger log = Logger.getLogger(Whois.class.getName());
 
 	public String parse(Pattern[] ptns, String s) {
 		for (Pattern p : ptns) {
@@ -91,25 +91,16 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 			return rc.get();
 		}
 
-		// json: http://wq.apnic.net/whois-search/query?searchtext=182.171.83.197
-
 		KnownListIsp isp = search("http://whois.threet.co.jp/?key=", addr);
 //		KnownListIsp isp = search("http://lacnic.net/cgi-bin/lacnic/whois?query=", addr);
 //		KnownListIsp isp = search("http://wq.apnic.net/whois-search/static/search.html?query=", addr);
 		if (isp == null || isp.getName() == null || isp.getAddress().isEmpty()) {
 			System.err.println();
-			log.info("retry search. addr=" + addr);
-
-			// sleep ... 接続先が異なるのでsleepは行わない
-//			try {
-//				Thread.sleep(2 * 1000);
-//			}
-//			catch (InterruptedException ex) { }
+			log.log(Level.INFO, "retry search. addr={0}", addr);
 
 			isp = search("http://lacnic.net/cgi-bin/lacnic/whois?query=", addr);
-//			isp = search("http://whois.threet.co.jp/?key=", addr);
 			if (isp == null) {
-				log.warning("(既知ISP_IPアドレス):addr=" + addr + ", isp=null");
+				log.log(Level.WARNING, "(既知ISP_IPアドレス):addr={0}, isp=null", addr);
 
 				// 何らかの問題で取得に失敗していてもアクセスし続けるため
 				isp = new KnownListIsp(addr.toString(), "-");
@@ -120,7 +111,8 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 				String name = isp.getName();
 				String country = isp.getCountry();
 
-				log.warning("(既知ISP_IPアドレス):addr=" + addr + ", isp=[" + name + ", C=" + country + ", NET=" + addrs + "]");
+//				log.log(Level.WARNING, "(既知ISP_IPアドレス):addr=" + addr + ", isp=[" + name + ", C=" + country + ", NET=" + addrs + "]");
+				log.log(Level.WARNING, "(既知ISP_IPアドレス):addr={0}, isp=[{1}, C={2}, NET={3}]", new Object[] { addr, name, country, addrs});
 
 				if (addrs.isEmpty() && name == null) {
 //					isp = null;
@@ -228,7 +220,7 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 		catch (IOException e) {
 			// TODO Auto-generated catch block
 			if (url != null) {
-				log.severe("url=" + url.toString());
+				log.log(Level.SEVERE, "url={0}", url);
 			}
 //			e.printStackTrace();
 			return null;

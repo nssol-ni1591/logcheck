@@ -58,7 +58,10 @@ public class FwLogSummary extends Summary<FwLogBean> implements Comparable<FwLog
 	}
 
 	public int compareTo(FwLogSummary summary) {
-		// TODO Auto-generated method stub
+		if (summary == null) {
+			return 1;
+		}
+
 		int rc;
 		rc = dstPort - summary.getDstPort();
 		if (rc != 0) {

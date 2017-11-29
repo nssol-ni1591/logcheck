@@ -1,11 +1,6 @@
 package logcheck.test;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.stream.Stream;
 
 import logcheck.log.AccessLog;
 import logcheck.log.AccessLogSummary;
@@ -14,21 +9,48 @@ import static org.junit.Assert.assertNotNull;
 //import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class AccessLogTest {
 
+	private static WeldContainer container;
+	private static Weld weld;
+
+	private AccessLog test;
+
 	@BeforeClass
 	public static void beforeClass() {
 		System.out.println("start AccessLogTest ...");
+
+		weld = new Weld();
+		container = weld.initialize();
 	}
 	@AfterClass
 	public static void afterClass() {
+//		if (container != null) {
+			container.close();
+//		}
+//		if (weld != null) {
+//			weld.shutdown();
+//		}
+
 		System.out.println("AccessLogTest ... end");
 	}
 
+	@Before
+	public void before() {
+		test = container.select(AccessLog.class).get();
+	}
+	@After
+	public void after() {
+	}
+/*
 	public HashMap<String, AccessLogSummary> load(String file) {
 		HashMap<String, AccessLogSummary> map = new HashMap<>();
 		try {
@@ -52,14 +74,13 @@ public class AccessLogTest {
 		}
 		return map;
 	}
-
+*/
 	@Test
 	public void test01() {
-		HashMap<String, AccessLogSummary> map = new HashMap<>();
-		map = load("C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\VPN-LOG\\20171021.log");
+		HashMap<String, AccessLogSummary> map = test.load("C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\VPN-LOG\\20171021.log");
 		System.out.println("size=" + map.size());
 		assumeTrue("log's count is 73", map.size() == 73);
-		
+
 		for (AccessLogSummary sum : map.values()) {
 			assertNotNull("getAddr() is null", sum.getAddr());
 			assertNotNull("getAfterUsrId() is null", sum.getAfterUsrId());

@@ -1,19 +1,52 @@
 package logcheck.log;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
+
+import javax.inject.Inject;
 
 public class AccessLog {
 
-	private static Logger log = Logger.getLogger(AccessLog.class.getName());
+	@Inject private Logger log;
+//	private static Logger log = Logger.getLogger(AccessLog.class.getName());
 
 	public static final String PATTERN = "(\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d) - ([\\w-]+) - \\[([\\d\\.]*)\\] (.+)\\(([\\w\\(\\)-]*)\\)\\[(.*)\\] - (.*)$";
 // for 2017-11-18
 //	public static final String PATTERN2 = "\\[\\d+\\.\\d+\\.\\d+\\.\\d+\\] ([\\S ])+\\(\\S*\\)\\[[\\S ]*\\]";
 	public static final String PATTERN2 = "\\[\\d+\\.\\d+\\.\\d+\\.\\d+\\] ([\\S ]+)\\([\\S ]*\\)\\[[\\S ]*\\]";
 
-	private AccessLog() { }
+	public AccessLog() { }
+
+	public HashMap<String, AccessLogSummary> load(String file) {
+		HashMap<String, AccessLogSummary> map = new HashMap<>();
+		try {
+			log.log(Level.INFO, "start load ... file={0}", file);
+
+			try (Stream<String> input = Files.lines(Paths.get(file), StandardCharsets.UTF_8)) {
+				input.filter(AccessLog::test).map(AccessLog::parse).forEach(b -> {
+					AccessLogSummary als = map.get(b.getAddr().toString());
+					if (als == null) {
+						als = new AccessLogSummary(b, null);
+						map.put(b.getAddr().toString(), als);
+					}
+				});
+			}
+			log.log(Level.INFO, "end load ... size={0}", map.size());
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			log.log(Level.SEVERE, e.getMessage(), e);
+		}
+		return map;
+	}
 
 	public static AccessLogBean parse(String s) {
 		String date = null;
@@ -47,7 +80,8 @@ public class AccessLog {
 
 		String[] array = s.split(" - ");
 		if (array.length < 4) {
-			log.warning("(AccessLog): \"" + s + "\"");
+//			log.log(Level.WARNING, "(AccessLog): \"{0}\"", s);
+			Logger.getLogger(AccessLog.class.getName()).log(Level.WARNING, "(AccessLog): \"{0}\"", s);
 			return false;
 		}
 
@@ -55,7 +89,8 @@ public class AccessLog {
 		Matcher m = p.matcher(array[2]);
 		boolean rc = m.matches();
 		if (!rc) {
-			log.warning("(AccessLog): \"" + s + "\"");
+//			log.log(Level.WARNING, "(AccessLog): \"{0}\"", s);
+			Logger.getLogger(AccessLog.class.getName()).log(Level.WARNING, "(AccessLog): \"{0}\"", s);
 		}
 		return rc;
 	}

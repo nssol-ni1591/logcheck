@@ -117,6 +117,8 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 	protected static final String INFO_SUMMARY_MSG = "<><><> Information message summary <><><>";
 	protected static final String DUP_FAILED_MSG = "<><><> Duplicate failed message summary <><><>";
 
+	private static final String LINE_SEPARATOR = "line.separator";
+	
 	protected AbstractChecker() { }
 
 	private T run(InputStream is) throws Exception {
@@ -127,7 +129,7 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 		return map;
 	}
 	private T run(String file) throws Exception {
-		log.log(Level.INFO, "checking from file=%s:", file);
+		log.log(Level.INFO, "checking from file={0}:", file);
 
 		this.stream = Files.lines(Paths.get(file), StandardCharsets.UTF_8);
 		T map = run2();
@@ -176,18 +178,18 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 				map = run(argv[ix]);
 			}
 		}
-		addrErrs.forEach(addr -> log.warning("unknown ip: addr=" + addr));
-		userErrs.forEach(userId -> log.warning("not found user: userid=" + userId));
+		addrErrs.forEach(addr -> log.log(Level.WARNING, "unknown ip: addr={0}", addr));
+		userErrs.forEach(userId -> log.log(Level.WARNING, "not found user: userid={0}", userId));
 
-		String crlf = System.getProperty("line.separator");
-		System.setProperty("line.separator", "\r\n");
+		String crlf = System.getProperty(LINE_SEPARATOR);
+		System.setProperty(LINE_SEPARATOR, "\r\n");
 
 		try (PrintWriter out = new PrintWriter(System.out))
 		{
 			report(out, map);
 			out.flush();
 		}
-		System.setProperty("line.separator", crlf);
+		System.setProperty(LINE_SEPARATOR, crlf);
 	}
 
 	private class CheckProgress implements Runnable {
