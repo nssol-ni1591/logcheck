@@ -7,10 +7,8 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import org.jboss.weld.environment.se.Weld;
-import org.jboss.weld.environment.se.WeldContainer;
-
 import logcheck.log.AccessLogBean;
+import logcheck.util.weld.WeldWrapper;
 
 /*
  * ログ解析用の集約ツール1'：
@@ -35,7 +33,8 @@ public class Checker22 extends Checker8 {
 	protected String getPattern(AccessLogBean b) {
 		Optional<String> rc = Stream.of(ALL_PATTERNS)
 				.filter(p -> p.matcher(b.getMsg()).matches())
-				.map(p -> p.toString())
+//				.map(p -> p.toString())
+				.map(Pattern::toString)
 				.findFirst();
 		if (rc.isPresent()) {
 			return rc.get();
@@ -45,20 +44,7 @@ public class Checker22 extends Checker8 {
 	}
 
 	public static void main(String... argv) {
-		if (argv.length < 2) {
-			System.err.println("usage: java logcheck.Checker81 knownlist maglist [accesslog...]");
-			System.exit(1);
-		}
-
-		int rc = 0;
-		Weld weld = new Weld();
-		try (WeldContainer container = weld.initialize()) {
-			Checker22 application = container.select(Checker22.class).get();
-			application.init(argv[0], argv[1]).start(argv, 2);
-		}
-		catch (Exception ex) {
-			rc = 1;
-		}
+		int rc = new WeldWrapper<Checker22>(Checker22.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

@@ -1,14 +1,12 @@
 package logcheck.test;
 
-//import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import javax.enterprise.util.AnnotationLiteral;
 
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -16,6 +14,7 @@ import logcheck.*;
 import logcheck.annotations.UseChecker14;
 import logcheck.annotations.UseChecker23;
 import logcheck.annotations.UseChecker8;
+import logcheck.util.weld.WeldWrapper;
 
 public class MainTest {
 
@@ -35,272 +34,177 @@ public class MainTest {
 	}
 	@AfterClass
 	public static void afterClass() {
-//		if (container != null) {
-			container.close();
-//		}
-//		if (weld != null) {
-//			weld.shutdown();
-//		}
-
+		container.close();
 		System.out.println("MainTest ... end");
 	}
 
-	@Before
-	public void before() {
-		/*
-		if (weld == null) {
-			weld = new Weld();
-		}
-		if (container == null) {
-			container = weld.initialize();
-		}
-		*/
-	}
-	@After
-	public void after() {
-	}
-
-	private static String SSLINDEX  = "C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\xls\\index.txt";
-	private static String MAGLIST   = "C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\xls\\maglist.txt";
-	private static String KNOWNLIST = "C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\xls\\knownlist.txt";
-	private static String SDCLIST   = "C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\xls\\sdclist.txt";
-	private static String ACCESSLOG = "C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\VPN-LOG\\access.log";
-//	private static String FWLOG		= "C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\fortigate-LOG\\ForwardTrafficLog-disk-2017-04-21T14-38-26.394251.log";
-	private static String FWLOG		= "C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\fortigate-LOG\\fw.log";
+	public static String SSLINDEX  = "C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\xls\\index.txt";
+	public static String MAGLIST   = "C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\xls\\maglist.txt";
+	public static String KNOWNLIST = "C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\xls\\knownlist.txt";
+	public static String SDCLIST   = "C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\xls\\sdclist.txt";
+	public static String ACCESSLOG = "C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\VPN-LOG\\access.log";
+	public static String FWLOG		= "C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\fortigate-LOG\\fw.log";
 
 	@Test
 	public void test3() {
-//		Weld weld = new Weld();
-//		try (WeldContainer container = weld.initialize()) {
-		try {
-			Checker3 application = container.select(Checker3.class).get();
-			application.init(KNOWNLIST, MAGLIST).start(new String[] { ACCESSLOG }, 0);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		Checker3 application = container.select(Checker3.class).get();
+		int rc = new WeldWrapper<Checker3>().exec(application, 2, KNOWNLIST, MAGLIST, ACCESSLOG);
+		assertEquals("MainTest#test3 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker3>().exec(application, 2, KNOWNLIST);
+		assertEquals("MainTest#test3 ... NG", 2, rc);
 	}
 	@Test
 	public void test4() {
-//		Weld weld = new Weld();
-//		try (WeldContainer container = weld.initialize()) {
-		try {
-			Checker4 application = container.select(Checker4.class).get();
-			application.init(KNOWNLIST, MAGLIST).start(new String[] { ACCESSLOG }, 0);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		Checker4 application = container.select(Checker4.class).get();
+		int rc = new WeldWrapper<Checker4>().exec(application, 2, KNOWNLIST, MAGLIST, ACCESSLOG);
+		assertEquals("MainTest#test4 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker4>().exec(application, 2, KNOWNLIST);
+		assertEquals("MainTest#test4 ... NG", 2, rc);
 	}
 	@Test
 	public void test5() {
-//		Weld weld = new Weld();
-//		try (WeldContainer container = weld.initialize()) {
-		try {
-			Checker5 application = container.select(Checker5.class).get();
-			application.init(KNOWNLIST, MAGLIST).start(new String[] { ACCESSLOG }, 0);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		Checker5 application = container.select(Checker5.class).get();
+		int rc = new WeldWrapper<Checker5>().exec(application, 2, KNOWNLIST, MAGLIST, ACCESSLOG);
+		assertEquals("MainTest#test5 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker5>().exec(application, 2, KNOWNLIST);
+		assertEquals("MainTest#test5 ... NG", 2, rc);
 	}
 	@Test
 	public void test6() {
-//		Weld weld = new Weld();
-//		try (WeldContainer container = weld.initialize()) {
-		try {
-			Checker6 application = container.select(Checker6.class).get();
-			application.init(KNOWNLIST, MAGLIST).start(new String[] { ACCESSLOG }, 0);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		Checker6 application = container.select(Checker6.class).get();
+		int rc = new WeldWrapper<Checker6>().exec(application, 2, KNOWNLIST, MAGLIST, ACCESSLOG);
+		assertEquals("MainTest#test6 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker6>().exec(application, 2, KNOWNLIST);
+		assertEquals("MainTest#test6 ... NG", 2, rc);
 	}
 	@Test
 	public void test7() {
-//		Weld weld = new Weld();
-//		try (WeldContainer container = weld.initialize()) {
-		try {
-			Checker7 application = container.select(Checker7.class).get();
-			application.init(KNOWNLIST, MAGLIST).start(new String[] { ACCESSLOG }, 0);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		Checker7 application = container.select(Checker7.class).get();
+		int rc = new WeldWrapper<Checker7>().exec(application, 2, KNOWNLIST, MAGLIST, ACCESSLOG);
+		assertEquals("MainTest#test7 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker7>().exec(application, 2, KNOWNLIST);
+		assertEquals("MainTest#test7 ... NG", 2, rc);
 	}
 	@Test
 	public void test8() {
-//		Weld weld = new Weld();
-//		try (WeldContainer container = weld.initialize()) {
-		try {
-			Checker8 application = container.select(Checker8.class, new AnnotationLiteral<UseChecker8>(){
-				private static final long serialVersionUID = 1L;
-			}).get();
-			application.init(KNOWNLIST, MAGLIST).start(new String[] { ACCESSLOG }, 0);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		Checker8 application = container.select(Checker8.class, new AnnotationLiteral<UseChecker8>(){
+			private static final long serialVersionUID = 1L;
+		}).get();
+		int rc = new WeldWrapper<Checker8>().exec(application, 2, KNOWNLIST, MAGLIST, ACCESSLOG);
+		assertEquals("MainTest#test8 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker8>().exec(application, 2, KNOWNLIST);
+		assertEquals("MainTest#test8 ... NG", 2, rc);
 	}
 	@Test
 	public void test9() {
-//		Weld weld = new Weld();
-//		try (WeldContainer container = weld.initialize()) {
-		try {
-			Checker9 application = container.select(Checker9.class).get();
-			application.init("2017-01-30", KNOWNLIST, MAGLIST).start(new String[] { ACCESSLOG }, 0);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		Checker9 application = container.select(Checker9.class).get();
+		int rc = new WeldWrapper<Checker9>().exec(application, 3, "2017-01-30", KNOWNLIST, MAGLIST, ACCESSLOG);
+		assertEquals("MainTest#test9 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker9>().exec(application, 3, "2017-01-30", KNOWNLIST);
+		assertEquals("MainTest#test9 ... NG", 2, rc);
+		rc = new WeldWrapper<Checker9>().exec(application, 3, "2017-01-", KNOWNLIST, MAGLIST, ACCESSLOG);
+		assertEquals("MainTest#test9 ... NG", 3, rc);
 	}
-
 	@Test
 	public void test10() {
-//		Weld weld = new Weld();
-//		try (WeldContainer container = weld.initialize()) {
-		try {
-			Checker10 application = container.select(Checker10.class).get();
-			application.init(KNOWNLIST, MAGLIST).start(new String[] { ACCESSLOG }, 0);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		Checker10 application = container.select(Checker10.class).get();
+		int rc = new WeldWrapper<Checker10>().exec(application, 2, KNOWNLIST, MAGLIST, ACCESSLOG);
+		assertEquals("MainTest#test10 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker10>().exec(application, 2, KNOWNLIST);
+		assertEquals("MainTest#test10 ... NG", 2, rc);
 	}
 
 	@Test
 	public void test12() {
-//		Weld weld = new Weld();
-//		try (WeldContainer container = weld.initialize()) {
-		try {
-			Checker12 application = container.select(Checker12.class).get();
-			application.init(KNOWNLIST, MAGLIST).start(new String[] { ACCESSLOG }, 0);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		Checker12 application = container.select(Checker12.class).get();
+		int rc = new WeldWrapper<Checker12>().exec(application, 2, KNOWNLIST, MAGLIST, ACCESSLOG);
+		assertEquals("MainTest#test12 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker12>().exec(application, 2, KNOWNLIST);
+		assertEquals("MainTest#test12 ... NG", 2, rc);
 	}
 	@Test
 	public void test13() {
-//		Weld weld = new Weld();
-//		try (WeldContainer container = weld.initialize()) {
-		try {
-			Checker13 application = container.select(Checker13.class).get();
-			application.init(KNOWNLIST, MAGLIST).start(new String[] { ACCESSLOG }, 0);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		Checker13 application = container.select(Checker13.class).get();
+		int rc = new WeldWrapper<Checker13>().exec(application, 2, KNOWNLIST, MAGLIST, ACCESSLOG);
+		assertEquals("MainTest#test13 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker13>().exec(application, 2, KNOWNLIST);
+		assertEquals("MainTest#test13 ... NG", 2, rc);
 	}
 	@Test
 	public void test14() {
-//		Weld weld = new Weld();
-//		try (WeldContainer container = weld.initialize()) {
-		try {
-			Checker14 application = container.select(Checker14.class, new AnnotationLiteral<UseChecker14>(){
-				private static final long serialVersionUID = 1L;
-			}).get();
-			application.init(KNOWNLIST, SSLINDEX).start(new String[] { ACCESSLOG }, 0);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		Checker14 application = container.select(Checker14.class, new AnnotationLiteral<UseChecker14>(){
+			private static final long serialVersionUID = 1L;
+		}).get();
+		int rc = new WeldWrapper<Checker14>().exec(application, 2, KNOWNLIST, SSLINDEX, ACCESSLOG);
+		assertEquals("MainTest#test10 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker14>().exec(application, 2, KNOWNLIST);
+		assertEquals("MainTest#test14 ... NG", 2, rc);
 	}
 	@Test
 	public void test15() {
-//		Weld weld = new Weld();
-//		try (WeldContainer container = weld.initialize()) {
-		try {
-			Checker15 application = container.select(Checker15.class).get();
-			application.init(KNOWNLIST, SSLINDEX).start(new String[] { ACCESSLOG }, 0);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		Checker15 application = container.select(Checker15.class).get();
+		int rc = new WeldWrapper<Checker15>().exec(application, 2, KNOWNLIST, SSLINDEX, ACCESSLOG);
+		assertEquals("MainTest#test15 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker15>().exec(application, 2, KNOWNLIST);
+		assertEquals("MainTest#test15 ... NG", 2, rc);
 	}
 	@Test
 	public void test16() {
-//		Weld weld = new Weld();
-//		try (WeldContainer container = weld.initialize()) {
-		try {
-			Checker16 application = container.select(Checker16.class).get();
-			application.init(KNOWNLIST, SSLINDEX).start(new String[] { ACCESSLOG }, 0);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		Checker16 application = container.select(Checker16.class).get();
+		int rc = new WeldWrapper<Checker16>().exec(application, 2, KNOWNLIST, SSLINDEX, ACCESSLOG);
+		assertEquals("MainTest#test16 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker16>().exec(application, 2, KNOWNLIST);
+		assertEquals("MainTest#test16 ... NG", 2, rc);
 	}
 	@Test
 	public void test17() {
-//		Weld weld = new Weld();
-//		try (WeldContainer container = weld.initialize()) {
-		try {
-			Checker17 application = container.select(Checker17.class).get();
-			application.init(KNOWNLIST, SSLINDEX).start(new String[] { ACCESSLOG }, 0);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		Checker17 application = container.select(Checker17.class).get();
+		int rc = new WeldWrapper<Checker17>().exec(application, 2, KNOWNLIST, SSLINDEX, ACCESSLOG);
+		assertEquals("MainTest#test17 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker17>().exec(application, 2, KNOWNLIST);
+		assertEquals("MainTest#test17 ... NG", 2, rc);
 	}
 	@Test
 	public void test18() {
-//		Weld weld = new Weld();
-//		try (WeldContainer container = weld.initialize()) {
-		try {
-			Checker18 application = container.select(Checker18.class).get();
-			application.init(KNOWNLIST, SSLINDEX).start(new String[] { ACCESSLOG }, 0);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		Checker18 application = container.select(Checker18.class).get();
+		int rc = new WeldWrapper<Checker18>().exec(application, 2, KNOWNLIST, SSLINDEX, ACCESSLOG);
+		assertEquals("MainTest#test18 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker18>().exec(application, 2, KNOWNLIST);
+		assertEquals("MainTest#test18 ... NG", 2, rc);
 	}
 	@Test
 	public void test22() {
-//		Weld weld = new Weld();
-//		try (WeldContainer container = weld.initialize()) {
-		try {
-			Checker22 application = container.select(Checker22.class).get();
-			application.init(KNOWNLIST, MAGLIST).start(new String[] { ACCESSLOG }, 0);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		Checker22 application = container.select(Checker22.class).get();
+		int rc = new WeldWrapper<Checker22>().exec(application, 2, KNOWNLIST, MAGLIST, ACCESSLOG);
+		assertEquals("MainTest#test22 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker22>().exec(application, 2, KNOWNLIST);
+		assertEquals("MainTest#test22 ... NG", 2, rc);
 	}
 	@Test
 	public void test23() {
-//		Weld weld = new Weld();
-//		try (WeldContainer container = weld.initialize()) {
-		try {
-			Checker23 application = container.select(Checker23.class, new AnnotationLiteral<UseChecker23>(){
-				private static final long serialVersionUID = 1L;
-			}).get();
-			application.init(KNOWNLIST, MAGLIST).start(new String[] { ACCESSLOG }, 0);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		Checker23 application = container.select(Checker23.class, new AnnotationLiteral<UseChecker23>(){
+			private static final long serialVersionUID = 1L;
+		}).get();
+		int rc = new WeldWrapper<Checker23>().exec(application, 2, KNOWNLIST, MAGLIST, ACCESSLOG);
+		assertEquals("MainTest#test23 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker23>().exec(application, 2, KNOWNLIST);
+		assertEquals("MainTest#test23 ... NG", 2, rc);
 	}
 	@Test
 	public void test25() {
-//		Weld weld = new Weld();
-//		try (WeldContainer container = weld.initialize()) {
-		try {
-			Checker25 application = container.select(Checker25.class).get();
-			application.init(KNOWNLIST, MAGLIST).start(new String[] { ACCESSLOG }, 0);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		Checker25 application = container.select(Checker25.class).get();
+		int rc = new WeldWrapper<Checker25>().exec(application, 2, KNOWNLIST, MAGLIST, ACCESSLOG);
+		assertEquals("MainTest#test25 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker25>().exec(application, 2, KNOWNLIST);
+		assertEquals("MainTest#test25 ... NG", 2, rc);
 	}
 	@Test
 	public void test50() {
-		try {
-			Checker50 application = container.select(Checker50.class).get();
-			application.init(KNOWNLIST, MAGLIST, SDCLIST).start(new String[] { FWLOG }, 0);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		Checker50 application = container.select(Checker50.class).get();
+		int rc = new WeldWrapper<Checker50>().exec(application, 3, KNOWNLIST, MAGLIST, SDCLIST, FWLOG);
+		assertEquals("MainTest#test50 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker50>().exec(application, 3, KNOWNLIST);
+		assertEquals("MainTest#test25 ... NG", 2, rc);
 	}
 
 }

@@ -8,9 +8,6 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import org.jboss.weld.environment.se.Weld;
-import org.jboss.weld.environment.se.WeldContainer;
-
 import logcheck.fw.FwLog;
 import logcheck.fw.FwLogSummary;
 import logcheck.isp.IspList;
@@ -19,6 +16,7 @@ import logcheck.known.KnownList;
 import logcheck.mag.MagList;
 import logcheck.sdc.SdcList;
 import logcheck.util.net.NetAddr;
+import logcheck.util.weld.WeldWrapper;
 
 /*
  * FWログの集約処理：
@@ -32,11 +30,10 @@ public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 	@Inject private MagList maglist;
 	@Inject private SdcList sdclist;
 
-	public Checker50 init(String knownfile, String magfile, String sdcfile) throws Exception {
-		this.knownlist.load(knownfile);
-		this.maglist.load(magfile);
-		this.sdclist.load(sdcfile);
-		return this;
+	public void init(String...argv) throws Exception {
+		this.knownlist.load(argv[0]);
+		this.maglist.load(argv[1]);
+		this.sdclist.load(argv[2]);
 	}
 
 	private IspList getIspList(NetAddr addr) {
@@ -77,7 +74,6 @@ public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 						list.add(sum);
 					}
 					else {
-//						sum.update(b);
 						sum.update(b.getDate());
 					}
 				});
@@ -87,7 +83,7 @@ public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 	@Override
 	public void report(final PrintWriter out, final Set<FwLogSummary> list) {
 		out.println("出現日時\t最終日時\t接続元国\t接続元名\t接続元IP\t接続先国\t接続先名\t接続先IP\t接続先ポート\tログ数");
-		list.forEach(s -> {
+		list.forEach(s -> 
 			out.println(new StringBuilder(s.getFirstDate() == null ? "" : s.getFirstDate())
 					.append("\t").append(s.getLastDate())
 					.append("\t").append(s.getSrcIsp().getCountry())
@@ -98,25 +94,17 @@ public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 					.append("\t").append(s.getDstAddr())
 					.append("\t").append(s.getDstPort())
 					.append("\t").append(s.getCount())
-					);
-		});
+					)
+		);
+	}
+
+	@Override
+	public String usage(String name) {
+		return String.format("usage: java %s knownlist maglist sdclist [fwlog...]", name);
 	}
 
 	public static void main(String... argv) {
-		if (argv.length < 3) {
-			System.err.println("usage: java logcheck.Checker21 knownlist maglist sdclist [accesslog...]");
-			System.exit(1);
-		}
-
-		int rc = 0;
-		Weld weld = new Weld();
-		try (WeldContainer container = weld.initialize()) {
-			Checker50 application = container.select(Checker50.class).get();
-			application.init(argv[0], argv[1], argv[2]).start(argv, 3);
-		}
-		catch (Exception ex) {
-			rc = 1;
-		}
+		int rc = new WeldWrapper<Checker50>(Checker50.class).weld(3, argv);
 		System.exit(rc);
 	}
 

@@ -37,6 +37,7 @@ public class DbSiteListTest {
 			assertNotNull("getName() is null", isp.getName());
 			assertNotNull("getSiteId() is null", isp.getSiteId());
 			assertNotNull("getAddress() is null", isp.getAddress());
+			assertFalse("equlas(null)", isp.equals(null));
 			ix += 1;
 		}
 		System.out.println("count: " + ix);

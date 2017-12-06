@@ -14,7 +14,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
-//import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -23,6 +22,7 @@ import javax.inject.Inject;
 
 import logcheck.annotations.WithElaps;
 import logcheck.util.net.NetAddr;
+import logcheck.util.weld.WeldRunner;
 
 /*
  * アクセスログのソースIPに一致するISP名/企業名を取得し、国別にISP名/企業名と出力ログ数を出力する
@@ -30,7 +30,7 @@ import logcheck.util.net.NetAddr;
  * 第2引数：インターネット経由接続先一覧
  * 第3引数以降：アクセスログ
  */
-public abstract class AbstractChecker<T> implements Callable<T> {
+public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 
 	@Inject private Logger log;
 
@@ -119,21 +119,20 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 
 	private static final String LINE_SEPARATOR = "line.separator";
 	
-	protected AbstractChecker() { }
+	protected AbstractChecker() {
+	}
 
 	private T run(InputStream is) throws Exception {
 		log.info("checking from InputStream:");
 
 		this.stream = new BufferedReader(new InputStreamReader(is)).lines();
-		T map = run2();
-		return map;
+		return run2();
 	}
 	private T run(String file) throws Exception {
 		log.log(Level.INFO, "checking from file={0}:", file);
 
 		this.stream = Files.lines(Paths.get(file), StandardCharsets.UTF_8);
-		T map = run2();
-		return map;
+		return run2();
 	}
 	private T run2() throws Exception {
 
@@ -168,7 +167,8 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 
 	// 将来的にサブクラス外からの呼び出しを考慮してpublicとする
 	@WithElaps
-	public void start(String[] argv, int offset) throws Exception {
+	public int start(String[] argv, int offset) throws Exception {
+		int rc = 0;
 		T map = null;
 		if (argv.length <= offset) {
 			map = run(System.in);
@@ -178,18 +178,19 @@ public abstract class AbstractChecker<T> implements Callable<T> {
 				map = run(argv[ix]);
 			}
 		}
+
 		addrErrs.forEach(addr -> log.log(Level.WARNING, "unknown ip: addr={0}", addr));
 		userErrs.forEach(userId -> log.log(Level.WARNING, "not found user: userid={0}", userId));
 
+		// 結果の出力。ただし、CSV形式とするため改行コードを"\r\n"に変更する
 		String crlf = System.getProperty(LINE_SEPARATOR);
 		System.setProperty(LINE_SEPARATOR, "\r\n");
-
-		try (PrintWriter out = new PrintWriter(System.out))
-		{
+		try (PrintWriter out = new PrintWriter(System.out)) {
 			report(out, map);
 			out.flush();
 		}
 		System.setProperty(LINE_SEPARATOR, crlf);
+		return rc;
 	}
 
 	private class CheckProgress implements Runnable {

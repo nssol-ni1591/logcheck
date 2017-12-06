@@ -1,10 +1,9 @@
 package logcheck.fw;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class FwLog {
-
-	private static final Logger log = Logger.getLogger(FwLog.class.getName());
 
 	private FwLog() { }
 
@@ -22,10 +21,9 @@ public class FwLog {
 
 		String[] array = s.split(" ");
 		for (String st: array) {
-			int index = st.indexOf("=");
+			int index = st.indexOf('=');
 			if (index < 0) {
 				// 値に空白が含まれるログ対応：例えば、"United State"など
-//				throw new IllegalArgumentException("index < 0 : st=" + st);
 				break;
 			}
 			String key = st.substring(0, index);
@@ -51,26 +49,21 @@ public class FwLog {
 			case "dstport":
 				dstport = st.substring(index + 1);
 				break;
+			default:
+				// skip
+				break;
 			}
 		}
-		/* test（）にcheckを入れたので、parseでの以下の条件は不要（なはず）
-		if (srcip == null) {
-			throw new IllegalArgumentException("srcip is null: \"" + s + "\"");
-		}
-		else if (dstip == null) {
-			throw new IllegalArgumentException("desip is null: \"" + s + "\"");
-		}
-		*/
 		return new FwLogBean(date, time, level, srcip, srcport, dstip, dstport);
 	}
 
 	public static boolean test(String s) {
+		final Logger log = Logger.getLogger(FwLog.class.getName());
 		if (s.startsWith("#")) {
-			log.warning("(FwLog): \"" + s + "\"");
 			return false;
 		}
 		if (!s.contains("srcip=") || !s.contains("dstip=")) {
-			log.warning("(FwLog): \"" + s + "\"");
+			log.log(Level.WARNING, "(FwLog): \"{0}\"", s);
 			return false;
 		}
 		return true;

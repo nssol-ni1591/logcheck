@@ -2,11 +2,9 @@ package logcheck;
 
 import java.io.PrintWriter;
 
-import org.jboss.weld.environment.se.Weld;
-import org.jboss.weld.environment.se.WeldContainer;
-
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
+import logcheck.util.weld.WeldWrapper;
 
 /*
  * ユーザの利用状況を取得する：
@@ -47,7 +45,7 @@ public class Checker18 extends Checker14 {
 					String projDelFlag = user.getProjDelFlag();
 					String siteDelFlag = user.getSiteDelFlag();
 					String userDelFlag = user.getUserDelFlag();
-					user.getSites().forEach(site -> {
+					user.getSites().forEach(site -> 
 						out.println(new StringBuilder(user.getUserId())
 								.append("\t").append(site.getCountry())
 								.append("\t").append(site.getProjId())
@@ -64,27 +62,19 @@ public class Checker18 extends Checker14 {
 								.append("\t").append(projDelFlag)
 								.append("\t").append(siteDelFlag)
 								.append("\t").append(userDelFlag)
-								);
-					});
+								)
+					);
 				}
 			});
 	}
 
-	public static void main(String... argv) {
-		if (argv.length < 2) {
-			System.err.println("usage: java logcheck.Checker14 knownlist sslindex [accesslog...]");
-			System.exit(1);
-		}
+	@Override
+	public String usage(String name) {
+		return String.format("usage: java %s knownlist sslindex [accesslog...]", name);
+	}
 
-		int rc = 0;
-		Weld weld = new Weld();
-		try (WeldContainer container = weld.initialize()) {
-			Checker18 application = container.select(Checker18.class).get();
-			application.init(argv[0], argv[1]).start(argv, 2);
-		}
-		catch (Exception ex) {
-			rc = 1;
-		}
+	public static void main(String... argv) {
+		int rc = new WeldWrapper<Checker18>(Checker18.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

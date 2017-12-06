@@ -2,11 +2,9 @@ package logcheck;
 
 import java.io.PrintWriter;
 
-import org.jboss.weld.environment.se.Weld;
-import org.jboss.weld.environment.se.WeldContainer;
-
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
+import logcheck.util.weld.WeldWrapper;
 
 /*
  * ユーザの利用状況を取得する：
@@ -49,21 +47,13 @@ public class Checker17 extends Checker14 {
 			});
 	}
 
-	public static void main(String... argv) {
-		if (argv.length < 2) {
-			System.err.println("usage: java logcheck.Checker17 knownlist sslindex [accesslog...]");
-			System.exit(1);
-		}
+	@Override
+	public String usage(String name) {
+		return String.format("usage: java %s knownlist sslindex [accesslog...]", name);
+	}
 
-		int rc = 0;
-		Weld weld = new Weld();
-		try (WeldContainer container = weld.initialize()) {
-			Checker17 application = container.select(Checker17.class).get();
-			application.init(argv[0], argv[1]).start(argv, 2);
-		}
-		catch (Exception ex) {
-			rc = 1;
-		}
+	public static void main(String... argv) {
+		int rc = new WeldWrapper<Checker17>(Checker17.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

@@ -1,5 +1,6 @@
 package logcheck.user.sslindex;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
@@ -33,7 +34,7 @@ public class SSLIndexBean {
 
 	@PostConstruct
 	public void init() {
-		log.fine(this.toString());
+		log.log(Level.FINE, "SSLIndex={0}", toString());
 	}
 	public String getFlag() {
 		return flag;
@@ -56,7 +57,6 @@ public class SSLIndexBean {
 
 	@Override
 	public String toString() {
-//		return "user=" + userId + ", flag=" + flag + ", expire=" + expire + ", revoce=" + revoce;
 		return "user=" + userId + ", flag=" + flag;
 	}
 

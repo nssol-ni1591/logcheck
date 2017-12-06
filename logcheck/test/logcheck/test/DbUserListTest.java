@@ -48,6 +48,7 @@ public class DbUserListTest {
 				sum.getSiteId();
 				sum.getSiteName();
 				sum.getUserDelFlag();
+				assertFalse("equlas(null)", sum.equals(null));
 				ix += 1;
 			}
 			iy += 1;

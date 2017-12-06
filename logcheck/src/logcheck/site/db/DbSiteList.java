@@ -4,9 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.enterprise.inject.Alternative;
+import javax.inject.Inject;
 
 import logcheck.annotations.WithElaps;
 import logcheck.site.SiteList;
@@ -20,8 +22,9 @@ import logcheck.util.DB;
 @Alternative
 public class DbSiteList extends LinkedHashMap<String, SiteListIsp> implements SiteList {
 
+	@Inject private Logger log;
+
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(DbSiteList.class.getName());
 	private static final String DEFAULT_IP = "0.0.0.0";
 
 	public static final String SQL_ALL_SITE = 
@@ -34,15 +37,19 @@ public class DbSiteList extends LinkedHashMap<String, SiteListIsp> implements Si
 
 	public DbSiteList() {
 		super(600);
+		if (log == null) {
+			// logのインスタンスが生成できないため
+			log = Logger.getLogger(DbSiteList.class.getName());
+		}
 	}
 
 	@Override @WithElaps
 	public SiteList load(String file) throws Exception {
-		// 引数のfileは使用しない
+		// @Overrideのため、使用しない引数のfileを定義する
 		String sql = SQL_ALL_SITE;
 
 		// Oracle JDBC Driverのロード
-		//Class.forName("oracle.jdbc.driver.OracleDriver");
+		// なぜコメントアウトで動作する？：Class.forName("oracle.jdbc.driver.OracleDriver");
 		try (	// Oracleに接続
 				Connection conn = DB.createConnection();
 				// ステートメントを作成
@@ -73,10 +80,19 @@ public class DbSiteList extends LinkedHashMap<String, SiteListIsp> implements Si
 					this.put(siteId, site);
 				}
 				site.addAddress(globalIp);
-				log.fine(site.toString());
+				log.log(Level.FINE, "DbSiteList={0}", site.toString());
 			}
 		}
 		return this;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		return super.equals(o);
+	}
+	@Override
+	public int hashCode() {
+		return super.hashCode();
 	}
 
 }

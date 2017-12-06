@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,8 +17,6 @@ import logcheck.util.net.NetAddr;
 
 public class SdcList extends LinkedHashMap<String, SdcListIsp> {
 
-	private static final Logger log = Logger.getLogger(SdcList.class.getName());
-
 	private static final long serialVersionUID = 1L;
 	public static final String PATTERN = "(\\d+\\.\\d+\\.\\d+\\.\\d+/?[\\d\\.]*)\t([\\S ]+)\t([\\S ]+)";
 
@@ -26,9 +25,9 @@ public class SdcList extends LinkedHashMap<String, SdcListIsp> {
 	}
 
 	public SdcListIsp get(NetAddr addr) {
-		Optional<SdcListIsp> rc = values().stream().filter(isp -> {
-			return isp.within(addr);
-		}).findFirst();
+		Optional<SdcListIsp> rc = values().stream()
+				.filter(isp -> isp.within(addr))
+				.findFirst();
 		return rc.isPresent() ? rc.get() : null;
 	}
 
@@ -76,7 +75,7 @@ public class SdcList extends LinkedHashMap<String, SdcListIsp> {
 		Matcher m = p.matcher(s);
 		boolean rc = m.find();
 		if (!rc) {
-			log.warning("(SdcList): \"" + s + "\"");
+			Logger.getLogger(SdcList.class.getName()).log(Level.WARNING, "(SdcList): \"{0}\"", s);
 		}
 		return rc;
 	}

@@ -4,11 +4,10 @@ import java.io.PrintWriter;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.jboss.weld.environment.se.Weld;
-import org.jboss.weld.environment.se.WeldContainer;
-
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
+import logcheck.user.UserListSite;
+import logcheck.util.weld.WeldWrapper;
 
 /*
  * 未利用ユーザ検索：
@@ -23,10 +22,9 @@ public class Checker15 extends Checker14 {
 		userlist.values().stream()
 				.filter(user -> user.getSites().stream()
 						.filter(site -> "0".equals(site.getUserDelFlag()))
-						.mapToInt(site -> site.getCount()).sum() == 0
-						&& "1".equals(user.getValidFlag())
+						.mapToInt(UserListSite::getCount).sum() == 0 && "1".equals(user.getValidFlag())
 						)
-				.forEach(user -> {
+				.forEach(user -> 
 					user.getSites().stream()
 							.filter(site ->
 									"0".equals(site.getProjDelFlag())
@@ -45,35 +43,27 @@ public class Checker15 extends Checker14 {
 								if (userId == null) {
 									sitemap.put(siteName, user.getUserId());
 								}
-							});
-				});
+							})
+				);
 		
 		out.println("ユーザID\tISP/プロジェクトID\t拠点名");
-		projmap.forEach((projId, sitemap) -> {
-			sitemap.forEach((sitename, userId) -> {
+		projmap.forEach((projId, sitemap) -> 
+			sitemap.forEach((sitename, userId) -> 
 				out.println(new StringBuilder(userId)
 						.append("\t").append(projId)
 						.append("\t").append(sitename)
-						);
-			});
-		});
+						)
+			)
+		);
+	}
+
+	@Override
+	public String usage(String name) {
+		return String.format("usage: java %s knownlist sslindex [accesslog...]", name);
 	}
 
 	public static void main(String... argv) {
-		if (argv.length < 2) {
-			System.err.println("usage: java logcheck.Checker15 knownlist sslindex [accesslog...]");
-			System.exit(1);
-		}
-
-		int rc = 0;
-		Weld weld = new Weld();
-		try (WeldContainer container = weld.initialize()) {
-			Checker15 application = container.select(Checker15.class).get();
-			application.init(argv[0], argv[1]).start(argv, 2);
-		}
-		catch (Exception ex) {
-			rc = 1;
-		}
+		int rc = new WeldWrapper<Checker15>(Checker15.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

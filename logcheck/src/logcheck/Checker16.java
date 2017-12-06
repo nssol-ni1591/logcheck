@@ -2,10 +2,9 @@ package logcheck;
 
 import java.io.PrintWriter;
 
-import org.jboss.weld.environment.se.Weld;
-import org.jboss.weld.environment.se.WeldContainer;
-
 import logcheck.user.UserListBean;
+import logcheck.user.UserListSite;
+import logcheck.util.weld.WeldWrapper;
 import logcheck.user.UserList;
 
 /*
@@ -33,12 +32,12 @@ public class Checker16 extends Checker14 {
 		out.println("ユーザID\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除");
 		map.values().stream()
 			// ツール実行時点で証明書が無効ならば、利用状況を確認する必要がないので対象外にする
-			.filter(user -> user.getSites().stream().mapToInt(site -> 
-					site.getCount()).sum() == 0
-					&& "1".equals(user.getValidFlag())
-					)
-			.forEach(user -> {
-				user.getSites().forEach(site -> {
+			.filter(user -> 
+				user.getSites().stream().mapToInt(UserListSite::getCount).sum() == 0
+				&& "1".equals(user.getValidFlag())
+			)
+			.forEach(user -> 
+				user.getSites().forEach(site -> 
 					out.println(
 							new StringBuilder(user.getUserId())
 							.append("\t").append(site.getProjId())
@@ -46,26 +45,18 @@ public class Checker16 extends Checker14 {
 							.append("\t").append(site.getProjDelFlag())
 							.append("\t").append(site.getSiteDelFlag())
 							.append("\t").append(site.getUserDelFlag())
-							);
-			});
-		});
+							)
+			)
+		);
+	}
+
+	@Override
+	public String usage(String name) {
+		return String.format("usage: java %s knownlist sslindex [accesslog...]", name);
 	}
 
 	public static void main(String... argv) {
-		if (argv.length < 2) {
-			System.err.println("usage: java logcheck.Checker16 knownlist sslindex [accesslog...]");
-			System.exit(1);
-		}
-
-		int rc = 0;
-		Weld weld = new Weld();
-		try (WeldContainer container = weld.initialize()) {
-			Checker16 application = container.select(Checker16.class).get();
-			application.init(argv[0], argv[1]).start(argv, 2);
-		}
-		catch (Exception ex) {
-			rc = 1;
-		}
+		int rc = new WeldWrapper<Checker16>(Checker16.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

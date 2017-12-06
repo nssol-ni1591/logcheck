@@ -4,7 +4,6 @@ public class ClientAddr extends NetAddr {
 
 	public ClientAddr(String addr) {
 		super(addr);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

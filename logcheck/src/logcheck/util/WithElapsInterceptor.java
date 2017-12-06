@@ -33,7 +33,7 @@ public class WithElapsInterceptor {
 		String classAndMethod = ic.getTarget().getClass().getSuperclass().getName() + "#" + ic.getMethod().getName();
 
 		// メソッド開始前のログ
-		log.info("start " + classAndMethod + ".");
+		log.log(Level.INFO, "start {0} ...", classAndMethod);
 
 		Object rc = null;
 		long time = System.currentTimeMillis();
@@ -52,7 +52,7 @@ public class WithElapsInterceptor {
 
 		// メソッド終了後のログ
 		System.err.println();
-		log.info("end " + classAndMethod + "... elaps=" + time + " ms");
+		log.log(Level.INFO, "end {0} ... elaps={1} ms", new Object[] { classAndMethod, time });
 		return rc;
 	}
 

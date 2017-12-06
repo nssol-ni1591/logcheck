@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -16,16 +17,15 @@ import javax.inject.Inject;
 public class AccessLog {
 
 	@Inject private Logger log;
-//	private static Logger log = Logger.getLogger(AccessLog.class.getName());
 
 	public static final String PATTERN = "(\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d) - ([\\w-]+) - \\[([\\d\\.]*)\\] (.+)\\(([\\w\\(\\)-]*)\\)\\[(.*)\\] - (.*)$";
-// for 2017-11-18
-//	public static final String PATTERN2 = "\\[\\d+\\.\\d+\\.\\d+\\.\\d+\\] ([\\S ])+\\(\\S*\\)\\[[\\S ]*\\]";
 	public static final String PATTERN2 = "\\[\\d+\\.\\d+\\.\\d+\\.\\d+\\] ([\\S ]+)\\([\\S ]*\\)\\[[\\S ]*\\]";
 
-	public AccessLog() { }
+	public AccessLog() {
+		// なにもしない
+	}
 
-	public HashMap<String, AccessLogSummary> load(String file) {
+	public Map<String, AccessLogSummary> load(String file) {
 		HashMap<String, AccessLogSummary> map = new HashMap<>();
 		try {
 			log.log(Level.INFO, "start load ... file={0}", file);
@@ -42,7 +42,6 @@ public class AccessLog {
 			log.log(Level.INFO, "end load ... size={0}", map.size());
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			log.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return map;
@@ -59,10 +58,10 @@ public class AccessLog {
 		String[] array = s.split(" - ");
 		date = array[0];
 		host = array[1];
-		int pos1 = array[2].indexOf("]", 1);
-		int pos2 = array[2].indexOf(" ", pos1 + 1);
-		int pos3 = array[2].indexOf("(", pos2 + 1);
-		int pos4 = array[2].indexOf("[", pos3 + 1);
+		int pos1 = array[2].indexOf(']', 1);
+		int pos2 = array[2].indexOf(' ', pos1 + 1);
+		int pos3 = array[2].indexOf('(', pos2 + 1);
+		int pos4 = array[2].indexOf('[', pos3 + 1);
 		ip = array[2].substring(1, pos1);
 		id = array[2].substring(pos2 + 1, pos3);
 		role = array[2].substring(pos4 + 1, array[2].length() - 1);
@@ -80,7 +79,6 @@ public class AccessLog {
 
 		String[] array = s.split(" - ");
 		if (array.length < 4) {
-//			log.log(Level.WARNING, "(AccessLog): \"{0}\"", s);
 			Logger.getLogger(AccessLog.class.getName()).log(Level.WARNING, "(AccessLog): \"{0}\"", s);
 			return false;
 		}
@@ -89,7 +87,6 @@ public class AccessLog {
 		Matcher m = p.matcher(array[2]);
 		boolean rc = m.matches();
 		if (!rc) {
-//			log.log(Level.WARNING, "(AccessLog): \"{0}\"", s);
 			Logger.getLogger(AccessLog.class.getName()).log(Level.WARNING, "(AccessLog): \"{0}\"", s);
 		}
 		return rc;

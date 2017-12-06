@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import javax.enterprise.inject.Alternative;
+import javax.inject.Inject;
 import javax.sql.RowSet;
 import javax.sql.rowset.FilteredRowSet;
 import javax.sql.rowset.Predicate;
@@ -34,8 +35,9 @@ import oracle.jdbc.rowset.OracleFilteredRowSet;
 @Alternative
 public class SSLUserList extends LinkedHashMap<String, UserListBean> implements UserList<UserListBean> {
 
+	@Inject Logger log;
+
 	private static final long serialVersionUID = 1L;
-	private static Logger log = Logger.getLogger(SSLUserList.class.getName());
 
 	public static final String SQL_ZUSER =
 			"select u.site_id, u.user_id, u.delete_flag"
@@ -49,23 +51,12 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 
 	public SSLUserList() {
 		super(4000);
-	}
-/*
-	private FilteredRowSet getRowSet(String sql) throws Exception {
-		try ( // Oracleに接続
-				Connection conn = DB.createConnection();
-				// ステートメントを作成
-				PreparedStatement stmt = conn.prepareStatement(sql);
-				ResultSet rs = stmt.executeQuery();
-				)
-		{
-			// このメソッド内ではFilteredRowSet frsをclose()しないで、呼出元で使い終わったのちにclose()すること
-			FilteredRowSet frs = new OracleFilteredRowSet();
-			frs.populate(rs);
-			return frs;
+		if (log == null) {
+			// logのインスタンスが生成できないため
+			log = Logger.getLogger(SSLUserList.class.getName());
 		}
 	}
-*/
+
 	private SSLIndexBean parse(String s) {
 		String[] array = s.split("\t");
 		String flag = array[0];
@@ -90,7 +81,7 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 		}
 
 		if (!rc) {
-			log.warning("(SSLインデックス): s=\"" + s.trim() + "\"");
+			log.log(Level.WARNING, "(SSLインデックス): s=\"{0}\"", s.trim());
 		}
 		// 対象をZユーザに絞る
 		if (!s.contains("/CN=Z")) {
@@ -118,61 +109,66 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 
 			try (Stream<String> input = Files.lines(Paths.get(file), Charset.forName("utf-8")))
 			{
-				input.filter(s -> test(s)).map(s -> parse(s)).forEach(b -> {
-					boolean status = false;
-					UserListBean bean = this.get(b.getUserId());
-					if (bean == null) {
-						try {
-							frs.beforeFirst();
-							frs.setFilter(new SelectUser(b.getUserId()));
+				input.filter(this::test)
+					.map(this::parse)
+					.forEach(b -> {
+						boolean status = false;
+						UserListBean bean = this.get(b.getUserId());
+						if (bean == null) {
+							try {
+								frs.beforeFirst();
+								frs.setFilter(new SelectUser(b.getUserId()));
 
-							while (frs.next()) {
-								String siteId = frs.getString(1);
-								// String userId = frs.getString(2);
-								String userDelFlag = frs.getString(3);
+								while (frs.next()) {
+									String siteId = frs.getString(1);
+									String userDelFlag = frs.getString(3);
 
-								// if (status) {
-								// log.warning("site already exist: siteId=" + siteId + ", bean=[" + bean +
-								// "]");
-								// }
-								status = true;
+									status = true;
 
-								if (bean == null) {
-									// bean = new UserListBean(b, userDelFlag);
+									if (bean == null) {
+										bean = new UserListBean(b);
+										this.put(b.getUserId(), bean);
+									}
+
+									SiteListIsp siteBean = sitelist.get(siteId);
+									if (siteBean != null) {
+										UserListSite site = new UserListSite(siteBean, userDelFlag);
+										bean.addSite(site);
+									}
+									else {
+										log.log(Level.WARNING, "site is null: siteId={0}, bean=[{1}]", new Object[] {siteId, bean});
+									}
+
+								}
+								if (!status) {
+									// sslindexに存在するが、SSLテーブルに存在しない場合：
+									// 不正な状態を検知することができるように削除フラグ"-1"でuserlistに追加する
+									log.log(Level.WARNING, "user_id not found: sslindex=[{0}]", b);
 									bean = new UserListBean(b);
 									this.put(b.getUserId(), bean);
 								}
-
-								SiteListIsp siteBean = sitelist.get(siteId);
-								if (siteBean != null) {
-									UserListSite site = new UserListSite(siteBean, userDelFlag);
-									bean.addSite(site);
-								} else {
-									log.warning("site is null: siteId=" + siteId + ", bean=[" + bean + "]");
-								}
-
+							} 
+							catch (SQLException e) {
+								log.log(Level.SEVERE, "例外", e);
 							}
-							if (!status) {
-								// sslindexに存在するが、SSLテーブルに存在しない場合：
-								// 不正な状態を検知することができるように削除フラグ"-1"でuserlistに追加する
-								log.warning("user_id not found: sslindex=[" + b + "]");
-								// bean = new UserListBean(b, "-1");
-								bean = new UserListBean(b);
-								this.put(b.getUserId(), bean);
-							}
-						} catch (SQLException e) {
-							// TODO Auto-generated catch block
-							log.log(Level.SEVERE, "例外", e);
 						}
-
-					} else {
-						// 以前の証明書が失効している場合
-						bean.update(b);
-					}
-				});
+						else {
+							// 以前の証明書が失効している場合
+							bean.update(b);
+						}
+					});
 			}
 		}
 		return this;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		return super.equals(o);
+	}
+	@Override
+	public int hashCode() {
+		return super.hashCode();
 	}
 
 	class SelectUser implements Predicate {
@@ -187,20 +183,17 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 		public boolean evaluate(RowSet rs) {
 			try {
 				return userId.equals(rs.getString(2));
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-//				e.printStackTrace();
+			} 
+			catch (SQLException e) {
+				return false;
 			}
-			return false;
 		}
 		@Override
 		public boolean evaluate(Object value, int column) throws SQLException {
-			// TODO Auto-generated method stub
 			return false;
 		}
 		@Override
 		public boolean evaluate(Object value, String columnName) throws SQLException {
-			// TODO Auto-generated method stub
 			return false;
 		}
 	}

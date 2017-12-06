@@ -68,6 +68,14 @@ public class WhoisTest {
 	public void test05() {
 		assertNotNull(getIsp("64.134.171.160"));
 	}
+	@Test
+	public void test06() {
+		assertNotNull(getIsp("260.1.1.1"));
+	}
+	@Test
+	public void test07() {
+		assertNotNull(getIsp("93.144.39.100"));
+	}
 
 	
 

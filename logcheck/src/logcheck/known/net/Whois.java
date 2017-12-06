@@ -92,8 +92,6 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 		}
 
 		KnownListIsp isp = search("http://whois.threet.co.jp/?key=", addr);
-//		KnownListIsp isp = search("http://lacnic.net/cgi-bin/lacnic/whois?query=", addr);
-//		KnownListIsp isp = search("http://wq.apnic.net/whois-search/static/search.html?query=", addr);
 		if (isp == null || isp.getName() == null || isp.getAddress().isEmpty()) {
 			System.err.println();
 			log.log(Level.INFO, "retry search. addr={0}", addr);
@@ -111,18 +109,15 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 				String name = isp.getName();
 				String country = isp.getCountry();
 
-//				log.log(Level.WARNING, "(既知ISP_IPアドレス):addr=" + addr + ", isp=[" + name + ", C=" + country + ", NET=" + addrs + "]");
 				log.log(Level.WARNING, "(既知ISP_IPアドレス):addr={0}, isp=[{1}, C={2}, NET={3}]", new Object[] { addr, name, country, addrs});
 
 				if (addrs.isEmpty() && name == null) {
-//					isp = null;
-//					上記と同じ理由で、ispをnullするのはよくない
 					isp = new KnownListIsp(addr.toString(), country == null ? "-" : country);
 					isp.addAddress(new NetAddr(addr.toString() + "/32"));
 				}
 				else if (name == null) {
 					final KnownListIsp isp2 = new KnownListIsp(addr.toString(), country);
-					isp.getAddress().forEach(a -> isp2.addAddress(a));
+					isp.getAddress().forEach(isp2::addAddress);
 					isp = isp2;
 				}
 				else {
@@ -166,31 +161,34 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 						if (name == null) {
 							name = tmp;
 						}
-						else if (name.contains("Inc.") || name.contains("INC.")
-								|| name.contains("LTD.") 
-								|| name.contains("Limited") 
-								|| name.contains("Corporation")
-								|| name.contains("Company")
-								|| name.contains("Telecom")
+						else if ("Inc.".contains(name) 
+								|| "INC.".contains(name)
+								|| "LTD.".contains(name) 
+								|| "Limited".contains(name) 
+								|| "Corporation".contains(name)
+								|| "Company".contains(name)
+								|| "Telecom".contains(name)
 								) {
+							// すでに"Inc."などを含む文字列がnameに設定されている場合はnameの変更は行わない
 						}
 						else if (tmp.contains("Inc.") || tmp.contains("INC.")) {
 							name = tmp;
 						}
-						else if (tmp.contains("HaNoi")
+						else if (tmp.contains("HaNoi") || tmp.contains("Hanoi")
 								|| tmp.contains("Bangkok")
 								|| tmp.contains("Route")
 								|| tmp.contains("STATIC")
 								|| tmp.contains("Assign for")
 								|| tmp.contains("contact ")
 								) {
+							// "Hanoi"とか地名が含まれている場合は住所の可能性が大きいのでnameの文字列で置換しない
 						}
 						else if ("Paris, France".equals(tmp)
 								|| "Security Gateway for Customer".equals(tmp)
 								) {
+							// 地名とか機器名の場合は置換しない
 						}
 						else if ("PL".equals(country)
-//								|| "CN".equals(country)
 								|| "PH".equals(country)
 								) {
 							// 下位のエントリの方が記述が曖昧なので、文字の置換は行わない
@@ -213,16 +211,11 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 					}
 				}
 			}
-			catch (IOException e) {
-				throw e;
-			}
 		}
 		catch (IOException e) {
-			// TODO Auto-generated catch block
 			if (url != null) {
 				log.log(Level.SEVERE, "url={0}", url);
 			}
-//			e.printStackTrace();
 			return null;
 		}
 		finally {
@@ -232,7 +225,9 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 		}
 
 		// 複数の名称で登録されている組織名、もしくは、分かりづらい組織名の置換
-		if (name == null) { }
+		if (name == null) {
+			// nameがnullの場合は何もしない
+		}
 		else if (name.contains("DOCOMO")) {
 			name = "NTT DOCOMO, INC.";
 		}
@@ -317,8 +312,17 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 	@Override
 	public KnownList load(String file) throws IOException {
 		KnownList list = new TsvKnownList().load(file);
-		list.forEach(value -> add(value));
+		list.forEach(this::add);
 		return this;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		return super.equals(o);
+	}
+	@Override
+	public int hashCode() {
+		return super.hashCode();
 	}
 
 }

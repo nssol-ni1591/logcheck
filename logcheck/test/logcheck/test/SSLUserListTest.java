@@ -43,6 +43,7 @@ public class SSLUserListTest {
 			assertNotNull("getUserDelFlag() is null", u.getUserDelFlag());
 			assertNotNull("getFirstDate() is null", u.getFirstDate());
 			assertNotNull("getLastDate() is null", u.getLastDate());
+			assertFalse("equals(null)", u.equals(null));
 		}
 	}
 

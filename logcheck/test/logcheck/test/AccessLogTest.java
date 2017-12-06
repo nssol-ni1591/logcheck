@@ -1,13 +1,12 @@
 package logcheck.test;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import logcheck.log.AccessLog;
 import logcheck.log.AccessLogSummary;
 
 import static org.junit.Assert.assertNotNull;
-//import static org.junit.Assert.*;
-import static org.junit.Assume.*;
+import static org.junit.Assume.assumeTrue;
 
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
@@ -33,12 +32,7 @@ public class AccessLogTest {
 	}
 	@AfterClass
 	public static void afterClass() {
-//		if (container != null) {
-			container.close();
-//		}
-//		if (weld != null) {
-//			weld.shutdown();
-//		}
+		container.close();
 
 		System.out.println("AccessLogTest ... end");
 	}
@@ -50,34 +44,10 @@ public class AccessLogTest {
 	@After
 	public void after() {
 	}
-/*
-	public HashMap<String, AccessLogSummary> load(String file) {
-		HashMap<String, AccessLogSummary> map = new HashMap<>();
-		try {
-				System.out.println("AccessLogTest.load ... file=" + file);
 
-				try (Stream<String> input = Files.lines(Paths.get(file), StandardCharsets.UTF_8)) {
-					input.filter(AccessLog::test)
-						.map(AccessLog::parse)
-						.forEach(b -> {
-							AccessLogSummary als = map.get(b.getAddr().toString());
-							if (als == null) {
-								als = new AccessLogSummary(b, null);
-								map.put(b.getAddr().toString(), als);
-							}
-						});
-				};
-				System.out.println("end AccessLogTest.load ...");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return map;
-	}
-*/
 	@Test
 	public void test01() {
-		HashMap<String, AccessLogSummary> map = test.load("C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\VPN-LOG\\20171021.log");
+		Map<String, AccessLogSummary> map = test.load("C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\VPN-LOG\\20171021.log");
 		System.out.println("size=" + map.size());
 		assumeTrue("log's count is 73", map.size() == 73);
 

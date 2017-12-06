@@ -4,9 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.enterprise.inject.Alternative;
+import javax.inject.Inject;
 
 import logcheck.annotations.WithElaps;
 import logcheck.site.SiteList;
@@ -23,8 +25,9 @@ import logcheck.util.DB;
 @Alternative
 public class DbUserList extends LinkedHashMap<String, UserListBean> implements UserList<UserListBean> {
 
+	@Inject Logger log;
+
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = Logger.getLogger(DbUserList.class.getName());
 	private static final String DEFAULT_IP = "0.0.0.0";
 
 	public static final String SQL_ZUSER = 
@@ -42,6 +45,10 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 
 	public DbUserList() {
 		super(4000);
+		if (log == null) {
+			// logのインスタンスが生成できないため
+			log = Logger.getLogger(DbUserList.class.getName());
+		}
 	}
 
 	@WithElaps
@@ -70,7 +77,6 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 
 				UserListBean bean = this.get(userId);
 				if (bean == null) {
-//					bean = new UserListBean(userId, userDelFlag, validFlag);
 					bean = new UserListBean(userId, validFlag);
 					this.put(userId, bean);
 				}
@@ -81,7 +87,6 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 					globalIp = DEFAULT_IP;	// IPアドレスとしては不正なので一致しない for 専用線、ISP経由
 				}
 
-//				UserListSummary site = bean.getSite(new NetAddr(globalIp));
 				UserListSite site = bean.getSite(siteId);
 				if (site == null) {
 					SiteListIsp siteBean = new SiteListIspImpl(siteId, siteName, siteDelFlag, projId, projDelFlag);
@@ -89,10 +94,19 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 					bean.addSite(site);
 				}
 				site.addAddress(globalIp);
-				log.fine(bean.toString());
+				log.log(Level.FINE, "DbUserList: UserListBean={0}", bean.toString());
 			}
 		}
 		return this;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		return super.equals(o);
+	}
+	@Override
+	public int hashCode() {
+		return super.hashCode();
 	}
 
 }
