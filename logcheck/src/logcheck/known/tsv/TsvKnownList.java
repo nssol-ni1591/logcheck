@@ -6,11 +6,14 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedHashSet;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import javax.enterprise.inject.Alternative;
+import javax.inject.Inject;
 
 import logcheck.annotations.WithElaps;
 import logcheck.known.KnownList;
@@ -29,13 +32,18 @@ import logcheck.util.net.NetAddr;
 @Alternative
 public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownList {
 
-	private static Logger log = Logger.getLogger(TsvKnownList.class.getName());
+	@Inject private Logger log;
+
 	private static final long serialVersionUID = 1L;
 
 	public static final String PATTERN = "(\\d+\\.\\d+\\.\\d+\\.\\d+/?\\d*)\t([^\t]+)\t(プライベート|\\S\\S)";
 
 	public TsvKnownList() {
 		super(200);
+		if (log == null) {
+			// logのインスタンスが生成できないため
+			log = Logger.getLogger(TsvKnownList.class.getName());
+		}
 	}
 
 	/*
@@ -50,8 +58,9 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 
 	@WithElaps
 	public KnownList load(String file) throws IOException {
-		Files.lines(Paths.get(file), Charset.forName("MS932"))
-				.filter(TsvKnownList::test)
+		log.log(Level.INFO, "start load ... file={0}", (file == null ? "null" : file));
+		try (Stream<String> input = Files.lines(Paths.get(file), Charset.forName("MS932"))) {
+			input.filter(TsvKnownList::test)
 				.map(TsvKnownList::parse)
 				.forEach(b -> {
 					KnownListIsp isp = get(new NetAddr(b.getAddr()));
@@ -61,6 +70,8 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 					}
 					isp.addAddress(new NetAddr(b.getAddr()));
 				});
+		}
+		log.log(Level.INFO, "end load ... size={0}", this.size());
 		return this;
 	}
 
@@ -97,28 +108,19 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 		Matcher m = p.matcher(s);
 		boolean rc = m.find();
 		if (!rc) {
-			log.warning("(既知ISP_IPアドレス): s=\"" + s + "\"");
+			Logger.getLogger(TsvKnownList.class.getName()).log(Level.WARNING, "(既知ISP_IPアドレス): s=\"{0}\"", s);
 		}
+		Logger.getLogger(TsvKnownList.class.getName()).log(Level.FINE, "(既知ISP_IPアドレス): s=\"{0}\"", s);
 		return rc;
 	}
 
-	public static void main(String... argv) {
-		System.out.println("start IspList.main ...");
-		KnownList map = new TsvKnownList();
-		try {
-			map = new TsvKnownList().load(argv[0]);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		for (KnownListIsp n : map) {
-			System.out.println(n.getCountry() + "\t" + n + "\t" + n.getAddress());
-			System.out.print("\t");
-			n.getAddress().forEach(s -> System.out.printf("[%s]", s.toStringRange()));
-			System.out.println();
-		}
-		System.out.println("IspList.main ... end");
+	@Override
+	public boolean equals(Object o) {
+		return super.equals(o);
+	}
+	@Override
+	public int hashCode() {
+		return super.hashCode();
 	}
 
 }

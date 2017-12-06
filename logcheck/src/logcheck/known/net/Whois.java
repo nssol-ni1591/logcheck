@@ -8,21 +8,23 @@ import java.net.URL;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.enterprise.inject.Alternative;
+import javax.inject.Inject;
 
 import logcheck.known.KnownList;
 import logcheck.known.KnownListIsp;
 import logcheck.known.tsv.TsvKnownList;
-import logcheck.util.net.ClientAddr;
 import logcheck.util.net.NetAddr;
 
 @Alternative
 public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 
+	@Inject private Logger log;
 	private static final long serialVersionUID = 1L;
 
 	private static final Pattern[] PTN_NETADDRS = {
@@ -55,9 +57,6 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 			Pattern.compile("network:Country-Code:(\\w+)"),			// USA というパターンもあるので
 	};
 
-	//@Inject private Logger log;
-	private static Logger log = Logger.getLogger(Whois.class.getName());
-
 	public String parse(Pattern[] ptns, String s) {
 		for (Pattern p : ptns) {
 			Matcher m = p.matcher(s);
@@ -88,29 +87,18 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 		Optional<KnownListIsp> rc = this.stream()
 				.filter(isp -> isp.within(addr))
 				.findFirst();
-		if (rc != null && rc.isPresent()) {
+		if (rc.isPresent()) {
 			return rc.get();
 		}
 
-		// json: http://wq.apnic.net/whois-search/query?searchtext=182.171.83.197
-
 		KnownListIsp isp = search("http://whois.threet.co.jp/?key=", addr);
-//		KnownListIsp isp = search("http://lacnic.net/cgi-bin/lacnic/whois?query=", addr);
-//		KnownListIsp isp = search("http://wq.apnic.net/whois-search/static/search.html?query=", addr);
 		if (isp == null || isp.getName() == null || isp.getAddress().isEmpty()) {
 			System.err.println();
-			log.info("retry search. addr=" + addr);
-
-			// sleep ... 接続先が異なるのでsleepは行わない
-//			try {
-//				Thread.sleep(2 * 1000);
-//			}
-//			catch (InterruptedException ex) { }
+			log.log(Level.INFO, "retry search. addr={0}", addr);
 
 			isp = search("http://lacnic.net/cgi-bin/lacnic/whois?query=", addr);
-//			isp = search("http://whois.threet.co.jp/?key=", addr);
 			if (isp == null) {
-				log.warning("(既知ISP_IPアドレス):addr=" + addr + ", isp=null");
+				log.log(Level.WARNING, "(既知ISP_IPアドレス):addr={0}, isp=null", addr);
 
 				// 何らかの問題で取得に失敗していてもアクセスし続けるため
 				isp = new KnownListIsp(addr.toString(), "-");
@@ -121,17 +109,15 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 				String name = isp.getName();
 				String country = isp.getCountry();
 
-				log.warning("(既知ISP_IPアドレス):addr=" + addr + ", isp=[" + name + ", C=" + country + ", NET=" + addrs + "]");
+				log.log(Level.WARNING, "(既知ISP_IPアドレス):addr={0}, isp=[{1}, C={2}, NET={3}]", new Object[] { addr, name, country, addrs});
 
 				if (addrs.isEmpty() && name == null) {
-//					isp = null;
-//					上記と同じ理由で、ispをnullするのはよくない
 					isp = new KnownListIsp(addr.toString(), country == null ? "-" : country);
 					isp.addAddress(new NetAddr(addr.toString() + "/32"));
 				}
 				else if (name == null) {
 					final KnownListIsp isp2 = new KnownListIsp(addr.toString(), country);
-					isp.getAddress().forEach(a -> isp2.addAddress(a));
+					isp.getAddress().forEach(isp2::addAddress);
 					isp = isp2;
 				}
 				else {
@@ -175,31 +161,34 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 						if (name == null) {
 							name = tmp;
 						}
-						else if (name.contains("Inc.") || name.contains("INC.")
-								|| name.contains("LTD.") 
-								|| name.contains("Limited") 
-								|| name.contains("Corporation")
-								|| name.contains("Company")
-								|| name.contains("Telecom")
+						else if ("Inc.".contains(name) 
+								|| "INC.".contains(name)
+								|| "LTD.".contains(name) 
+								|| "Limited".contains(name) 
+								|| "Corporation".contains(name)
+								|| "Company".contains(name)
+								|| "Telecom".contains(name)
 								) {
+							// すでに"Inc."などを含む文字列がnameに設定されている場合はnameの変更は行わない
 						}
 						else if (tmp.contains("Inc.") || tmp.contains("INC.")) {
 							name = tmp;
 						}
-						else if (tmp.contains("HaNoi")
+						else if (tmp.contains("HaNoi") || tmp.contains("Hanoi")
 								|| tmp.contains("Bangkok")
 								|| tmp.contains("Route")
 								|| tmp.contains("STATIC")
 								|| tmp.contains("Assign for")
 								|| tmp.contains("contact ")
 								) {
+							// "Hanoi"とか地名が含まれている場合は住所の可能性が大きいのでnameの文字列で置換しない
 						}
 						else if ("Paris, France".equals(tmp)
 								|| "Security Gateway for Customer".equals(tmp)
 								) {
+							// 地名とか機器名の場合は置換しない
 						}
 						else if ("PL".equals(country)
-//								|| "CN".equals(country)
 								|| "PH".equals(country)
 								) {
 							// 下位のエントリの方が記述が曖昧なので、文字の置換は行わない
@@ -222,16 +211,11 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 					}
 				}
 			}
-			catch (IOException e) {
-				throw e;
-			}
 		}
 		catch (IOException e) {
-			// TODO Auto-generated catch block
 			if (url != null) {
-				log.severe("url=" + url.toString());
+				log.log(Level.SEVERE, "url={0}", url);
 			}
-//			e.printStackTrace();
 			return null;
 		}
 		finally {
@@ -241,7 +225,9 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 		}
 
 		// 複数の名称で登録されている組織名、もしくは、分かりづらい組織名の置換
-		if (name == null) { }
+		if (name == null) {
+			// nameがnullの場合は何もしない
+		}
 		else if (name.contains("DOCOMO")) {
 			name = "NTT DOCOMO, INC.";
 		}
@@ -326,85 +312,17 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 	@Override
 	public KnownList load(String file) throws IOException {
 		KnownList list = new TsvKnownList().load(file);
-		list.forEach(value -> add(value));
+		list.forEach(this::add);
 		return this;
 	}
 
-	public static void main(String... argv) {
-
-		System.setProperty("proxySet" , "true");
-		System.setProperty("proxyHost", "proxy.ns-sol.co.jp");
-		System.setProperty("proxyPort", "8000");
-
-		NetAddr[] addrs = {
-//				new ClientAddr(""),
-//				new ClientAddr(""),
-//				new ClientAddr(""),
-				new ClientAddr("119.72.196.172"),
-				new ClientAddr("124.35.68.170"),
-				new ClientAddr("119.224.170.26"),
-				new ClientAddr("62.173.40.229"),
-				new ClientAddr("61.204.36.71"),
-				new ClientAddr("202.248.61.202"),
-				new ClientAddr("61.204.36.81"),
-				new ClientAddr("202.248.61.202"),
-				new ClientAddr("61.204.36.71"),
-/*
-				new ClientAddr("210.1.29.82"),
-				new ClientAddr("182.232.195.22"),
-				new ClientAddr("203.87.156.92"),
-				new ClientAddr("182.48.105.210"),
-				new ClientAddr("60.251.66.155"),
-				new ClientAddr("52.90.33.223"),
-				new ClientAddr("106.140.52.162"),
-				new ClientAddr("210.173.87.154"),
-
-				new ClientAddr("70.62.31.2"),
-				new ClientAddr("64.134.171.160"),
-				new ClientAddr("110.77.214.76"),
-				new ClientAddr("101.99.14.161"),
-				new ClientAddr("59.153.233.226"),
-				new ClientAddr("117.4.252.36"),
-				new ClientAddr("222.252.17.6"),
-				new ClientAddr("122.2.36.229"),
-				new ClientAddr("93.150.63.11"),
-				new ClientAddr("183.82.120.86"),
-				new ClientAddr("103.40.133.2"),
-				new ClientAddr("79.191.82.167"),
-				new ClientAddr("219.90.84.2"),
-				new ClientAddr("122.2.36.229"),
-*/
-		};
-
-		try {
-			Whois f = new Whois();
-			f.load(argv[0]);
-
-			for (NetAddr addr : addrs) {
-				KnownListIsp isp = f.get(addr);
-				if (isp == null) {
-					System.out.println("addr=" + addr + ", isp=null");
-				}
-				else {
-					System.out.println("addr=" + addr + ", isp=[" + isp + ", C=" + isp.getCountry() +", NET=" + isp.getAddress() + "]");
-				}
-			}
-
-			for (int ix = 1; ix < argv.length; ix++) {
-				String addr = argv[ix];
-				KnownListIsp isp = f.get(new ClientAddr(addr));
-				if (isp == null) {
-					System.out.println("addr=" + addr + ", isp=null");
-				}
-				else {
-					System.out.println("addr=" + addr + ", isp=[" + isp + ", C=" + isp.getCountry() +", NET=" + isp.getAddress() + "]");
-				}
-			}
-//			System.out.println("f=" + f);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	@Override
+	public boolean equals(Object o) {
+		return super.equals(o);
+	}
+	@Override
+	public int hashCode() {
+		return super.hashCode();
 	}
 
 }

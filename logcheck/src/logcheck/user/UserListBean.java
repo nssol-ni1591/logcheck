@@ -76,37 +76,6 @@ public class UserListBean implements Comparable<UserListBean> {
 				.findFirst();
 		return rc.isPresent() ? rc.get() : null;
 	}
-//	public UserListSite getSite(String projId, String siteName) {
-//	Optional<UserListSite> rc = sites.stream()
-//			.filter(site -> site.getProjId().equals(projId) && site.getSiteName().equals(siteName))
-//			.findFirst();
-//	return rc.isPresent() ? rc.get() : null;
-//}
-//	public UserListSite getSite(String projId) {
-//		Optional<UserListSite> rc = sites.stream()
-//				.filter(site -> site.getProjId().equals(projId))
-//				.findFirst();
-//		return rc.isPresent() ? rc.get() : null;
-//	}
-/*
-	public UserListSite getSite(NetAddr addr, String[] roles) {
-//	public UserListSite getSite(String[] roles) {
-		UserListSite site2 = getSite(addr);
-		if (site2 != null) {
-			return site2;
-		}
-		for (int ix = 0; ix < roles.length; ix++) {
-			final String role = roles[ix];
-			Optional<UserListSite> rc = sites.stream()
-					.filter(site -> site.getProjId().equals(role))
-					.findFirst();
-			if (rc.isPresent()) {
-				return rc.get();
-			}
-		}
-		return null;
-	}
-*/
 	public synchronized void update(SSLIndexBean b) {
 		validFlag = b.getFlag();
 		expire = b.getExpire();
@@ -114,25 +83,31 @@ public class UserListBean implements Comparable<UserListBean> {
 	}
 
 	public int getTotal() {
-		return sites.stream().mapToInt(site -> site.getCount()).sum();
+		return sites.stream().mapToInt(UserListSite::getCount).sum();
 	}
 
 	public String getProjDelFlag() {
+		if (sites.stream().allMatch(site -> "-1".equals(site.getProjDelFlag()))) {
+			return "-1";
+		}
 		return sites.stream().anyMatch(site -> "0".equals(site.getProjDelFlag())) ? "0" : "1";
 	}
 	public String getSiteDelFlag() {
+		if (sites.stream().allMatch(site -> "-1".equals(site.getSiteDelFlag()))) {
+			return "-1";
+		}
 		return sites.stream().anyMatch(site -> "0".equals(site.getSiteDelFlag())) ? "0" : "1";
 	}
 	public String getUserDelFlag() {
+		if (sites.stream().allMatch(site -> "-1".equals(site.getUserDelFlag()))) {
+			return "-1";
+		}
 		return sites.stream().anyMatch(site -> "0".equals(site.getUserDelFlag())) ? "0" : "1";
 	}
 	public String getFirstDate() {
-		String date = "";
+		String date = "9999";
 		for (UserListSite site : sites) {
-			if ("".equals(date)) {
-				date = site.getFirstDate();
-			}
-			else if (site.getFirstDate().compareTo(date) < 0) {
+			if (site.getFirstDate().compareTo(date) < 0) {
 				date = site.getFirstDate();
 			}
 		}
@@ -147,7 +122,7 @@ public class UserListBean implements Comparable<UserListBean> {
 		}
 		return date;
 	}
-
+	@Override
 	public String toString() {
 		return String.format("userId=%s, site=%s", userId, sites);
 	}
@@ -156,4 +131,23 @@ public class UserListBean implements Comparable<UserListBean> {
 	public int compareTo(UserListBean o) {
 		return userId.compareTo(o.getUserId());
 	}
+	/*
+	equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめる
+	*/
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o instanceof UserListBean) {
+			UserListBean bean = (UserListBean)o;
+			return compareTo(bean) == 0;
+		}
+		return false;
+	}
+
 }

@@ -1,3 +1,23 @@
+[2017/11/20]
+・不具合修正：
+・Weld処理クラス追加：
+・Checker25追加：Checker24は削除
+・SonarQubeの指摘事項の修正
+・JUnit対応+カバレッジ取得
+・2017-11-18（IDM更改）に伴う修正
+	LDAPサーバの名称がNSSDC_LDAPからSDC-ADに変更されたことによる修正
+	ユーザ名のパターン追加
+	[Testing Source IP realm restrictions failed...]のパターン追加（ただし意味をなしていないと思う）
+・Checke24追加
+	Checker23を継承するためUserChecker23アノテーションを追加
+・Maven対応
+	（注意）oracleのドライバはローカルのリポジトリに追加
+[2017/10/26]
+・ログメッセージの追加（2件）
+・ホスト名に"-"が含まれる場合の対策
+・クラス名変更：Checker21=>Checker50、Checker8a=>Checker22
+[2017/08/03]
+・Whois：2回ともISP検索に失敗するとNullpointer例外を修正
 [2017/07/29]
 ・未利用ユーザ洗い出しリリース版
 ・不具合の修正

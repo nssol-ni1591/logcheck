@@ -5,18 +5,47 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
+
+import javax.inject.Inject;
 
 public class AccessLog {
 
-	private static Logger log = Logger.getLogger(AccessLog.class.getName());
+	@Inject private Logger log;
 
 	public static final String PATTERN = "(\\d\\d\\d\\d-\\d\\d-\\d\\d \\d\\d:\\d\\d:\\d\\d) - ([\\w-]+) - \\[([\\d\\.]*)\\] (.+)\\(([\\w\\(\\)-]*)\\)\\[(.*)\\] - (.*)$";
-	public static final String PATTERN2 = "\\[\\d+\\.\\d+\\.\\d+\\.\\d+\\] ([\\S ])+\\(\\S*\\)\\[[\\S ]*\\]";
+	public static final String PATTERN2 = "\\[\\d+\\.\\d+\\.\\d+\\.\\d+\\] ([\\S ]+)\\([\\S ]*\\)\\[[\\S ]*\\]";
 
-	private AccessLog() { }
+	public AccessLog() {
+		// なにもしない
+	}
+
+	public Map<String, AccessLogSummary> load(String file) {
+		HashMap<String, AccessLogSummary> map = new HashMap<>();
+		try {
+			log.log(Level.INFO, "start load ... file={0}", file);
+
+			try (Stream<String> input = Files.lines(Paths.get(file), StandardCharsets.UTF_8)) {
+				input.filter(AccessLog::test).map(AccessLog::parse).forEach(b -> {
+					AccessLogSummary als = map.get(b.getAddr().toString());
+					if (als == null) {
+						als = new AccessLogSummary(b, null);
+						map.put(b.getAddr().toString(), als);
+					}
+				});
+			}
+			log.log(Level.INFO, "end load ... size={0}", map.size());
+
+		} catch (IOException e) {
+			log.log(Level.SEVERE, e.getMessage(), e);
+		}
+		return map;
+	}
 
 	public static AccessLogBean parse(String s) {
 		String date = null;
@@ -29,10 +58,10 @@ public class AccessLog {
 		String[] array = s.split(" - ");
 		date = array[0];
 		host = array[1];
-		int pos1 = array[2].indexOf("]", 1);
-		int pos2 = array[2].indexOf(" ", pos1 + 1);
-		int pos3 = array[2].indexOf("(", pos2 + 1);
-		int pos4 = array[2].indexOf("[", pos3 + 1);
+		int pos1 = array[2].indexOf(']', 1);
+		int pos2 = array[2].indexOf(' ', pos1 + 1);
+		int pos3 = array[2].indexOf('(', pos2 + 1);
+		int pos4 = array[2].indexOf('[', pos3 + 1);
 		ip = array[2].substring(1, pos1);
 		id = array[2].substring(pos2 + 1, pos3);
 		role = array[2].substring(pos4 + 1, array[2].length() - 1);
@@ -50,7 +79,7 @@ public class AccessLog {
 
 		String[] array = s.split(" - ");
 		if (array.length < 4) {
-			log.warning("(AccessLog): \"" + s + "\"");
+			Logger.getLogger(AccessLog.class.getName()).log(Level.WARNING, "(AccessLog): \"{0}\"", s);
 			return false;
 		}
 
@@ -58,33 +87,9 @@ public class AccessLog {
 		Matcher m = p.matcher(array[2]);
 		boolean rc = m.matches();
 		if (!rc) {
-			log.warning("(AccessLog): \"" + s + "\"");
+			Logger.getLogger(AccessLog.class.getName()).log(Level.WARNING, "(AccessLog): \"{0}\"", s);
 		}
 		return rc;
 	}
 
-	public static void main(String... argv) {
-		try {
-			for (String file : argv) {
-				System.out.println("start AccessLog.main ... file=" + file);
-				HashMap<String, AccessLogSummary> map = new HashMap<>();
-				Files.lines(Paths.get(file), StandardCharsets.UTF_8)
-						.filter(AccessLog::test)
-						.map(AccessLog::parse)
-						.forEach(b -> {
-							AccessLogSummary als = map.get(b.getAddr().toString());
-							if (als == null) {
-								als = new AccessLogSummary(b, null);
-								map.put(b.getAddr().toString(), als);
-							}
-							System.out.println("log=" + b);
-						});
-				System.out.println("end AccessLog.main ...");
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("AccessLog.main ... end");
-	}
 }

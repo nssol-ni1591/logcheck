@@ -24,17 +24,33 @@ public class IspBean<E> implements Comparable<IspBean<E>> {
 
 	@Override
 	public int compareTo(IspBean<E> o) {
-		// TODO Auto-generated method stub
 		int rc = country.compareTo(o.getCountry());
 		if (rc != 0) {
 			return rc;
 		}
 		return name.compareTo(o.getName());
 	}
-
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o != null && this.getClass() == o.getClass()) {
+			@SuppressWarnings("unchecked")
+			IspBean<E> bean = (IspBean<E>)o;
+			return compareTo(bean) == 0;
+		}
+		return false;
+	}
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	@Override
 	public String toString() {
 		return name;
 	}
+
 	public String toStringWithAddress() {
 		return toString() + " " + ref.toString();
 	}

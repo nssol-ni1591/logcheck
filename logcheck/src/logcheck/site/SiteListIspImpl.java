@@ -53,18 +53,19 @@ public class SiteListIspImpl extends IspListImpl implements SiteListIsp {
 	public String getProjDelFlag() {
 		return projDelFlag;
 	}
-	@Override
-	public String getCountry() {
-		return super.getCountry();
-	}
-	@Override
-	public String getName() {
-		return super.getName();
-	}
 
+	@Override
+	public boolean equals(Object o) {
+		return super.equals(o);
+	}
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
 	@Override
 	public String toString() {
 		return String.format("siteId=%s, projId=%s, del=%s%s, addrs=[%s]", 
 				getSiteId(), getProjId(), getSiteDelFlag(), getProjDelFlag(), getAddress());
 	}
+
 }

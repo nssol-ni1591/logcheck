@@ -5,11 +5,14 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import javax.enterprise.inject.Alternative;
+import javax.inject.Inject;
 
 import logcheck.annotations.WithElaps;
 import logcheck.site.SiteList;
@@ -22,22 +25,25 @@ import logcheck.site.SiteListIspImpl;
 @Alternative
 public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteList {
 
-	//@Inject private Logger log;
-	private static Logger log = Logger.getLogger(TsvSiteList.class.getName());
+	@Inject private Logger log;
 
 	private static final long serialVersionUID = 1L;
 
-	public static String PATTERN = "(PRJ_[\\w_]+)\t(.+)\t(.+)\t([\\d\\.～\\/]+)\t([\\d+\\.\\d+\\.\\d+\\.\\d+]+)\t([\\d+\\.\\d+\\.\\d+\\.\\d+]+)";
+	public static final String PATTERN = "(PRJ_[\\w_]+)\t(.+)\t(.+)\t([\\d\\.～\\/]+)\t([\\d+\\.\\d+\\.\\d+\\.\\d+]+)\t([\\d+\\.\\d+\\.\\d+\\.\\d+]+)";
 
 	public TsvSiteList() {
 		super(200);
+		if (log == null) {
+			// logのインスタンスが生成できないため
+			log = Logger.getLogger(TsvSiteList.class.getName());
+		}
 	}
 
 	@WithElaps
 	public SiteList load(String file) throws IOException {
-		Files.lines(Paths.get(file), Charset.forName("MS932"))
-				.filter(s -> test(s))
-				.map(s -> parse(s))
+		try (Stream<String> input = Files.lines(Paths.get(file), Charset.forName("MS932"))) {
+			input.filter(this::test)
+				.map(this::parse)
 				.forEach(b -> {
 					SiteListIsp site = this.get(b.getProjId());
 					if (site == null) {
@@ -46,6 +52,7 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 					}
 					site.addAddress(b.getMagIp());
 				});
+		}
 		return this;
 	}
 
@@ -66,9 +73,7 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 		if (array.length > 3) {
 			siteName = array[3];
 		}
-//		if (array.length > 4) {
-//			projIp = array[4];
-//		}
+		// 4番目は使用しない
 		if (array.length > 5) {
 			magIp = array[5];
 		}
@@ -89,7 +94,7 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 		Matcher m = p.matcher(s);
 		boolean rc = m.find();
 		if (!rc) {
-			log.warning("(インターネット経由接続先): s=\"" + s.trim() + "\"");
+			log.log(Level.WARNING, "(インターネット経由接続先): s=\"{0}\"", s.trim());
 		}
 
 		String[] array = s.split("\t");
@@ -102,20 +107,13 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 		return rc;
 	}
 
-	public static void main(String... argv) {
-		System.out.println("start TsvMagList.main ...");
-		TsvSiteList map = new TsvSiteList();
-		try {
-			map.load(argv[0]);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		for (String name : map.keySet()) {
-			SiteListIsp c = map.get(name);
-			System.out.println(name + "=" + c.getAddress());
-		}
-		System.out.println("TsvMagList.main ... end");
+	@Override
+	public boolean equals(Object o) {
+		return super.equals(o);
 	}
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
 }

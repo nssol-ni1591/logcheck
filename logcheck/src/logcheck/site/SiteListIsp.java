@@ -10,31 +10,11 @@ public interface SiteListIsp extends IspList {
 	default String getSiteId() {
 		return null;
 	}
-//	default String getSiteName() {
-//		return "-";
-//	}
 
 	String getSiteName();
 	String getSiteDelFlag();
 	String getProjId();
 	String getProjDelFlag();
-
-//	default String getSiteDelFlag() {
-//		return "-1";
-//	}
-//	default String getProjId() {
-//		return "-";
-//	}
-//	default String getProjDelFlag() {
-//		return "-1";
-//	}
-
-//	default String getCountry() {
-//		return "-";
-//	}
-//	default String getName() {
-//		return "-";
-//	}
 
 	default Set<NetAddr> getAddress() {
 		throw new IllegalArgumentException("don't use");

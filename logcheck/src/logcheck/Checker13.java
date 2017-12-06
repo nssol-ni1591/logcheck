@@ -10,9 +10,6 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import org.jboss.weld.environment.se.Weld;
-import org.jboss.weld.environment.se.WeldContainer;
-
 import logcheck.isp.Isp;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
@@ -20,6 +17,7 @@ import logcheck.log.AccessLog;
 import logcheck.log.AccessLogBean;
 import logcheck.mag.MagList;
 import logcheck.util.net.NetAddr;
+import logcheck.util.weld.WeldWrapper;
 
 /*
  * 利用申請外接続の検索処理：その2
@@ -31,14 +29,11 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-//	private final Map<String, Map<Isp, List<AccessLogBean>>> map = new TreeMap<>();
+	private static final Pattern IP_RANGE_PATTERN = Pattern.compile("Testing Source IP realm restrictions failed for [\\S ]*/NSSDC-Auth\\d(\\(\\w+\\))? *");
 
-	private static final Pattern IP_RANGE_PATTERN = Pattern.compile("Testing Source IP realm restrictions failed for /NSSDC-Auth1 *");
-
-	public Checker13 init(String knownfile, String magfile) throws Exception {
-		this.knownlist.load(knownfile);
-		this.maglist.load(magfile);
-		return this;
+	public void init(String...argv) throws Exception {
+		this.knownlist.load(argv[0]);
+		this.maglist.load(argv[1]);
 	}
 
 	@Override
@@ -67,7 +62,7 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 
 						addrmap = ispmap.get(isp);
 						if (addrmap == null) {
-							addrmap = new ArrayList<AccessLogBean>();
+							addrmap = new ArrayList<>();
 							ispmap.put(isp, addrmap);
 						}
 
@@ -83,35 +78,21 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 	@Override
 	public void report(final PrintWriter out, final Map<String, Map<Isp, List<AccessLogBean>>> map) {
 		out.println("国\tISP/プロジェクト\tアドレス\t日時");
-		map.forEach((country, ispmap) -> {
-			ispmap.forEach((isp, addrmap) -> {
-				addrmap.forEach((msg) -> {
+		map.forEach((country, ispmap) -> 
+			ispmap.forEach((isp, addrmap) -> 
+				addrmap.forEach(msg -> 
 					out.println(new StringBuilder(country)
 							.append("\t").append(isp.getName())
 							.append("\t").append(msg.getAddr())
 							.append("\t").append(msg.getDate())
-							);
-				});
-			});
-		});
+							)
+				)
+			)
+		);
 	}
 
 	public static void main(String... argv) {
-		if (argv.length < 2) {
-			System.err.println("usage: java logcheck.Checker13 knownlist maglist [accesslog...]");
-			System.exit(1);
-		}
-
-		int rc = 0;
-		Weld weld = new Weld();
-		try (WeldContainer container = weld.initialize()) {
-			Checker13 application = container.instance().select(Checker13.class).get();
-			application.init(argv[0], argv[1]).start(argv, 2);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace(System.err);
-			rc = 1;
-		}
+		int rc = new WeldWrapper<Checker13>(Checker13.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

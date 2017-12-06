@@ -9,15 +9,13 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import org.jboss.weld.environment.se.Weld;
-import org.jboss.weld.environment.se.WeldContainer;
-
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
 import logcheck.log.AccessLogSummary;
 import logcheck.mag.MagList;
 import logcheck.util.net.NetAddr;
+import logcheck.util.weld.WeldWrapper;
 
 /*
  * ユーザ認証ログ突合せ処理：
@@ -32,19 +30,15 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-//	private final List<AccessLogSummary> list = new Vector<>(1000);
-
 	private static final Pattern[] AUTH_PATTERNS = {
 			Pattern.compile("Primary authentication successful for [\\S ]+ from [\\d\\.]+"),
-//			Pattern.compile("Primary authentication failed for [\\S ]+ from \\S+"),
-			Pattern.compile("Login failed using auth server NSSDC_LDAP \\(LDAP Server\\).  Reason: Failed"),
-			Pattern.compile("Login failed using auth server NSSDC_LDAP \\(LDAP Server\\).  Reason: Short Password"),
+			Pattern.compile("Login failed using auth server (NSSDC_LDAP|SDC-AD) \\([\\w ]+\\).  Reason: Failed"),
+			Pattern.compile("Login failed using auth server (NSSDC_LDAP|SDC-AD) \\([\\w ]+\\).  Reason: Short Password"),
 	};
 
-	public Checker10 init(String knownfile, String magfile) throws Exception {
-		this.knownlist.load(knownfile);
-		this.maglist.load(magfile);
-		return this;
+	public void init(String...argv) throws Exception {
+		this.knownlist.load(argv[0]);
+		this.maglist.load(argv[1]);
 	}
 
 	@Override
@@ -104,6 +98,7 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 								}
 
 								if (!"".equals(msg.getReason()) && !msg.getReason().endsWith("（※）：")) {
+									// すでに"（※）"で終わらない原因が設定されている場合は置換を行わない
 								}
 								else if (msg.getAddr().equals(b.getAddr()) && msg.getId().equals(b.getId())) {
 									// アドレスもユーザIDも一致している場合
@@ -148,7 +143,7 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 	@Override
 	public void report(final PrintWriter out, final List<AccessLogSummary> list) {
 		out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\t参考ユーザID\tエラー回数\t想定される原因\t詳細");
-		list.forEach(msg -> {
+		list.forEach(msg -> 
 			out.println(new StringBuilder(msg.getFirstDate())
 					.append("\t").append(msg.getIsp().getCountry())
 					.append("\t").append(msg.getIsp().getName())
@@ -158,26 +153,12 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 					.append("\t").append(msg.getCount())
 					.append("\t").append(msg.getReason())
 					.append("\t").append(msg.getDetail())
-					);
-		});
+					)
+		);
 	}
 
 	public static void main(String... argv) {
-		if (argv.length < 2) {
-			System.err.println("usage: java logcheck.Checker10 knownlist maglist [accesslog...]");
-			System.exit(1);
-		}
-
-		int rc = 0;
-		Weld weld = new Weld();
-		try (WeldContainer container = weld.initialize()) {
-			Checker10 application = container.instance().select(Checker10.class).get();
-			application.init(argv[0], argv[1]).start(argv, 2);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace(System.err);
-			rc = 1;
-		}
+		int rc = new WeldWrapper<Checker10>(Checker10.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

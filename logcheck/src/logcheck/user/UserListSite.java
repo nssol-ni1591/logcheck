@@ -13,11 +13,9 @@ public class UserListSite extends Summary<SiteListIsp> {
 	private final String userDelFlag;
 
 	public UserListSite(SiteListIsp site, String userDelFlag) {
-//	public UserListSite(SiteListIsp site) {
 		super(site);
 		this.userDelFlag = userDelFlag;
 	}
-//	public UserListSite(KnownListIsp isp, String userDelFlag) {
 	public UserListSite(KnownListIsp isp) {
 		super(new SiteListKnownIsp(isp));
 		this.userDelFlag = "-1";

@@ -9,9 +9,6 @@ import java.util.stream.Stream;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 
-import org.jboss.weld.environment.se.Weld;
-import org.jboss.weld.environment.se.WeldContainer;
-
 import logcheck.annotations.UseChecker14;
 import logcheck.known.KnownList;
 import logcheck.known.KnownListIsp;
@@ -22,6 +19,7 @@ import logcheck.site.SiteListIspImpl;
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
 import logcheck.user.UserListSite;
+import logcheck.util.weld.WeldWrapper;
 
 /*
  * ユーザの利用状況を取得する：
@@ -38,15 +36,12 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 	@Inject private Logger log;
 
 	private static final Pattern AUTH_PATTERN = 
-//			Pattern.compile("Certificate realm restrictions successfully passed for [\\S ]+ , with certificate 'CN=(Z\\w+), [\\S ]+'")
-			Pattern.compile("VPN Tunneling: Session started for user with IPv4 address ([\\w\\.]+), hostname ([\\S]+)")
-			;
+			Pattern.compile("VPN Tunneling: Session started for user with IPv4 address ([\\w\\.]+), hostname ([\\S]+)");
 
-	public Checker14 init(String knownfile, String sslindex) throws Exception {
-		this.knownlist.load(knownfile);
+	public void init(String...argv) throws Exception {
+		this.knownlist.load(argv[0]);
 		this.sitelist.load(null);
-		this.userlist.load(sslindex, sitelist);
-		return this;
+		this.userlist.load(argv[1], sitelist);
 	}
 
 	@Override
@@ -58,10 +53,6 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 				.filter(b -> b.getId().startsWith("Z"))
 				.forEach(b -> {
 					String userId = null;
-//					Matcher m = AUTH_PATTERN.matcher("   " + b.getMsg()); // 1文字目が欠ける対策
-//					if (m.find(1)) {
-//						userId = m.group(1);
-//					}
 					userId = b.getId();
 
 					UserListBean user = userlist.get(userId);
@@ -92,7 +83,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 							log.config(String.format("user=%s, isp=%s", user, isp));
 						}
 						else {
-							if (b.getRoles() == null || b.getRoles().length < 2) {
+							if (/*b.getRoles() == null || */b.getRoles().length < 2) {
 								site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[0]), "-1");
 							}
 							else {
@@ -134,7 +125,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 							);
 				}
 				else {
-					user.getSites().forEach(site -> {
+					user.getSites().forEach(site ->
 						out.println(new StringBuilder(user.getUserId())
 								.append("\t").append(site.getCountry())
 								.append("\t").append(site.getProjId())
@@ -148,31 +139,21 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 								.append("\t").append(site.getCount())
 								.append("\t").append(user.getRevoce())
 								.append("\t").append(user.getTotal())
-								);
-					});
+								)
+					);
 				}
 			});
 	}
 
-	public static void main(String... argv) {
-		if (argv.length < 2) {
-			System.err.println("usage: java logcheck.Checker14 knownlist sslindex [accesslog...]");
-			System.exit(1);
-		}
+	@Override
+	public String usage(String name) {
+		return String.format("usage: java %s knownlist sslindex [accesslog...]", name);
+	}
 
-		int rc = 0;
-		Weld weld = new Weld();
-		try (WeldContainer container = weld.initialize()) {
-//			Checker14 application = container.instance().select(Checker14.class).get();
-			Checker14 application = container.instance().select(Checker14.class, new AnnotationLiteral<UseChecker14>(){
-				private static final long serialVersionUID = 1L;
-			}).get();
-			application.init(argv[0], argv[1]).start(argv, 2);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace(System.err);
-			rc = 1;
-		}
+	public static void main(String... argv) {
+		int rc = new WeldWrapper<Checker14>(Checker14.class).weld(new AnnotationLiteral<UseChecker14>(){
+			private static final long serialVersionUID = 1L;
+		}, 2, argv);
 		System.exit(rc);
 	}
 }
