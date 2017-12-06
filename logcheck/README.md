@@ -1,4 +1,6 @@
 [2017/11/20]
+・不具合修正：
+・Weld処理クラス追加：
 ・Checker25追加：Checker24は削除
 ・SonarQubeの指摘事項の修正
 ・JUnit対応+カバレッジ取得

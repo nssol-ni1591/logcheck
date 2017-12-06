@@ -87,12 +87,21 @@ public class UserListBean implements Comparable<UserListBean> {
 	}
 
 	public String getProjDelFlag() {
+		if (sites.stream().allMatch(site -> "-1".equals(site.getProjDelFlag()))) {
+			return "-1";
+		}
 		return sites.stream().anyMatch(site -> "0".equals(site.getProjDelFlag())) ? "0" : "1";
 	}
 	public String getSiteDelFlag() {
+		if (sites.stream().allMatch(site -> "-1".equals(site.getSiteDelFlag()))) {
+			return "-1";
+		}
 		return sites.stream().anyMatch(site -> "0".equals(site.getSiteDelFlag())) ? "0" : "1";
 	}
 	public String getUserDelFlag() {
+		if (sites.stream().allMatch(site -> "-1".equals(site.getUserDelFlag()))) {
+			return "-1";
+		}
 		return sites.stream().anyMatch(site -> "0".equals(site.getUserDelFlag())) ? "0" : "1";
 	}
 	public String getFirstDate() {
