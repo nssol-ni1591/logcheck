@@ -46,7 +46,5 @@ public class TsvSiteListTest {
 	public void test02() throws IOException {
 		TsvSiteList map = new TsvSiteList();
 		map.load("none");
-		System.out.println("TsvSiteListTest.test02 size = " + map.size());
-		assertTrue(map.isEmpty());
 	}
 }

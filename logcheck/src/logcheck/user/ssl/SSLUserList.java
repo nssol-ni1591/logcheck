@@ -7,7 +7,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
@@ -127,10 +126,11 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 								while (frs.next()) {
 									String siteId = frs.getString(1);
 									String userDelFlag = frs.getString(3);
-									Timestamp d = frs.getTimestamp(4);
 									String endDate = "";
-									if (d != null) {
-										endDate = dateFormat.format(d);
+									// OracleFilteredRowSet#getTimestampはTimestampをサポートしていないため
+									Object o = frs.getObject(4);
+									if (o != null) {
+										endDate = dateFormat.format(((oracle.sql.TIMESTAMP)o).timestampValue());
 									}
 
 									status = true;

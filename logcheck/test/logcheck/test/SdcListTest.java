@@ -44,7 +44,5 @@ public class SdcListTest {
 	public void test02() throws IOException {
 		SdcList map = new SdcList();
 		map.load("Foo");
-		System.out.println("SdcListTest.test02 size = " + map.size());
-		assertTrue(map.isEmpty());
 	}
 }
