@@ -7,6 +7,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,9 +41,11 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 	@Inject Logger log;
 
 	private static final long serialVersionUID = 1L;
+	private static final String TIME_FORMAT = "yyyy/MM/dd HH:mm:ss";
+	private static final DateFormat dateFormat = new SimpleDateFormat(TIME_FORMAT);
 
 	public static final String SQL_ZUSER =
-			"select u.site_id, u.user_id, u.delete_flag"
+			"select u.site_id, u.user_id, u.delete_flag, u.end_date"
 			+ " from sas_prj_site_user u"
 			+ " where u.user_id like 'Z%'"
 //	証明書が有効なユーザに関する情報を取得する。その際、過去のPRJは考慮しない
@@ -122,6 +127,11 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 								while (frs.next()) {
 									String siteId = frs.getString(1);
 									String userDelFlag = frs.getString(3);
+									Timestamp d = frs.getTimestamp(4);
+									String endDate = "";
+									if (d != null) {
+										endDate = dateFormat.format(d);
+									}
 
 									status = true;
 
@@ -132,7 +142,7 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 
 									SiteListIsp siteBean = sitelist.get(siteId);
 									if (siteBean != null) {
-										UserListSite site = new UserListSite(siteBean, userDelFlag);
+										UserListSite site = new UserListSite(siteBean, userDelFlag, endDate);
 										bean.addSite(site);
 									}
 									else {

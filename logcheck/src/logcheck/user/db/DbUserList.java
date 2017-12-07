@@ -3,6 +3,9 @@ package logcheck.user.db;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,10 +32,12 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 
 	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_IP = "0.0.0.0";
+	private static final String TIME_FORMAT = "yyyy/MM/dd HH:mm:ss";
+	private static final DateFormat dateFormat = new SimpleDateFormat(TIME_FORMAT);
 
 	public static final String SQL_ZUSER = 
 			"select p.prj_id, p.delete_flag, s.site_id, s.site_name, s.delete_flag, g.site_gip"
-					+ " , u.user_id, u.delete_flag, l.valid_flg"
+					+ " , u.user_id, u.delete_flag, l.valid_flg, u.end_date"
 					+ " from mst_project p"
 					+ " , sas_prj_site_info s left outer join sas_site_gip  g on s.site_id = g.site_id"
 					+ " , sas_prj_site_user u, user_ssl_info l"
@@ -74,6 +79,11 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 				String userId = rs.getString(7);
 				String userDelFlag = rs.getString(8);
 				String validFlag = rs.getString(9);
+				Timestamp d = rs.getTimestamp(10);
+				String endDate = "";
+				if (d != null) {
+					endDate = dateFormat.format(d);
+				}
 
 				UserListBean bean = this.get(userId);
 				if (bean == null) {
@@ -90,7 +100,7 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 				UserListSite site = bean.getSite(siteId);
 				if (site == null) {
 					SiteListIsp siteBean = new SiteListIspImpl(siteId, siteName, siteDelFlag, projId, projDelFlag);
-					site = new UserListSite(siteBean, userDelFlag);
+					site = new UserListSite(siteBean, userDelFlag, endDate);
 					bean.addSite(site);
 				}
 				site.addAddress(globalIp);

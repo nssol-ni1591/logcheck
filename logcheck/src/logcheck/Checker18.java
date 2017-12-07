@@ -18,7 +18,7 @@ public class Checker18 extends Checker14 {
 		// アドレスを出力してはいけない。拠点ごとに回数を取得しているのに、アドレスを出力すると、回数は実際の値のアドレス数の倍になる
 		out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効"
 				+ "\t初回日時\t最終日時\t接続回数\t失効日時"
-				+ "\t接続回数集計\tプロジェクト削除集計\t拠点削除集計\tユーザ削除集計");
+				+ "\t接続回数集計\tプロジェクト削除集計\t拠点削除集計\tユーザ削除集計\t終了日時");
 		userlist.values().stream()
 			.forEach(user -> {
 				if (user.getSites().isEmpty()) {
@@ -38,13 +38,10 @@ public class Checker18 extends Checker14 {
 							.append("\t").append("-1")
 							.append("\t").append("-1")
 							.append("\t").append("-1")
+							.append("\t").append("")
 							);
 				}
 				else {
-					int total = user.getTotal();
-					String projDelFlag = user.getProjDelFlag();
-					String siteDelFlag = user.getSiteDelFlag();
-					String userDelFlag = user.getUserDelFlag();
 					user.getSites().forEach(site -> 
 						out.println(new StringBuilder(user.getUserId())
 								.append("\t").append(site.getCountry())
@@ -58,10 +55,11 @@ public class Checker18 extends Checker14 {
 								.append("\t").append(site.getLastDate())
 								.append("\t").append(site.getCount())
 								.append("\t").append(user.getRevoce())
-								.append("\t").append(total)
-								.append("\t").append(projDelFlag)
-								.append("\t").append(siteDelFlag)
-								.append("\t").append(userDelFlag)
+								.append("\t").append(user.getTotal())
+								.append("\t").append(user.getProjDelFlag())
+								.append("\t").append(user.getSiteDelFlag())
+								.append("\t").append(user.getUserDelFlag())
+								.append("\t").append(site.getEndDate())
 								)
 					);
 				}

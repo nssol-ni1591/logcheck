@@ -84,10 +84,10 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 						}
 						else {
 							if (/*b.getRoles() == null || */b.getRoles().length < 2) {
-								site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[0]), "-1");
+								site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[0]), "-1", "");
 							}
 							else {
-								site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[1]), "-1");
+								site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[1]), "-1", "");
 							}
 							site.addAddress(b.getAddr().toString());
 							user.addSite(site);
@@ -151,7 +151,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper<Checker14>(Checker14.class).weld(new AnnotationLiteral<UseChecker14>(){
+		int rc = new WeldWrapper<Checker14>(Checker14.class).weld(new AnnotationLiteral<UseChecker14>() {
 			private static final long serialVersionUID = 1L;
 		}, 2, argv);
 		System.exit(rc);
