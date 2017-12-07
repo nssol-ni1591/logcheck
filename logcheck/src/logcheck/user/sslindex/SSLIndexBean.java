@@ -1,10 +1,5 @@
 package logcheck.user.sslindex;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
 public class SSLIndexBean {
 
@@ -15,7 +10,7 @@ public class SSLIndexBean {
 	private final String filename;
 	private final String userId;
 
-	@Inject private Logger log;
+//	@Inject private Logger log;
 
 	public SSLIndexBean(String flag
 			, String expire
@@ -32,10 +27,6 @@ public class SSLIndexBean {
 		this.userId = userId;
 	}
 
-	@PostConstruct
-	public void init() {
-		log.log(Level.FINE, "SSLIndex={0}", toString());
-	}
 	public String getFlag() {
 		return flag;
 	}
