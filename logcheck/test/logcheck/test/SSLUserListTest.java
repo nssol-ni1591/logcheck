@@ -28,7 +28,7 @@ public class SSLUserListTest {
 	@Test
 	public void test01() throws Exception {
 		SSLUserList map = new SSLUserList();
-		map.load("C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\xls\\index.txt", new DbSiteList().load(null));
+		map.load(Env.SSLINDEX, new DbSiteList().load(null));
 		System.out.println("size=" + map.size());
 		assertFalse(map.isEmpty());
 

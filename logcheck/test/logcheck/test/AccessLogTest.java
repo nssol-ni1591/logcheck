@@ -47,9 +47,9 @@ public class AccessLogTest {
 
 	@Test
 	public void test01() {
-		Map<String, AccessLogSummary> map = test.load("C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\VPN-LOG\\20171021.log");
+		Map<String, AccessLogSummary> map = test.load(Env.VPNLOG);
 		System.out.println("size=" + map.size());
-		assumeTrue("log's count is 73", map.size() == 73);
+		assumeTrue("log's count is 35", map.size() == 35);
 
 		for (AccessLogSummary sum : map.values()) {
 			assertNotNull("getAddr() is null", sum.getAddr());

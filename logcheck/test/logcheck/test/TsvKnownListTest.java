@@ -45,7 +45,7 @@ public class TsvKnownListTest {
 	public void test01() throws IOException {
 		// TsvKnownList はAlternativeによりWeld環境では使用できない?
 		KnownList map = new TsvKnownList();
-		map.load("C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\xls\\既知ISP_IPアドレス一覧.txt");
+		map.load(Env.KNOWNLIST);
 		System.out.println("TsvKnownListTest.test01: size=" + map.size());
 		assertFalse(map.isEmpty());
 

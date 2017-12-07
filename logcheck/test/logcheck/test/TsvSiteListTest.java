@@ -28,7 +28,7 @@ public class TsvSiteListTest {
 	@Test
 	public void test01() throws IOException {
 		TsvSiteList map = new TsvSiteList();
-		map.load("C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\xls\\maglist.txt");
+		map.load(Env.MAGLIST);
 		System.out.println("TsvSiteListTest.test01 size = " + map.size());
 		assertFalse(map.isEmpty());
 
