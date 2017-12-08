@@ -32,8 +32,8 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 
 	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_IP = "0.0.0.0";
-	private static final String TIME_FORMAT = "yyyy/MM/dd HH:mm:ss";
-	private static final DateFormat dateFormat = new SimpleDateFormat(TIME_FORMAT);
+	private final String TIME_FORMAT = "yyyy/MM/dd HH:mm:ss";
+	private final DateFormat dateFormat = new SimpleDateFormat(TIME_FORMAT);
 
 	public static final String SQL_ZUSER = 
 			"select p.prj_id, p.delete_flag, s.site_id, s.site_name, s.delete_flag, g.site_gip"
