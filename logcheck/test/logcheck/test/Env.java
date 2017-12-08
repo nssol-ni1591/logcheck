@@ -16,9 +16,13 @@ public class Env {
 	public static String SSLINDEX;
 
 	static {
+		/*
 		String env = System.getProperty("env", "dev");
 		Properties props = new Properties();
 		InputStream is = FwLogTest.class.getResourceAsStream("/resources/" + env + ".properties");
+		*/
+		Properties props = new Properties();
+		InputStream is = FwLogTest.class.getResourceAsStream("/resources/conf.properties");
 		
 		try {
 			if (is != null) {
