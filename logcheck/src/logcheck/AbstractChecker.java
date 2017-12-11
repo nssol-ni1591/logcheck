@@ -45,15 +45,17 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 	protected static final Pattern[] FAIL_PATTERNS = {
 			Pattern.compile("Account disabled by password management on auth server '[\\S]+'"),	// 前：Primary authentication failed for ...
 			Pattern.compile("Host Checker policy 'MAC_Address_Filter' failed on host .+"),	// 単独で発生
-			Pattern.compile("Login failed using auth server (NSSDC_LDAP|SDC-AD) \\([\\w ]+\\).  Reason: Failed"),		// 後："Primary authentication failed for [\\S ]+ from \\S+"
-			Pattern.compile("Login failed using auth server (NSSDC_LDAP|SDC-AD) \\([\\w ]+\\).  Reason: Short Password"),//　後："Testing Password realm restrictions failed for [\\S ]+ , with certificate '[\\w ,=-]+' *"
+			Pattern.compile("Login failed using auth server (NSSDC_LDAP|SDC-AD) \\([\\w ]+\\)\\.  Reason: Failed"),		// 後："Primary authentication failed for [\\S ]+ from \\S+"
+			Pattern.compile("Login failed using auth server (NSSDC_LDAP|SDC-AD) \\([\\w ]+\\)\\.  Reason: Short Password"),//　後："Testing Password realm restrictions failed for [\\S ]+ , with certificate '[\\w ,=-]+' *"
+			Pattern.compile("Login failed using auth server NSSDC-Auth3\\(AD\\)\\.  Reason: SDC-AD"),		// 後："Primary authentication failed for [\\S ]+ from \\S+"
 			Pattern.compile("Login failed.  Reason: Failed"),								// 単独で発生
 			Pattern.compile("Login failed.  Reason: IP Denied"),							// 前："Testing Source IP realm restrictions failed for \\w+/NSSDC-Auth1 *"
 			Pattern.compile("Login failed.  Reason: No Certificate"),						// 後："Testing Certificate realm restrictions failed for [\\w\\.]*/NSSDC-Auth(1|2)(\\(MAC\\))? *"
 			Pattern.compile("Login failed.  Reason: No Roles"),								// 単独
 			Pattern.compile("Login failed.  Reason: Revoked Certificate"),					//　後："Testing Certificate realm restrictions failed for [\\w\\.]*/NSSDC-Auth(1|2)(\\(MAC\\))? , with certificate '[\\w ,=-]+' *"
+//			Pattern.compile("Login failed.  Reason: Revoked SDC-AD"),						//　後："NSSDC-Auth3(AD) authentication failed for /Primary from ..."
 			Pattern.compile("Login failed.  Reason: Wrong Certificate::unable to get certificate CRL"),	//　2017-10-26追加: 後："Testing Certificate realm restrictions failed for [\\w\\.]*/NSSDC-Auth(1|2)(\\(MAC\\))? , with certificate '[\\w ,=-]+' unable to get certificate CRL"
-			Pattern.compile("Login failed \\((NSSDC_LDAP|SDC-AD)\\).  Reason: LDAP Server"),			// 後： authentication failed for Primary/Z06290  from NSSDC_LDAP
+			Pattern.compile("Login failed \\((NSSDC_LDAP|SDC-AD)\\)\\.  Reason: (LDAP Server|SDC-AD|Active Directory)"),			// 後： authentication failed for Primary/Z06290  from NSSDC_LDAP
 			Pattern.compile("Could not connect to LDAP server '(NSSDC_LDAP|SDC-AD)': Failed binding to admin DN: \\[\\d+\\] Can't contact LDAP server: [\\d\\.:]+ [\\d\\.:]+"),
 	};
 	protected static final Pattern[] FAIL_PATTERNS_DUP = {
@@ -62,7 +64,8 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 			Pattern.compile("Active Directory authentication server '[\\S]+' : Received NTSTATUS code '[\\w_]+' \\."),
 			Pattern.compile("Authentication failure for AD server '[\\S]+': specified account does not exist"),	// => Login failed using auth server SDC-AD (Active Directory).  Reason: Failed
 			Pattern.compile("Host Checker policies could not be evaluated on host '[\\d\\.]+' address '[\\w\\-]+'."),	// 後：Host Checker policy ...
-			Pattern.compile("Primary authentication failed for [\\S ]+ from \\S+"),
+			Pattern.compile("(Primary|NSSDC-Auth3\\(AD\\))? authentication failed for [\\S ]+ from [\\S ]+"),
+//			Pattern.compile("(NSSDC-Auth3\\(AD\\))? authentication failed for /Primary from [\\S ]+"),
 //			Pattern.compile("Testing Certificate realm restrictions failed for [\\S ]*/NSSDC-Auth(1|2\\(MAC\\)|3\\(AD\\)|4\\(AD_MAC\\)) *"),
 //			Pattern.compile("Testing Certificate realm restrictions failed for [\\S ]*/NSSDC-Auth(1|2\\(MAC\\)|3\\(AD\\)|4\\(AD_MAC\\)) , with certificate '[\\w ,=-]+' *"),
 			Pattern.compile("Testing Certificate realm restrictions failed for [\\S ]*/NSSDC-Auth(1|2\\(MAC\\)|3\\(AD\\)|4\\(AD_MAC\\)) (, with certificate '[\\w ,=-]+')? "),
