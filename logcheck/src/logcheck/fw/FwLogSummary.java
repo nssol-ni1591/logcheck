@@ -79,13 +79,6 @@ public class FwLogSummary extends Summary<FwLogBean> implements Comparable<FwLog
 		return 0;
 
 	}
-	/*
-	equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめる
-	*/
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -96,6 +89,11 @@ public class FwLogSummary extends Summary<FwLogBean> implements Comparable<FwLog
 			return compareTo(summary) == 0;
 		}
 		return false;
+	}
+	// equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめる
+	@Override
+	public int hashCode() {
+		return super.hashCode();
 	}
 	@Override
 	public String toString() {

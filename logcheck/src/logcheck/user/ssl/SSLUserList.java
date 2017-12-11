@@ -60,39 +60,6 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 		}
 	}
 
-	private SSLIndexBean parse(String s) {
-		String[] array = s.split("\t");
-		String flag = array[0];
-		String expire = array[1];
-		String revoce = array[2];
-		String serial = array[3];
-		String filename = array[4];
-
-		int pos = array[5].indexOf("/CN=");
-		String userId = array[5].substring(pos + 4, array[5].length());
-
-		return new SSLIndexBean(flag, expire, revoce, serial, filename, userId);
-	}
-	private boolean test(String s) {
-		boolean rc = false;
-		String[] array = s.split("\t");
-		if (array.length == 6) {
-			int pos = s.indexOf("/CN=");
-			if (pos >= 0) {
-				rc = true;
-			}
-		}
-
-		if (!rc) {
-			log.log(Level.WARNING, "(SSLインデックス): s=\"{0}\"", s.trim());
-		}
-		// 対象をZユーザに絞る
-		if (!s.contains("/CN=Z")) {
-			rc = false;
-		}
-		return rc;
-	}
-
 	@WithElaps
 	public SSLUserList load(String file, SiteList sitelist) throws Exception {
 
@@ -112,8 +79,8 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 
 			try (Stream<String> input = Files.lines(Paths.get(file), Charset.forName("utf-8")))
 			{
-				input.filter(this::test)
-					.map(this::parse)
+				input.filter(SSLIndexBean::test)
+					.map(SSLIndexBean::parse)
 					.forEach(b -> {
 						boolean status = false;
 						UserListBean bean = this.get(b.getUserId());
