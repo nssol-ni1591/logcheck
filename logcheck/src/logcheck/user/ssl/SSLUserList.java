@@ -41,7 +41,6 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 
 	private static final long serialVersionUID = 1L;
 	private static final String TIME_FORMAT = "yyyy/MM/dd HH:mm:ss";
-	private static final DateFormat dateFormat = new SimpleDateFormat(TIME_FORMAT);
 
 	public static final String SQL_ZUSER =
 			"select u.site_id, u.user_id, u.delete_flag, u.end_date"
@@ -130,7 +129,8 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 									// OracleFilteredRowSet#getTimestampはTimestampをサポートしていないため
 									Object o = frs.getObject(4);
 									if (o != null) {
-										endDate = dateFormat.format(((oracle.sql.TIMESTAMP)o).timestampValue());
+										final DateFormat f = new SimpleDateFormat(TIME_FORMAT);
+										endDate = f.format(((oracle.sql.TIMESTAMP)o).timestampValue());
 									}
 
 									status = true;

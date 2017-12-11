@@ -10,8 +10,6 @@ public class SSLIndexBean {
 	private final String filename;
 	private final String userId;
 
-//	@Inject private Logger log;
-
 	public SSLIndexBean(String flag
 			, String expire
 			, String revoce

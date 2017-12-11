@@ -32,8 +32,7 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 
 	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_IP = "0.0.0.0";
-	private final String TIME_FORMAT = "yyyy/MM/dd HH:mm:ss";
-	private final DateFormat dateFormat = new SimpleDateFormat(TIME_FORMAT);
+	private final String TIMEFORMAT = "yyyy/MM/dd HH:mm:ss";
 
 	public static final String SQL_ZUSER = 
 			"select p.prj_id, p.delete_flag, s.site_id, s.site_name, s.delete_flag, g.site_gip"
@@ -82,7 +81,8 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 				Timestamp d = rs.getTimestamp(10);
 				String endDate = "";
 				if (d != null) {
-					endDate = dateFormat.format(d);
+					final DateFormat f = new SimpleDateFormat(TIMEFORMAT);
+					endDate = f.format(d);
 				}
 
 				UserListBean bean = this.get(userId);
