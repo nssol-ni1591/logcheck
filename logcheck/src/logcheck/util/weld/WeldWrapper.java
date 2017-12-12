@@ -26,7 +26,12 @@ public class WeldWrapper<T extends WeldRunner> {
 		int rc = 0;
 		try {
 			if (argv.length < argc) {
-				System.err.println(application.usage(application.getClass().getName()));
+				String name = application.getClass().getName();
+				int index = name.indexOf('$');
+				if (index > 0) {
+					name = name.substring(0, index);
+				}
+				System.err.println(application.usage(name));
 				rc = 2;
 			}
 			else if (!application.check(argc, argv)) {
