@@ -81,6 +81,7 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 			{
 				input.filter(SSLIndexBean::test)
 					.map(SSLIndexBean::parse)
+					.filter(b -> b.getUserId().startsWith("Z"))
 					.forEach(b -> {
 						boolean status = false;
 						UserListBean bean = this.get(b.getUserId());
