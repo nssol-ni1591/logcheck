@@ -33,7 +33,6 @@ public class Checker22 extends Checker8 {
 	protected String getPattern(AccessLogBean b) {
 		Optional<String> rc = Stream.of(ALL_PATTERNS)
 				.filter(p -> p.matcher(b.getMsg()).matches())
-//				.map(p -> p.toString())
 				.map(Pattern::toString)
 				.findFirst();
 		if (rc.isPresent()) {

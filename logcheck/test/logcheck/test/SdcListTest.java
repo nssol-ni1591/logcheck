@@ -28,7 +28,7 @@ public class SdcListTest {
 	@Test
 	public void test01() throws IOException {
 		SdcList map = new SdcList();
-		map.load("C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\xls\\sdclist.txt");
+		map.load(Env.SDCLIST);
 		System.out.println("TsvSiteListTest.test01 size = " + map.size());
 		assertFalse(map.isEmpty());
 
@@ -44,7 +44,5 @@ public class SdcListTest {
 	public void test02() throws IOException {
 		SdcList map = new SdcList();
 		map.load("Foo");
-		System.out.println("SdcListTest.test02 size = " + map.size());
-		assertTrue(map.isEmpty());
 	}
 }

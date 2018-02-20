@@ -50,7 +50,8 @@ public class WhoisTest {
 
 	@Test
 	public void test01() {
-		assertNotNull(getIsp("210.1.29.82"));
+		// ns-sol proxy. 上位プロバイダ[ARTERIA Networks Corporation]
+		assertNotNull(getIsp("113.33.234.133"));
 	}
 	@Test
 	public void test02() {

@@ -36,7 +36,6 @@ public class DbUserListTest {
 		for (String userId : map.keySet()) {
 			UserListBean b = map.get(userId);
 			for (UserListSite sum : b.getSites()) {
-//				System.out.println("userId=" + userId + " (" + b.getValidFlag() + "), sum=[" + sum + "]");
 				sum.getAddress();
 				sum.getCount();
 				sum.getCountry();

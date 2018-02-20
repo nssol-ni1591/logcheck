@@ -9,7 +9,11 @@ public class LogConfig {
 
 	private static final Logger log = Logger.getLogger(LogConfig.class.getName());
 
-	private LogConfig() {
+	public LogConfig() {
+		init();
+	}
+
+	private void init() {
 		try {
 			LogManager.getLogManager().readConfiguration(getClass().getResourceAsStream("/META-INF/logging.properties"));
 			// このクラスと同じパッケージでは無い場合は /myapp/logging.properties など絶対パス指定

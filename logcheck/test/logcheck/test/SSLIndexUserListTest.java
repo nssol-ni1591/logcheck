@@ -25,7 +25,7 @@ public class SSLIndexUserListTest {
 	@Test
 	public void test01() throws IOException {
 		SSLIndexUserList map = new SSLIndexUserList();
-		map = map.load("C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\xls\\index.txt", null);
+		map = map.load(Env.SSLINDEX, null);
 		System.out.println("size=" + map.size());
 		assertFalse(map.isEmpty());
 	}
@@ -34,7 +34,5 @@ public class SSLIndexUserListTest {
 	public void test02() throws IOException {
 		SSLIndexUserList map = new SSLIndexUserList();
 		map = map.load("none", null);
-		System.out.println("size=" + map.size());
-		fail("throw Exception");
 	}
 }

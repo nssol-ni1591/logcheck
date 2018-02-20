@@ -47,7 +47,6 @@ public class AccessLogBean {
 	}
 	public String[] getRoles() {
 		if (roles == null || "".equals(roles)) {
-//			return null;
 			return new String[] {
 				// nothing to do
 			};

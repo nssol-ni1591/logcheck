@@ -13,6 +13,7 @@
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>test</testSourceDirectory>
+
 		<resources>
 			<resource>
 				<directory>src</directory>
@@ -21,6 +22,26 @@
 				</excludes>
 			</resource>
 		</resources>
+
+		<testResources>
+		<!-- 
+			<testResource>
+				<directory>test</directory>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+				<filtering>true</filtering>
+			</testResource>
+		 -->
+			<testResource>
+				<directory>test/resources/${conf}</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</testResource>
+		</testResources>
+
+
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -100,6 +121,7 @@
 		</plugins>
 	</build>
 
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -117,4 +139,25 @@
 			<version>8.0</version>
 		</dependency>
 	</dependencies>
+
+	<!-- 
+	profileはpom.xmlの変数${...}を置換するもので、アーカイブ生成時のファイルを切り替えるみたいな使い方
+	 -->
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<conf>dev</conf>
+			</properties>
+		</profile>
+		<profile>
+			<id>jenkins</id>
+			<properties>
+				<conf>jenkins</conf>
+			</properties>
+		</profile>
+	</profiles>
 </project>

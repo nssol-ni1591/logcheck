@@ -10,19 +10,31 @@ import logcheck.util.net.NetAddr;
 
 public class UserListSite extends Summary<SiteListIsp> {
 
+	/*
+	 * このシステムにおけるDBユーザ情報のプライマリキーは、拠点+ユーザIDなので、拠点側のクラスにDBユーザ情報の属性を保持する
+	 */
 	private final String userDelFlag;
+	private final String endDate;
 
-	public UserListSite(SiteListIsp site, String userDelFlag) {
+	public UserListSite(SiteListIsp site, String userDelFlag, String endDate) {
 		super(site);
 		this.userDelFlag = userDelFlag;
+		this.endDate = endDate;
 	}
+	/*
+	 * ユーザ管理をExcelで行っていた時の遺産
+	 */
 	public UserListSite(KnownListIsp isp) {
 		super(new SiteListKnownIsp(isp));
 		this.userDelFlag = "-1";
+		this.endDate = "";
 	}
 
 	public String getUserDelFlag() {
 		return userDelFlag;
+	}
+	public String getEndDate() {
+		return endDate;
 	}
 
 	public String getCountry() {

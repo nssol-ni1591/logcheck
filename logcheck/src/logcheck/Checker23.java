@@ -76,28 +76,28 @@ public class Checker23 extends AbstractChecker<List<AccessLogSummary>> {
 				.map(AccessLog::parse)
 				.forEach(b -> {
 					String pattern = getPattern(b);
-					NetAddr addr = b.getAddr();
-					IspList isp = maglist.get(addr);
-					if (isp == null) {
-						isp = knownlist.get(addr);
+					AccessLogSummary msg;
+
+					if (INFO_SUMMARY_MSG.equals(pattern)) {
+						// 正常メッセージは出力しない⇒出力データ削減
 					}
-
-					if (isp != null) {
-						AccessLogSummary msg;
-
-						if (INFO_SUMMARY_MSG.equals(pattern)) {
-							// 正常メッセージは出力しない⇒出力データ削減
-						}
-						else if (DUP_FAILED_MSG.equals(pattern)) {
-							// 同一原因のエラーメッセージは出力しない⇒出力データ削減
-						}
-						else {
-							msg = new AccessLogSummary(b, pattern, isp);
-							list.add(msg);
-						}
+					else if (DUP_FAILED_MSG.equals(pattern)) {
+						// 同一原因のエラーメッセージは出力しない⇒出力データ削減
 					}
 					else {
-						addrErrs.add(b.getAddr());
+						// Ispへの変換は出力対象のメッセージの場合だけ実行すればよい
+						NetAddr addr = b.getAddr();
+						IspList isp = maglist.get(addr);
+						if (isp == null) {
+							isp = knownlist.get(addr);
+							if (isp == null) {
+								addrErrs.add(b.getAddr());
+								return;
+							}
+						}
+
+						msg = new AccessLogSummary(b, pattern, isp);
+						list.add(msg);
 					}
 				});
 		return list;

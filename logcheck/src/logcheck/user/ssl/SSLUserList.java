@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,9 +40,10 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 	@Inject Logger log;
 
 	private static final long serialVersionUID = 1L;
+	private static final String TIME_FORMAT = "yyyy/MM/dd HH:mm:ss";
 
 	public static final String SQL_ZUSER =
-			"select u.site_id, u.user_id, u.delete_flag"
+			"select u.site_id, u.user_id, u.delete_flag, u.end_date"
 			+ " from sas_prj_site_user u"
 			+ " where u.user_id like 'Z%'"
 //	証明書が有効なユーザに関する情報を取得する。その際、過去のPRJは考慮しない
@@ -55,39 +58,6 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 			// logのインスタンスが生成できないため
 			log = Logger.getLogger(SSLUserList.class.getName());
 		}
-	}
-
-	private SSLIndexBean parse(String s) {
-		String[] array = s.split("\t");
-		String flag = array[0];
-		String expire = array[1];
-		String revoce = array[2];
-		String serial = array[3];
-		String filename = array[4];
-
-		int pos = array[5].indexOf("/CN=");
-		String userId = array[5].substring(pos + 4, array[5].length());
-
-		return new SSLIndexBean(flag, expire, revoce, serial, filename, userId);
-	}
-	private boolean test(String s) {
-		boolean rc = false;
-		String[] array = s.split("\t");
-		if (array.length == 6) {
-			int pos = s.indexOf("/CN=");
-			if (pos >= 0) {
-				rc = true;
-			}
-		}
-
-		if (!rc) {
-			log.log(Level.WARNING, "(SSLインデックス): s=\"{0}\"", s.trim());
-		}
-		// 対象をZユーザに絞る
-		if (!s.contains("/CN=Z")) {
-			rc = false;
-		}
-		return rc;
 	}
 
 	@WithElaps
@@ -109,8 +79,9 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 
 			try (Stream<String> input = Files.lines(Paths.get(file), Charset.forName("utf-8")))
 			{
-				input.filter(this::test)
-					.map(this::parse)
+				input.filter(SSLIndexBean::test)
+					.map(SSLIndexBean::parse)
+					.filter(b -> b.getUserId().startsWith("Z"))
 					.forEach(b -> {
 						boolean status = false;
 						UserListBean bean = this.get(b.getUserId());
@@ -122,6 +93,13 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 								while (frs.next()) {
 									String siteId = frs.getString(1);
 									String userDelFlag = frs.getString(3);
+									String endDate = "";
+									// OracleFilteredRowSet#getTimestampはTimestampをサポートしていないため
+									Object o = frs.getObject(4);
+									if (o != null) {
+										final DateFormat f = new SimpleDateFormat(TIME_FORMAT);
+										endDate = f.format(((oracle.sql.TIMESTAMP)o).timestampValue());
+									}
 
 									status = true;
 
@@ -132,7 +110,7 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 
 									SiteListIsp siteBean = sitelist.get(siteId);
 									if (siteBean != null) {
-										UserListSite site = new UserListSite(siteBean, userDelFlag);
+										UserListSite site = new UserListSite(siteBean, userDelFlag, endDate);
 										bean.addSite(site);
 									}
 									else {

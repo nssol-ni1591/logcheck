@@ -21,8 +21,8 @@ import org.junit.Test;
 public class FwLogTest {
 
 	@BeforeClass
-	public static void beforeClass() {
-		System.err.println("start FwLogTest ... ");
+	public static void beforeClass() throws IOException {
+		System.err.println("start FwLogTest ...");
 	}
 	@AfterClass
 	public static void aforeClass() {
@@ -65,7 +65,7 @@ public class FwLogTest {
 	@Test
 	public void test01() throws IOException {
 		Map<FwLogBean, FwLogSummary> map = null;
-		map = load("C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\fortigate-LOG\\ForwardTrafficLog-disk-2017-04-21T14-38-26.394251.log");
+		map = load(Env.FWLOG);
 		//map.values().forEach(summary -> System.out.println("log: " + summary));
 
 		// 正常動作なので、ログのコレクションが返却されて正常
