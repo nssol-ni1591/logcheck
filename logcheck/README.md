@@ -1,3 +1,9 @@
+[2017/12/07]
+・jdbc.propertiesにsdclog01経由のDB定義を追加
+・Checker10：正規化の表現のあいまいさを修正
+・Chacker23：処理の高速化。レポート対象でないメッセージのWhois処理をスキップ
+・SonarQubeの指摘事項の修正
+・MavenにJenkins環境を追加。ならびに、Mavenの環境依存部分をprofile対応に変更
 [2017/11/20]
 ・不具合修正：
 ・Weld処理クラス追加：
