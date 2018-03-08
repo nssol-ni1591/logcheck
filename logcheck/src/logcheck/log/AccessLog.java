@@ -64,6 +64,18 @@ public class AccessLog {
 		int pos4 = array[2].indexOf('[', pos3 + 1);
 		ip = array[2].substring(1, pos1);
 		id = array[2].substring(pos2 + 1, pos3);
+		// "SDC\"始まりの場合、以降の処理で都合の悪い場合があるので"SDC\"は削除する
+		if (id.startsWith("SDC\\") && id.length() > 4) {
+			id = id.substring(4);
+		}
+		// 2018/03/08 AccessLogBeanからZユーザの大文字置換を移した
+		/*
+		if (id.startsWith("z")) {
+			id = "Z" + id.substring(1);
+		}
+		*/
+		id = id.toUpperCase();
+
 		role = array[2].substring(pos4 + 1, array[2].length() - 1);
 		msg = new StringBuilder(array[3]);
 		for (int ix = 4; ix < array.length; ix++) {

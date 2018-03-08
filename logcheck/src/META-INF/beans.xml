@@ -21,5 +21,6 @@
 		<class>logcheck.known.net.Whois</class>
 		<class>logcheck.site.db.DbSiteList</class>
 		<class>logcheck.user.ssl.SSLUserList</class>
+		<class>logcheck.proj.db.DbProjList</class>
 	</alternatives>
 </beans>
