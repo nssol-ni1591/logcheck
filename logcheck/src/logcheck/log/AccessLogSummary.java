@@ -84,9 +84,7 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 	public int compareTo(AccessLogSummary o) {
 		return getRef().compareTo(o.getRef());
 	}
-	/*
-	equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめる
-	*/
+	// equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめたいのだが
 	@Override
 	public int hashCode() {
 		return super.hashCode();

@@ -64,19 +64,9 @@ public class DbProjList extends LinkedHashMap<String, ProjListBean> implements P
 			}
 		}
 		catch (SQLException ex) {
-			// TODO: handle exception
 			log.log(Level.SEVERE, "catch SQLException", ex);
 		}
 		return this;
 	}
-	/*
-	@Override
-	public boolean equals(Object o) {
-		return super.equals(o);
-	}
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
-	*/
+
 }

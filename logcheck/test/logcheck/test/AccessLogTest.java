@@ -49,7 +49,7 @@ public class AccessLogTest {
 	public void test01() {
 		Map<String, AccessLogSummary> map = test.load(Env.VPNLOG);
 		System.out.println("size=" + map.size());
-		assumeTrue("log's count is 35", map.size() == 35);
+		assumeTrue(map.size() > 0);
 
 		for (AccessLogSummary sum : map.values()) {
 			assertNotNull("getAddr() is null", sum.getAddr());
@@ -64,5 +64,10 @@ public class AccessLogTest {
 			assertNotNull("getReason() is null", sum.getReason());
 			assertNotNull("getRoles() is null", sum.getRoles());
 		}
+	}
+	@Test
+	public void test02() {
+		Map<String, AccessLogSummary> map = test.load("abc.log");
+		assumeTrue("log's map is empty", map.isEmpty());
 	}
 }

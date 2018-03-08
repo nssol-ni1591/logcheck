@@ -2,6 +2,8 @@ package logcheck.test;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -45,6 +47,12 @@ public class SSLUserListTest {
 			assertNotNull("getLastDate() is null", u.getLastDate());
 			assertFalse("equals(null)", u.equals(null));
 		}
+	}
+
+	@Test
+	public void test02() throws Exception {
+		SSLUserList map = new SSLUserList();
+		assertTrue(map.isEmpty());
 	}
 
 }

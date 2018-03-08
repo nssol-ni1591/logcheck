@@ -184,6 +184,8 @@ public class MainTest {
 		Checker19 application = container.select(Checker19.class).get();
 		int rc = new WeldWrapper<Checker19>().exec(application, 2, null, null, ACCESSLOG);
 		assertEquals("MainTest#test19 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker19>().exec(application, 2, KNOWNLIST);
+		assertEquals("MainTest#test19 ... NG", 2, rc);
 	}
 	@Test
 	public void test22() {

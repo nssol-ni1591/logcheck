@@ -77,6 +77,5 @@ public class FwLogTest {
 		//Map<FwLogBean, FwLogSummary> map = null;
 		load("a.txt");
 		// 存在しないファイルを指定しているので、例外発生が正常
-		fail("throw exception?");
 	}
 }

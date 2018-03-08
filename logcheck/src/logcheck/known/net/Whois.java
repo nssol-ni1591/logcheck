@@ -316,13 +316,4 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 		return this;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		return super.equals(o);
-	}
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
-
 }

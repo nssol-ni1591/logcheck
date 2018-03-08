@@ -48,24 +48,9 @@ public class ProjListBean implements Comparable<ProjListBean> {
 	public int compareTo(ProjListBean o) {
 		return projId.compareTo(o.getProjId());
 	}
+	// equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめる
 	/*
-	equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめる
-	*/
-	/*
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o instanceof ProjListBean) {
-			ProjListBean bean = (ProjListBean)o;
-			return compareTo(bean) == 0;
-		}
-		return false;
-	}
+	public int hashCode() { .. }
+	public boolean equals(Object o) { .. }
 	*/
 }
