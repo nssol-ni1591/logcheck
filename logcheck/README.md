@@ -1,3 +1,9 @@
+[2018/03/08]
+・（不具合）ユーザIDが"SDC\\"始まりの場合だと不都合が生じる可能性があるので削除するロジックを追加する
+・長期間使用されていないプロジェクトの検索処理を追加 （Checker19）
+	・logcheck.proj.ProjList,ProjListBean、logcheck.log.db.DbProjList を追加
+	・AbstrctCheckerにprojErrs追加
+	・Testロジック追加
 [2017/12/07]
 ・jdbc.propertiesにsdclog01経由のDB定義を追加
 ・Checker10：正規化の表現のあいまいさを修正
