@@ -43,7 +43,7 @@ public class SSLIndexUserList extends HashMap<String, UserListBean> implements U
 		}
 		return this;
 	}
-
+	/*
 	@Override
 	public int hashCode() {
 		return super.hashCode();
@@ -52,5 +52,5 @@ public class SSLIndexUserList extends HashMap<String, UserListBean> implements U
 	public boolean equals(Object o) {
 		return super.equals(o);
 	}
-
+	*/
 }

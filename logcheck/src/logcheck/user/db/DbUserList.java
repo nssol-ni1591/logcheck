@@ -109,7 +109,7 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 		}
 		return this;
 	}
-
+	/*
 	@Override
 	public boolean equals(Object o) {
 		return super.equals(o);
@@ -118,5 +118,5 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 	public int hashCode() {
 		return super.hashCode();
 	}
-
+	*/
 }

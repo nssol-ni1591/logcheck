@@ -79,6 +79,7 @@ public class FwLogSummary extends Summary<FwLogBean> implements Comparable<FwLog
 		return 0;
 
 	}
+	/*
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -95,6 +96,7 @@ public class FwLogSummary extends Summary<FwLogBean> implements Comparable<FwLog
 	public int hashCode() {
 		return super.hashCode();
 	}
+	*/
 	@Override
 	public String toString() {
 		return "[" + getFirstDate() + "/" + getLastDate() + "]"

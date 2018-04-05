@@ -113,7 +113,7 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 		Logger.getLogger(TsvKnownList.class.getName()).log(Level.FINE, "(既知ISP_IPアドレス): s=\"{0}\"", s);
 		return rc;
 	}
-
+	/*
 	@Override
 	public boolean equals(Object o) {
 		return super.equals(o);
@@ -122,5 +122,5 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 	public int hashCode() {
 		return super.hashCode();
 	}
-
+	*/
 }

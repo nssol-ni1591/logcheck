@@ -29,12 +29,19 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
-
+	/*
 	private static final Pattern[] AUTH_PATTERNS = {
 			Pattern.compile("Primary authentication successful for [\\S ]+ from [\\d\\.]+"),
 			Pattern.compile("Login failed using auth server (NSSDC_LDAP|SDC-AD) \\([\\w ]+\\)\\.  Reason: Failed"),		// 後："Primary authentication failed for [\\S ]+ from \\S+"
 			Pattern.compile("Login failed using auth server (NSSDC_LDAP|SDC-AD) \\([\\w ]+\\)\\.  Reason: Short Password"),//　後："Testing Password realm restrictions failed for [\\S ]+ , with certificate '[\\w ,=-]+' *"
 	};
+	 */
+	protected static final Pattern[] AUTH_PATTERNS;
+	static {
+		AUTH_PATTERNS = new Pattern[AUTH_SUCCESS_PATTERNS.length + AUTH_FAILED_PATTERNS.length];
+		System.arraycopy(AUTH_SUCCESS_PATTERNS, 0, AUTH_PATTERNS, 0, AUTH_SUCCESS_PATTERNS.length);
+		System.arraycopy(AUTH_FAILED_PATTERNS, 0, AUTH_PATTERNS, AUTH_SUCCESS_PATTERNS.length, AUTH_FAILED_PATTERNS.length);
+	}
 
 	public void init(String...argv) throws Exception {
 		this.knownlist.load(argv[0]);

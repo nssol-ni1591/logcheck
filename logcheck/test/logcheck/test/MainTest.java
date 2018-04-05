@@ -180,6 +180,22 @@ public class MainTest {
 		assertEquals("MainTest#test18 ... NG", 2, rc);
 	}
 	@Test
+	public void test19() {
+		Checker19 application = container.select(Checker19.class).get();
+		int rc = new WeldWrapper<Checker19>().exec(application, 2, null, null, ACCESSLOG);
+		assertEquals("MainTest#test19 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker19>().exec(application, 2, KNOWNLIST);
+		assertEquals("MainTest#test19 ... NG", 2, rc);
+	}
+	@Test
+	public void test21() {
+		Checker21 application = container.select(Checker21.class).get();
+		int rc = new WeldWrapper<Checker21>().exec(application, 2, KNOWNLIST, MAGLIST, ACCESSLOG);
+		assertEquals("MainTest#test21 ... NG", 0, rc);
+		rc = new WeldWrapper<Checker21>().exec(application, 2, KNOWNLIST);
+		assertEquals("MainTest#test21 ... NG", 2, rc);
+	}
+	@Test
 	public void test22() {
 		Checker22 application = container.select(Checker22.class).get();
 		int rc = new WeldWrapper<Checker22>().exec(application, 2, KNOWNLIST, MAGLIST, ACCESSLOG);

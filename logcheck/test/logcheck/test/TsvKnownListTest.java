@@ -3,6 +3,7 @@ package logcheck.test;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -55,7 +56,12 @@ public class TsvKnownListTest {
 			n.getAddress().forEach(s -> System.out.printf("[%s]", s.toStringRange()));
 			System.out.println();
 		}
+	}
 
+	@Test(expected = NoSuchFileException.class)
+	public void test02() throws IOException {
+		KnownList map = new TsvKnownList();
+		map.load("abc");
 	}
 
 }

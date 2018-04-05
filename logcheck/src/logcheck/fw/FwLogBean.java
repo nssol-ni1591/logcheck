@@ -60,6 +60,7 @@ public class FwLogBean implements Comparable<FwLogBean> {
 	/*
 	equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめる
 	*/
+	/*
 	@Override
 	public int hashCode() {
 		return super.hashCode();
@@ -75,6 +76,7 @@ public class FwLogBean implements Comparable<FwLogBean> {
 		}
 		return false;
 	}
+	*/
 	@Override
 	public String toString() {
 		return String.format("srcip=%s, dstip=%s, dstport=%d", srcip, dstip, dstport);
