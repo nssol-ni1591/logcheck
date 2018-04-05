@@ -2,7 +2,6 @@ package logcheck;
 
 import java.io.PrintWriter;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -21,10 +20,10 @@ public class Checker19 extends AbstractChecker<ProjList<ProjListBean>> {
 
 	@Inject protected ProjList<ProjListBean> projlist;
 	@Inject private Logger log;
-
+	/*
 	private static final Pattern AUTH_PATTERN = 
 			Pattern.compile("VPN Tunneling: Session started for user with IPv4 address ([\\w\\.]+), hostname ([\\S]+)");
-
+	*/
 	public void init(String...argv) throws Exception {
 		this.projlist.load();
 	}
@@ -34,7 +33,7 @@ public class Checker19 extends AbstractChecker<ProjList<ProjListBean>> {
 		stream//.parallel()		// parallel()を使用するとOutOfMemory例外が発生する　=> なぜ?
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
-				.filter(b -> AUTH_PATTERN.matcher(b.getMsg()).matches())
+				.filter(b -> SESS_START_PATTERN.matcher(b.getMsg()).matches())
 				//.filter(b -> b.getId().startsWith("Z"))
 				.forEach(b -> {
 					String[] roles = b.getRoles();
@@ -49,7 +48,7 @@ public class Checker19 extends AbstractChecker<ProjList<ProjListBean>> {
 							projlist.put(projId, proj);
 						}
 
-						proj.update(b, AUTH_PATTERN.toString());
+						proj.update(b, SESS_START_PATTERN.toString());
 						log.config(String.format("proj=%s, user=%s", projId, b.getId()));
 					}
 				});
