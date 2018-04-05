@@ -134,6 +134,7 @@ public class UserListBean implements Comparable<UserListBean> {
 	/*
 	equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめる
 	*/
+	/*
 	@Override
 	public int hashCode() {
 		return super.hashCode();
@@ -149,5 +150,5 @@ public class UserListBean implements Comparable<UserListBean> {
 		}
 		return false;
 	}
-
+	*/
 }

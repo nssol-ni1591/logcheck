@@ -30,6 +30,7 @@ public class IspBean<E> implements Comparable<IspBean<E>> {
 		}
 		return name.compareTo(o.getName());
 	}
+	/*
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -46,6 +47,7 @@ public class IspBean<E> implements Comparable<IspBean<E>> {
 	public int hashCode() {
 		return super.hashCode();
 	}
+	*/
 	@Override
 	public String toString() {
 		return name;

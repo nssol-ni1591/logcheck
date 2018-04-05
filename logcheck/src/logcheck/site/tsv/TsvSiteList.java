@@ -105,7 +105,7 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 		}
 		return rc;
 	}
-
+	/*
 	@Override
 	public boolean equals(Object o) {
 		return super.equals(o);
@@ -114,5 +114,5 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 	public int hashCode() {
 		return super.hashCode();
 	}
-
+	*/
 }

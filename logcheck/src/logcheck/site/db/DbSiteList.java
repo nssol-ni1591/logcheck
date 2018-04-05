@@ -85,7 +85,7 @@ public class DbSiteList extends LinkedHashMap<String, SiteListIsp> implements Si
 		}
 		return this;
 	}
-
+	/*
 	@Override
 	public boolean equals(Object o) {
 		return super.equals(o);
@@ -94,5 +94,5 @@ public class DbSiteList extends LinkedHashMap<String, SiteListIsp> implements Si
 	public int hashCode() {
 		return super.hashCode();
 	}
-
+	*/
 }
