@@ -161,13 +161,13 @@ public class Whois extends LinkedHashSet<KnownListIsp> implements KnownList {
 						if (name == null) {
 							name = tmp;
 						}
-						else if ("Inc.".contains(name) 
-								|| "INC.".contains(name)
-								|| "LTD.".contains(name) 
-								|| "Limited".contains(name) 
-								|| "Corporation".contains(name)
-								|| "Company".contains(name)
-								|| "Telecom".contains(name)
+						else if (name.contains("Inc.") 
+								|| name.contains("INC.")
+								|| name.contains("LTD.") 
+								|| name.contains("Limited") 
+								|| name.contains("Corporation")
+								|| name.contains("Company")
+								|| name.contains("Telecom")
 								) {
 							// すでに"Inc."などを含む文字列がnameに設定されている場合はnameの変更は行わない
 						}
