@@ -77,6 +77,11 @@ public class WhoisTest {
 	public void test07() {
 		assertNotNull(getIsp("93.144.39.100"));
 	}
+	@Test
+	public void test08() {
+		assertNotNull(getIsp("112.64.68.201"));
+		assertNotNull(getIsp("112.65.48.4"));
+	}
 
 	
 
