@@ -1,4 +1,9 @@
+[2018/04/05]
+・ISP名の不正表示：最終的にXLSファイルで対応する
+・Whoisの組織名取得に不具合あり
 [2018/03/08]
+・NSSDC-Auth5対応
+	・結果として、メッセージの正規化パターンを見直し、整理
 ・（不具合）ユーザIDが"SDC\\"始まりの場合だと不都合が生じる可能性があるので削除するロジックを追加する
 ・長期間使用されていないプロジェクトの検索処理を追加 （Checker19）
 	・logcheck.proj.ProjList,ProjListBean、logcheck.log.db.DbProjList を追加
