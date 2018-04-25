@@ -24,7 +24,7 @@ public class FwLog {
 			int index = st.indexOf('=');
 			if (index < 0) {
 				// 値に空白が含まれるログ対応：例えば、"United State"など
-				break;
+				continue;
 			}
 			String key = st.substring(0, index);
 			switch (key) {
@@ -63,7 +63,10 @@ public class FwLog {
 			return false;
 		}
 		if (!s.contains("srcip=") || !s.contains("dstip=")) {
-			log.log(Level.WARNING, "(FwLog): \"{0}\"", s);
+			// type=eventの場合はログの出力は行わない
+			if (!s.contains("type=event")) {
+				log.log(Level.WARNING, "(FwLog): \"{0}\"", s);
+			}
 			return false;
 		}
 		return true;
