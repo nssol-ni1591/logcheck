@@ -18,7 +18,7 @@ import logcheck.util.net.NetAddr;
 public class SdcList extends LinkedHashMap<String, SdcListIsp> {
 
 	private static final long serialVersionUID = 1L;
-	public static final String PATTERN = "(\\d+\\.\\d+\\.\\d+\\.\\d+/?[\\d\\.]*)\t([\\S ]+)\t([\\S ]+)";
+	public static final String PATTERN = "(\\d+\\.\\d+\\.\\d+\\.\\d+/?[\\d\\.]*)\t([\\S ]+)\t([\\S ]+)(\t[\\S ]*)?";
 
 	public SdcList() {
 		super(100);
@@ -54,7 +54,7 @@ public class SdcList extends LinkedHashMap<String, SdcListIsp> {
 		String type = null;
 
 		Pattern p = Pattern.compile(PATTERN);
-		Matcher m = p.matcher(s);		// 1文字目が欠ける対策
+		Matcher m = p.matcher(" " + s);		// 1文字目が欠ける対策
 		if (m.find(1)) {
 			addr = m.group(1);
 		}

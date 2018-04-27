@@ -13,6 +13,7 @@ import logcheck.fw.FwLogSummary;
 import logcheck.isp.IspList;
 import logcheck.isp.IspListImpl;
 import logcheck.known.KnownList;
+import logcheck.known.privateaddr.PrivateAddrList;
 import logcheck.mag.MagList;
 import logcheck.sdc.SdcList;
 import logcheck.util.net.NetAddr;
@@ -26,7 +27,8 @@ import logcheck.util.weld.WeldWrapper;
  */
 public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 
-	@Inject private KnownList knownlist;
+	//@Inject private KnownList knownlist;
+	private KnownList knownlist = new PrivateAddrList();
 	@Inject private MagList maglist;
 	@Inject private SdcList sdclist;
 
@@ -50,7 +52,7 @@ public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 			return isp;
 		}
 
-		isp = new IspListImpl(addr.toString(), "unknown");
+		isp = new IspListImpl(addr.toString(), "社外");
 		return isp;
 	}
 
@@ -82,7 +84,7 @@ public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 
 	@Override
 	public void report(final PrintWriter out, final Set<FwLogSummary> list) {
-		out.println("出現日時\t最終日時\t接続元国\t接続元名\t接続元IP\t接続先国\t接続先名\t接続先IP\t接続先ポート\tログ数");
+		out.println("出現日時\t最終日時\t接続元識別\t接続元NW\t接続元IP\t接続先識別\t接続先NW\t接続先IP\t接続先ポート\tログ数");
 		list.forEach(s -> 
 			out.println(new StringBuilder(s.getFirstDate() == null ? "" : s.getFirstDate())
 					.append("\t").append(s.getLastDate())
