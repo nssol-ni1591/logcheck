@@ -49,11 +49,20 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 //	証明書が有効なユーザに関する情報を取得する。その際、過去のPRJは考慮しない
 //			+ " and u.delete_flag = '0'"
 //	ユーザIDは一意で決定するので、orderを指定する必要はない　<- うそ
-			+ " order by　u.delete_flag"
+			+ " order by u.delete_flag"
 	;
 
 	public SSLUserList() {
 		super(4000);
+		/*
+		if (log == null) {
+			// logのインスタンスが生成できないため
+			log = Logger.getLogger(SSLUserList.class.getName());
+		}
+		*/
+	}
+
+	public void init() {
 		if (log == null) {
 			// logのインスタンスが生成できないため
 			log = Logger.getLogger(SSLUserList.class.getName());

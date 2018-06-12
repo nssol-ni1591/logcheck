@@ -42,7 +42,7 @@ public class DB {
 		String password = props.getProperty("password", getPassword());
 
 		host = System.getProperty("jdbc.connect.host", host);
-
+/*
 		String url = new StringBuilder("jdbc:oracle:thin:@")
 				.append(host)
 				.append(":")
@@ -53,6 +53,16 @@ public class DB {
 
 		Class.forName("oracle.jdbc.driver.OracleDriver");
 		return DriverManager.getConnection(url, username, password);
+*/
+		String url = new StringBuilder("jdbc:derby:c:/opt/java-bin/db-derby-10.13.1.1-bin/db/masterinfo")
+				.append(";user=")
+				.append(username)
+				.append(";password=")
+				.append(password)
+				.toString();
+
+		Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+		return DriverManager.getConnection(url);
 	}
 
 }

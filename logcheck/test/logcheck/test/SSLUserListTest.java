@@ -28,6 +28,7 @@ public class SSLUserListTest {
 	@Test
 	public void test01() throws Exception {
 		SSLUserList map = new SSLUserList();
+		map.init();
 		map.load(Env.SSLINDEX, new DbSiteList().load(null));
 		System.out.println("size=" + map.size());
 		assertFalse(map.isEmpty());

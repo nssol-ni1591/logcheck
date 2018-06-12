@@ -40,6 +40,16 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 
 	public TsvKnownList() {
 		super(200);
+		/*
+		if (log == null) {
+			// logのインスタンスが生成できないため
+			log = Logger.getLogger(TsvKnownList.class.getName());
+		}
+		*/
+		init();
+	}
+	
+	public void init() {
 		if (log == null) {
 			// logのインスタンスが生成できないため
 			log = Logger.getLogger(TsvKnownList.class.getName());

@@ -49,6 +49,15 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 
 	public DbUserList() {
 		super(4000);
+		/*
+		if (log == null) {
+			// logのインスタンスが生成できないため
+			log = Logger.getLogger(DbUserList.class.getName());
+		}
+		*/
+	}
+
+	public void init() {
 		if (log == null) {
 			// logのインスタンスが生成できないため
 			log = Logger.getLogger(DbUserList.class.getName());

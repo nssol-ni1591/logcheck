@@ -27,6 +27,7 @@ public class DbProjListTest {
 	@Test
 	public void test() throws Exception {
 		DbProjList map = new DbProjList();
+		map.init();
 		map.load();
 		System.out.println("size=" + map.size());
 		assertFalse(map.isEmpty());

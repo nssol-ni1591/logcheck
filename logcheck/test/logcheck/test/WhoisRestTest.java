@@ -9,23 +9,22 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import logcheck.known.KnownListIsp;
-import logcheck.known.net.Whois;
+import logcheck.known.net.WhoisRest;
 import logcheck.util.net.ClientAddr;
 
-
-public class WhoisTest {
+public class WhoisRestTest {
 
 	private static WeldContainer container;
 	private static Weld weld;
 
-	private static Whois f;
+	private static WhoisRest f;
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@BeforeClass
 	public static void setupWhoisTest() throws Exception {
-		System.out.println("start WhoisTest ...");
+		System.out.println("start WhoisRestTest ...");
 
 		System.setProperty("proxySet" , "true");
 		System.setProperty("proxyHost", "proxy.ns-sol.co.jp");
@@ -33,12 +32,12 @@ public class WhoisTest {
 
 		weld = new Weld();
 		container = weld.initialize();
-		f = container.select(Whois.class).get();
+		f = container.select(WhoisRest.class).get();
 	}
 	@AfterClass
 	public static void afterClass() throws Exception {
 		container.close();
-		System.out.println("WhoisTest ... end");
+		System.out.println("WhoisRestTest ... end");
 	}
 
 	private KnownListIsp getIsp(String addr) {
@@ -51,7 +50,8 @@ public class WhoisTest {
 	@Test
 	public void test01() {
 		// ns-sol proxy. 上位プロバイダ[ARTERIA Networks Corporation]
-		assertNotNull(getIsp("113.33.234.133"));
+		KnownListIsp isp = getIsp("113.33.234.133");
+		assertNotNull(isp);
 	}
 	@Test
 	public void test02() {
@@ -79,7 +79,7 @@ public class WhoisTest {
 	}
 	@Test
 	public void test08() {
-		assertNotNull(getIsp("112.64.68.201"));
+//		assertNotNull(getIsp("112.64.68.201"));
 		assertNotNull(getIsp("112.65.48.4"));
 	}
 	@Test

@@ -2,10 +2,6 @@ package logcheck.known.privateaddr;
 
 import java.util.LinkedHashSet;
 import java.util.Optional;
-import java.util.logging.Logger;
-
-import javax.enterprise.inject.Alternative;
-import javax.inject.Inject;
 
 import logcheck.annotations.WithElaps;
 import logcheck.known.KnownList;
@@ -21,19 +17,21 @@ import logcheck.util.net.NetAddr;
  * IPアドレスから取得される接続元はISP名ではなく企業名を取得したい。
  * 今のHashMapでは、Hash地の値により、どちらが取得されるか判断付かない。
  */
-@Alternative
+//@Alternative
 public class PrivateAddrList extends LinkedHashSet<KnownListIsp> implements KnownList {
 
-	@Inject private Logger log;
+	//@Inject private Logger log;
 
 	private static final long serialVersionUID = 1L;
 
 	public PrivateAddrList() {
 		super();
+		/*
 		if (log == null) {
 			// logのインスタンスが生成できないため
 			log = Logger.getLogger(PrivateAddrList.class.getName());
 		}
+		*/
 	}
 
 	/*

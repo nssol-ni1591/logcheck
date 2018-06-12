@@ -194,11 +194,17 @@ public class NetAddr implements Comparable<NetAddr> {
 		sb.append(")");
 		return sb.toString();
 	}
+	public String toStringNetwork() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(network[0]).append(".").append(network[1]).append(".").append(network[2]).append(".").append(network[3]);
+		sb.append("/").append(mask);
+		return sb.toString();
+	}
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(srcaddr[0]).append(".").append(srcaddr[1]).append(".").append(srcaddr[2]).append(".").append(srcaddr[3]);
-		sb.append("/").append(mask);
+		//sb.append("/").append(mask);
 		return sb.toString();
 	}
 

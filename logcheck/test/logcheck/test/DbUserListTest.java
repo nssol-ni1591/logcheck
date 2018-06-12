@@ -27,6 +27,7 @@ public class DbUserListTest {
 	@Test
 	public void test01() throws Exception {
 		DbUserList map = new DbUserList();
+		map.init();
 		map.load(null, null);
 		System.out.println("size=" + map.size());
 		assertFalse(map.isEmpty());

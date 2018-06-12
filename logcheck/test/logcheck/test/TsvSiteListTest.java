@@ -28,6 +28,7 @@ public class TsvSiteListTest {
 	@Test
 	public void test01() throws Exception {
 		TsvSiteList map = new TsvSiteList();
+		map.init();
 		map.load(Env.MAGLIST);
 		System.out.println("TsvSiteListTest.test01 size = " + map.size());
 		assertFalse(map.isEmpty());
@@ -45,6 +46,7 @@ public class TsvSiteListTest {
 	@Test(expected = IOException.class)
 	public void test02() throws Exception {
 		TsvSiteList map = new TsvSiteList();
+		map.init();
 		map.load("none");
 	}
 }

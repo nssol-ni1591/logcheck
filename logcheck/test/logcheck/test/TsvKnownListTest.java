@@ -46,6 +46,7 @@ public class TsvKnownListTest {
 	public void test01() throws IOException {
 		// TsvKnownList はAlternativeによりWeld環境では使用できない?
 		KnownList map = new TsvKnownList();
+		map.init();
 		map.load(Env.KNOWNLIST);
 		System.out.println("TsvKnownListTest.test01: size=" + map.size());
 		assertFalse(map.isEmpty());
@@ -61,6 +62,7 @@ public class TsvKnownListTest {
 	@Test(expected = NoSuchFileException.class)
 	public void test02() throws IOException {
 		KnownList map = new TsvKnownList();
+		map.init();
 		map.load("abc");
 	}
 

@@ -20,4 +20,5 @@ public interface KnownList extends Set<KnownListIsp> {
 
 	KnownList load(String file) throws IOException;
 
+	default void init() { }
 }

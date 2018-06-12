@@ -32,6 +32,15 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 
 	public TsvSiteList() {
 		super(200);
+		/*
+		if (log == null) {
+			// logのインスタンスが生成できないため
+			log = Logger.getLogger(TsvSiteList.class.getName());
+		}
+		*/
+	}
+
+	public void init() {
 		if (log == null) {
 			// logのインスタンスが生成できないため
 			log = Logger.getLogger(TsvSiteList.class.getName());

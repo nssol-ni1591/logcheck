@@ -4,10 +4,9 @@ import java.lang.annotation.Annotation;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.enterprise.inject.se.SeContainer;
+import javax.enterprise.inject.se.SeContainerInitializer;
 import javax.enterprise.util.AnnotationLiteral;
-
-import org.jboss.weld.environment.se.Weld;
-import org.jboss.weld.environment.se.WeldContainer;
 
 public class WeldWrapper<T extends WeldRunner> {
 
@@ -63,11 +62,18 @@ public class WeldWrapper<T extends WeldRunner> {
 
 	public int weld(int argc, String...argv) {
 		int rc = 0;
+		/*
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
 			T application = container.select(cl).get();
 			rc = exec(application, argc, argv);
 		}
+		*/
+		try(SeContainer container = SeContainerInitializer.newInstance().initialize()) {
+	        // start the container, retrieve a bean and do work with it
+	        T application = container.select(cl).get();
+			rc = exec(application, argc, argv);
+	    }
 		catch (Exception ex) {
 			log.log(Level.SEVERE, "in weld", ex);
 			rc = -1;
@@ -76,11 +82,18 @@ public class WeldWrapper<T extends WeldRunner> {
 	}
 	public <E extends Annotation> int weld(AnnotationLiteral<E> anno, int argc, String...argv) {
 		int rc = 0;
+		/*
 		Weld weld = new Weld();
 		try (WeldContainer container = weld.initialize()) {
 			T application = container.select(cl, anno).get();
 			rc = exec(application, argc, argv);
 		}
+		*/
+		try(SeContainer container = SeContainerInitializer.newInstance().initialize()) {
+	        // start the container, retrieve a bean and do work with it
+	        T application = container.select(cl, anno).get();
+			rc = exec(application, argc, argv);
+	    }
 		catch (Exception ex) {
 			log.log(Level.SEVERE, "in weld", ex);
 			rc = -1;
