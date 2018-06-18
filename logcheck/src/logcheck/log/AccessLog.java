@@ -42,7 +42,7 @@ public class AccessLog {
 			log.log(Level.INFO, "end load ... size={0}", map.size());
 
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.getMessage(), e);
+			log.log(Level.SEVERE, e.getMessage());
 		}
 		return map;
 	}

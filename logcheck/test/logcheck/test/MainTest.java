@@ -227,7 +227,7 @@ public class MainTest {
 		int rc = new WeldWrapper<Checker50>().exec(application, 3, KNOWNLIST, MAGLIST, SDCLIST, FWLOG);
 		assertEquals("MainTest#test50 ... NG", 0, rc);
 		rc = new WeldWrapper<Checker50>().exec(application, 3, KNOWNLIST);
-		assertEquals("MainTest#test25 ... NG", 2, rc);
+		assertEquals("MainTest#test50 ... NG", 2, rc);
 	}
 
 }

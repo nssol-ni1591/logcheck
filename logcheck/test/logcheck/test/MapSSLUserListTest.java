@@ -8,26 +8,26 @@ import org.junit.Test;
 
 import logcheck.site.db.DbSiteList;
 import logcheck.user.UserListBean;
-import logcheck.user.ssl.FilteredSSLUserList;
+import logcheck.user.ssl.MapSSLUserList;
 
 
 /*
  * VPNクライアント証明書が発行されているユーザの一覧を取得する
  */
-public class SSLUserListTest {
+public class MapSSLUserListTest {
 
 	@BeforeClass
 	public static void beforeClass() {
-		System.out.println("start SSLUserListTest ...");
+		System.out.println("start MapSSLUserListTest ...");
 	}
 	@AfterClass
 	public static void afterClass() {
-		System.out.println("SSLUserListTest ... end");
+		System.out.println("MapSSLUserListTest ... end");
 	}
 
-	//@Test
+	@Test
 	public void test01() throws Exception {
-		FilteredSSLUserList map = new FilteredSSLUserList();
+		MapSSLUserList map = new MapSSLUserList();
 		map.init();
 		map.load(Env.SSLINDEX, new DbSiteList().load(null));
 		System.out.println("size=" + map.size());
@@ -50,7 +50,7 @@ public class SSLUserListTest {
 
 	@Test
 	public void test02() throws Exception {
-		FilteredSSLUserList map = new FilteredSSLUserList();
+		MapSSLUserList map = new MapSSLUserList();
 		assertTrue(map.isEmpty());
 	}
 

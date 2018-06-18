@@ -35,7 +35,7 @@ import oracle.jdbc.rowset.OracleFilteredRowSet;
  * VPNクライアント証明書が発行されているユーザの一覧を取得する
  */
 @Alternative
-public class SSLUserList extends LinkedHashMap<String, UserListBean> implements UserList<UserListBean> {
+public class FilteredSSLUserList extends LinkedHashMap<String, UserListBean> implements UserList<UserListBean> {
 
 	@Inject Logger log;
 
@@ -52,25 +52,19 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 			+ " order by u.delete_flag"
 	;
 
-	public SSLUserList() {
+	public FilteredSSLUserList() {
 		super(4000);
-		/*
-		if (log == null) {
-			// logのインスタンスが生成できないため
-			log = Logger.getLogger(SSLUserList.class.getName());
-		}
-		*/
 	}
 
 	public void init() {
 		if (log == null) {
 			// logのインスタンスが生成できないため
-			log = Logger.getLogger(SSLUserList.class.getName());
+			log = Logger.getLogger(FilteredSSLUserList.class.getName());
 		}
 	}
 
 	@WithElaps
-	public SSLUserList load(String file, SiteList sitelist) throws Exception {
+	public FilteredSSLUserList load(String file, SiteList sitelist) throws Exception {
 
 		try ( // Oracleに接続
 				Connection conn = DB.createConnection();
@@ -90,7 +84,7 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 			{
 				input.filter(SSLIndexBean::test)
 					.map(SSLIndexBean::parse)
-					.filter(b -> b.getUserId().startsWith("Z"))
+					.filter(b -> b.getUserId().startsWith("Z"))	// index.txtの読み込みなので、SQLとは別の集合
 					.forEach(b -> {
 						boolean status = false;
 						UserListBean bean = this.get(b.getUserId());
@@ -103,7 +97,9 @@ public class SSLUserList extends LinkedHashMap<String, UserListBean> implements 
 									String siteId = frs.getString(1);
 									String userDelFlag = frs.getString(3);
 									String endDate = "";
-									// OracleFilteredRowSet#getTimestampはTimestampをサポートしていないため
+
+									// cached rowset のため oracle環境でしか動作しない
+									// OracleFilteredRowSet#getTimestampはTimestampをサポートしていないため書式変換する
 									Object o = frs.getObject(4);
 									if (o != null) {
 										final DateFormat f = new SimpleDateFormat(TIME_FORMAT);

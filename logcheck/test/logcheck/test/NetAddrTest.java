@@ -22,7 +22,7 @@ public class NetAddrTest {
 	@Test
 	public void test01() {
 		NetAddr addr = new NetAddr("0.0.0.0");
-		assertTrue("unmatch 0.0.0.0", "0.0.0.0/32 (0.0.0.0-0.0.0.0)".equals(addr.toStringRange()));
+		assertTrue("unmatch 0.0.0.0", "0.0.0.0 (0.0.0.0-0.0.0.0)".equals(addr.toStringRange()));
 	}
 
 }

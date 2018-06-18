@@ -1,4 +1,4 @@
-package logcheck.known.net.rest;
+package logcheck.known.net.apnic;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -14,9 +14,10 @@ import javax.json.bind.serializer.DeserializationContext;
 import javax.json.bind.serializer.JsonbDeserializer;
 import javax.json.stream.JsonParser;
 
+import logcheck.util.net.NetAddr;
+
 public class SearchMapDeserializer implements JsonbDeserializer<SearchMap> {
 
-//	@Inject private Logger log;
 	final Logger log = Logger.getLogger(SearchMapDeserializer.class.getName());
 
 	@Override
@@ -36,8 +37,9 @@ public class SearchMapDeserializer implements JsonbDeserializer<SearchMap> {
 				case "attributes":
 				{
 					Jsonb jsonb = JsonbBuilder.create();
-					@SuppressWarnings("serial")
-					Type hashListType = new ArrayList<Map<String, Object>>() {}.getClass().getGenericSuperclass();
+					Type hashListType = new ArrayList<Map<String, Object>>() {
+						private static final long serialVersionUID = 1L;
+						}.getClass().getGenericSuperclass();
 					try {
 						List<Map<String, Object>> attrs = jsonb.fromJson(val, hashListType);
 						//System.out.println("List-->:" + attrs);
@@ -47,26 +49,64 @@ public class SearchMapDeserializer implements JsonbDeserializer<SearchMap> {
 					    	.forEach(attr -> {
 					    		String name = attr.get("name").toString().toLowerCase();
 					    		Object values = attr.get("values");
-				    			if (values == null) {
-//				    				log.log(Level.INFO, "name={0}, attr={1}", new Object[] { name, attr });
+				    			if (map.containsKey(name)) {
+				    				if ("inetnum".equals(name)) {
+				    					log.log(Level.FINE, "duplicate key={0}, exists={1}, new={2}", new Object[] { name, map.get(name), values });
+				    					String v;
+				    					if (values instanceof List) {
+				    						v = ((List<?>) values).get(0).toString();
+				    					}
+				    					else {
+				    						v = values.toString();
+				    					}
+				    					NetAddr cur = new NetAddr(map.get(name).toString());
+				    					NetAddr rep = new NetAddr(v.toString());
+				    					if (cur != null && !cur.equals(rep) && cur.within(rep)) {
+						    				SearchTextString st = new SearchTextString(v);
+						    				map.put(name, st);
+						    				map.remove("descr");
+						    				map.remove("country");
+					    					log.log(Level.INFO, "replace key={0}, exists={1}, new={2}", new Object[] { name, map.get(name), values });
+				    					}
+				    				}
+				    				else if ("descr".equals(name)) {
+				    					log.log(Level.FINE, "duplicate key={0}, exists={1}, new={2}", new Object[] { name, map.get(name), values });
+				    					String value;
+				    					if (values instanceof List) {
+				    						value = ((List<?>) values).get(0).toString();
+				    					}
+				    					else {
+				    						value = values.toString();
+				    					}
+
+				    					if (value.contains("Inc") 
+				    							|| value.contains("INC")
+				    							|| value.contains("LTD") 
+												|| value.contains("Limited") 
+												|| value.contains("Corp")
+												|| value.contains("Company")
+												|| value.contains("Telecom")
+												) {
+				    						SearchTextString st = new SearchTextString(value);
+				    						map.put(name, st);
+					    					log.log(Level.INFO, "replace key={0}, exists={1}, new={2}", new Object[] { name, map.get(name), value });
+										}
+
+				    				}
+				    				else {
+				    					log.log(Level.FINE, "duplicate key={0}, exists={1}, new={2}", new Object[] { name, map.get(name), values });
+				    				}
+				    			}
+				    			else if (values == null) {
+//				    				log.log(Level.FINE, "name={0}, attr={1}", new Object[] { name, attr });
 					    		}
 					    		else if (values instanceof List) {
-									@SuppressWarnings("unchecked")
-									List<Object> l = (List<Object>)values;
+									List<?> l = (List<?>)values;
 					    			if (l.size() == 1) {
 					    				SearchTextString st = new SearchTextString(l.get(0).toString());
-						    			if (map.containsKey(name)) {
-						    				if (name.equals("descr")) {
-							    				log.log(Level.INFO, "duplicate key={0}, exists={1}, new={2}", new Object[] { name, map.get(name), values });
-						    				}
-						    				else {
-							    				map.put(name, st);
-						    					log.log(Level.INFO, "update key={0}, exists={1}, new={2}", new Object[] { name, map.get(name), values });
-						    				}
-						    			}
+					    				map.put(name, st);
 					    			}
 					    			else {
-						    			// Listの場合は置換する
 					    				SearchTextAttributes links = new SearchTextAttributes();
 					    				l.forEach(v -> links.add(v));
 					    				map.put(name, links);
@@ -88,13 +128,13 @@ public class SearchMapDeserializer implements JsonbDeserializer<SearchMap> {
 	    			if (map.containsKey(name)) {
 	    				SearchTextString sts = new SearchTextString(val);
 	    				map.put(className, sts);
-	    				log.log(Level.INFO, "update key={0}, exists={1}, new={2}", new Object[] { name, map.get(name), val });
+	    				log.log(Level.FINE, "update key={0}, exists={1}, new={2}", new Object[] { name, map.get(name), val });
 	    			}
 	    			break;
 				case "type":
 				case "comments":
 				default:
-//					log.log(Level.INFO, "className={0}, val={1}", new Object[] { className, val });
+//					log.log(Level.FINE, "className={0}, val={1}", new Object[] { className, val });
 				}
 				//                }
 //                catch (ClassNotFoundException e) {
@@ -105,7 +145,7 @@ public class SearchMapDeserializer implements JsonbDeserializer<SearchMap> {
             	//System.out.println("event=" + event);
             }
         }
-//		log.log(Level.INFO, "map={0}" + map);
+//		log.log(Level.FINE, "map={0}" + map);
         return map;
 	}
 

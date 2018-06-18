@@ -1,4 +1,4 @@
-package logcheck.known.net.rest;
+package logcheck.known.net.apnic;
 
 import java.util.ArrayList;
 

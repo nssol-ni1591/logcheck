@@ -113,6 +113,9 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 		if (s.startsWith("#")) {
 			return false;
 		}
+		if (s.isEmpty()) {
+			return false;
+		}
 
 		Pattern p = Pattern.compile(PATTERN);
 		Matcher m = p.matcher(s);
