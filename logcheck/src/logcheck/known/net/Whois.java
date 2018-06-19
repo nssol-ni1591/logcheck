@@ -7,4 +7,6 @@ public interface Whois {
 
 	KnownListIsp get(NetAddr addr);
 
+	// for exec JUnit
+	void init();
 }

@@ -23,7 +23,7 @@ import logcheck.known.tsv.TsvKnownList;
 import logcheck.util.net.NetAddr;
 
 @Alternative
-public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements KnownList {
+public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements KnownList, Whois {
 
 	@Inject private Logger log;
 	private static final long serialVersionUID = 1L;

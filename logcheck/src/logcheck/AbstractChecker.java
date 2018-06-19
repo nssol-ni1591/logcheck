@@ -73,7 +73,7 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 			Pattern.compile("Testing Password realm restrictions failed for [\\S ]*/NSSDC-Auth\\d+(\\([\\w_]+\\))?( , with certificate '[\\w ,=-]+')? *"),
 			Pattern.compile("Testing Source IP realm restrictions failed for [\\S ]*/NSSDC-Auth\\d+(\\([\\w_]+\\))? *"),	// 後："Login failed.  Reason: IP Denied"
 			Pattern.compile("The X\\.509 certificate for .+; Detail: '[\\w ]+' *"),
-			Pattern.compile("TLS handshake failed - client issued alert 'untrusted or unknown certificate'"),
+			Pattern.compile("TLS handshake failed - (client|server) issued alert '[\\S ]+'"),
 	};
 
 	protected static final Pattern[] INFO_PATTERNS_PART = {

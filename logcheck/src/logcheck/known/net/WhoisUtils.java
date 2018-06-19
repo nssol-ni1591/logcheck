@@ -39,7 +39,7 @@ public class WhoisUtils {
 					log.log(Level.WARNING, "line={0}", s);
 				}
 			});
-			log.log(Level.INFO, "map={0}", map);
+			log.log(Level.FINE, "map={0}", map);
 		}
 		catch (IOException ex) {
 			log.log(Level.WARNING, ex.getMessage(), ex);

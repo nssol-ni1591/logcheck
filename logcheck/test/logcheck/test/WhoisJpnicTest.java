@@ -4,50 +4,23 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import logcheck.known.KnownListIsp;
 import logcheck.known.net.jpnic.WhoisJpnic;
-import logcheck.util.net.ClientAddr;
 
 public class WhoisJpnicTest extends WhoisKnownListTest {
-
-	private static WhoisJpnic f;
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@BeforeClass
-	public static void setupWhoisTest() throws Exception {
+	public static void setupClass() throws Exception {
 		System.out.println("start WhoisJpnic ...");
 
-		System.setProperty("proxySet" , "true");
-		System.setProperty("proxyHost", "proxy.ns-sol.co.jp");
-		System.setProperty("proxyPort", "8000");
-
-//		weld = new Weld();
-//		container = weld.initialize();
-//		f = container.select(WhoisRest.class).get();
-		f = new WhoisJpnic();
-		f.init();
-//		f.load(Env.KNOWNLIST);
+		whois = new WhoisJpnic();
+		whois.init();
 	}
 	@AfterClass
 	public static void afterClass() throws Exception {
 		System.out.println("WhoisJpnic ... end");
-	}
-	@Override
-	protected KnownListIsp getIsp(String addr) {
-		if (addr.isEmpty()) {
-			return null;
-		}
-
-		KnownListIsp isp = f.get(new ClientAddr(addr));
-		if (isp != null) {
-			System.out.println("WhoisJpnic: addr=" + addr + ", isp=[" + isp + ", C=" + isp.getCountry() +", NET=" + isp.toStringNetwork() + "]");
-		}
-		else {
-			System.out.println("WhoisJpnic: addr=" + addr + ", isp=null");
-		}
-		return isp;
 	}
 
 	@Test
