@@ -75,6 +75,7 @@ public class SdcList extends LinkedHashMap<String, SdcListIsp> {
 		Matcher m = p.matcher(s);
 		boolean rc = m.find();
 		if (!rc) {
+			// JUnitの場合、logのインスタンスが生成できないため
 			Logger.getLogger(SdcList.class.getName()).log(Level.WARNING, "(SdcList): \"{0}\"", s);
 		}
 		return rc;

@@ -19,14 +19,6 @@ public class AccessLogBean {
 		this.date = date;
 		this.host = host;
 		this.ip = ip;
-		/* 2018/03/08 AccessLog.javaに移した
-		if (id.startsWith("z")) {
-			this.id = "Z" + id.substring(1);
-		}
-		else {
-			this.id = id;
-		}
-		*/
 		this.id = id;
 		this.roles = roles;
 		this.msg = msg;

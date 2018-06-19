@@ -49,18 +49,12 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 
 	public DbUserList() {
 		super(4000);
-		/*
-		if (log == null) {
-			// logのインスタンスが生成できないため
-			log = Logger.getLogger(DbUserList.class.getName());
-		}
-		*/
 	}
 
 	public void init() {
 		if (log == null) {
-			// logのインスタンスが生成できないため
-			log = Logger.getLogger(DbUserList.class.getName());
+			// JUnitの場合、logのインスタンスが生成できないため
+			log = Logger.getLogger(this.getClass().getName());
 		}
 	}
 
@@ -118,14 +112,5 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 		}
 		return this;
 	}
-	/*
-	@Override
-	public boolean equals(Object o) {
-		return super.equals(o);
-	}
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
-	*/
+	// equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめる
 }

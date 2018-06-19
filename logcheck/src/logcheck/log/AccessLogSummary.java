@@ -84,28 +84,11 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 	public int compareTo(AccessLogSummary o) {
 		return getRef().compareTo(o.getRef());
 	}
-	// equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめたいのだが
 	/*
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o instanceof AccessLogSummary) {
-			AccessLogSummary bean = (AccessLogSummary)o;
-			return compareTo(bean) == 0;
-		}
-		return false;
-	}
-	*/
 	@Override
 	public String toString() {
 		return String.format("[first=%s, last=%s, addr=%s, id=%s, count=%d]",
 				getFirstDate(), getLastDate(), addr.toString(), usrId, getCount());
 	}
-
+	*/
 }

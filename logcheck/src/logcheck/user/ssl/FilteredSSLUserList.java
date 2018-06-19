@@ -58,8 +58,8 @@ public class FilteredSSLUserList extends LinkedHashMap<String, UserListBean> imp
 
 	public void init() {
 		if (log == null) {
-			// logのインスタンスが生成できないため
-			log = Logger.getLogger(FilteredSSLUserList.class.getName());
+			// JUnitの場合、logのインスタンスが生成できないため
+			log = Logger.getLogger(this.getClass().getName());
 		}
 	}
 

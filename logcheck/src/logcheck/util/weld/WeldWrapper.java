@@ -62,13 +62,7 @@ public class WeldWrapper<T extends WeldRunner> {
 
 	public int weld(int argc, String...argv) {
 		int rc = 0;
-		/*
-		Weld weld = new Weld();
-		try (WeldContainer container = weld.initialize()) {
-			T application = container.select(cl).get();
-			rc = exec(application, argc, argv);
-		}
-		*/
+
 		try(SeContainer container = SeContainerInitializer.newInstance().initialize()) {
 	        // start the container, retrieve a bean and do work with it
 	        T application = container.select(cl).get();
@@ -82,13 +76,7 @@ public class WeldWrapper<T extends WeldRunner> {
 	}
 	public <E extends Annotation> int weld(AnnotationLiteral<E> anno, int argc, String...argv) {
 		int rc = 0;
-		/*
-		Weld weld = new Weld();
-		try (WeldContainer container = weld.initialize()) {
-			T application = container.select(cl, anno).get();
-			rc = exec(application, argc, argv);
-		}
-		*/
+
 		try(SeContainer container = SeContainerInitializer.newInstance().initialize()) {
 	        // start the container, retrieve a bean and do work with it
 	        T application = container.select(cl, anno).get();

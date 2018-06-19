@@ -31,15 +31,19 @@ public class DbProjListTest {
 		map.load();
 		System.out.println("size=" + map.size());
 		assertFalse(map.isEmpty());
+		// select count(*) from mst_project;
+		assertEquals(map.size(), 1010);
 
 		int ix = 0;
 		for (ProjListBean bean : map.values()) {
 			assertNotNull("getProjIs() is null", bean.getProjId());
 			assertNotNull("getValidFlag() is null", bean.getValidFlag());
-			assertFalse("equlas(null)", bean.equals(null));
 			ix += 1;
 		}
 		System.out.println("count: " + ix);
+
+		assertTrue("PRJ_SDC not found", map.containsKey("PRJ_SDC"));
+		assertTrue("PRJ_SDC_OM not found", map.containsKey("PRJ_SDC_OM"));
 	}
 
 }

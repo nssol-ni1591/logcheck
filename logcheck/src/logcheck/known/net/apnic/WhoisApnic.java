@@ -25,6 +25,7 @@ public class WhoisApnic implements Whois {
 
 	public void init() {
 		if (log == null) {
+			// JUnitの場合、logのインスタンスが生成できないため
 			log = Logger.getLogger(this.getClass().getName());
 		}
 	}

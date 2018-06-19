@@ -31,7 +31,7 @@ import logcheck.util.DB;
  * VPNクライアント証明書が発行されているユーザの一覧を取得する
  */
 @Alternative
-public class MapSSLUserList extends LinkedHashMap<String, UserListBean> implements UserList<UserListBean> {
+public class MappedSSLUserList extends LinkedHashMap<String, UserListBean> implements UserList<UserListBean> {
 
 	@Inject Logger log;
 	private Map<String, SelectUser> map = new HashMap<>();
@@ -49,19 +49,19 @@ public class MapSSLUserList extends LinkedHashMap<String, UserListBean> implemen
 			+ " order by u.delete_flag"
 	;
 
-	public MapSSLUserList() {
+	public MappedSSLUserList() {
 		super(4000);
 	}
 
 	public void init() {
 		if (log == null) {
 			// logのインスタンスが生成できないため
-			log = Logger.getLogger(MapSSLUserList.class.getName());
+			log = Logger.getLogger(this.getClass().getName());
 		}
 	}
 
 	@WithElaps
-	public MapSSLUserList load(String file, SiteList sitelist) throws Exception {
+	public MappedSSLUserList load(String file, SiteList sitelist) throws Exception {
 
 		try ( // Oracleに接続
 				Connection conn = DB.createConnection();

@@ -32,7 +32,7 @@ public class WhoisJpnic implements Whois {
 
 	public void init() {
 		if (log == null) {
-			// logのインスタンスが生成できないため
+			// JUnitの場合、logのインスタンスが生成できないため
 			log = Logger.getLogger(this.getClass().getName());
 		}
 	}
@@ -46,18 +46,23 @@ public class WhoisJpnic implements Whois {
 			KnownListIsp isp = search("https://whois.nic.ad.jp/cgi-bin/whois_gw?key=", addr);
 			return isp;
 		}
-		catch (IOException e) { }
+		catch (IOException e) {
+			log.log(Level.WARNING, e.getMessage());
+		}
 
 		try {
 			Thread.sleep(10 * 1000);
 		}
-		catch (InterruptedException e1) { }
+		catch (InterruptedException e) {
+		}
 
 		try {
 			KnownListIsp isp = search("https://whois.nic.ad.jp/cgi-bin/whois_gw?key=", addr);
 			return isp;
 		}
-		catch (IOException e) { }
+		catch (IOException e) {
+			log.log(Level.SEVERE, e.getMessage());
+		}
 		return null;
 	}
 

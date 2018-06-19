@@ -35,8 +35,8 @@ public class TsvSiteListBean {
 		return magIp;
 	}
 
-	public String toString() {
-		return String.format("projId=%s, magIp=%s", projId, magIp);
-	}
+//	public String toString() {
+//		return String.format("projId=%s, magIp=%s", projId, magIp);
+//	}
 
 }

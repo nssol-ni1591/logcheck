@@ -28,37 +28,16 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 	@Inject private Logger log;
 	private static final long serialVersionUID = 1L;
 	
-	@Inject WhoisTreetCoJp treet;
-	@Inject WhoisLacnic lacnic;
-	@Inject WhoisApnic apnic;
-	@Inject WhoisJpnic jpnic;
-	@Inject WhoisArin arin;
+	@SuppressWarnings("unused")
+	@Inject private WhoisTreetCoJp treet;
+	@SuppressWarnings("unused")
+	@Inject private WhoisLacnic lacnic;
+	@Inject private WhoisApnic apnic;
+	@Inject private WhoisJpnic jpnic;
+	@Inject private WhoisArin arin;
 
 	public void init() {
-		if (log == null) {
-			// logのインスタンスが生成できないため
-			log = Logger.getLogger(this.getClass().getName());
-		}
-		if (treet == null) {
-			treet = new WhoisTreetCoJp();
-			treet.init();
-		}
-		if (lacnic == null) {
-			lacnic = new WhoisLacnic();
-			lacnic.init();
-		}
-		if (apnic == null) {
-			apnic = new WhoisApnic();
-			apnic.init();
-		}
-		if (jpnic == null) {
-			jpnic = new WhoisJpnic();
-			jpnic.init();
-		}
-		if (arin == null) {
-			arin = new WhoisArin();
-			arin.init();
-		}
+		// ダミーメソッド
 	}
 
 	private boolean check(KnownListIsp isp) {
@@ -147,7 +126,9 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 
 	@Override
 	public KnownList load(String file) throws IOException {
-		KnownList list = new TsvKnownList().load(file);
+		KnownList list = new TsvKnownList();
+		list.init();
+		list.load(file);
 		list.forEach(this::add);
 		return this;
 	}

@@ -36,7 +36,9 @@ public class TsvSiteListTest {
 		int ix = 0;
 		for (SiteListIsp isp : map.values()) {
 			isp.getSiteId();
+			isp.getName();
 			isp.getAddress();
+			isp.toString();
 			assertFalse("equals(null) is true", isp.equals(null));
 			assertNotNull("isp#toString is null", isp.getAddress());
 			ix = ix + 1;

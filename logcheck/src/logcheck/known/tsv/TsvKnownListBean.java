@@ -22,9 +22,10 @@ public class TsvKnownListBean {
 	public String getCountry() {
 		return country;
 	}
-
+	/*
 	@Override
 	public String toString() {
 		return String.format("addr=%s, name=%s, country=%s", addr, name, country);
 	}
+	*/
 }

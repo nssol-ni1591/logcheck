@@ -34,18 +34,12 @@ public class DbProjList extends LinkedHashMap<String, ProjListBean> implements P
 
 	public DbProjList() {
 		super(600);
-		/*
-		if (log == null) {
-			// logのインスタンスが生成できないため
-			log = Logger.getLogger(DbProjList.class.getName());
-		}
-		*/
 	}
 	
 	public void init() {
 		if (log == null) {
-			// logのインスタンスが生成できないため
-			log = Logger.getLogger(DbProjList.class.getName());
+			// JUnitの場合、logのインスタンスが生成できないため
+			log = Logger.getLogger(this.getClass().getName());
 		}
 	}
 

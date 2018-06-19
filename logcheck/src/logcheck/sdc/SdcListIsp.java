@@ -12,14 +12,5 @@ public class SdcListIsp extends IspListImpl {
 	public String toString() {
 		return String.format("name=%s, addr=%s", getName(), getAddress());
 	}
-
-	@Override
-	public boolean equals(Object o) {
-		return super.equals(o);
-	}
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
-
+	// equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめる
 }

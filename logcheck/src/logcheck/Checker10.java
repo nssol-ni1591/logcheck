@@ -29,13 +29,7 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
-	/*
-	private static final Pattern[] AUTH_PATTERNS = {
-			Pattern.compile("Primary authentication successful for [\\S ]+ from [\\d\\.]+"),
-			Pattern.compile("Login failed using auth server (NSSDC_LDAP|SDC-AD) \\([\\w ]+\\)\\.  Reason: Failed"),		// 後："Primary authentication failed for [\\S ]+ from \\S+"
-			Pattern.compile("Login failed using auth server (NSSDC_LDAP|SDC-AD) \\([\\w ]+\\)\\.  Reason: Short Password"),//　後："Testing Password realm restrictions failed for [\\S ]+ , with certificate '[\\w ,=-]+' *"
-	};
-	 */
+
 	protected static final Pattern[] AUTH_PATTERNS;
 	static {
 		AUTH_PATTERNS = new Pattern[AUTH_SUCCESS_PATTERNS.length + AUTH_FAILED_PATTERNS.length];
@@ -59,16 +53,10 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 						.anyMatch(p -> p.matcher(b.getMsg()).matches())
 						)
 				.forEach(b -> {
-					/* Ispの取得は失敗メッセージの場合だけ行えばよい。成功メッセージではIspの参照を行っていないので
-					NetAddr addr = b.getAddr();
-					IspList isp = maglist.get(addr);
-					if (isp == null) {
-						isp = knownlist.get(addr);
-					}
-					*/
 					AccessLogSummary msg = null;
 					if (b.getMsg().contains("failed")) {
-						// 失敗メッセージ
+						// 失敗メッセージ:
+						// Ispの取得は失敗メッセージの場合だけ行えばよい。成功メッセージではIspの参照を行っていないので
 						NetAddr addr = b.getAddr();
 						IspList isp = maglist.get(addr);
 						if (isp == null) {

@@ -29,7 +29,7 @@ public class WhoisArin implements Whois {
 
 	public void init() {
 		if (log == null) {
-			// logのインスタンスが生成できないため
+			// JUnitの場合、logのインスタンスが生成できないため
 			log = Logger.getLogger(this.getClass().getName());
 		}
 	}

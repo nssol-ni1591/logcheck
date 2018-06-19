@@ -33,10 +33,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 	@Inject protected UserList<UserListBean> userlist;
 
 	@Inject private Logger log;
-/*
-	private static final Pattern AUTH_PATTERN = 
-			Pattern.compile("VPN Tunneling: Session started for user with IPv4 address ([\\w\\.]+), hostname ([\\S]+)");
-*/
+
 	public void init(String...argv) throws Exception {
 		this.knownlist.load(argv[0]);
 		this.sitelist.load(null);
@@ -48,7 +45,6 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 		stream//.parallel()		// parallel()を使用するとOutOfMemory例外が発生する　=> なぜ?
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
-//				.filter(b -> SESS_START_PATTERN.matcher(b.getMsg()).matches())
 				.filter(b -> Stream.of(SESS_START_PATTERN)
 						// 正規化表現に一致するメッセージのみを処理対象にする
 						.anyMatch(p -> p.matcher(b.getMsg()).matches())

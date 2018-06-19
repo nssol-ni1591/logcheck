@@ -5,9 +5,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -33,13 +31,6 @@ public class TsvKnownListTest {
 	@AfterClass
 	public static void afterClass() {
 		System.out.println("TsvKnownListTest ... end");
-	}
-
-	@Before
-	public void before() {
-	}
-	@After
-	public void after() {
 	}
 
 	@Test

@@ -54,6 +54,7 @@ public class FwLogTest {
 				summary.getDstIsp();
 				summary.getDstPort();
 				summary.compareTo(prevSummary);
+				summary.toString();
 
 				assertNotNull("bean is null", b.toString());
 				assertFalse("bean#equals(null)", b.equals(null));

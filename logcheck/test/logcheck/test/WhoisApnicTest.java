@@ -27,9 +27,5 @@ public class WhoisApnicTest extends WhoisKnownListTest {
 	public void test01() {
 		super.test01();
 	}
-	@Test
-	public void test02() {
-		super.test02();
-	}
 
 }

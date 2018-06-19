@@ -23,6 +23,7 @@ public class WhoisJpnicTest extends WhoisKnownListTest {
 		System.out.println("WhoisJpnic ... end");
 	}
 
+	// Jpnic のレスポンスは悪いので、通常は試験しない
 	@Test
 	public void test01() {
 //		super.test01();

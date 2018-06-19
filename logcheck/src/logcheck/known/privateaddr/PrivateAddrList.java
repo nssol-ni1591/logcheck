@@ -17,21 +17,12 @@ import logcheck.util.net.NetAddr;
  * IPアドレスから取得される接続元はISP名ではなく企業名を取得したい。
  * 今のHashMapでは、Hash地の値により、どちらが取得されるか判断付かない。
  */
-//@Alternative
 public class PrivateAddrList extends LinkedHashSet<KnownListIsp> implements KnownList {
-
-	//@Inject private Logger log;
 
 	private static final long serialVersionUID = 1L;
 
 	public PrivateAddrList() {
 		super();
-		/*
-		if (log == null) {
-			// logのインスタンスが生成できないため
-			log = Logger.getLogger(PrivateAddrList.class.getName());
-		}
-		*/
 	}
 
 	/*

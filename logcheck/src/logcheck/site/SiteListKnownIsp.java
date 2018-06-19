@@ -37,11 +37,16 @@ public class SiteListKnownIsp implements SiteListIsp {
 	public void addAddress(String addr) {
 		isp.addAddress(addr);
 	}
-
+	@Override
+	public void addAddress(NetAddr addr) {
+		isp.addAddress(addr);
+	}
+	/*
+	@Override
 	public String toString() {
 		return String.format("siteId=%s, projId=%s, del=%s%s", getSiteId(), getProjId(), getSiteDelFlag(), getProjDelFlag());
 	}
-
+	*/
 	@Override
 	public String getSiteDelFlag() {
 		return "0";

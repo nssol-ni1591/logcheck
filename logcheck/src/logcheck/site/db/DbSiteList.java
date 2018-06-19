@@ -37,19 +37,12 @@ public class DbSiteList extends LinkedHashMap<String, SiteListIsp> implements Si
 
 	public DbSiteList() {
 		super(600);
-		/*
-		if (log == null) {
-			// logのインスタンスが生成できないため
-			log = Logger.getLogger(DbSiteList.class.getName());
-		}
-		*/
-		init();
 	}
 
 	public void init() {
 		if (log == null) {
-			// logのインスタンスが生成できないため
-			log = Logger.getLogger(DbSiteList.class.getName());
+			// JUnitの場合、logのインスタンスが生成できないため
+			log = Logger.getLogger(this.getClass().getName());
 		}
 	}
 
@@ -95,14 +88,5 @@ public class DbSiteList extends LinkedHashMap<String, SiteListIsp> implements Si
 		}
 		return this;
 	}
-	/*
-	@Override
-	public boolean equals(Object o) {
-		return super.equals(o);
-	}
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
-	*/
+
 }

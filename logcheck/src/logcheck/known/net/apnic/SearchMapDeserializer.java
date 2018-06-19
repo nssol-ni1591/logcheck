@@ -42,14 +42,13 @@ public class SearchMapDeserializer implements JsonbDeserializer<SearchMap> {
 						}.getClass().getGenericSuperclass();
 					try {
 						List<Map<String, Object>> attrs = jsonb.fromJson(val, hashListType);
-						//System.out.println("List-->:" + attrs);
 
 					    attrs.stream()
 					    	.filter(attr -> attr.containsKey("name"))
 					    	.forEach(attr -> {
 					    		String name = attr.get("name").toString().toLowerCase();
 					    		Object values = attr.get("values");
-				    			if (map.containsKey(name)) {
+				    			if (map.containsKey(name)) {	
 				    				if ("inetnum".equals(name)) {
 				    					log.log(Level.FINE, "duplicate key={0}, exists={1}, new={2}", new Object[] { name, map.get(name), values });
 				    					String v;
@@ -98,7 +97,6 @@ public class SearchMapDeserializer implements JsonbDeserializer<SearchMap> {
 				    				}
 				    			}
 				    			else if (values == null) {
-//				    				log.log(Level.FINE, "name={0}, attr={1}", new Object[] { name, attr });
 					    		}
 					    		else if (values instanceof List) {
 									List<?> l = (List<?>)values;
@@ -125,7 +123,7 @@ public class SearchMapDeserializer implements JsonbDeserializer<SearchMap> {
 				case "objectType":
 				case "primaryKey":
 		    		String name = className.toLowerCase();
-	    			if (map.containsKey(name)) {
+	    			if (!map.containsKey(name)) {
 	    				SearchTextString sts = new SearchTextString(val);
 	    				map.put(className, sts);
 	    				log.log(Level.FINE, "update key={0}, exists={1}, new={2}", new Object[] { name, map.get(name), val });
@@ -134,18 +132,12 @@ public class SearchMapDeserializer implements JsonbDeserializer<SearchMap> {
 				case "type":
 				case "comments":
 				default:
-//					log.log(Level.FINE, "className={0}, val={1}", new Object[] { className, val });
 				}
-				//                }
-//                catch (ClassNotFoundException e) {
-//                	e.printStackTrace();
-//                }
             }
             else {
-            	//System.out.println("event=" + event);
             }
         }
-//		log.log(Level.FINE, "map={0}" + map);
+		log.log(Level.FINE, "map={0}" + map);
         return map;
 	}
 

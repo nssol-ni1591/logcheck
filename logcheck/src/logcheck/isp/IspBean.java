@@ -39,7 +39,8 @@ public class IspBean<E> implements Comparable<IspBean<E>> {
 		return name;
 	}
 
-	public String toStringWithAddress() {
-		return toString() + " " + ref.toString();
-	}
+//	public String toStringWithAddress() {
+//		return toString() + " " + ref.toString();
+//	}
+
 }

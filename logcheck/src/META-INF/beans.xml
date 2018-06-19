@@ -22,7 +22,7 @@
 		 -->
 		<class>logcheck.known.net.WhoisKnownList</class>
 		<class>logcheck.site.db.DbSiteList</class>
-		<class>logcheck.user.ssl.MapSSLUserList</class>
+		<class>logcheck.user.ssl.MappedSSLUserList</class>
 		<class>logcheck.proj.db.DbProjList</class>
 	</alternatives>
 </beans>

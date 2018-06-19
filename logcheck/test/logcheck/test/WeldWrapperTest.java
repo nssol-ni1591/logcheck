@@ -27,6 +27,7 @@ public class WeldWrapperTest {
 	@BeforeClass
 	public static void beforeClass() throws Exception {
 		System.out.println("start WeldWrapperTest ...");
+		Env.init();
 
 	}
 	@AfterClass
@@ -57,6 +58,7 @@ public class WeldWrapperTest {
 	}
 	@Test
 	public void test03() {
+		// 引数が不足しているので、WeldWrapperで例外が発生する
 		int rc = new WeldWrapper<WeldWrapperTestSub3>(WeldWrapperTestSub3.class)
 					.weld(4, KNOWNLIST, MAGLIST, ACCESSLOG, ACCESSLOG);
 		assertEquals("WeldWrapperTest#test03 ... NG", -1, rc);

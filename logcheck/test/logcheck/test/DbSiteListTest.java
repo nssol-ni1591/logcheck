@@ -27,9 +27,12 @@ public class DbSiteListTest {
 	@Test
 	public void test() throws Exception {
 		DbSiteList map = new DbSiteList();
+		map.init();
 		map.load(null);
 		System.out.println("size=" + map.size());
 		assertFalse(map.isEmpty());
+		// select count(*) from sas_prj_site_info;
+		assertEquals(map.size(), 884);
 
 		int ix = 0;
 		for (SiteListIsp isp : map.values()) {
@@ -41,6 +44,11 @@ public class DbSiteListTest {
 			ix += 1;
 		}
 		System.out.println("count: " + ix);
+
+		SiteListIsp isp = map.get("268");
+		assertNotNull("site_id='268' not found", isp);
+		String prjId = isp.getProjId();
+		assertEquals("prj_id illegal", prjId, "PRJ_SDC_OM");
 	}
 
 }

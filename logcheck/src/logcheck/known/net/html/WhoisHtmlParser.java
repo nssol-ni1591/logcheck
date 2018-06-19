@@ -52,7 +52,7 @@ public abstract class WhoisHtmlParser {
 
 	public void init() {
 		if (log == null) {
-			// logのインスタンスが生成できないため
+			// JUnitの場合、logのインスタンスが生成できないため
 			log = Logger.getLogger(this.getClass().getName());
 		}
 	}
@@ -66,7 +66,7 @@ public abstract class WhoisHtmlParser {
 		}
 		return null;
 	}
-	public String[] parse2(String ptn, String s) {
+	public String[] parse(String ptn, String s) {
 		Pattern p = Pattern.compile(ptn);
 		Matcher m = p.matcher(s);
 		if (m.matches()) {
@@ -130,18 +130,6 @@ public abstract class WhoisHtmlParser {
 								)) {
 							// すでに"Inc."などを含む文字列がnameに設定されている場合はnameの変更は行わない
 						}
-						/*
-						else if ("Paris, France".equals(tmp)
-								|| "Security Gateway for Customer".equals(tmp)
-								) {
-							// 地名とか機器名の場合は置換しない
-						}
-						else if ("PL".equals(country)
-								|| "PH".equals(country)
-								) {
-							// 下位のエントリの方が記述が曖昧なので、文字の置換は行わない
-						}
-						*/
 						else {
 							name = tmp;
 						}
@@ -150,14 +138,6 @@ public abstract class WhoisHtmlParser {
 					if (tmp != null) {
 						country = tmp;
 					}
-
-//					if (name == null) {
-//						String[] array = parse2("([\\S ]+) [\\w-]+ \\(NET-[\\d-]+\\) (\\d+\\.\\d+\\.\\d+\\.\\d+) - <a \\S+>(\\d+\\.\\d+\\.\\d+\\.\\d+)</a>", s);
-//						if (array != null) {
-//							name = array[0];
-//							netaddr = array[1] + " - " + array[2];
-//						}
-//					}
 				}
 			}
 		}
