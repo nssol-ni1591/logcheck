@@ -85,10 +85,11 @@ public class WhoisKnownListTest {
 	@Test
 	public void test02() {
 		// 親ISP： Japan Network Information Center、211.8.0.0 - 211.19.255.255
+		// WhoisApnic: addr=211.9.34.69 => name=BIT-DRIVE, country=JP, net=[211.9.32.0/22] 
 		KnownListIsp isp = getIsp("211.9.34.69");
 		assertNotNull(isp);
 		if (check) {
-			assertEquals("Sony Network Communications Inc.", isp.getName());
+			assertEquals("BIT-DRIVE", isp.getName());
 		}
 	}
 	// キャッシュ動作 -> 2つ目のアドレス検索時にWhoisクラスがcallされないことを確認する

@@ -18,18 +18,19 @@ public class DB {
 	private static final String DEFAULT_URL = "jdbc:oracle:thin:@172.30.90.145:1521:sdcdb011";
 
 	private DB () {
+		// Do nothing
 	}
 
-	private static String getUsername() {
+	public static String getUsername() {
 		return MASTERINFO_USER;
 	}
-	private static String getPassword() {
+	public static String getPassword() {
 		return MASTERINFO_PASS;
 	}
-	private static String getDriver() {
+	public static String getDriver() {
 		return DEFAULT_DRIVER;
 	}
-	private static String getUrl() {
+	public static String getUrl() {
 		return DEFAULT_URL;
 	}
 

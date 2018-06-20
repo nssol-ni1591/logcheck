@@ -88,7 +88,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 							else {
 								site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[1]), "-1", "");
 							}
-							site.addAddress(b.getAddr().toString());
+							site.addAddress(b.getAddr());
 							user.addSite(site);
 							site.update(b.getDate());
 							log.config(String.format("user=%s, magisp=%s", user, magisp));

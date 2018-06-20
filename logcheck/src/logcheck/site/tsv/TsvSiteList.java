@@ -17,6 +17,7 @@ import logcheck.annotations.WithElaps;
 import logcheck.site.SiteList;
 import logcheck.site.SiteListIsp;
 import logcheck.site.SiteListIspImpl;
+import logcheck.util.net.NetAddr;
 
 /*
  * 以前の TsvMagListクラス
@@ -52,7 +53,7 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 						site = new SiteListIspImpl(b.getSiteName(), b.getProjId());
 						this.put(b.getProjId(), site);
 					}
-					site.addAddress(b.getMagIp());
+					site.addAddress(new NetAddr(b.getMagIp()));
 				});
 		}
 		return this;

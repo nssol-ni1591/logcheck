@@ -6,6 +6,7 @@ import java.util.Optional;
 import logcheck.annotations.WithElaps;
 import logcheck.known.KnownList;
 import logcheck.known.KnownListIsp;
+import logcheck.util.Constants;
 import logcheck.util.net.NetAddr;
 
 /*
@@ -39,16 +40,16 @@ public class PrivateAddrList extends LinkedHashSet<KnownListIsp> implements Know
 	public KnownList load(String file) {
 		KnownListIsp isp;
 		isp = new KnownListIsp("LOOPBACK-RESERVED", "プライベート");
-		isp.addAddress(new NetAddr("127.0.0.0/8"));
+		isp.addAddress(new NetAddr(Constants.LOCALHOST));
 		add(isp);
 		isp = new KnownListIsp("ABLK-RFC1918-RESERVED", "プライベート");
-		isp.addAddress(new NetAddr("10.0.0.0/8"));
+		isp.addAddress(new NetAddr(Constants.CLASS_A));
 		add(isp);
 		isp = new KnownListIsp("BBLK-RFC1918-RESERVED", "プライベート");
-		isp.addAddress(new NetAddr("172.16.0.0/12"));
+		isp.addAddress(new NetAddr(Constants.CLASS_B));
 		add(isp);
 		isp = new KnownListIsp("CBLK-RFC1918-RESERVED", "プライベート");
-		isp.addAddress(new NetAddr("192.168.0.0/16"));
+		isp.addAddress(new NetAddr(Constants.CLASS_C));
 		add(isp);
 		return this;
 	}

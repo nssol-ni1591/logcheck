@@ -180,6 +180,10 @@ public class NetAddr implements Comparable<NetAddr> {
 		}
 		return 0;
 	}
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
 
 	public boolean equals(NetAddr another) {
 		if (another == null) {
@@ -234,30 +238,36 @@ public class NetAddr implements Comparable<NetAddr> {
 	public int[] getBroadcastAddr() {
 		return brdcast;
 	}
-	public int getMask() {
+	public int getNetmask() {
 		return netmask;
 	}
+	// xx.xx.xx.xx (yy.yy.yy.yy-zz.zz.zz.zz)
 	public String toStringRange() {
-		StringBuilder sb = new StringBuilder(toString());
-		sb.append(" (");
-		sb.append(network[0]).append(".").append(network[1]).append(".").append(network[2]).append(".").append(network[3]);
-		sb.append("-");
-		sb.append(brdcast[0]).append(".").append(brdcast[1]).append(".").append(brdcast[2]).append(".").append(brdcast[3]);
-		sb.append(")");
+		StringBuilder sb = new StringBuilder(toString())
+				.append(" (")
+				.append(join(network, "."))
+				.append("-")
+				.append(join(brdcast, "."))
+				.append(")");
 		return sb.toString();
 	}
+	// xx.xx.xx.xx/yy
 	public String toStringNetwork() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(network[0]).append(".").append(network[1]).append(".").append(network[2]).append(".").append(network[3]);
-		sb.append("/").append(netmask);
+		StringBuilder sb = new StringBuilder()
+				.append(join(network, "."))
+				.append("/")
+				.append(netmask);
 		return sb.toString();
 	}
 	@Override
+	// xx.xx.xx.xx
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(srcaddr[0]).append(".").append(srcaddr[1]).append(".").append(srcaddr[2]).append(".").append(srcaddr[3]);
-		//sb.append("/").append(mask);
+		StringBuilder sb = new StringBuilder()
+				.append(join(srcaddr, "."));
 		return sb.toString();
 	}
 
+	private String join(int[] a, String d) {
+		return new StringBuilder().append(a[0]).append(d).append(a[1]).append(d).append(a[2]).append(d).append(a[3]).toString();
+	}
 }
