@@ -84,11 +84,5 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 	public int compareTo(AccessLogSummary o) {
 		return getRef().compareTo(o.getRef());
 	}
-	/*
-	@Override
-	public String toString() {
-		return String.format("[first=%s, last=%s, addr=%s, id=%s, count=%d]",
-				getFirstDate(), getLastDate(), addr.toString(), usrId, getCount());
-	}
-	*/
+
 }

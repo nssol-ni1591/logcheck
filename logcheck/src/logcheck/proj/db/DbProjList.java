@@ -48,8 +48,6 @@ public class DbProjList extends LinkedHashMap<String, ProjListBean> implements P
 		// @Overrideのため、使用しない引数のfileを定義する
 		String sql = SQL_ALL_PROJ;
 
-		// Oracle JDBC Driverのロード
-		// なぜコメントアウトで動作する？：Class.forName("oracle.jdbc.driver.OracleDriver");
 		try (	// Oracleに接続
 				Connection conn = DB.createConnection();
 				// ステートメントを作成

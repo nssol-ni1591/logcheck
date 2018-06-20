@@ -62,11 +62,6 @@ public class UserListSite extends Summary<SiteListIsp> {
 	public void addAddress(NetAddr addr) {
 		getRef().addAddress(addr);
 	}
-	/*
-	public void addAddress(String addr) {
-		getRef().addAddress(addr);
-	}
-	*/
 	public boolean within(NetAddr addr) {
 		return getRef().within(addr);
 	}

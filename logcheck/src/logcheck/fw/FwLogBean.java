@@ -58,6 +58,26 @@ public class FwLogBean implements Comparable<FwLogBean> {
 		return 0;
 	}
 	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	@Override
+	public boolean equals(Object another) {
+		if (another == null) {
+			return false;
+		}
+		if (another == this) {
+			return true;
+		}
+		if (getClass() != another.getClass()) {
+			return false;
+		}
+		if (another instanceof FwLogBean) {
+			return compareTo((FwLogBean)another) == 0;
+		}
+		return false;
+	}
+	@Override
 	public String toString() {
 		return String.format("srcip=%s, dstip=%s, dstport=%d", srcip, dstip, dstport);
 	}

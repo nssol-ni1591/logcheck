@@ -41,7 +41,7 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 	public TsvKnownList() {
 		super(200);
 	}
-	
+	@Override
 	public void init() {
 		if (log == null) {
 			// JUnitの場合、logのインスタンスが生成できないため
@@ -116,7 +116,6 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 		if (!rc) {
 			Logger.getLogger(TsvKnownList.class.getName()).log(Level.WARNING, "(既知ISP_IPアドレス): s=\"{0}\"", s);
 		}
-		//Logger.getLogger(TsvKnownList.class.getName()).log(Level.FINE, "(既知ISP_IPアドレス): s=\"{0}\"", s);
 		return rc;
 	}
 

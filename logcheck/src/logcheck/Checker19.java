@@ -18,12 +18,9 @@ import logcheck.util.weld.WeldWrapper;
  */
 public class Checker19 extends AbstractChecker<ProjList<ProjListBean>> {
 
-	@Inject protected ProjList<ProjListBean> projlist;
 	@Inject private Logger log;
-	/*
-	private static final Pattern AUTH_PATTERN = 
-			Pattern.compile("VPN Tunneling: Session started for user with IPv4 address ([\\w\\.]+), hostname ([\\S]+)");
-	*/
+	@Inject protected ProjList<ProjListBean> projlist;
+
 	public void init(String...argv) throws Exception {
 		this.projlist.load();
 	}
@@ -34,7 +31,6 @@ public class Checker19 extends AbstractChecker<ProjList<ProjListBean>> {
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
 				.filter(b -> SESS_START_PATTERN.matcher(b.getMsg()).matches())
-				//.filter(b -> b.getId().startsWith("Z"))
 				.forEach(b -> {
 					String[] roles = b.getRoles();
 

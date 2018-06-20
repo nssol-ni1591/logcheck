@@ -27,7 +27,6 @@ import logcheck.util.weld.WeldWrapper;
  */
 public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 
-	//@Inject private KnownList knownlist;
 	private KnownList knownlist = new PrivateAddrList();
 	@Inject private MagList maglist;
 	@Inject private SdcList sdclist;

@@ -33,7 +33,6 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 	@Inject Logger log;
 
 	private static final long serialVersionUID = 1L;
-//	private static final String DEFAULT_IP = "0.0.0.0";
 	private static final String TIME_FORMAT = "yyyy/MM/dd HH:mm:ss";
 
 	public static final String SQL_ZUSER = 
@@ -59,10 +58,6 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 			log = Logger.getLogger(this.getClass().getName());
 		}
 	}
-
-//	public String getDefaultIP() {
-//		return DEFAULT_IP;
-//	}
 
 	@WithElaps
 	public DbUserList load(String file, SiteList sitelist) throws Exception {
@@ -106,14 +101,7 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 					site = new UserListSite(siteBean, userDelFlag, endDate);
 					bean.addSite(site);
 				}
-				/*
-				if (globalIp == null
-						|| "非固定".equals(globalIp)
-						|| "追加不要".equals(globalIp)) {
-					globalIp = DEFAULT_IP;	// IPアドレスとしては不正なので一致しない for 専用線、ISP経由
-				}
-				site.addAddress(globalIp);
-				*/
+
 				NetAddr addr;
 				try {
 					addr = new NetAddr(globalIp);

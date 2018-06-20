@@ -26,9 +26,6 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-	//private static final Pattern IP_RANGE_PATTERN = Pattern.compile("Testing Source IP realm restrictions failed for [\\S ]*/NSSDC-Auth\\d(\\(\\w+\\))? *");
-	//private static final Pattern IP_RANGE_PATTERN = Pattern.compile("Testing Source IP realm restrictions failed for [\\S ]*/NSSDC-Auth\\d+(\\([\\w_]+\\))? *");
-
 	public void init(String...argv) throws Exception {
 		this.knownlist.load(argv[0]);
 		this.maglist.load(argv[1]);
@@ -40,7 +37,6 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 		stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
-//				.filter(b -> IP_RANGE_PATTERN.matcher(b.getMsg()).matches())
 				.filter(b -> Stream.of(IP_RANGE_PATTERN)
 						// 正規化表現に一致するメッセージのみを処理対象にする
 						.anyMatch(p -> p.matcher(b.getMsg()).matches())

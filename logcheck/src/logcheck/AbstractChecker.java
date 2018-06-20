@@ -40,9 +40,6 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 	protected final Set<String> userErrs = new TreeSet<>(); 
 	protected final Set<NetAddr> addrErrs = new TreeSet<>(); 
 
-	/*
-			Pattern.compile(""),
-	 */
 	protected static final Pattern[] FAIL_PATTERNS;
 	protected static final Pattern[] FAIL_PATTERNS_DUP;
 	protected static final Pattern[] INFO_PATTERNS;
@@ -57,7 +54,6 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 			Pattern.compile("Login failed.  Reason: No Certificate"),						// 後："Testing Certificate realm restrictions failed for [\\w\\.]*/NSSDC-Auth(1|2)(\\(MAC\\))? *"
 			Pattern.compile("Login failed.  Reason: No Roles"),								// 単独
 			Pattern.compile("Login failed.  Reason: Revoked Certificate"),					//　後："Testing Certificate realm restrictions failed for [\\w\\.]*/NSSDC-Auth(1|2)(\\(MAC\\))? , with certificate '[\\w ,=-]+' *"
-//			Pattern.compile("Login failed.  Reason: Revoked SDC-AD"),						//　後："NSSDC-Auth3(AD) authentication failed for /Primary from ..."
 			Pattern.compile("Login failed.  Reason: Wrong Certificate::unable to get certificate CRL"),	//　2017-10-26追加: 後："Testing Certificate realm restrictions failed for [\\w\\.]*/NSSDC-Auth(1|2)(\\(MAC\\))? , with certificate '[\\w ,=-]+' unable to get certificate CRL"
 			Pattern.compile("Login failed \\((NSSDC_LDAP|SDC-AD)\\)\\.  Reason: (LDAP Server|SDC-AD|Active Directory)"),			// 後： authentication failed for Primary/Z06290  from NSSDC_LDAP
 			Pattern.compile("Could not connect to LDAP server '(NSSDC_LDAP|SDC-AD)': Failed binding to admin DN: \\[\\d+\\] Can't contact LDAP server: [\\d\\.:]+ [\\d\\.:]+"),
@@ -134,7 +130,6 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 
 		FAIL_PATTERNS_DUP = new Pattern[FAIL_PATTERNS_DUP_PART.length + 1];
 		System.arraycopy(FAIL_PATTERNS_DUP_PART, 0, FAIL_PATTERNS_DUP, 0, FAIL_PATTERNS_DUP_PART.length);
-//		System.arraycopy(IP_RANGE_PATTERN, 0, FAIL_PATTERNS_DUP, FAIL_PATTERNS_DUP_PART.length, IP_RANGE_PATTERN.length);
 		FAIL_PATTERNS_DUP[FAIL_PATTERNS_DUP_PART.length] = IP_RANGE_PATTERN;
 
 		INFO_PATTERNS = new Pattern[INFO_PATTERNS_PART.length + AUTH_SUCCESS_PATTERNS.length + 1 /*SESS_START_PATTERN.length*/];

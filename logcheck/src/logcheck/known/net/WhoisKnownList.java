@@ -36,8 +36,9 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 	@Inject private WhoisJpnic jpnic;
 	@Inject private WhoisArin arin;
 
+	@Override
 	public void init() {
-		// ダミーメソッド
+		// No nothing
 	}
 
 	private boolean check(KnownListIsp isp) {
@@ -67,8 +68,8 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 			return rc.get();
 		}
 
-//		final Whois[] whois = { apnic, treet, lacnic, arin, jpnic };
-		// jpnicはレスポンスが遅いので最後
+		// { apnic, treet, lacnic, arin, jpnic }から選択
+		// 注意：jpnicはレスポンスが遅いので最後
 		final Whois[] whois = { apnic, arin, jpnic };
 
 		KnownListIsp isp = null;

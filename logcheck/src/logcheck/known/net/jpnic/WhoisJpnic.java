@@ -81,7 +81,6 @@ public class WhoisJpnic implements Whois {
 	public KnownListIsp search(String site, NetAddr addr) throws IOException {
 		String netaddr = null;
 		String name = null;
-		final String country = "JP";
 
 		// URLを作成してGET通信を行う
 		URL url = null;
@@ -117,7 +116,7 @@ public class WhoisJpnic implements Whois {
 				http.disconnect();
 			}
 		}
-		return WhoisUtils.format(addr, netaddr, name, country);
+		return WhoisUtils.format(addr, netaddr, name, "JP");
 	}
 
 }

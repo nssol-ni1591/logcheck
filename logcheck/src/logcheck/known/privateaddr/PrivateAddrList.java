@@ -21,6 +21,7 @@ import logcheck.util.net.NetAddr;
 public class PrivateAddrList extends LinkedHashSet<KnownListIsp> implements KnownList {
 
 	private static final long serialVersionUID = 1L;
+	private static final String PRIVATE = "プライベート";
 
 	public PrivateAddrList() {
 		super();
@@ -39,16 +40,16 @@ public class PrivateAddrList extends LinkedHashSet<KnownListIsp> implements Know
 	@WithElaps
 	public KnownList load(String file) {
 		KnownListIsp isp;
-		isp = new KnownListIsp("LOOPBACK-RESERVED", "プライベート");
+		isp = new KnownListIsp("LOOPBACK-RESERVED", PRIVATE);
 		isp.addAddress(new NetAddr(Constants.LOCALHOST));
 		add(isp);
-		isp = new KnownListIsp("ABLK-RFC1918-RESERVED", "プライベート");
+		isp = new KnownListIsp("ABLK-RFC1918-RESERVED", PRIVATE);
 		isp.addAddress(new NetAddr(Constants.CLASS_A));
 		add(isp);
-		isp = new KnownListIsp("BBLK-RFC1918-RESERVED", "プライベート");
+		isp = new KnownListIsp("BBLK-RFC1918-RESERVED", PRIVATE);
 		isp.addAddress(new NetAddr(Constants.CLASS_B));
 		add(isp);
-		isp = new KnownListIsp("CBLK-RFC1918-RESERVED", "プライベート");
+		isp = new KnownListIsp("CBLK-RFC1918-RESERVED", PRIVATE);
 		isp.addAddress(new NetAddr(Constants.CLASS_C));
 		add(isp);
 		return this;

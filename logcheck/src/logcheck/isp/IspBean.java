@@ -7,9 +7,6 @@ public class IspBean<E> implements Comparable<IspBean<E>> {
 	private final E ref;
 
 	public IspBean(String name, String country, E ref) {
-//		if (name == null) {
-//			throw new IllegalAccessError("name is null");
-//		}
 		this.name = name;
 		this.country = country == null ? null : country.toUpperCase();
 		this.ref = ref;
@@ -38,9 +35,5 @@ public class IspBean<E> implements Comparable<IspBean<E>> {
 	public String toString() {
 		return name;
 	}
-
-//	public String toStringWithAddress() {
-//		return toString() + " " + ref.toString();
-//	}
 
 }

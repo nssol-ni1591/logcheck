@@ -109,8 +109,9 @@ public abstract class WhoisHtmlParser {
 					if (tmp != null) {
 						if (tmp.contains("@")) {
 						}
-						else if (tmp.contains("HaNoi") || tmp.contains("Hanoi")
-//								|| tmp.contains("Bangkok")
+						else if (tmp.contains("HaNoi")
+								|| tmp.contains("Hanoi")
+								|| tmp.contains("Bangkok")
 								|| tmp.contains("Route")
 								|| tmp.contains("STATIC")
 								|| tmp.contains("Assign for")

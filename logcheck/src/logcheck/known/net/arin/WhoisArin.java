@@ -117,7 +117,7 @@ public class WhoisArin implements Whois {
 		String[] keys = { "OrgName", "CustName", "Organization" };
 		Optional<String> ret = Stream.of(keys)
 				.filter(key -> map.get(key) != null)
-				.map(key -> map.get(key).toString())
+				.map(key -> map.get(key))
 				.filter(s -> !s.contains("@"))
 				.findFirst();
 		return ret.isPresent() ? ret.get() : null;

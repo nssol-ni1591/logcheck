@@ -27,7 +27,6 @@ public class DbSiteList extends LinkedHashMap<String, SiteListIsp> implements Si
 	@Inject private Logger log;
 
 	private static final long serialVersionUID = 1L;
-//	private static final String DEFAULT_IP = "0.0.0.0";
 
 	public static final String SQL_ALL_SITE = 
 			"select s.site_id, s.site_name, s.delete_flag, p.prj_id, p.delete_flag, g.site_gip"
@@ -48,11 +47,8 @@ public class DbSiteList extends LinkedHashMap<String, SiteListIsp> implements Si
 		}
 	}
 
-//	public String getDefaultIP() {
-//		return DEFAULT_IP;
-//	}
-
-	@Override @WithElaps
+	@Override 
+	@WithElaps
 	public SiteList load(String file) throws Exception {
 		// @Overrideのため、使用しない引数のfileを定義する
 		String sql = SQL_ALL_SITE;
@@ -80,14 +76,7 @@ public class DbSiteList extends LinkedHashMap<String, SiteListIsp> implements Si
 					site = new SiteListIspImpl(siteId, siteName, siteDelFlag, projId, projDelFlag);
 					this.put(siteId, site);
 				}
-				/*
-				if (globalIp == null
-						|| "非固定".equals(globalIp)
-						|| "追加不要".equals(globalIp)) {
-					globalIp = getDefaultIP();	// IPアドレスとしては不正なので一致しない
-				}
-				site.addAddress(globalIp);
-				 */
+
 				NetAddr addr;
 				try {
 					addr = new NetAddr(globalIp);

@@ -96,6 +96,7 @@ public class ApnicDeserializer implements JsonbDeserializer<HashMap> {
 									}
 								}
 								else if (values == null) {
+									// Do nothing
 								}
 								else if (values instanceof List) {
 									List<?> l = (List<?>) values;
@@ -103,21 +104,14 @@ public class ApnicDeserializer implements JsonbDeserializer<HashMap> {
 										map.put(name, l.get(0).toString());
 									}
 									else {
-										//SearchTextAttributes links = new SearchTextAttributes();
-										//List<String> links = new ArrayList<>();
-										//l.forEach(v -> links.add(v.toString()));
 										map.put(name, l.toString());
 									}
 								}
 								else {
-									//SearchTextString st = new SearchTextString(values.toString());
 									map.put(name, values.toString());
 								}
 							});
 						}
-//						catch (JsonbException e) {
-//							log.log(Level.SEVERE, "catch JsonbException", e);
-//						}
 						catch (Exception e) {
 							log.log(Level.SEVERE, "catch Exception", e);
 						}
@@ -137,9 +131,10 @@ public class ApnicDeserializer implements JsonbDeserializer<HashMap> {
 				}
             }
             else {
+            	// Do nothing
             }
         }
-		log.log(Level.FINE, "map={0}" + map);
+		log.log(Level.FINE, "map={0}", map);
         return map;
 	}
 
