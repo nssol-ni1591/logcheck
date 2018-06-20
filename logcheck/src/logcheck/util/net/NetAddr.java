@@ -184,9 +184,15 @@ public class NetAddr implements Comparable<NetAddr> {
 	public int hashCode() {
 		return super.hashCode();
 	}
-
-	public boolean equals(NetAddr another) {
+	@Override
+	public boolean equals(Object another) {
 		if (another == null) {
+			return false;
+		}
+		if (another == this) {
+			return true;
+		}
+		if (getClass() != another.getClass()) {
 			return false;
 		}
 		if (another instanceof NetAddr) {
