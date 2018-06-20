@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -140,12 +139,6 @@ public abstract class WhoisHtmlParser {
 					}
 				}
 			}
-		}
-		catch (IOException e) {
-			if (url != null) {
-				log.log(Level.SEVERE, "url={0}, exception={1}", new Object[] { url, e });
-			}
-			throw e;
 		}
 		finally {
 			if (http != null) {

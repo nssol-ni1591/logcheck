@@ -35,6 +35,7 @@ public class Checker21 extends AbstractChecker<Map<NetAddr, Map<String, Map<Stri
 	}
 
 	public void init(String...argv) {
+		// Do nothing
 	}
 
 	// ログのメッセージ部分はPatternの正規化表現で集約するため、対象ログが一致したPattern文字列を取得する
@@ -93,7 +94,6 @@ public class Checker21 extends AbstractChecker<Map<NetAddr, Map<String, Map<Stri
 	public void report(final PrintWriter out, 
 			final Map<NetAddr, Map<String, Map<String, AccessLogSummary>>> map)
 	{
-		//out.println("国\tISP/プロジェクト\tアドレス\tユーザID\tメッセージ\tロール\t初回日時\t最終日時\tログ数");
 		out.println("アドレス\tユーザID\tメッセージ\tロール\t初回日時\t最終日時\tログ数");
 		map.forEach((addr, idmap) -> 
 			idmap.forEach((id, msgmap) -> 

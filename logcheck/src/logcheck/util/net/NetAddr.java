@@ -8,45 +8,37 @@ public class NetAddr implements Comparable<NetAddr> {
 	private int netmask;
 
 	public NetAddr(String addr, String net, String brd) {
-		this.srcaddr = addr(addr);
-		this.network = addr(net);
-		this.brdcast = addr(brd);
-		this.netmask = mask(network, brdcast);
+		this.srcaddr = address(addr);
+		this.network = address(net);
+		this.brdcast = address(brd);
+		this.netmask = netmask(network, brdcast);
 	}
-	public NetAddr(String addr, String netrange) {
-		String[] array = netrange.split("-");
+	public NetAddr(String addr, String netaddr) {
+		if (netaddr == null) {
+			throw new IllegalArgumentException("network address is null");
+		}
+		String[] array = netaddr.split("-");
 		if (array.length == 2) {
 			// "x.x.x.x/x - y.y.y.y.y/y"形式
 			if (addr == null) {
-				addr = array[0].trim();
+				this.srcaddr = address(array[0].trim());
 			}
-			this.srcaddr = addr(addr);
-			this.network = addr(array[0].trim());
-			this.brdcast = addr(array[1].trim());
-			this.netmask = mask(network, brdcast);
+			else {
+				this.srcaddr = address(addr);
+			}
+			this.network = address(array[0].trim());
+			this.brdcast = address(array[1].trim());
+			this.netmask = netmask(network, brdcast);
 		}
 		else {
-			this.srcaddr = addr(addr);
+			this.srcaddr = address(addr);
 			this.network = new int[4];
 			this.brdcast = new int[4];
-			calc(netrange);
+			calc(netaddr);
 		}
 	}
-	public NetAddr(String addr) {
-		String[] array = addr.split("-");
-		if (array.length == 2) {
-			// "x.x.x.x/x - y.y.y.y.y/y"形式
-			this.srcaddr = addr(array[0].trim());
-			this.network = addr(array[0].trim());
-			this.brdcast = addr(array[1].trim());
-			this.netmask = mask(network, brdcast);
-		}
-		else {
-			this.srcaddr = new int[4];
-			this.network = new int[4];
-			this.brdcast = new int[4];
-			calc(addr);
-		}
+	public NetAddr(String netaddr) {
+		this(null, netaddr);
 	}
 
 	private void calc(String addr) {
@@ -56,7 +48,7 @@ public class NetAddr implements Comparable<NetAddr> {
 			throw new IllegalArgumentException("network error: " + addr);
 		}
 
-		int[] array = addr(s0[0]);
+		int[] array = address(s0[0]);
 		if (this.srcaddr[0] == 0) {
 			for (int ix = 0; ix < 4; ix++) {
 				this.srcaddr[ix] = array[ix];
@@ -135,7 +127,7 @@ public class NetAddr implements Comparable<NetAddr> {
 			this.brdcast[3] = this.brdcast[3] | (int)(Math.pow(2, (32 - this.netmask)) - 1);
 		}
 	}
-	private int mask(int[] netmask, int[] brdcast) {
+	private int netmask(int[] netmask, int[] brdcast) {
 		int tmp = 0;
 		for (int ix = 0; ix < 4; ix++) {
 			switch (brdcast[ix] - network[ix]) {
@@ -154,7 +146,10 @@ public class NetAddr implements Comparable<NetAddr> {
 		}
 		return tmp;
 	}
-	private int[] addr(String s) {
+	private int[] address(String s) {
+		if (s == null) {
+			return new int[4];
+		}
 		String[] s1 = s.split("\\.");
 		if (s1.length > 4) {
 			throw new IllegalArgumentException("ip error(3): " + s + ", len=" + s1.length);
@@ -167,6 +162,10 @@ public class NetAddr implements Comparable<NetAddr> {
 	}
 
 	public int compareTo(NetAddr another) {
+		if (another == null) {
+			return -1;
+		}
+
 		int[] addr = another.getNetworkAddr();
 		for (int ix = 0; ix < 4; ix++) {
 			if (network[ix] - addr[ix] != 0) {
@@ -181,12 +180,15 @@ public class NetAddr implements Comparable<NetAddr> {
 		}
 		return 0;
 	}
-	@Override
-	public boolean equals(Object another) {
-		if (another instanceof NetAddr) {
-			return compareTo((NetAddr)another) == 0 ? true : false;
+
+	public boolean equals(NetAddr another) {
+		if (another == null) {
+			return false;
 		}
-		return super.equals(another);
+		if (another instanceof NetAddr) {
+			return compareTo((NetAddr)another) == 0;
+		}
+		return false;
 	}
 
 	public boolean within(NetAddr another) {

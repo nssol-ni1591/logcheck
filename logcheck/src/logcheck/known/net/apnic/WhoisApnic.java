@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,10 +37,11 @@ public class WhoisApnic implements Whois {
 	 */
 	public KnownListIsp get(NetAddr addr) {
 		try {
-			KnownListIsp isp = search("https://wq.apnic.net/query?searchtext=", addr);
-			return isp;
+			return search("https://wq.apnic.net/query?searchtext=", addr);
 		}
-		catch (IOException e) { }
+		catch (IOException e) {
+			log.log(Level.WARNING, e.getMessage());
+		}
 		return null;
 	}
 
@@ -51,7 +54,6 @@ public class WhoisApnic implements Whois {
 		HttpURLConnection http = null;
 		try  {
 			url = new URL(site + addr);
-			log.log(Level.FINE, "request url={0}", url);
 
 			http = (HttpURLConnection)url.openConnection();
 			http.setRequestMethod("GET");
@@ -59,23 +61,19 @@ public class WhoisApnic implements Whois {
 
 			JsonbConfig config = new JsonbConfig()
 					.withFormatting(true)
-					.withDeserializers(new SearchMapDeserializer());
-			Jsonb jsonb = JsonbBuilder.create(config);
-			Type type = new SearchMap() {
-				private static final long serialVersionUID = 1L;
-			}.getClass().getGenericSuperclass();
+					.withDeserializers(new ApnicDeserializer());
+			try (Jsonb jsonb = JsonbBuilder.create(config))
+			{
+				Type type = HashMap.class;
+				Map<String, String> map = jsonb.fromJson(http.getInputStream(), type);
 
-			SearchMap map = jsonb.fromJson(http.getInputStream(), type);
-
-			netaddr = getNetaddr(map);
-			name = getOrganization(map);
-			country = getCountry(map);
-		}
-		catch (IOException e) {
-			if (url != null) {
-				log.log(Level.SEVERE, "url={0}, exception={1}", new Object[] { url, e });
+				netaddr = getNetaddr(map);
+				name = getOrganization(map);
+				country = getCountry(map);
 			}
-			throw e;
+			catch (Exception e) {
+				throw new IOException(e);
+			}
 		}
 		finally {
 			if (http != null) {
@@ -85,33 +83,31 @@ public class WhoisApnic implements Whois {
 		return WhoisUtils.format(addr, netaddr, name, country);
 	}
 
-	public String getNetaddr(SearchMap map) {
+	public String getNetaddr(Map<String, String> map) {
 		String[] keys = { "inetnum", "netrange" };
 		Optional<String> ret = Stream.of(keys)
 				.filter(key -> map.get(key) != null)
 				.findFirst();
-		return ret.isPresent() ? map.get(ret.get()).getValue() : null;
+		return ret.isPresent() ? map.get(ret.get()) : null;
 	}
-	public String getOrganization(SearchMap map) {
-		//String[] keys = { "org-name", "organization", "descr", "owner", "role" };
+	public String getOrganization(Map<String, String> map) {
 		String[] keys = { "org-name", "organization", "descr", "role", "owner" };
 		// org-name for RIPE
 		// owner for "CLARO S.A." (test10)
 		Optional<String> ret = Stream.of(keys)
 				.filter(key -> map.get(key) != null)
-				.map(key -> map.get(key).getValue())
 				.filter(s -> !s.contains("@"))
 				.filter(s -> !s.equals("Japan Network Information Center"))	// JPNICから取得する
 				.filter(s -> !s.equals("ARTERIA Networks Corporation"))		// JPNICに詳細な情報アリ
 				.findFirst();
-		return ret.isPresent() ? ret.get() : null;
+		return ret.isPresent() ? map.get(ret.get()) : null;
 	}
-	public String getCountry(SearchMap map) {
+	public String getCountry(Map<String, String> map) {
 		String[] keys = { "country" };
 		Optional<String> ret = Stream.of(keys)
 				.filter(key -> map.get(key) != null)
 				.findFirst();
-		return ret.isPresent() ? map.get(ret.get()).getValue() : null;
+		return ret.isPresent() ? map.get(ret.get()) : null;
 	}
 
 }

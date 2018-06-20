@@ -1,6 +1,7 @@
 package logcheck.known.net.html;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 import logcheck.known.KnownListIsp;
 import logcheck.known.net.Whois;
@@ -14,10 +15,11 @@ public class WhoisTreetCoJp extends WhoisHtmlParser implements Whois {
 	@Override
 	public KnownListIsp get(NetAddr addr) {
 		try {
-			KnownListIsp isp = search("http://whois.threet.co.jp/?key=", addr);
-			return isp;
+			return search("http://whois.threet.co.jp/?key=", addr);
 		}
-		catch (IOException e) { }
+		catch (IOException e) {
+			log.log(Level.WARNING, e.getMessage());
+		}
 		return null;
 	}
 

@@ -43,25 +43,24 @@ public class WhoisJpnic implements Whois {
 	@Override
 	public KnownListIsp get(NetAddr addr) {
 		try {
-			KnownListIsp isp = search("https://whois.nic.ad.jp/cgi-bin/whois_gw?key=", addr);
-			return isp;
+			return search("https://whois.nic.ad.jp/cgi-bin/whois_gw?key=", addr);
 		}
 		catch (IOException e) {
 			log.log(Level.WARNING, e.getMessage());
 		}
 
 		try {
-			Thread.sleep(10 * 1000);
+			Thread.sleep(10 * 1000L);
 		}
 		catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 		}
 
 		try {
-			KnownListIsp isp = search("https://whois.nic.ad.jp/cgi-bin/whois_gw?key=", addr);
-			return isp;
+			return search("https://whois.nic.ad.jp/cgi-bin/whois_gw?key=", addr);
 		}
 		catch (IOException e) {
-			log.log(Level.SEVERE, e.getMessage());
+			log.log(Level.WARNING, e.getMessage());
 		}
 		return null;
 	}
@@ -112,12 +111,6 @@ public class WhoisJpnic implements Whois {
 					}
 				}
 			}
-		}
-		catch (IOException e) {
-			if (url != null) {
-				log.log(Level.SEVERE, "url={0}, exception={1}", new Object[] { url, e });
-			}
-			throw e;
 		}
 		finally {
 			if (http != null) {

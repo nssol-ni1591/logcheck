@@ -39,11 +39,11 @@ public class WhoisArin implements Whois {
 	 */
 	public KnownListIsp get(NetAddr addr) {
 		try {
-		KnownListIsp isp = search("http://whois.arin.net/rest/ip/", addr);
-//		log.log(Level.INFO, "addr={0}: name={1}, country={2}, net={3}", new Object[] { addr, isp.getName(), isp.getCountry(), isp.toStringNetwork() });
-		return isp;
+			return search("http://whois.arin.net/rest/ip/", addr);
 		}
-		catch (IOException e) { }
+		catch (IOException e) {
+			log.log(Level.WARNING, e.getMessage());
+		}
 		return null;
 	}
 
@@ -74,7 +74,6 @@ public class WhoisArin implements Whois {
 					if (s.isEmpty() || s.startsWith("#") || s.startsWith("Comment")) {
 						continue;
 					}
-					//log.log(Level.FINE, "s={0}", s);
 					Matcher m = PATTERN.matcher(s);
 					if (m.matches()) {
 						String key = m.group(1);
@@ -98,12 +97,6 @@ public class WhoisArin implements Whois {
 			}
 			netaddr = getNetaddr(map);
 			country = getCountry(map);
-		}
-		catch (IOException e) {
-			if (url != null) {
-				log.log(Level.SEVERE, "url={0}, exception={1}", new Object[] { url, e });
-			}
-			throw e;
 		}
 		finally {
 			if (http != null) {
