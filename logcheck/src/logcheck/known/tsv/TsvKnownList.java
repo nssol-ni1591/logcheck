@@ -119,4 +119,13 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 		return rc;
 	}
 
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	@Override
+	public boolean equals(Object o) {
+		return super.equals(o);
+	}
+
 }

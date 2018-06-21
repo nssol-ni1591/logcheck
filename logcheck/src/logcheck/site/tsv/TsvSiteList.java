@@ -110,5 +110,14 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 		}
 		return rc;
 	}
-	// equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめる
+
+	// equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめたい
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	@Override
+	public boolean equals(Object o) {
+		return super.equals(o);
+	}
 }

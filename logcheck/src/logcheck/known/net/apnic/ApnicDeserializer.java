@@ -23,6 +23,58 @@ public class ApnicDeserializer implements JsonbDeserializer<Map> {
 	private static final String DUP_MSG = "duplicate key={0}, exists={1}, new={2}";
 	private static final String REP_MSG = "replace key={0}, exists={1}, new={2}";
 
+	private void duplicate(HashMap<String, String> map, String name, Object values) {
+		// 特定のキーの場合のみ値の置換を行う
+		if ("inetnum".equals(name)) {
+			log.log(Level.FINE, DUP_MSG,
+					new Object[] { name, map.get(name), values });
+			String v;
+			if (values instanceof List) {
+				v = ((List<?>) values).get(0).toString();
+			}
+			else {
+				v = values.toString();
+			}
+			NetAddr cur = new NetAddr(map.get(name));
+			NetAddr rep = new NetAddr(v);
+			if (cur != null && !cur.equals(rep) && cur.within(rep)) {
+				map.put(name, v);
+				map.remove("descr");
+				map.remove("country");
+				log.log(Level.INFO, REP_MSG,
+						new Object[] { name, map.get(name), values });
+			}
+		}
+		else if ("descr".equals(name)) {
+			log.log(Level.FINE, DUP_MSG,
+					new Object[] { name, map.get(name), values });
+			String v;
+			if (values instanceof List) {
+				v = ((List<?>) values).get(0).toString();
+			}
+			else {
+				v = values.toString();
+			}
+
+			if (v.contains("Inc")
+					|| v.contains("INC")
+					|| v.contains("LTD")
+					|| v.contains("Limited")
+					|| v.contains("Corp")
+					|| v.contains("Company")
+					|| v.contains("Telecom")) {
+				map.put(name, v);
+				log.log(Level.INFO, REP_MSG,
+						new Object[] { name, map.get(name), v });
+			}
+
+		}
+		else {
+			log.log(Level.FINE, DUP_MSG,
+					new Object[] { name, map.get(name), values });
+		}
+	}
+
 	@Override
 	public Map<String, String> deserialize(JsonParser jsonParser,
 			DeserializationContext deserializationContext,
@@ -51,73 +103,24 @@ public class ApnicDeserializer implements JsonbDeserializer<Map> {
                 				Object values = attr.get("values");
 
                 				if (map.containsKey(name)) {
-                					// 特定のキーの場合のみ値の置換を行う
-                					if ("inetnum".equals(name)) {
-                						log.log(Level.FINE, DUP_MSG,
-                								new Object[] { name, map.get(name), values });
-                						String v;
-                						if (values instanceof List) {
-                							v = ((List<?>) values).get(0).toString();
-                						}
-                						else {
-                							v = values.toString();
-										}
-										NetAddr cur = new NetAddr(map.get(name));
-										NetAddr rep = new NetAddr(v);
-										if (cur != null && !cur.equals(rep) && cur.within(rep)) {
-											map.put(name, v);
-											map.remove("descr");
-											map.remove("country");
-											log.log(Level.INFO, REP_MSG,
-													new Object[] { name, map.get(name), values });
-										}
-									}
-									else if ("descr".equals(name)) {
-										log.log(Level.FINE, DUP_MSG,
-												new Object[] { name, map.get(name), values });
-										String v;
-										if (values instanceof List) {
-											v = ((List<?>) values).get(0).toString();
-										}
-										else {
-											v = values.toString();
-										}
-
-										if (v.contains("Inc")
-												|| v.contains("INC")
-												|| v.contains("LTD")
-												|| v.contains("Limited")
-												|| v.contains("Corp")
-												|| v.contains("Company")
-												|| v.contains("Telecom")) {
-											map.put(name, v);
-											log.log(Level.INFO, REP_MSG,
-													new Object[] { name, map.get(name), v });
-										}
-
-									}
-									else {
-										log.log(Level.FINE, DUP_MSG,
-												new Object[] { name, map.get(name), values });
-									}
+                					duplicate(map, name, values);
                 				}
 								else if (values == null) {
 									// Do nothing
 								}
-								else {
-									// キーが存在しないので値の置換を行う
-									if (values instanceof List) {
-										List<?> l = (List<?>) values;
-										if (l.size() == 1) {
-											map.put(name, l.get(0).toString());
-										}
-										else {
-											map.put(name, l.toString());
-										}
+								else if (values instanceof List) {
+									// キーが存在しないので値の置換を行う(List)
+									List<?> l = (List<?>) values;
+									if (l.size() == 1) {
+										map.put(name, l.get(0).toString());
 									}
 									else {
-										map.put(name, values.toString());
+										map.put(name, l.toString());
 									}
+								}
+								else {
+									// キーが存在しないので値の置換を行う(Object)
+									map.put(name, values.toString());
 								}
                 			});
                 	}

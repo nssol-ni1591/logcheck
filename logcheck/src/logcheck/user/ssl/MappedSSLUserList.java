@@ -132,6 +132,16 @@ public class MappedSSLUserList
 		return this;
 	}
 
+	// equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめたい
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	@Override
+	public boolean equals(Object o) {
+		return super.equals(o);
+	}
+
 	class SelectUser {
 
 		private final String siteId;

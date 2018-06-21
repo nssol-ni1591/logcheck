@@ -71,4 +71,13 @@ public class DbProjList extends LinkedHashMap<String, ProjListBean> implements P
 		return this;
 	}
 
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	@Override
+	public boolean equals(Object o) {
+		return super.equals(o);
+	}
+
 }

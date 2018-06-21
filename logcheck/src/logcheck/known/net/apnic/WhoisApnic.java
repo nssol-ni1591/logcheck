@@ -72,9 +72,7 @@ public class WhoisApnic implements Whois {
 			throw new IOException(e);
 		}
 		finally {
-			if (http != null) {
-				http.disconnect();
-			}
+			http.disconnect();
 		}
 		return WhoisUtils.format(addr, netaddr, name, country);
 	}

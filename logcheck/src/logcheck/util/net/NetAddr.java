@@ -159,7 +159,6 @@ public class NetAddr implements Comparable<NetAddr> {
 				case 127:	tmp += 7; break;
 				default:
 					// Whoisに登録されているinetnumが不正な値の場合がある
-					//throw new IllegalArgumentException("network=" + toIpaddr(network) + ", brdcast=" + toIpaddr(brdcast));
 					log.log(Level.WARNING, "illegal inetnum: network={0}, brdcast={1}", 
 							new Object[] { toIpaddr(network), toIpaddr(brdcast) });
 					if (d > 1) {
