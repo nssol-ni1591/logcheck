@@ -143,7 +143,7 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 	protected AbstractChecker() {
 	}
 
-	private T run(InputStream is) throws InterruptedException, ExecutionException, IOException {
+	private T run(InputStream is) throws InterruptedException, ExecutionException {
 		log.info("checking from InputStream:");
 
 		this.stream = new BufferedReader(new InputStreamReader(is)).lines();

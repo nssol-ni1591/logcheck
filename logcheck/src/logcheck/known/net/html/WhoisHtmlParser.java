@@ -75,67 +75,66 @@ public abstract class WhoisHtmlParser {
 		String country = null;
 
 		// URLを作成してGET通信を行う
-		URL url = null;
-		HttpURLConnection http = null;
-		try  {
-			url = new URL(site + addr);
+		URL url = new URL(site + addr);
+		HttpURLConnection http = (HttpURLConnection)url.openConnection();
+		http.setRequestMethod("GET");
+		http.connect();
 
-			http = (HttpURLConnection)url.openConnection();
-			http.setRequestMethod("GET");
-			http.connect();
+		// サーバーからのレスポンスを取得してパースする
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(http.getInputStream()))) {
 
-			// サーバーからのレスポンスを取得してパースする
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(http.getInputStream()))) {
+			String s;
+			while((s = reader.readLine()) != null) {
+				// check network address
+				String tmp = parse(PTN_NETADDRS, s);
+				if (tmp != null) {
+					netaddr = tmp;
+				}
 
-				String s;
-				while((s = reader.readLine()) != null) {
-					String tmp = parse(PTN_NETADDRS, s);
-					if (tmp != null) {
-						netaddr = tmp;
-					}
-					tmp = parse(PTN_NAMES, s);
-					if (tmp != null) {
-						if (tmp.contains("@")) {
-							// Do nothing
-						}
-						else if (tmp.contains("HaNoi")
-								|| tmp.contains("Hanoi")
-								|| tmp.contains("Bangkok")
-								|| tmp.contains("Route")
-								|| tmp.contains("STATIC")
-								|| tmp.contains("Assign for")
-								|| tmp.contains("contact ")
-								) {
-							// "Hanoi"とか地名が含まれている場合は住所の可能性が大きいのでnameに置換しない
-						}
-						else if (name != null
-								&& (name.contains("Inc.") 
-								|| name.contains("INC.")
-								|| name.contains("LTD.") 
-								|| name.contains("Limited") 
-								|| name.contains("Corp")
-								|| name.contains("Company")
-								|| name.contains("Telecom")
-								)) {
-							// すでに"Inc."などを含む文字列がnameに設定されている場合はnameの変更は行わない
-						}
-						else {
-							name = tmp;
-						}
-					}
-					tmp = parse(PTN_COUNTRIES, s);
-					if (tmp != null) {
-						country = tmp;
-					}
+				// check organization name
+				tmp = parse(PTN_NAMES, s);
+				if (tmp == null) {
+					// Do nothing
+				}
+				else if (tmp.contains("@")) {
+					// Do nothing
+				}
+				else if (tmp.contains("HaNoi")
+						|| tmp.contains("Hanoi")
+						|| tmp.contains("Bangkok")
+						|| tmp.contains("Route")
+						|| tmp.contains("STATIC")
+						|| tmp.contains("Assign for")
+						|| tmp.contains("contact ")
+						) {
+					// "Hanoi"とか地名が含まれている場合は住所の可能性が大きいのでnameに置換しない
+				}
+				else if (name != null
+						&& (name.contains("Inc.") 
+						|| name.contains("INC.")
+						|| name.contains("LTD.") 
+						|| name.contains("Limited") 
+						|| name.contains("Corp")
+						|| name.contains("Company")
+						|| name.contains("Telecom")
+						)) {
+					// すでに"Inc."などを含む文字列がnameに設定されている場合はnameの変更は行わない
+				}
+				else {
+					name = tmp;
+				}
+
+				// check country
+				tmp = parse(PTN_COUNTRIES, s);
+				if (tmp != null) {
+					country = tmp;
 				}
 			}
+			return WhoisUtils.format(addr, netaddr, name, country);
 		}
 		finally {
-			if (http != null) {
-				http.disconnect();
-			}
+			http.disconnect();
 		}
-		return WhoisUtils.format(addr, netaddr, name, country);
 	}
 
 }

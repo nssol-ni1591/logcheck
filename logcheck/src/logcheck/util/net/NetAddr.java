@@ -1,6 +1,11 @@
 package logcheck.util.net;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class NetAddr implements Comparable<NetAddr> {
+
+	private final Logger log = Logger.getLogger(NetAddr.class.getName());
 
 	private final int[] srcaddr;
 	private final int[] network;
@@ -137,22 +142,52 @@ public class NetAddr implements Comparable<NetAddr> {
 	}
 	private int netmask(int[] network, int[] brdcast) {
 		int tmp = 0;
-		for (int ix = 0; ix < 4; ix++) {
-			switch (brdcast[ix] - network[ix]) {
-			case 0:		tmp += 8; break;
-			case 1:		tmp += 7; break;
-			case 3:		tmp += 6; break;
-			case 7:		tmp += 5; break;
-			case 15:	tmp += 4; break;
-			case 32:	tmp += 3; break;
-			case 63:	tmp += 2; break;
-			case 127:	tmp += 1; break;
-			case 255:	tmp += 0; break;
-			default:
-				throw new IllegalArgumentException("network=" + network + ", brdcast=" + brdcast);
+		for (int ix = 3; ix >= 0; --ix) {
+			int d = brdcast[ix] - network[ix];
+			if (d == 255) {
+				tmp += 8;
+			}
+			else {
+				switch (d) {
+				case 0:		tmp += 0; break;
+				case 1:		tmp += 1; break;
+				case 3:		tmp += 2; break;
+				case 7:		tmp += 3; break;
+				case 15:	tmp += 4; break;
+				case 31:	tmp += 5; break;
+				case 63:	tmp += 6; break;
+				case 127:	tmp += 7; break;
+				default:
+					// Whoisに登録されているinetnumが不正な値の場合がある
+					//throw new IllegalArgumentException("network=" + toIpaddr(network) + ", brdcast=" + toIpaddr(brdcast));
+					log.log(Level.WARNING, "illegal inetnum: network={0}, brdcast={1}", 
+							new Object[] { toIpaddr(network), toIpaddr(brdcast) });
+					if (d > 1) {
+						tmp++;
+					}
+					if (d > 3) {
+						tmp++;
+					}
+					if (d > 7) {
+						tmp++;
+					}
+					if (d > 15) {
+						tmp++;
+					}
+					if (d > 31) {
+						tmp++;
+					}
+					if (d > 63) {
+						tmp++;
+					}
+					if (d > 127) {
+						tmp++;
+					}
+				}
+				break;
 			}
 		}
-		return tmp;
+		return 32 - tmp;
 	}
 	private int[] address(String s) {
 		if (s == null) {
@@ -256,16 +291,16 @@ public class NetAddr implements Comparable<NetAddr> {
 	public String toStringRange() {
 		StringBuilder sb = new StringBuilder(toString())
 				.append(" (")
-				.append(join(network, "."))
+				.append(toIpaddr(network))
 				.append("-")
-				.append(join(brdcast, "."))
+				.append(toIpaddr(brdcast))
 				.append(")");
 		return sb.toString();
 	}
 	// xx.xx.xx.xx/yy
 	public String toStringNetwork() {
 		StringBuilder sb = new StringBuilder()
-				.append(join(network, "."))
+				.append(toIpaddr(network))
 				.append("/")
 				.append(netmask);
 		return sb.toString();
@@ -274,11 +309,13 @@ public class NetAddr implements Comparable<NetAddr> {
 	// xx.xx.xx.xx
 	public String toString() {
 		StringBuilder sb = new StringBuilder()
-				.append(join(srcaddr, "."));
+				.append(toIpaddr(srcaddr));
 		return sb.toString();
 	}
 
-	private String join(int[] a, String d) {
+	private String toIpaddr(int[] a) {
+		String d = ".";
 		return new StringBuilder().append(a[0]).append(d).append(a[1]).append(d).append(a[2]).append(d).append(a[3]).toString();
 	}
+
 }

@@ -28,7 +28,8 @@ public class WeldWrapper<T extends WeldRunner> {
 				if (index > 0) {
 					name = name.substring(0, index);
 				}
-				log.log(Level.SEVERE, application.usage(name));
+				String msg = application.usage(name);
+				log.log(Level.SEVERE, msg);
 				rc = 2;
 			}
 			else if (!application.check(argc, argv)) {

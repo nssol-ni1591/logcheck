@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -50,30 +49,27 @@ public class WhoisApnic implements Whois {
 		String name = null;
 		String country = null;
 
-		URL url = null;
-		HttpURLConnection http = null;
-		try  {
-			url = new URL(site + addr);
+		URL url = new URL(site + addr);
+		HttpURLConnection http = (HttpURLConnection)url.openConnection();
+		http.setRequestMethod("GET");
+		http.connect();
 
-			http = (HttpURLConnection)url.openConnection();
-			http.setRequestMethod("GET");
-			http.connect();
+		JsonbConfig config = new JsonbConfig()
+				.withFormatting(true)
+				.withDeserializers(new ApnicDeserializer());
+		try (Jsonb jsonb = JsonbBuilder.create(config)) {
+			Type type = Map.class;
+			Map<String, String> map = jsonb.fromJson(http.getInputStream(), type);
 
-			JsonbConfig config = new JsonbConfig()
-					.withFormatting(true)
-					.withDeserializers(new ApnicDeserializer());
-			try (Jsonb jsonb = JsonbBuilder.create(config))
-			{
-				Type type = HashMap.class;
-				Map<String, String> map = jsonb.fromJson(http.getInputStream(), type);
-
-				netaddr = getNetaddr(map);
-				name = getOrganization(map);
-				country = getCountry(map);
-			}
-			catch (Exception e) {
-				throw new IOException(e);
-			}
+			netaddr = getNetaddr(map);
+			name = getOrganization(map);
+			country = getCountry(map);
+		}
+		catch (IOException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new IOException(e);
 		}
 		finally {
 			if (http != null) {

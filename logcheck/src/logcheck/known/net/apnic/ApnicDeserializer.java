@@ -17,16 +17,18 @@ import javax.json.stream.JsonParser;
 import logcheck.util.net.NetAddr;
 
 @SuppressWarnings("rawtypes")
-public class ApnicDeserializer implements JsonbDeserializer<HashMap> {
+public class ApnicDeserializer implements JsonbDeserializer<Map> {
 
 	private final Logger log = Logger.getLogger(ApnicDeserializer.class.getName());
 	private static final String DUP_MSG = "duplicate key={0}, exists={1}, new={2}";
 	private static final String REP_MSG = "replace key={0}, exists={1}, new={2}";
 
 	@Override
-	public HashMap<String, String> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext, Type type) {
+	public Map<String, String> deserialize(JsonParser jsonParser,
+			DeserializationContext deserializationContext,
+			Type type) {
 
-		HashMap<String, String> map = new HashMap<String, String>();
+		HashMap<String, String> map = new HashMap<>();
 
 		while (jsonParser.hasNext()) {
             JsonParser.Event event = jsonParser.next();
@@ -36,29 +38,29 @@ public class ApnicDeserializer implements JsonbDeserializer<HashMap> {
                 jsonParser.next();
                 String val = jsonParser.getValue().toString();
 
-				switch (className) {
-				case "attributes": {
-					try (Jsonb jsonb = JsonbBuilder.create()) {
-						Type hashListType = ArrayList.class;
-						List<Map<String, Object>> attrs = jsonb.fromJson(val, hashListType);
+                switch (className) {
+                case "attributes":
+                	try (Jsonb jsonb = JsonbBuilder.create()) {
+                		Type hashListType = ArrayList.class;
+                		List<Map<String, Object>> attrs = jsonb.fromJson(val, hashListType);
 
-						attrs.stream()
-							.filter(attr -> attr.containsKey("name"))
-							.forEach(attr -> {
-								String name = attr.get("name").toString().toLowerCase();
-								Object values = attr.get("values");
+                		attrs.stream()
+                			.filter(attr -> attr.containsKey("name"))
+                			.forEach(attr -> {
+                				String name = attr.get("name").toString().toLowerCase();
+                				Object values = attr.get("values");
 
-								if (map.containsKey(name)) {
-									// 特定のキーの場合のみ値の置換を行う
-									if ("inetnum".equals(name)) {
-										log.log(Level.FINE, DUP_MSG,
-												new Object[] { name, map.get(name), values });
-										String v;
-										if (values instanceof List) {
-											v = ((List<?>) values).get(0).toString();
-										}
-										else {
-											v = values.toString();
+                				if (map.containsKey(name)) {
+                					// 特定のキーの場合のみ値の置換を行う
+                					if ("inetnum".equals(name)) {
+                						log.log(Level.FINE, DUP_MSG,
+                								new Object[] { name, map.get(name), values });
+                						String v;
+                						if (values instanceof List) {
+                							v = ((List<?>) values).get(0).toString();
+                						}
+                						else {
+                							v = values.toString();
 										}
 										NetAddr cur = new NetAddr(map.get(name));
 										NetAddr rep = new NetAddr(v);
@@ -98,7 +100,7 @@ public class ApnicDeserializer implements JsonbDeserializer<HashMap> {
 										log.log(Level.FINE, DUP_MSG,
 												new Object[] { name, map.get(name), values });
 									}
-								}
+                				}
 								else if (values == null) {
 									// Do nothing
 								}
@@ -117,14 +119,13 @@ public class ApnicDeserializer implements JsonbDeserializer<HashMap> {
 										map.put(name, values.toString());
 									}
 								}
-							});
-						}
-						catch (Exception e) {
-							log.log(Level.SEVERE, "catch Exception", e);
-						}
-						break;
-				}
-				case "objectType":
+                			});
+                	}
+                	catch (Exception e) {
+                		log.log(Level.SEVERE, "catch Exception", e);
+                	}
+                	break;
+                case "objectType":
 				case "primaryKey":
 		    		String name = className.toLowerCase();
 	    			if (!map.containsKey(name)) {

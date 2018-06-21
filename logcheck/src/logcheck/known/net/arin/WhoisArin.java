@@ -56,53 +56,50 @@ public class WhoisArin implements Whois {
 		String country = null;
 
 		// URLを作成してGET通信を行う
-		URL url = null;
-		HttpURLConnection http = null;
-		try  {
-			url = new URL(site + addr + "/pft");
+		URL url = new URL(site + addr + "/pft");
+		HttpURLConnection http = (HttpURLConnection)url.openConnection();
+		http.setRequestMethod("GET");
+		http.setRequestProperty("Accept", "text/plain");
+		http.connect();
 
-			http = (HttpURLConnection)url.openConnection();
-			http.setRequestMethod("GET");
-			http.setRequestProperty("Accept", "text/plain");
-			http.connect();
+		// サーバーからのレスポンスを取得してパースして map を生成する
+		Map<String, String> map = new HashMap<>();
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(http.getInputStream()))) {
+			String s;
+			while((s = reader.readLine()) != null) {
+				if (s.isEmpty() || s.startsWith("#") || s.startsWith("Comment")) {
+					continue;
+				}
 
-			// サーバーからのレスポンスを取得してパースする
-			Map<String, String> map = new HashMap<>();
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(http.getInputStream()))) {
-				String s;
-				while((s = reader.readLine()) != null) {
-					if (s.isEmpty() || s.startsWith("#") || s.startsWith("Comment")) {
-						continue;
+				Matcher m = PATTERN.matcher(s);
+				if (m.matches()) {
+					String key = m.group(1);
+					String val = m.group(2);
+					if (map.containsKey(key)) {
+						log.log(Level.FINE, "duplicate key={0}, org={1}, new={2}",
+								new Object[] { key, map.get(key), val });
 					}
-					Matcher m = PATTERN.matcher(s);
-					if (m.matches()) {
-						String key = m.group(1);
-						String val = m.group(2);
-						if (map.containsKey(key)) {
-							log.log(Level.FINE, "duplicate key={0}, org={1}, new={2}", new Object[] { key, map.get(key), val });
-						}
-						else {
-							map.put(key, val);
-						}
+					else {
+						map.put(key, val);
 					}
 				}
 			}
-			String netType = map.get("NetType");
-			if (netType == null
-					|| (!netType.startsWith("Allocated to"))
-					&& !netType.startsWith("Early Registrations,")
-					) {
-				// 外部NIC参照の場合は組織名の設定は行わない
-				name = getOrganization(map);
-			}
-			netaddr = getNetaddr(map);
-			country = getCountry(map);
 		}
 		finally {
-			if (http != null) {
-				http.disconnect();
-			}
+			http.disconnect();
 		}
+
+		// mapから必要な情報を取得して KnownListIsp を生成する
+		String netType = map.get("NetType");
+		if (netType == null
+				|| (!netType.startsWith("Allocated to"))
+				&& !netType.startsWith("Early Registrations,")
+				) {
+			// 外部NIC参照の場合は組織名の設定は行わない
+			name = getOrganization(map);
+		}
+		netaddr = getNetaddr(map);
+		country = getCountry(map);
 		return WhoisUtils.format(addr, netaddr, name, country);
 	}
 

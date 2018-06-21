@@ -83,40 +83,33 @@ public class WhoisJpnic implements Whois {
 		String name = null;
 
 		// URLを作成してGET通信を行う
-		URL url = null;
-		HttpURLConnection http = null;
-		try  {
-			url = new URL(site + addr);
+		URL url = new URL(site + addr);
+		HttpURLConnection http = (HttpURLConnection)url.openConnection();
+		http.setRequestMethod("GET");
+		http.connect();
 
-			http = (HttpURLConnection)url.openConnection();
-			http.setRequestMethod("GET");
-			http.connect();
-
-			// サーバーからのレスポンスを取得してパースする
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(http.getInputStream(), "windows-31j"))) {
-				String s;
-				while((s = reader.readLine()) != null) {
-					if (s.isEmpty() || s.startsWith("-")) {
-						continue;
-					}
-					log.log(Level.FINE, "s={0}", s);
-					String tmp = parse(PTN_NETADDRS, s);
-					if (tmp != null) {
-						netaddr = tmp;
-					}
-					tmp = parse(PTN_NAMES, s);
-					if (tmp != null) {
-						name = tmp;
-					}
+		// サーバーからのレスポンスを取得してパースする
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(http.getInputStream(), "windows-31j"))) {
+			String s;
+			while((s = reader.readLine()) != null) {
+				if (s.isEmpty() || s.startsWith("-")) {
+					continue;
+				}
+				log.log(Level.FINE, "s={0}", s);
+				String tmp = parse(PTN_NETADDRS, s);
+				if (tmp != null) {
+					netaddr = tmp;
+				}
+				tmp = parse(PTN_NAMES, s);
+				if (tmp != null) {
+					name = tmp;
 				}
 			}
+			return WhoisUtils.format(addr, netaddr, name, "JP");
 		}
 		finally {
-			if (http != null) {
-				http.disconnect();
-			}
+			http.disconnect();
 		}
-		return WhoisUtils.format(addr, netaddr, name, "JP");
 	}
 
 }

@@ -90,7 +90,11 @@ public class WhoisKnownListTest {
 		KnownListIsp isp = getIsp("211.9.34.69");
 		assertNotNull(isp);
 		if (check) {
-			assertEquals("BIT-DRIVE", isp.getName());
+			//assertEquals("BIT-DRIVE", isp.getName());
+			//assertEquals("Sony Network Communications Inc.", isp.getName());
+			assertTrue("BIT-DRIVE".equals(isp.getName())
+					|| "Sony Network Communications Inc.".equals(isp.getName())
+					);
 		}
 	}
 	// キャッシュ動作 -> 2つ目のアドレス検索時にWhoisクラスがcallされないことを確認する

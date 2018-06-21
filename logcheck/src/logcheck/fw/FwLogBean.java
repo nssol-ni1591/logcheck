@@ -62,18 +62,18 @@ public class FwLogBean implements Comparable<FwLogBean> {
 		return super.hashCode();
 	}
 	@Override
-	public boolean equals(Object another) {
-		if (another == null) {
+	public boolean equals(Object o) {
+		if (o == null) {
 			return false;
 		}
-		if (another == this) {
+		if (o == this) {
 			return true;
 		}
-		if (getClass() != another.getClass()) {
+		if (getClass() != o.getClass()) {
 			return false;
 		}
-		if (another instanceof FwLogBean) {
-			return compareTo((FwLogBean)another) == 0;
+		if (o instanceof FwLogBean) {
+			return compareTo((FwLogBean)o) == 0;
 		}
 		return false;
 	}

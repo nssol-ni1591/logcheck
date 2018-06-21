@@ -115,7 +115,8 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 	public boolean check(int argc, String...argv) {
 		Pattern p = Pattern.compile("\\d\\d\\d\\d-\\d\\d-\\d\\d");
 		if (argv.length > 1 && !p.matcher(argv[0]).matches()) {
-			log.log(Level.SEVERE, usage("Checker9"));
+			String msg = usage("Checker9");
+			log.log(Level.SEVERE, msg);
 			return false;
 		}
 		return true;

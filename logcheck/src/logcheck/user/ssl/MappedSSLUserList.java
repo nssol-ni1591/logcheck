@@ -64,8 +64,8 @@ public class MappedSSLUserList
 
 	@WithElaps
 	public MappedSSLUserList load(String file, SiteList sitelist)
-			throws IOException, ClassNotFoundException, SQLException {
-
+			throws IOException, ClassNotFoundException, SQLException
+	{
 		final Map<String, SelectUser> map = new HashMap<>();
 
 		try ( // Oracleに接続
@@ -90,45 +90,44 @@ public class MappedSSLUserList
 		}
 
 		try (Stream<String> input = Files.lines(Paths.get(file), Charset.forName("utf-8"))) {
-			input.filter(SSLIndexBean::test)
-			.map(SSLIndexBean::parse)
-			.filter(b -> b.getUserId().startsWith("Z"))	// index.txtの読み込みなので、SQLとは別の集合
-			.forEach(b -> {
-				UserListBean bean = this.get(b.getUserId());
-				if (bean == null) {
 
-					SelectUser su = map.get(b.getUserId());
-					if (su != null) {
-						if (bean == null) {
+			input.filter(SSLIndexBean::test)
+				.map(SSLIndexBean::parse)
+				.filter(b -> b.getUserId().startsWith("Z"))	// index.txtの読み込みなので、SQLとは別の集合
+				.forEach(b -> {
+					UserListBean bean = this.get(b.getUserId());
+					if (bean != null) {
+						// 同じユーザIdが存在するということは、以前の証明書が失効している場合
+						bean.update(b);
+					}
+					else {
+						// DBから対象のユーザ情報を取得する
+						SelectUser su = map.get(b.getUserId());
+						if (su != null) {
+							bean = new UserListBean(b);
+							this.put(b.getUserId(), bean);
+
+							SiteListIsp siteBean = sitelist.get(su.getSiteId());
+							if (siteBean != null) {
+								UserListSite site =
+										new UserListSite(siteBean, su.getUserDelFlag(), su.getEndDate());
+								bean.addSite(site);
+							}
+							else {
+								log.log(Level.WARNING, "site is null: siteId={0}, bean=[{1}]",
+										new Object[] { su.getSiteId(), bean });
+							}
+						}
+						else {
+							// DBから対象のユーザ情報を取得できなかった、つまり、
+							// sslindexに存在するが、SSLテーブルに存在しない場合：
+							// 不正な状態を検知することができるように削除フラグ"-1"でuserlistに追加する
+							log.log(Level.WARNING, "user_id not found: sslindex=[{0}]", b);
 							bean = new UserListBean(b);
 							this.put(b.getUserId(), bean);
 						}
-
-						SiteListIsp siteBean = sitelist.get(su.getSiteId());
-						if (siteBean != null) {
-							UserListSite site =
-									new UserListSite(siteBean, su.getUserDelFlag(), su.getEndDate());
-							bean.addSite(site);
-						}
-						else {
-							log.log(Level.WARNING, "site is null: siteId={0}, bean=[{1}]",
-									new Object[] { su.getSiteId(), bean });
-						}
-
-					}
-					else {
-						// sslindexに存在するが、SSLテーブルに存在しない場合：
-						// 不正な状態を検知することができるように削除フラグ"-1"でuserlistに追加する
-						log.log(Level.WARNING, "user_id not found: sslindex=[{0}]", b);
-						bean = new UserListBean(b);
-						this.put(b.getUserId(), bean);
-					}
-				} 
-				else {
-					// 同じユーザIdが存在するということは、以前の証明書が失効している場合
-					bean.update(b);
-				}
-			});
+					} 
+				});
 		}
 		return this;
 	}

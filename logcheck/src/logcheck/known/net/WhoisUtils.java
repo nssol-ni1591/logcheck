@@ -51,13 +51,13 @@ public class WhoisUtils {
 	/*
 	 * 複数の名称で登録されている組織名、もしくは、分かりづらい組織名の置換
 	 */
-	public static KnownListIsp format(NetAddr addr, String netaddr, String name, String country) {
-		if (name == null) {
-			// nameがnullの場合は何もしない
-		}
-		else {
-			String s = map.get(name);
+	public static KnownListIsp format(NetAddr addr, String netaddr, String ispname, String country) {
+		String name = ispname;
+		if (name != null) {
+			// nameの編集処理を開始する
+
 			// nameが一致するものがあれば置換する
+			String s = map.get(name);
 			if (s != null ) {
 				name = s;
 			}
@@ -66,13 +66,14 @@ public class WhoisUtils {
 			int len = name.length();
 			if (name.charAt(len - 1) == ')') {
 				len = name.indexOf('(');
-				if (len != 0) {
-					if (name.charAt(len - 1) == ' ') {
-						name = name.substring(0, len - 1);
-					}
-					else {
-						name = name.substring(0, len);
-					}
+				if (len <= 0) {
+					// Do nothing
+				}
+				else if (name.charAt(len - 1) == ' ') {
+					name = name.substring(0, len - 1);
+				}
+				else {
+					name = name.substring(0, len);
 				}
 			}
 		}
