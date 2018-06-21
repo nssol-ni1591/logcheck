@@ -6,20 +6,16 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.inject.Inject;
-
 import logcheck.known.KnownListIsp;
 import logcheck.known.net.Whois;
+import logcheck.known.net.AbstractWhoisServer;
 import logcheck.known.net.WhoisUtils;
 import logcheck.util.net.NetAddr;
 
-public class WhoisJpnic implements Whois {
-
-	@Inject protected Logger log;
+public class WhoisJpnic extends AbstractWhoisServer implements Whois {
 
 	protected static final Pattern[] PTN_NETADDRS = {
 			Pattern.compile("a\\. \\[[\\S]*\\] +<A HREF=\"\\S+\">([\\d+\\.]+/\\d+)</A>"),
@@ -30,11 +26,8 @@ public class WhoisJpnic implements Whois {
 			Pattern.compile("\\[Organization\\] +(.*)"),
 	};
 
-	public void init() {
-		if (log == null) {
-			// JUnitの場合、logのインスタンスが生成できないため
-			log = Logger.getLogger(this.getClass().getName());
-		}
+	public WhoisJpnic() {
+		super("https://whois.nic.ad.jp/cgi-bin/whois_gw?key=");
 	}
 
 	/*
@@ -43,7 +36,7 @@ public class WhoisJpnic implements Whois {
 	@Override
 	public KnownListIsp get(NetAddr addr) {
 		try {
-			return search("https://whois.nic.ad.jp/cgi-bin/whois_gw?key=", addr);
+			return search(super.url, addr);
 		}
 		catch (IOException e) {
 			log.log(Level.WARNING, e.getMessage());
@@ -57,7 +50,7 @@ public class WhoisJpnic implements Whois {
 		}
 
 		try {
-			return search("https://whois.nic.ad.jp/cgi-bin/whois_gw?key=", addr);
+			return search(super.url, addr);
 		}
 		catch (IOException e) {
 			log.log(Level.WARNING, e.getMessage());

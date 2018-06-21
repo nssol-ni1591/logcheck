@@ -70,47 +70,10 @@ public class NetAddr implements Comparable<NetAddr> {
 			this.brdcast[ix] = array[ix];
 		}
 
-		// netmaskの取得
-		if (s0.length < 2) {
-			// netmaskの指定がない場合=>32bit固定
-			this.netmask = 32;
-		}
-		else {
-			// netmaskの指定がある場合y=>netmaskの書式を確認
-			String[] s2 = s0[1].split("\\.");
-			if (s2.length == 1) {
-				// xx.xx.xx.xx/yy 形式
-				this.netmask = Byte.parseByte(s0[1]);
-			}
-			else if (s2.length == 4) {
-				// xx.xx.xx.xx/yy.yy.yy.yy 形式
-				int tmp = 0;
-				for (int ix = 0; ix < 4; ix++) {
-					int m = Integer.parseInt(s2[ix]);
+		// netmask の取得
+		this.netmask = netmask(s0, addr);
 
-					switch (m) {
-					case 0:		tmp += 0 ; break;
-					case 127:	tmp += 1 ; break;
-					case 128:	tmp += 1 ; break;	// 記入ミス対応
-					case 192:	tmp += 2 ; break;
-					case 224:	tmp += 3 ; break;
-					case 240:	tmp += 4 ; break;
-					case 248:	tmp += 5 ; break;
-					case 252:	tmp += 6 ; break;
-					case 254:	tmp += 7 ; break;
-					case 255:	tmp += 8 ; break;
-					default:
-						throw new IllegalArgumentException("netmask value: addr=" + addr + ", s2=" + s2);
-					}
-				}
-				this.netmask = tmp;
-			}
-			else {
-				// 上記2形式のどれにも当てはまらない場合はエラー
-				throw new IllegalArgumentException("netmask format: addr=" + addr + ", array.len=" + s2.length);
-			}
-		}
-
+		// networkアドレスと broadcastアドレスの設定
 		if (this.netmask > 0 && this.netmask <= 8) {
 			this.network[0] = network[0] & (int)(256 - Math.pow(2, (8 - this.netmask)));
 			this.network[1] = 0;
@@ -140,6 +103,49 @@ public class NetAddr implements Comparable<NetAddr> {
 			this.brdcast[3] = this.brdcast[3] | (int)(Math.pow(2, (32 - this.netmask)) - 1);
 		}
 	}
+
+	// netmaskの取得
+	private int netmask(String[] s0, String addr) {
+		int mask = 0;
+		if (s0.length < 2) {
+			// netmaskの指定がない場合=>32bit固定
+			mask = 32;
+		}
+		else {
+			// netmaskの指定がある場合y=>netmaskの書式を確認
+			String[] s2 = s0[1].split("\\.");
+			if (s2.length == 1) {
+				// xx.xx.xx.xx/yy 形式
+				mask = Byte.parseByte(s0[1]);
+			}
+			else if (s2.length == 4) {
+				// xx.xx.xx.xx/yy.yy.yy.yy 形式
+				for (int ix = 0; ix < 4; ix++) {
+					int m = Integer.parseInt(s2[ix]);
+
+					switch (m) {
+					case 0:		mask += 0 ; break;
+					case 127:	mask += 1 ; break;
+					case 128:	mask += 1 ; break;	// 記入ミス対応
+					case 192:	mask += 2 ; break;
+					case 224:	mask += 3 ; break;
+					case 240:	mask += 4 ; break;
+					case 248:	mask += 5 ; break;
+					case 252:	mask += 6 ; break;
+					case 254:	mask += 7 ; break;
+					case 255:	mask += 8 ; break;
+					default:
+						throw new IllegalArgumentException("netmask value: addr=" + addr + ", s2=" + s2);
+					}
+				}
+			}
+			else {
+				// 上記2形式のどれにも当てはまらない場合はエラー
+				throw new IllegalArgumentException("netmask format: addr=" + addr + ", array.len=" + s2.length);
+			}
+		}
+		return mask;
+	}
 	private int netmask(int[] network, int[] brdcast) {
 		int tmp = 0;
 		for (int ix = 3; ix >= 0; --ix) {
@@ -158,29 +164,30 @@ public class NetAddr implements Comparable<NetAddr> {
 				case 63:	tmp += 6; break;
 				case 127:	tmp += 7; break;
 				default:
-					// Whoisに登録されているinetnumが不正な値の場合がある
 					log.log(Level.WARNING, "illegal inetnum: network={0}, brdcast={1}", 
 							new Object[] { toIpaddr(network), toIpaddr(brdcast) });
+
+					// Whoisに登録されているinetnumが不正な値の場合があるので、適当に補正する
 					if (d > 1) {
 						tmp++;
 					}
-					if (d > 3) {
-						tmp++;
+					else if (d > 3) {
+						tmp += 2;
 					}
-					if (d > 7) {
-						tmp++;
+					else if (d > 7) {
+						tmp += 3;
 					}
-					if (d > 15) {
-						tmp++;
+					else if (d > 15) {
+						tmp += 4;
 					}
-					if (d > 31) {
-						tmp++;
+					else if (d > 31) {
+						tmp += 5;
 					}
-					if (d > 63) {
-						tmp++;
+					else if (d > 63) {
+						tmp += 6;
 					}
-					if (d > 127) {
-						tmp++;
+					else if (d > 127) {
+						tmp += 7;
 					}
 				}
 				break;
@@ -188,6 +195,8 @@ public class NetAddr implements Comparable<NetAddr> {
 		}
 		return 32 - tmp;
 	}
+
+	// IPアドレスの型変換
 	private int[] address(String s) {
 		if (s == null) {
 			return new int[4];
@@ -202,6 +211,7 @@ public class NetAddr implements Comparable<NetAddr> {
 		}
 		return addr;
 	}
+
 
 	public int compareTo(NetAddr another) {
 		if (another == null) {

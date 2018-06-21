@@ -37,7 +37,7 @@ public class ApnicDeserializer implements JsonbDeserializer<Map> {
 			}
 			NetAddr cur = new NetAddr(map.get(name));
 			NetAddr rep = new NetAddr(v);
-			if (cur != null && !cur.equals(rep) && cur.within(rep)) {
+			if (!cur.equals(rep) && cur.within(rep)) {
 				map.put(name, v);
 				map.remove("descr");
 				map.remove("country");
@@ -74,6 +74,43 @@ public class ApnicDeserializer implements JsonbDeserializer<Map> {
 					new Object[] { name, map.get(name), values });
 		}
 	}
+	private void attributes(HashMap<String, String> map, String val) {
+    	try (Jsonb jsonb = JsonbBuilder.create()) {
+    		Type hashListType = ArrayList.class;
+    		List<Map<String, Object>> attrs = jsonb.fromJson(val, hashListType);
+
+    		attrs.stream()
+    			.filter(attr -> attr.containsKey("name"))
+    			.forEach(attr -> {
+    				String name = attr.get("name").toString().toLowerCase();
+    				Object values = attr.get("values");
+
+    				if (map.containsKey(name)) {
+    					duplicate(map, name, values);
+    				}
+					else if (values == null) {
+						// Do nothing
+					}
+					else if (values instanceof List) {
+						// キーが存在しないので値の置換を行う(List)
+						List<?> l = (List<?>) values;
+						if (l.size() == 1) {
+							map.put(name, l.get(0).toString());
+						}
+						else {
+							map.put(name, l.toString());
+						}
+					}
+					else {
+						// キーが存在しないので値の置換を行う(Object)
+						map.put(name, values.toString());
+					}
+    			});
+    	}
+    	catch (Exception e) {
+    		log.log(Level.SEVERE, "catch Exception", e);
+    	}
+	}
 
 	@Override
 	public Map<String, String> deserialize(JsonParser jsonParser,
@@ -92,41 +129,7 @@ public class ApnicDeserializer implements JsonbDeserializer<Map> {
 
                 switch (className) {
                 case "attributes":
-                	try (Jsonb jsonb = JsonbBuilder.create()) {
-                		Type hashListType = ArrayList.class;
-                		List<Map<String, Object>> attrs = jsonb.fromJson(val, hashListType);
-
-                		attrs.stream()
-                			.filter(attr -> attr.containsKey("name"))
-                			.forEach(attr -> {
-                				String name = attr.get("name").toString().toLowerCase();
-                				Object values = attr.get("values");
-
-                				if (map.containsKey(name)) {
-                					duplicate(map, name, values);
-                				}
-								else if (values == null) {
-									// Do nothing
-								}
-								else if (values instanceof List) {
-									// キーが存在しないので値の置換を行う(List)
-									List<?> l = (List<?>) values;
-									if (l.size() == 1) {
-										map.put(name, l.get(0).toString());
-									}
-									else {
-										map.put(name, l.toString());
-									}
-								}
-								else {
-									// キーが存在しないので値の置換を行う(Object)
-									map.put(name, values.toString());
-								}
-                			});
-                	}
-                	catch (Exception e) {
-                		log.log(Level.SEVERE, "catch Exception", e);
-                	}
+                	attributes(map, val);
                 	break;
                 case "objectType":
 				case "primaryKey":

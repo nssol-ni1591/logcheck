@@ -9,42 +9,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import javax.inject.Inject;
-
 import logcheck.known.KnownListIsp;
 import logcheck.known.net.Whois;
+import logcheck.known.net.AbstractWhoisServer;
 import logcheck.known.net.WhoisUtils;
 import logcheck.util.net.NetAddr;
 
-public class WhoisArin implements Whois {
-
-	@Inject protected Logger log;
+public class WhoisArin extends AbstractWhoisServer implements Whois {
 
 	private static final Pattern PATTERN = Pattern.compile("^([\\S]+): +([\\S ]+)$");
-
-	public void init() {
-		if (log == null) {
-			// JUnitの場合、logのインスタンスが生成できないため
-			log = Logger.getLogger(this.getClass().getName());
-		}
-	}
 
 	/*
 	 * 引数のIPアドレスを含むISPを取得する
 	 */
-	public KnownListIsp get(NetAddr addr) {
-		try {
-			return search("http://whois.arin.net/rest/ip/", addr);
-		}
-		catch (IOException e) {
-			log.log(Level.WARNING, e.getMessage());
-		}
-		return null;
+	public WhoisArin() {
+		super("http://whois.arin.net/rest/ip/");
 	}
 
 	/*

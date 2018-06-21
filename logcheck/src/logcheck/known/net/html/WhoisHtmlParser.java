@@ -5,19 +5,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.inject.Inject;
-
 import logcheck.known.KnownListIsp;
+import logcheck.known.net.AbstractWhoisServer;
 import logcheck.known.net.WhoisUtils;
 import logcheck.util.net.NetAddr;
 
-public abstract class WhoisHtmlParser {
-
-	@Inject protected Logger log;
+public class WhoisHtmlParser extends AbstractWhoisServer {
 
 	protected static final Pattern[] PTN_NETADDRS = {
 			Pattern.compile("% Information related to '(\\d+\\.\\d+\\.\\d+\\.\\d+ - \\d+\\.\\d+\\.\\d+\\.\\d+)'"),
@@ -49,11 +45,8 @@ public abstract class WhoisHtmlParser {
 			Pattern.compile("network:Country-Code:(\\w+)"),			// USA というパターンもあるので
 	};
 
-	public void init() {
-		if (log == null) {
-			// JUnitの場合、logのインスタンスが生成できないため
-			log = Logger.getLogger(this.getClass().getName());
-		}
+	public WhoisHtmlParser(String url) {
+		super(url);
 	}
 
 	public String parse(Pattern[] ptns, String s) {

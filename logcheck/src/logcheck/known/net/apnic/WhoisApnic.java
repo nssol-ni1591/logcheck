@@ -6,42 +6,22 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
-import javax.inject.Inject;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbConfig;
 
 import logcheck.known.KnownListIsp;
 import logcheck.known.net.Whois;
+import logcheck.known.net.AbstractWhoisServer;
 import logcheck.known.net.WhoisUtils;
 import logcheck.util.net.NetAddr;
 
-public class WhoisApnic implements Whois {
+public class WhoisApnic extends AbstractWhoisServer implements Whois {
 
-	@Inject private Logger log;
-
-	public void init() {
-		if (log == null) {
-			// JUnitの場合、logのインスタンスが生成できないため
-			log = Logger.getLogger(this.getClass().getName());
-		}
-	}
-
-	/*
-	 * 引数のIPアドレスを含むISPを取得する
-	 */
-	public KnownListIsp get(NetAddr addr) {
-		try {
-			return search("https://wq.apnic.net/query?searchtext=", addr);
-		}
-		catch (IOException e) {
-			log.log(Level.WARNING, e.getMessage());
-		}
-		return null;
+	public WhoisApnic() {
+		super("https://wq.apnic.net/query?searchtext=");
 	}
 
 	public KnownListIsp search(String site, NetAddr addr) throws IOException {
