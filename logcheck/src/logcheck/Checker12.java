@@ -1,6 +1,8 @@
 package logcheck;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Stream;
@@ -26,13 +28,13 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-	public void init(String...argv) throws Exception {
+	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.knownlist.load(argv[0]);
 		this.maglist.load(argv[1]);
 	}
 
 	@Override
-	public Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> call(Stream<String> stream) throws Exception {
+	public Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> call(Stream<String> stream) {
 		final Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)

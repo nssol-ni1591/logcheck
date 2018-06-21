@@ -1,8 +1,10 @@
 package logcheck.site.db;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,7 +51,7 @@ public class DbSiteList extends LinkedHashMap<String, SiteListIsp> implements Si
 
 	@Override 
 	@WithElaps
-	public SiteList load(String file) throws Exception {
+	public SiteList load(String file) throws IOException, ClassNotFoundException, SQLException {
 		// @Overrideのため、使用しない引数のfileを定義する
 		String sql = SQL_ALL_SITE;
 

@@ -1,6 +1,8 @@
 package logcheck;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -36,7 +38,7 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 
 	@Inject private Logger log;
 
-	public void init(String...argv) throws Exception {
+	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.knownlist.load(argv[0]);
 		this.maglist.load(argv[1]);
 	}
@@ -74,7 +76,7 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 
 	@Override
 	public Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> call(Stream<String> stream)
-			throws Exception {
+		{
 		final Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> map = new TreeMap<>();
 		stream//.parallel()
 				.filter(AccessLog::test)

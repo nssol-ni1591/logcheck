@@ -1,11 +1,13 @@
 package logcheck.user.ssl;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -31,10 +33,10 @@ import logcheck.util.DB;
  * VPNクライアント証明書が発行されているユーザの一覧を取得する
  */
 @Alternative
-public class MappedSSLUserList extends LinkedHashMap<String, UserListBean> implements UserList<UserListBean> {
+public class MappedSSLUserList
+	extends LinkedHashMap<String, UserListBean> implements UserList<UserListBean> {
 
 	@Inject Logger log;
-	private Map<String, SelectUser> map = new HashMap<>();
 
 	private static final long serialVersionUID = 1L;
 	private static final String TIME_FORMAT = "yyyy/MM/dd HH:mm:ss";
@@ -61,7 +63,10 @@ public class MappedSSLUserList extends LinkedHashMap<String, UserListBean> imple
 	}
 
 	@WithElaps
-	public MappedSSLUserList load(String file, SiteList sitelist) throws Exception {
+	public MappedSSLUserList load(String file, SiteList sitelist)
+			throws IOException, ClassNotFoundException, SQLException {
+
+		final Map<String, SelectUser> map = new HashMap<>();
 
 		try ( // Oracleに接続
 				Connection conn = DB.createConnection();
@@ -71,6 +76,7 @@ public class MappedSSLUserList extends LinkedHashMap<String, UserListBean> imple
 				)
 		{
 			final DateFormat f = new SimpleDateFormat(TIME_FORMAT);
+
 			while (rs.next()) {
 				String siteId = rs.getString(1);
 				String userId = rs.getString(2);
@@ -100,11 +106,13 @@ public class MappedSSLUserList extends LinkedHashMap<String, UserListBean> imple
 
 						SiteListIsp siteBean = sitelist.get(su.getSiteId());
 						if (siteBean != null) {
-							UserListSite site = new UserListSite(siteBean, su.getUserDelFlag(), su.getEndDate());
+							UserListSite site =
+									new UserListSite(siteBean, su.getUserDelFlag(), su.getEndDate());
 							bean.addSite(site);
 						}
 						else {
-							log.log(Level.WARNING, "site is null: siteId={0}, bean=[{1}]", new Object[] { su.getSiteId(), bean });
+							log.log(Level.WARNING, "site is null: siteId={0}, bean=[{1}]",
+									new Object[] { su.getSiteId(), bean });
 						}
 
 					}

@@ -1,6 +1,8 @@
 package logcheck;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.text.Normalizer;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -34,14 +36,14 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 	@Inject private Logger log;
 
-	public void init(String...argv) throws Exception {
+	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.knownlist.load(argv[0]);
 		this.sitelist.load(null);
 		this.userlist.load(argv[1], sitelist);
 	}
 
 	@Override
-	public UserList<UserListBean> call(Stream<String> stream) throws Exception {
+	public UserList<UserListBean> call(Stream<String> stream) {
 		stream//.parallel()		// parallel()を使用するとOutOfMemory例外が発生する　=> なぜ?
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)

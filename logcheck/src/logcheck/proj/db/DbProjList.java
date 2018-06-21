@@ -1,5 +1,6 @@
 package logcheck.proj.db;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -44,7 +45,7 @@ public class DbProjList extends LinkedHashMap<String, ProjListBean> implements P
 	}
 
 	@Override @WithElaps
-	public ProjList<ProjListBean> load() throws Exception {
+	public ProjList<ProjListBean> load() throws IOException, ClassNotFoundException, SQLException {
 		// @Overrideのため、使用しない引数のfileを定義する
 		String sql = SQL_ALL_PROJ;
 

@@ -1,6 +1,8 @@
 package logcheck;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -21,12 +23,12 @@ public class Checker19 extends AbstractChecker<ProjList<ProjListBean>> {
 	@Inject private Logger log;
 	@Inject protected ProjList<ProjListBean> projlist;
 
-	public void init(String...argv) throws Exception {
+	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.projlist.load();
 	}
 
 	@Override
-	public ProjList<ProjListBean> call(Stream<String> stream) throws Exception {
+	public ProjList<ProjListBean> call(Stream<String> stream) {
 		stream//.parallel()		// parallel()を使用するとOutOfMemory例外が発生する　=> なぜ?
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)

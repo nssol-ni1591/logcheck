@@ -1,5 +1,6 @@
 package logcheck.site.tsv;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -43,7 +44,7 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 	}
 
 	@WithElaps
-	public SiteList load(String file) throws Exception {
+	public SiteList load(String file) throws IOException {
 		try (Stream<String> input = Files.lines(Paths.get(file), Charset.forName("MS932"))) {
 			input.filter(this::test)
 				.map(this::parse)

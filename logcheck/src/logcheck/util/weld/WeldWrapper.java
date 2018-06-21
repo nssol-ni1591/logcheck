@@ -12,8 +12,6 @@ public class WeldWrapper<T extends WeldRunner> {
 
 	private static Logger log = Logger.getLogger(WeldWrapper.class.getName());
 
-	private static final String LINE_SEPARATOR = "line.separator";
-
 	private Class<T> cl;
 
 	public WeldWrapper() { }
@@ -30,7 +28,7 @@ public class WeldWrapper<T extends WeldRunner> {
 				if (index > 0) {
 					name = name.substring(0, index);
 				}
-				System.err.println(application.usage(name));
+				log.log(Level.SEVERE, application.usage(name));
 				rc = 2;
 			}
 			else if (!application.check(argc, argv)) {
@@ -43,9 +41,8 @@ public class WeldWrapper<T extends WeldRunner> {
 				application.init(argv[0], argv[1], argv[2]);
 			}
 			else {
-				System.err.printf("%s: unknown init() parameter%s",
-						application.getClass().getName(),
-						System.getProperty(LINE_SEPARATOR));
+				log.log(Level.SEVERE, "{0}: unknown init() parameter size (argc={1})",
+						new Object[] { application.getClass().getName(), argc });
 				rc = 4;
 			}
 

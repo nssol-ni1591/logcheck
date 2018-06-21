@@ -65,18 +65,6 @@ public abstract class WhoisHtmlParser {
 		}
 		return null;
 	}
-	public String[] parse(String ptn, String s) {
-		Pattern p = Pattern.compile(ptn);
-		Matcher m = p.matcher(s);
-		if (m.matches()) {
-			String[] array = new String[m.groupCount()];
-			for (int ix = 0; ix < m.groupCount(); ix++) {
-				array[ix] = m.group(ix + 1);
-			}
-			return array;
-		}
-		return null;
-	}
 
 	/*
 	 * 引数のサイトからIPアドレスを含むISPを取得する
@@ -108,6 +96,7 @@ public abstract class WhoisHtmlParser {
 					tmp = parse(PTN_NAMES, s);
 					if (tmp != null) {
 						if (tmp.contains("@")) {
+							// Do nothing
 						}
 						else if (tmp.contains("HaNoi")
 								|| tmp.contains("Hanoi")

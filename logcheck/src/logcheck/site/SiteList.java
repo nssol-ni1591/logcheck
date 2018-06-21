@@ -1,5 +1,7 @@
 package logcheck.site;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -11,7 +13,7 @@ import logcheck.util.net.NetAddr;
  */
 public interface SiteList extends Map<String, SiteListIsp>, MagList {
 
-	SiteList load(String file) throws Exception;
+	SiteList load(String file) throws IOException, ClassNotFoundException, SQLException;
 
 	default SiteListIsp get(NetAddr addr) {
 		Optional<SiteListIsp> rc =

@@ -1,8 +1,10 @@
 package logcheck.user.db;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -60,7 +62,8 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 	}
 
 	@WithElaps
-	public DbUserList load(String file, SiteList sitelist) throws Exception {
+	public DbUserList load(String file, SiteList sitelist)
+			throws IOException, ClassNotFoundException, SQLException {
 		String sql = SQL_ZUSER;
 		try (	// Oracleに接続
 				Connection conn = DB.createConnection();

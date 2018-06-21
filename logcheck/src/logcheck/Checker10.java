@@ -2,8 +2,9 @@ package logcheck;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -37,14 +38,14 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 		System.arraycopy(AUTH_FAILED_PATTERNS, 0, AUTH_PATTERNS, AUTH_SUCCESS_PATTERNS.length, AUTH_FAILED_PATTERNS.length);
 	}
 
-	public void init(String...argv) throws Exception {
+	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.knownlist.load(argv[0]);
 		this.maglist.load(argv[1]);
 	}
 
 	@Override
-	public List<AccessLogSummary> call(Stream<String> stream) throws IOException {
-		final List<AccessLogSummary> list = new Vector<>(1000);
+	public List<AccessLogSummary> call(Stream<String> stream) {
+		final List<AccessLogSummary> list = new LinkedList<>();
 		stream//.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)

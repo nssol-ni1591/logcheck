@@ -20,6 +20,7 @@ import logcheck.known.net.html.WhoisLacnic;
 import logcheck.known.net.html.WhoisTreetCoJp;
 import logcheck.known.net.jpnic.WhoisJpnic;
 import logcheck.known.tsv.TsvKnownList;
+import logcheck.util.Constants;
 import logcheck.util.net.NetAddr;
 
 @Alternative
@@ -48,13 +49,10 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 		if (isp.getName() == null) {
 			return false;
 		}
-		if (isp.getCountry() == null || isp.getCountry().equals("--")) {
+		if (isp.getCountry() == null || isp.getCountry().equals(Constants.UNKNOWN_COUNTRY)) {
 			return false;
 		}
-		if (isp.getAddress().isEmpty()) {
-			return false;
-		}
-		return true;
+		return !isp.getAddress().isEmpty();
 	}
 	/*
 	 * 引数のIPアドレスを含むISPを取得する
@@ -65,29 +63,32 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 				.filter(isp -> isp.within(addr))
 				.findFirst();
 		if (rc.isPresent()) {
+			// Hit cache
 			return rc.get();
 		}
 
 		// { apnic, treet, lacnic, arin, jpnic }から選択
 		// 注意：jpnicはレスポンスが遅いので最後
-		final Whois[] whois = { apnic, arin, jpnic };
+		final Whois[] whois = { arin, apnic, jpnic };
 
 		KnownListIsp isp = null;
+		// check()結果がfalseの場合、取得したISP情報を一時的に保持するための
 		Map<Whois, KnownListIsp> map = new HashMap<>();
 		Optional<Whois> rc2 = Arrays.stream(whois)
-			.filter(w -> {
-				KnownListIsp i = w.get(addr);
-				map.put(w, i);
-				if (i == null) {
-					log.log(Level.INFO, "{0}: addr={1} => isp={2}", new Object[] { w.getClass().getSimpleName(), addr, i });
-				}
-				else {
-					log.log(Level.INFO, "{0}: addr={1} => name={2}, country={3}, net={4}",
-							new Object[] { w.getClass().getSimpleName(), addr, i.getName(), i.getCountry(), i.toStringNetwork() });
-				}
-				return check(i);
-			})
-			.findFirst();
+				.filter(w -> {
+					// WhoisサーバからISP情報を取得する
+					KnownListIsp i = w.get(addr);
+					map.put(w, i);
+					if (i == null) {
+						log.log(Level.INFO, "{0}: addr={1} => isp={2}", new Object[] { w.getClass().getSimpleName(), addr, i });
+					}
+					else {
+						log.log(Level.INFO, "{0}: addr={1} => name={2}, country={3}, net={4}",
+								new Object[] { w.getClass().getSimpleName(), addr, i.getName(), i.getCountry(), i.toStringNetwork() });
+					}
+					return check(i);
+				})
+				.findFirst();
 
 		if (rc2.isPresent()) {
 			Whois w = rc2.get();
@@ -107,16 +108,14 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 				country = map.get(rc3.get()).getCountry();
 
 				final KnownListIsp isp2 = new KnownListIsp(name, country);
-				map.values().forEach(i -> {
-					i.getAddress().forEach(isp2::addAddress);
-				});
+				map.values().forEach(i -> i.getAddress().forEach(isp2::addAddress));
 				isp = isp2;
 			}
 			else {
 				name = addr.toString();
-				country = "--";
+				country = Constants.UNKNOWN_COUNTRY;
+				isp = new KnownListIsp(name, country);
 			}
-
 		}
 
 		if (isp != null) {

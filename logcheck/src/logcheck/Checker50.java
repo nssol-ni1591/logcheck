@@ -1,6 +1,8 @@
 package logcheck;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
@@ -31,7 +33,7 @@ public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 	@Inject private MagList maglist;
 	@Inject private SdcList sdclist;
 
-	public void init(String...argv) throws Exception {
+	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.knownlist.load(argv[0]);
 		this.maglist.load(argv[1]);
 		this.sdclist.load(argv[2]);
@@ -56,7 +58,7 @@ public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 	}
 
 	@Override
-	public Set<FwLogSummary> call(Stream<String> stream) throws Exception {
+	public Set<FwLogSummary> call(Stream<String> stream) {
 		final Set<FwLogSummary> list = new TreeSet<>();
 		stream//.parallel()			// parallelでは java.util.ConcurrentModificationException が発生
 				.filter(FwLog::test)

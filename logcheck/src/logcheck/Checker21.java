@@ -52,8 +52,7 @@ public class Checker21 extends AbstractChecker<Map<NetAddr, Map<String, Map<Stri
 	}
 
 	@Override
-	public Map<NetAddr, Map<String, Map<String, AccessLogSummary>>> call(Stream<String> stream)
-			throws Exception {
+	public Map<NetAddr, Map<String, Map<String, AccessLogSummary>>> call(Stream<String> stream) {
 		final Map<NetAddr, Map<String, Map<String, AccessLogSummary>>> map = new TreeMap<>();
 		stream//.parallel()
 				.filter(AccessLog::test)

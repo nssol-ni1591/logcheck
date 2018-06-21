@@ -1,9 +1,13 @@
 package logcheck.util.weld;
 
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.concurrent.ExecutionException;
+
 public interface WeldRunner {
 
-	void init(String...argv) throws Exception;
-	int start(String[] argv, int argc) throws Exception;
+	void init(String...argv) throws IOException, ClassNotFoundException, SQLException;
+	int start(String[] argv, int argc) throws InterruptedException, ExecutionException, IOException;
 
 	default String usage(String name) {
 		return String.format("usage: java %s knownlist maglist [accesslog...]", name);

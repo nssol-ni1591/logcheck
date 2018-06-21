@@ -65,7 +65,7 @@ public class WhoisUtils {
 			// サイトIDが設定されている場合が多いので、文字の最後が"xxx(...)"の場合、"(...)"を削除する
 			int len = name.length();
 			if (name.charAt(len - 1) == ')') {
-				len = name.indexOf("(");
+				len = name.indexOf('(');
 				if (len != 0) {
 					if (name.charAt(len - 1) == ' ') {
 						name = name.substring(0, len - 1);

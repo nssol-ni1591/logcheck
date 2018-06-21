@@ -12,26 +12,8 @@ import java.util.logging.Logger;
 
 public class DB {
 
-	private static final String MASTERINFO_USER = "masterinfo";
-	private static final String MASTERINFO_PASS = "masterinfo";
-	private static final String DEFAULT_DRIVER = "oracle.jdbc.driver.OracleDriver";
-	private static final String DEFAULT_URL = "jdbc:oracle:thin:@172.30.90.145:1521:sdcdb011";
-
 	private DB () {
 		// Do nothing
-	}
-
-	public static String getUsername() {
-		return MASTERINFO_USER;
-	}
-	public static String getPassword() {
-		return MASTERINFO_PASS;
-	}
-	public static String getDriver() {
-		return DEFAULT_DRIVER;
-	}
-	public static String getUrl() {
-		return DEFAULT_URL;
 	}
 
 	public static Connection createConnection() throws ClassNotFoundException, SQLException, IOException {
@@ -42,13 +24,14 @@ public class DB {
 			props.load(new InputStreamReader(is));
 		}
 
-		String username = props.getProperty("username", getUsername());
-		String password = props.getProperty("password", getPassword());
+		String username = props.getProperty("username", Constants.MASTERINFO_USER);
+		String password = props.getProperty("password", Constants.MASTERINFO_PASS);
 
 		String env = System.getProperty("jdbc.env", "dev");
-		String driver = props.getProperty(env + ".driver", getDriver());
-		String url = props.getProperty(env + ".url", getUrl());
-		log.log(Level.INFO, "jdbc.env={0}, url={1}, driver={2}", new Object[] { env, url, driver });
+		String driver = props.getProperty(env + ".driver", Constants.JDBC_DRIVER);
+		String url = props.getProperty(env + ".url", Constants.JDBC_URL);
+
+		log.log(Level.FINE, "jdbc.env={0}, url={1}, driver={2}", new Object[] { env, url, driver });
 
 		if (driver != null && !driver.isEmpty()) {
 			Class.forName(driver);

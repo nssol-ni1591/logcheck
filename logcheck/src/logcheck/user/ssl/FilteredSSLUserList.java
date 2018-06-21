@@ -1,5 +1,6 @@
 package logcheck.user.ssl;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -64,7 +65,8 @@ public class FilteredSSLUserList extends LinkedHashMap<String, UserListBean> imp
 	}
 
 	@WithElaps
-	public FilteredSSLUserList load(String file, SiteList sitelist) throws Exception {
+	public FilteredSSLUserList load(String file, SiteList sitelist) 
+			throws IOException, ClassNotFoundException, SQLException {
 
 		try ( // Oracleに接続
 				Connection conn = DB.createConnection();

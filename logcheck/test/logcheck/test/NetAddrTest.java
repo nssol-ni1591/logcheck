@@ -2,8 +2,6 @@ package logcheck.test;
 
 import static org.junit.Assert.*;
 
-import java.nio.file.NoSuchFileException;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,14 +28,13 @@ public class NetAddrTest {
 		assertTrue("192.168.1.0/24".equals(addr.toStringNetwork()));
 
 		addr = new NetAddr("192.168.1.1", "192.168.1.0/16");
-		System.out.println(addr.toStringRange());
 		assertTrue("192.168.1.1 (192.168.0.0-192.168.255.255)".equals(addr.toStringRange()));
 
 		addr = new NetAddr("192.168.1.1", "192.168.1.0 - 192.168.1.255");
 		assertTrue("192.168.1.0/24".equals(addr.toStringNetwork()));
 
 		addr = new NetAddr("192.168.1.1/16");
-		assertTrue("192.168.1.1 (192.168.0.0-192.168.255.255)".equals(addr.toStringRange()));
+		assertTrue("192.168.0.0 (192.168.0.0-192.168.255.255)".equals(addr.toStringRange()));
 
 		addr = new NetAddr("192.168.1.0 - 192.168.1.255");
 		assertTrue("192.168.1.0/24".equals(addr.toStringNetwork()));

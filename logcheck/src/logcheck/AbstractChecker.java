@@ -1,6 +1,7 @@
 package logcheck;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -10,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -141,19 +143,19 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 	protected AbstractChecker() {
 	}
 
-	private T run(InputStream is) throws Exception {
+	private T run(InputStream is) throws InterruptedException, ExecutionException, IOException {
 		log.info("checking from InputStream:");
 
 		this.stream = new BufferedReader(new InputStreamReader(is)).lines();
 		return run2();
 	}
-	private T run(String file) throws Exception {
+	private T run(String file) throws InterruptedException, ExecutionException, IOException {
 		log.log(Level.INFO, "checking from file={0}:", file);
 
 		this.stream = Files.lines(Paths.get(file), StandardCharsets.UTF_8);
 		return run2();
 	}
-	private T run2() throws Exception {
+	private T run2() throws InterruptedException, ExecutionException {
 
 		ExecutorService exec = null;
 		T map = null;
@@ -176,17 +178,18 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 		return map;
 	}
 
-	protected abstract T call(Stream<String> stream) throws Exception;
+	protected abstract T call(Stream<String> stream);
 	protected abstract void report(final PrintWriter out, final T map);
 
 	@Override @WithElaps
-	public T call() throws Exception {
+	public T call() {
 		return call(stream);
 	}
 
 	// 将来的にサブクラス外からの呼び出しを考慮してpublicとする
 	@WithElaps
-	public int start(String[] argv, int offset) throws Exception {
+	public int start(String[] argv, int offset)
+			throws InterruptedException, ExecutionException, IOException {
 		int rc = 0;
 		T map = null;
 		if (argv.length <= offset) {

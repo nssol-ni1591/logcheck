@@ -84,5 +84,16 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 	public int compareTo(AccessLogSummary o) {
 		return getRef().compareTo(o.getRef());
 	}
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof AccessLogSummary) {
+			return compareTo((AccessLogSummary)o) == 0;
+		}
+		return false;
+	}
 
 }

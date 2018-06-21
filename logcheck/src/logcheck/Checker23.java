@@ -1,6 +1,8 @@
 package logcheck;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,7 +39,7 @@ public class Checker23 extends AbstractChecker<List<AccessLogSummary>> {
 
 	@Inject private Logger log;
 
-	public void init(String...argv) throws Exception {
+	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.knownlist.load(argv[0]);
 		this.maglist.load(argv[1]);
 	}
@@ -68,8 +70,7 @@ public class Checker23 extends AbstractChecker<List<AccessLogSummary>> {
 	}
 
 	@Override
-	public List<AccessLogSummary> call(Stream<String> stream)
-			throws Exception {
+	public List<AccessLogSummary> call(Stream<String> stream) {
 		final List<AccessLogSummary> list = Collections.synchronizedList(new LinkedList<>());
 		stream//.parallel()
 				.filter(AccessLog::test)

@@ -19,6 +19,7 @@ import org.junit.Test;
 import logcheck.known.KnownListIsp;
 import logcheck.known.net.Whois;
 import logcheck.known.net.WhoisKnownList;
+import logcheck.util.Constants;
 import logcheck.util.net.ClientAddr;
 
 public class WhoisKnownListTest {
@@ -206,17 +207,17 @@ public class WhoisKnownListTest {
 	public void test10() {
 		KnownListIsp isp = getIsp("201.6.0.0");
 		if (check) {
-			assertNotEquals("--", isp.getCountry());
+			assertNotEquals(Constants.UNKNOWN_COUNTRY, isp.getCountry());
 		}
 		isp = getIsp("187.95.130.0");
 		if (check) {
-			assertNotEquals("--", isp.getCountry());
+			assertNotEquals(Constants.UNKNOWN_COUNTRY, isp.getCountry());
 		}
 
 		// ripe
 		isp = getIsp("139.162.106.181");
 		if (check) {
-			assertNotEquals("--", isp.getCountry());
+			assertNotEquals(Constants.UNKNOWN_COUNTRY, isp.getCountry());
 		}
 	}
 

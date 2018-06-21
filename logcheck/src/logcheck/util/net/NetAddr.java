@@ -17,9 +17,10 @@ public class NetAddr implements Comparable<NetAddr> {
 		if (netaddr == null) {
 			throw new IllegalArgumentException("network address is null");
 		}
+
 		String[] array = netaddr.split("-");
 		if (array.length == 2) {
-			// "x.x.x.x/x - y.y.y.y.y/y"形式
+			// "xx.xx.xx.xx - yy.yy.yy.yy"形式
 			if (addr == null) {
 				this.srcaddr = address(array[0].trim());
 			}
@@ -31,47 +32,53 @@ public class NetAddr implements Comparable<NetAddr> {
 			this.netmask = netmask(network, brdcast);
 		}
 		else {
-			this.srcaddr = address(addr);
+			// "xx.xx.xx.xx/yy"形式
 			this.network = new int[4];
 			this.brdcast = new int[4];
-			calc(netaddr);
+			range(netaddr);
+			if (addr == null) {
+				// Deep copyの方がよいか？
+				this.srcaddr = this.network;
+			}
+			else {
+				this.srcaddr = address(addr);
+			}
 		}
 	}
 	public NetAddr(String netaddr) {
 		this(null, netaddr);
 	}
 
-	private void calc(String addr) {
-		// "xx.xx.xx.xx/xx"形式
+	/*
+	 *  "xx.xx.xx.xx/yy形式からnetwork、broadcast、netmaskを求める
+	 */
+	private void range(String addr) {
+		// "xx.xx.xx.xx(/yy)?"形式であることを確認
 		String[] s0 = addr.split("/");
 		if (s0.length != 1 && s0.length != 2) {
 			throw new IllegalArgumentException("network error: " + addr);
 		}
 
 		int[] array = address(s0[0]);
-		if (this.srcaddr[0] == 0) {
-			for (int ix = 0; ix < 4; ix++) {
-				this.srcaddr[ix] = array[ix];
-				this.network[ix] = array[ix];
-				this.brdcast[ix] = array[ix];
-			}
-		}
-		else {
-			for (int ix = 0; ix < 4; ix++) {
-				this.network[ix] = array[ix];
-				this.brdcast[ix] = array[ix];
-			}
+		for (int ix = 0; ix < 4; ix++) {
+			this.network[ix] = array[ix];
+			this.brdcast[ix] = array[ix];
 		}
 
+		// netmaskの取得
 		if (s0.length < 2) {
+			// netmaskの指定がない場合=>32bit固定
 			this.netmask = 32;
 		}
 		else {
+			// netmaskの指定がある場合y=>netmaskの書式を確認
 			String[] s2 = s0[1].split("\\.");
 			if (s2.length == 1) {
+				// xx.xx.xx.xx/yy 形式
 				this.netmask = Byte.parseByte(s0[1]);
 			}
 			else if (s2.length == 4) {
+				// xx.xx.xx.xx/yy.yy.yy.yy 形式
 				int tmp = 0;
 				for (int ix = 0; ix < 4; ix++) {
 					int m = Integer.parseInt(s2[ix]);
@@ -88,13 +95,14 @@ public class NetAddr implements Comparable<NetAddr> {
 					case 254:	tmp += 7 ; break;
 					case 255:	tmp += 8 ; break;
 					default:
-						throw new IllegalArgumentException("ip error(1): " + addr + ", s2=" + s2);
+						throw new IllegalArgumentException("netmask value: addr=" + addr + ", s2=" + s2);
 					}
 				}
 				this.netmask = tmp;
 			}
 			else {
-				throw new IllegalArgumentException("ip error(2): " + addr + ", len=" + s2.length);
+				// 上記2形式のどれにも当てはまらない場合はエラー
+				throw new IllegalArgumentException("netmask format: addr=" + addr + ", array.len=" + s2.length);
 			}
 		}
 
@@ -127,7 +135,7 @@ public class NetAddr implements Comparable<NetAddr> {
 			this.brdcast[3] = this.brdcast[3] | (int)(Math.pow(2, (32 - this.netmask)) - 1);
 		}
 	}
-	private int netmask(int[] netmask, int[] brdcast) {
+	private int netmask(int[] network, int[] brdcast) {
 		int tmp = 0;
 		for (int ix = 0; ix < 4; ix++) {
 			switch (brdcast[ix] - network[ix]) {
@@ -141,7 +149,7 @@ public class NetAddr implements Comparable<NetAddr> {
 			case 127:	tmp += 1; break;
 			case 255:	tmp += 0; break;
 			default:
-				// skip
+				throw new IllegalArgumentException("network=" + network + ", brdcast=" + brdcast);
 			}
 		}
 		return tmp;
@@ -222,13 +230,10 @@ public class NetAddr implements Comparable<NetAddr> {
 			if (addr[ix] == brdcast[ix]) {
 				// 等しい場合は下位OCTの比較を行う
 			}
-			else if (addr[ix] > brdcast[ix]) {
-				// 大きい場合はIPアドレスのレンジ外
-				return false;
-			}
 			else {
-				// 小さい場合はネットワークアドレスの範囲内
-				return true;
+				// 大きい場合はIPアドレスのレンジ外なのでfalse
+				// 小さい場合はネットワークアドレスの範囲内なのでtrue
+				return addr[ix] < brdcast[ix];
 			}
 		}
 		// 全てのOCTが等しい場合はネットワークアドレスの範囲内

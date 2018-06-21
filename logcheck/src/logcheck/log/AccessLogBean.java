@@ -51,9 +51,11 @@ public class AccessLogBean {
 		}
 		ArrayList<String> list = new ArrayList<>();
 		Arrays.stream(roles.split(","))
-			.map(role -> role.trim())
+			//.map(role -> role.trim())
+			.map(String::trim)
 			.filter(role -> !role.isEmpty())	// "[, NSSDC Common Role]"みたいなログ対応
-			.forEach(role -> list.add(role))
+			//.forEach(role -> list.add(role))
+			.forEach(list::add)
 			;
 		return list.toArray(new String[list.size()]);
 	}

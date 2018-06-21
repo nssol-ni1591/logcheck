@@ -132,4 +132,13 @@ public class UserListBean implements Comparable<UserListBean> {
 		return userId.compareTo(o.getUserId());
 	}
 	// equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめる
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj);
+	}
+
 }
