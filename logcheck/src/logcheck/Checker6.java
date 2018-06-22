@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
+import logcheck.log.AccessLogBean;
 import logcheck.mag.MagList;
 import logcheck.util.net.NetAddr;
 import logcheck.util.weld.WeldWrapper;
@@ -42,6 +43,42 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 		this.maglist.load(argv[1]);
 	}
 
+	private void sub(Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> map,
+			IspList isp, AccessLogBean b, String m)
+	{
+		NetAddr addr = b.getAddr();
+
+		Map<IspList, Map<String, Map<NetAddr, Integer>>> ispmap;
+		Map<String, Map<NetAddr, Integer>> msgmap;
+		Map<NetAddr, Integer> addrmap;
+		Integer count;
+
+		ispmap = map.get(isp.getCountry());
+		if (ispmap == null) {
+			ispmap = new TreeMap<>();
+			map.put(isp.getCountry(), ispmap);
+		}
+
+		msgmap = ispmap.get(isp);
+		if (msgmap == null) {
+			msgmap = new TreeMap<>();
+			ispmap.put(isp, msgmap);
+		}
+
+		addrmap = msgmap.get(m);
+		if (addrmap == null) {
+			addrmap = new TreeMap<>();
+			msgmap.put(m, addrmap);
+		}
+
+		count = addrmap.get(addr);
+		if (count == null) {
+			count = Integer.valueOf(0);
+		}
+		count += 1;
+		addrmap.put(addr, count);
+	}
+
 	@Override
 	public Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> call(Stream<String> stream) {
 		final Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> map = new TreeMap<>();
@@ -66,35 +103,7 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 					}
 
 					if (isp != null) {
-						Map<IspList, Map<String, Map<NetAddr, Integer>>> ispmap;
-						Map<String, Map<NetAddr, Integer>> msgmap;
-						Map<NetAddr, Integer> addrmap;
-						Integer count;
-
-						ispmap = map.get(isp.getCountry());
-						if (ispmap == null) {
-							ispmap = new TreeMap<>();
-							map.put(isp.getCountry(), ispmap);
-						}
-
-						msgmap = ispmap.get(isp);
-						if (msgmap == null) {
-							msgmap = new TreeMap<>();
-							ispmap.put(isp, msgmap);
-						}
-
-						addrmap = msgmap.get(m);
-						if (addrmap == null) {
-							addrmap = new TreeMap<>();
-							msgmap.put(m, addrmap);
-						}
-
-						count = addrmap.get(addr);
-						if (count == null) {
-							count = Integer.valueOf(0);
-						}
-						count += 1;
-						addrmap.put(addr, count);
+						sub(map, isp, b, m);
 					}
 					else {
 						log.log(Level.WARNING, "unknown ip: addr={0}", addr);

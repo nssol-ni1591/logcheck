@@ -14,6 +14,7 @@ import logcheck.annotations.UseChecker14;
 import logcheck.known.KnownList;
 import logcheck.known.KnownListIsp;
 import logcheck.log.AccessLog;
+import logcheck.log.AccessLogBean;
 import logcheck.site.SiteList;
 import logcheck.site.SiteListIsp;
 import logcheck.site.SiteListIspImpl;
@@ -40,6 +41,33 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 		this.knownlist.load(argv[0]);
 		this.sitelist.load(null);
 		this.userlist.load(argv[1], sitelist);
+	}
+
+	private void sub(AccessLogBean b, UserListSite site, UserListBean user) {
+		SiteListIsp magisp = sitelist.get(b.getAddr());
+		if (magisp == null) {
+			KnownListIsp isp = knownlist.get(b.getAddr());
+			if (isp == null) {
+				addrErrs.add(b.getAddr());
+				return;
+			}
+			site = new UserListSite(isp/*, "0"*/);
+			user.addSite(site);
+			site.update(b.getDate());
+			log.config(String.format("user=%s, isp=%s", user, isp));
+		}
+		else {
+			if (/*b.getRoles() == null || */b.getRoles().length < 2) {
+				site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[0]), "-1", "");
+			}
+			else {
+				site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[1]), "-1", "");
+			}
+			site.addAddress(b.getAddr());
+			user.addSite(site);
+			site.update(b.getDate());
+			log.config(String.format("user=%s, magisp=%s", user, magisp));
+		}
 	}
 
 	@Override
@@ -71,30 +99,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 					UserListSite site = user.getSite(b.getAddr());
 					if (site == null) {
-						SiteListIsp magisp = sitelist.get(b.getAddr());
-						if (magisp == null) {
-							KnownListIsp isp = knownlist.get(b.getAddr());
-							if (isp == null) {
-								addrErrs.add(b.getAddr());
-								return;
-							}
-							site = new UserListSite(isp/*, "0"*/);
-							user.addSite(site);
-							site.update(b.getDate());
-							log.config(String.format("user=%s, isp=%s", user, isp));
-						}
-						else {
-							if (/*b.getRoles() == null || */b.getRoles().length < 2) {
-								site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[0]), "-1", "");
-							}
-							else {
-								site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[1]), "-1", "");
-							}
-							site.addAddress(b.getAddr());
-							user.addSite(site);
-							site.update(b.getDate());
-							log.config(String.format("user=%s, magisp=%s", user, magisp));
-						}
+						sub(b, site, user);
 					}
 					else {
 						site.update(b.getDate());

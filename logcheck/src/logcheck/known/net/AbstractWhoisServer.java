@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import logcheck.known.KnownListIsp;
 import logcheck.util.net.NetAddr;
 
-abstract public class AbstractWhoisServer implements Whois {
+public abstract class AbstractWhoisServer implements Whois {
 
 	@Inject protected Logger log;
 
@@ -41,6 +41,6 @@ abstract public class AbstractWhoisServer implements Whois {
 		return null;
 	}
 
-	abstract public KnownListIsp search(String site, NetAddr addr) throws IOException;
+	public abstract KnownListIsp search(String site, NetAddr addr) throws IOException;
 
 }

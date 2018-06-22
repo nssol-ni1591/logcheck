@@ -74,6 +74,51 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 		return b.getMsg();
 	}
 
+	private void sub(Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> map,
+			IspList isp, AccessLogBean b, String pattern)
+	{
+		NetAddr addr = b.getAddr();
+
+		Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>> ispmap;
+		Map<NetAddr, Map<String, Map<String, AccessLogSummary>>> addrmap;
+		Map<String, Map<String, AccessLogSummary>> idmap;
+		Map<String, AccessLogSummary> msgmap;
+		AccessLogSummary msg;
+
+		ispmap = map.get(isp.getCountry());
+		if (ispmap == null) {
+			ispmap = new TreeMap<>();
+			map.put(isp.getCountry(), ispmap);
+		}
+
+		addrmap = ispmap.get(isp);
+		if (addrmap == null) {
+			addrmap = new TreeMap<>();
+			ispmap.put(isp, addrmap);
+		}
+
+		idmap = addrmap.get(addr);
+		if (idmap == null) {
+			idmap = new TreeMap<>();
+			addrmap.put(addr, idmap);
+		}
+
+		msgmap = idmap.get(b.getId());
+		if (msgmap == null) {
+			msgmap = new TreeMap<>();
+			idmap.put(b.getId(), msgmap);
+		}
+
+		msg = msgmap.get(pattern);
+		if (msg == null) {
+			msg = new AccessLogSummary(b, pattern);
+			msgmap.put(pattern, msg);
+		}
+		else {
+			msg.update(b);
+		}
+	}
+
 	@Override
 	public Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> call(Stream<String> stream)
 		{
@@ -90,45 +135,7 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 					}
 
 					if (isp != null) {
-						Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>> ispmap;
-						Map<NetAddr, Map<String, Map<String, AccessLogSummary>>> addrmap;
-						Map<String, Map<String, AccessLogSummary>> idmap;
-						Map<String, AccessLogSummary> msgmap;
-						AccessLogSummary msg;
-
-						ispmap = map.get(isp.getCountry());
-						if (ispmap == null) {
-							ispmap = new TreeMap<>();
-							map.put(isp.getCountry(), ispmap);
-						}
-
-						addrmap = ispmap.get(isp);
-						if (addrmap == null) {
-							addrmap = new TreeMap<>();
-							ispmap.put(isp, addrmap);
-						}
-
-						idmap = addrmap.get(addr);
-						if (idmap == null) {
-							idmap = new TreeMap<>();
-							addrmap.put(addr, idmap);
-						}
-
-						msgmap = idmap.get(b.getId());
-						if (msgmap == null) {
-							msgmap = new TreeMap<>();
-							idmap.put(b.getId(), msgmap);
-						}
-
-						msg = msgmap.get(pattern);
-						if (msg == null) {
-							msg = new AccessLogSummary(b, pattern);
-							msgmap.put(pattern, msg);
-						}
-						else {
-							msg.update(b);
-						}
-
+						sub(map, isp, b, pattern);
 					}
 					else {
 						addrErrs.add(b.getAddr());

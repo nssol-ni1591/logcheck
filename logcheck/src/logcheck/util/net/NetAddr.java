@@ -125,8 +125,8 @@ public class NetAddr implements Comparable<NetAddr> {
 
 					switch (m) {
 					case 0:		mask += 0 ; break;
-					case 127:	mask += 1 ; break;
-					case 128:	mask += 1 ; break;	// 記入ミス対応
+//					case 127:	mask += 1 ; break;	// 記入ミス対応
+					case 128:	mask += 1 ; break;
 					case 192:	mask += 2 ; break;
 					case 224:	mask += 3 ; break;
 					case 240:	mask += 4 ; break;
@@ -168,42 +168,47 @@ public class NetAddr implements Comparable<NetAddr> {
 							new Object[] { toIpaddr(network), toIpaddr(brdcast) });
 
 					// Whoisに登録されているinetnumが不正な値の場合があるので、適当に補正する
-					if (d > 1) {
-						tmp++;
-					}
-					else if (d > 3) {
-						tmp += 2;
-					}
-					else if (d > 7) {
-						tmp += 3;
-					}
-					else if (d > 15) {
-						tmp += 4;
-					}
-					else if (d > 31) {
-						tmp += 5;
-					}
-					else if (d > 63) {
-						tmp += 6;
-					}
-					else if (d > 127) {
-						tmp += 7;
-					}
+					tmp += errorNetmask(d);
 				}
 				break;
 			}
 		}
 		return 32 - tmp;
 	}
+	private int errorNetmask(int d) {
+		int tmp = 0;
+		if (d > 1) {
+			tmp++;
+		}
+		if (d > 3) {
+			tmp++;
+		}
+		if (d > 7) {
+			tmp++;
+		}
+		if (d > 15) {
+			tmp++;
+		}
+		if (d > 31) {
+			tmp++;
+		}
+		if (d > 63) {
+			tmp++;
+		}
+		if (d > 127) {
+			tmp++;
+		}
+		return tmp;
+	}
 
 	// IPアドレスの型変換
 	private int[] address(String s) {
 		if (s == null) {
-			return new int[4];
+			throw new IllegalArgumentException("format error: addr=null");
 		}
 		String[] s1 = s.split("\\.");
 		if (s1.length > 4) {
-			throw new IllegalArgumentException("ip error(3): " + s + ", len=" + s1.length);
+			throw new IllegalArgumentException("format error: addr=" + s + ", len=" + s1.length);
 		}
 		int[] addr = new int[4];
 		for (int ix = 0; ix < s1.length; ix++) {
@@ -221,13 +226,13 @@ public class NetAddr implements Comparable<NetAddr> {
 		int[] addr = another.getNetworkAddr();
 		for (int ix = 0; ix < 4; ix++) {
 			if (network[ix] - addr[ix] != 0) {
-				return network[ix] - addr[ix];
+				return addr[ix] - network[ix];
 			}
 		}
 		addr = another.getBroadcastAddr();
 		for (int ix = 0; ix < 4; ix++) {
 			if (brdcast[ix] - addr[ix] != 0) {
-				return brdcast[ix] - addr[ix];
+				return addr[ix] - brdcast[ix];
 			}
 		}
 		return 0;
@@ -254,6 +259,10 @@ public class NetAddr implements Comparable<NetAddr> {
 	}
 
 	public boolean within(NetAddr another) {
+		if (another == null) {
+			return false;
+		}
+
 		int[] addr = another.getNetworkAddr();
 		// 多分、0.0.0.0 => 非固定 のチェックは行わなくても大丈夫
 		for (int ix = 0; ix < 4; ix++) {

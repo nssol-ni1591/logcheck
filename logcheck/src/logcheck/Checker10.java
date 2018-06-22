@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
+import logcheck.log.AccessLogBean;
 import logcheck.log.AccessLogSummary;
 import logcheck.mag.MagList;
 import logcheck.util.net.NetAddr;
@@ -43,6 +44,82 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 		this.maglist.load(argv[1]);
 	}
 
+	private void failed(List<AccessLogSummary> list, AccessLogBean b) {
+		// 失敗メッセージ:
+		// Ispの取得は失敗メッセージの場合だけ行えばよい。成功メッセージではIspの参照を行っていないので
+		AccessLogSummary msg = null;
+		NetAddr addr = b.getAddr();
+		IspList isp = maglist.get(addr);
+		if (isp == null) {
+			isp = knownlist.get(addr);
+			if (isp == null) {
+				addrErrs.add(b.getAddr());
+				return;
+			}
+		}
+
+		if (list.isEmpty()) {
+			msg = new AccessLogSummary(b, b.getMsg(), isp);
+			list.add(msg);
+		}
+		else {
+			String date = b.getDate().substring(0, 10);
+			for (int ix = list.size() - 1; ix >= 0; ix--) {
+				msg = list.get(ix);
+				if (!msg.getFirstDate().startsWith(date)) {
+					msg = null;
+					break;
+				}
+				else if (msg.getAddr().equals(b.getAddr()) && msg.getId().equals(b.getId())) {
+					msg.addCount();
+					break;
+				}
+				msg = null;
+			}
+			if (msg == null) {
+				msg = new AccessLogSummary(b, b.getMsg(), isp);
+				list.add(msg);
+			}
+		}
+	}
+	private void success(List<AccessLogSummary> list, AccessLogBean b) {
+		// 成功メッセージ
+		// listをさかのぼる範囲は同じ日付のログまで
+		AccessLogSummary msg = null;
+		String date = b.getDate().substring(0, 10);
+		for (int ix = list.size() - 1; ix >= 0; ix--) {
+			msg = list.get(ix);
+			if (!msg.getFirstDate().startsWith(date)) {
+				// listの日付が変わったのでさかのぼる処理をやめる
+				break;
+			}
+
+			if (!"".equals(msg.getReason()) && !msg.getReason().endsWith("（※）：")) {
+				// すでに"（※）"で終わらない原因が設定されている場合は置換を行わない
+			}
+			else if (msg.getAddr().equals(b.getAddr()) && msg.getId().equals(b.getId())) {
+				// アドレスもユーザIDも一致している場合
+				msg.setReason("パスワードの入力ミス：");
+				msg.setDetail(b.getDate() + " に認証成功");
+			}
+			else if (msg.getId().equals(b.getId())) {
+				// アドレスが一致していないが、ユーザIDが一致している場合
+				msg.setReason("VPN利用方法のミス：");
+				msg.setDetail(b.getAddr() + " からの認証成功");
+			}
+			else if ("利用申請".equals(msg.getIsp().getCountry())) {
+				msg.setReason("利用申請先からの接続：");
+				msg.setDetail("問題なしとする");
+			}
+			else if (msg.getAddr().equals(b.getAddr())) {
+				// アドレスが一致しているが、ユーザIDが一致していない場合
+				msg.setAfterUsrId(b.getId());
+				msg.setReason("ユーザIDの入力ミス（※）：");
+				msg.setDetail(b.getId() + " / " + b.getDate() + " での認証成功");
+			}
+		}
+	}
+
 	@Override
 	public List<AccessLogSummary> call(Stream<String> stream) {
 		final List<AccessLogSummary> list = new LinkedList<>();
@@ -54,79 +131,13 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 						.anyMatch(p -> p.matcher(b.getMsg()).matches())
 						)
 				.forEach(b -> {
-					AccessLogSummary msg = null;
 					if (b.getMsg().contains("failed")) {
 						// 失敗メッセージ:
-						// Ispの取得は失敗メッセージの場合だけ行えばよい。成功メッセージではIspの参照を行っていないので
-						NetAddr addr = b.getAddr();
-						IspList isp = maglist.get(addr);
-						if (isp == null) {
-							isp = knownlist.get(addr);
-							if (isp == null) {
-								addrErrs.add(b.getAddr());
-								return;
-							}
-						}
-
-						if (list.isEmpty()) {
-							msg = new AccessLogSummary(b, b.getMsg(), isp);
-							list.add(msg);
-						}
-						else {
-							String date = b.getDate().substring(0, 10);
-							for (int ix = list.size() - 1; ix >= 0; ix--) {
-								msg = list.get(ix);
-								if (!msg.getFirstDate().startsWith(date)) {
-									msg = null;
-									break;
-								}
-								else if (msg.getAddr().equals(b.getAddr()) && msg.getId().equals(b.getId())) {
-									msg.addCount();
-									break;
-								}
-								msg = null;
-							}
-							if (msg == null) {
-								msg = new AccessLogSummary(b, b.getMsg(), isp);
-								list.add(msg);
-							}
-						}
+						failed(list, b);
 					}
 					else {
 						// 成功メッセージ
-						// listをさかのぼる範囲は同じ日付のログまで
-						String date = b.getDate().substring(0, 10);
-						for (int ix = list.size() - 1; ix >= 0; ix--) {
-							msg = list.get(ix);
-							if (!msg.getFirstDate().startsWith(date)) {
-								// listの日付が変わったのでさかのぼる処理をやめる
-								break;
-							}
-
-							if (!"".equals(msg.getReason()) && !msg.getReason().endsWith("（※）：")) {
-								// すでに"（※）"で終わらない原因が設定されている場合は置換を行わない
-							}
-							else if (msg.getAddr().equals(b.getAddr()) && msg.getId().equals(b.getId())) {
-								// アドレスもユーザIDも一致している場合
-								msg.setReason("パスワードの入力ミス：");
-								msg.setDetail(b.getDate() + " に認証成功");
-							}
-							else if (msg.getId().equals(b.getId())) {
-								// アドレスが一致していないが、ユーザIDが一致している場合
-								msg.setReason("VPN利用方法のミス：");
-								msg.setDetail(b.getAddr() + " からの認証成功");
-							}
-							else if ("利用申請".equals(msg.getIsp().getCountry())) {
-								msg.setReason("利用申請先からの接続：");
-								msg.setDetail("問題なしとする");
-							}
-							else if (msg.getAddr().equals(b.getAddr())) {
-								// アドレスが一致しているが、ユーザIDが一致していない場合
-								msg.setAfterUsrId(b.getId());
-								msg.setReason("ユーザIDの入力ミス（※）：");
-								msg.setDetail(b.getId() + " / " + b.getDate() + " での認証成功");
-							}
-						}
+						success(list, b);
 					}
 				});
 		list.stream()

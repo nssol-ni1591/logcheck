@@ -17,6 +17,7 @@ import logcheck.isp.IspList;
 import logcheck.isp.IspMap;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
+import logcheck.log.AccessLogBean;
 import logcheck.mag.MagList;
 import logcheck.util.net.NetAddr;
 import logcheck.util.weld.WeldWrapper;
@@ -43,6 +44,31 @@ public class Checker3 extends AbstractChecker<Map<String, IspMap<Map<String, Int
 		this.maglist.load(argv[1]);
 	}
 
+	private void sub(Map<String, IspMap<Map<String, Integer>>> map,
+			IspList isp, AccessLogBean b, String m)
+	{
+		NetAddr addr = b.getAddr();
+
+		IspMap<Map<String, Integer>> ispmap = map.get(isp.getName());
+		if (ispmap == null) {
+			ispmap = new IspMap<>(isp.getName(), isp.getCountry());
+			map.put(isp.getName(), ispmap);
+		}
+
+		Map<String, Integer> client = ispmap.get(addr);
+		if (client == null) {
+			client = new TreeMap<>();
+			ispmap.put(addr, client);
+		}
+
+		Integer count = client.get(m);
+		if (count == null) {
+			count = Integer.valueOf(0);
+		}
+		count += 1;
+		client.put(m, count);
+	}
+
 	@Override
 	public Map<String, IspMap<Map<String, Integer>>> call(Stream<String> stream) {
 		final Map<String, IspMap<Map<String, Integer>>> map = new TreeMap<>();
@@ -64,24 +90,7 @@ public class Checker3 extends AbstractChecker<Map<String, IspMap<Map<String, Int
 					}
 
 					if (isp != null) {
-						IspMap<Map<String, Integer>> ispmap = map.get(isp.getName());
-						if (ispmap == null) {
-							ispmap = new IspMap<>(isp.getName(), isp.getCountry());
-							map.put(isp.getName(), ispmap);
-						}
-
-						Map<String, Integer> client = ispmap.get(addr);
-						if (client == null) {
-							client = new TreeMap<>();
-							ispmap.put(addr, client);
-						}
-
-						Integer count = client.get(m);
-						if (count == null) {
-							count = Integer.valueOf(0);
-						}
-						count += 1;
-						client.put(m, count);
+						sub(map, isp, b, m);
 					}
 					else {
 						log.log(Level.WARNING, "unknown ip: addr={0}", addr);
