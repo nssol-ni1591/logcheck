@@ -70,7 +70,7 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 					msg = null;
 					break;
 				}
-				else if (msg.getAddr().equals(b.getAddr()) && msg.getId().equals(b.getId())) {
+				if (msg.getAddr().equals(b.getAddr()) && msg.getId().equals(b.getId())) {
 					msg.addCount();
 					break;
 				}

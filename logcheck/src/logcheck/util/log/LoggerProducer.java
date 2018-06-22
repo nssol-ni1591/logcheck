@@ -1,4 +1,4 @@
-package logcheck.util;
+package logcheck.util.log;
 
 import java.util.logging.Logger;
 

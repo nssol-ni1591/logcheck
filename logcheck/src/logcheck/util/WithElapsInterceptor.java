@@ -51,7 +51,8 @@ public class WithElapsInterceptor {
 		}
 
 		// メソッド終了後のログ
-		System.err.println();
+		//System.err.println();
+		//StdErrLogger.getLogger().info(System.lineSeparator());
 		log.log(Level.INFO, "end {0} ... elaps={1} ms", new Object[] { classAndMethod, time });
 		return rc;
 	}
