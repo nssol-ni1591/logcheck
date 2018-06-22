@@ -35,7 +35,6 @@ import logcheck.util.weld.WeldRunner;
 public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 
 	@Inject private Logger log;
-	//private Logger err = StdErrLogger.getLogger();
 
 	private Stream<String> stream;
 
@@ -226,7 +225,6 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 				try {
 					Thread.sleep(1000);
 					System.err.print(".");
-					//err.info(".");
 				} catch (InterruptedException e) {
 					// もし例外が発生してしまうとスレッドが停止してしまうが
 					// sonarのパーサが文句を言うので仕方がない

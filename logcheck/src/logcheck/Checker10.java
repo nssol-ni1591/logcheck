@@ -44,19 +44,10 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 		this.maglist.load(argv[1]);
 	}
 
-	private void failed(List<AccessLogSummary> list, AccessLogBean b) {
+	private void failed(List<AccessLogSummary> list, IspList isp, AccessLogBean b) {
 		// 失敗メッセージ:
 		// Ispの取得は失敗メッセージの場合だけ行えばよい。成功メッセージではIspの参照を行っていないので
 		AccessLogSummary msg = null;
-		NetAddr addr = b.getAddr();
-		IspList isp = maglist.get(addr);
-		if (isp == null) {
-			isp = knownlist.get(addr);
-			if (isp == null) {
-				addrErrs.add(b.getAddr());
-				return;
-			}
-		}
 
 		if (list.isEmpty()) {
 			msg = new AccessLogSummary(b, b.getMsg(), isp);
@@ -133,7 +124,16 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 				.forEach(b -> {
 					if (b.getMsg().contains("failed")) {
 						// 失敗メッセージ:
-						failed(list, b);
+						NetAddr addr = b.getAddr();
+						IspList isp = maglist.get(addr);
+						if (isp == null) {
+							isp = knownlist.get(addr);
+							if (isp == null) {
+								addrErrs.add(addr);
+								return;
+							}
+						}
+						failed(list, isp, b);
 					}
 					else {
 						// 成功メッセージ
