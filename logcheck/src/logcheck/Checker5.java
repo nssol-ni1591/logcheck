@@ -16,7 +16,6 @@ import javax.inject.Inject;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
-import logcheck.log.AccessLogBean;
 import logcheck.mag.MagList;
 import logcheck.util.net.NetAddr;
 import logcheck.util.weld.WeldWrapper;
@@ -44,7 +43,7 @@ public class Checker5 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 	}
 
 	private void sub(Map<String, Map<IspList, Map<String, Integer>>> map,
-			IspList isp, AccessLogBean b, String m)
+			IspList isp, String m)
 	{
 		Map<IspList, Map<String, Integer>> ispmap = map.get(isp.getCountry());
 		if (ispmap == null) {
@@ -90,7 +89,7 @@ public class Checker5 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 					}
 
 					if (isp != null) {
-						sub(map, isp, b, m);
+						sub(map, isp, m);
 					}
 					else {
 						log.log(Level.WARNING, "unknown ip: addr={0}", addr);

@@ -43,7 +43,8 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 		this.userlist.load(argv[1], sitelist);
 	}
 
-	private void sub(AccessLogBean b, UserListSite site, UserListBean user) {
+	private void sub(AccessLogBean b, UserListBean user) {
+		UserListSite site;
 		SiteListIsp magisp = sitelist.get(b.getAddr());
 		if (magisp == null) {
 			KnownListIsp isp = knownlist.get(b.getAddr());
@@ -54,7 +55,9 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 			site = new UserListSite(isp/*, "0"*/);
 			user.addSite(site);
 			site.update(b.getDate());
-			log.config(String.format("user=%s, isp=%s", user, isp));
+			//Invoke method(s) only conditionally.
+			String msg = String.format("user=%s, isp=%s", user, isp);
+			log.fine(msg);
 		}
 		else {
 			if (/*b.getRoles() == null || */b.getRoles().length < 2) {
@@ -66,7 +69,9 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 			site.addAddress(b.getAddr());
 			user.addSite(site);
 			site.update(b.getDate());
-			log.config(String.format("user=%s, magisp=%s", user, magisp));
+			//Invoke method(s) only conditionally.
+			String msg = String.format("user=%s, magisp=%s", user, magisp);
+			log.fine(msg);
 		}
 	}
 
@@ -99,7 +104,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 					UserListSite site = user.getSite(b.getAddr());
 					if (site == null) {
-						sub(b, site, user);
+						sub(b, user);
 					}
 					else {
 						site.update(b.getDate());
