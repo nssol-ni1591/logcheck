@@ -19,65 +19,59 @@ import logcheck.util.net.NetAddr;
 @SuppressWarnings("rawtypes")
 public class ApnicDeserializer implements JsonbDeserializer<Map> {
 
-	private final Logger log = Logger.getLogger(ApnicDeserializer.class.getName());
+	private transient Logger log = Logger.getLogger(ApnicDeserializer.class.getName());
 	private static final String DUP_MSG = "duplicate key={0}, exists={1}, new={2}";
 	private static final String REP_MSG = "replace key={0}, exists={1}, new={2}";
 
-	private void duplicate(HashMap<String, String> map, String name, Object values) {
+	private void duplicate(HashMap<String, String> map, String name, Object o) {
+		String value;
+		if (o instanceof List) {
+			value = ((List<?>) o).get(0).toString();
+		}
+		else {
+			value = o.toString();
+		}
+
 		// 特定のキーの場合のみ値の置換を行う
 		if ("inetnum".equals(name)) {
-			log.log(Level.FINE, DUP_MSG,
-					new Object[] { name, map.get(name), values });
-			String v;
-			if (values instanceof List) {
-				v = ((List<?>) values).get(0).toString();
-			}
-			else {
-				v = values.toString();
+			if (!map.get(name).equals(value)) {
+				log.log(Level.FINE, DUP_MSG, new Object[] { name, map.get(name), o });
 			}
 			NetAddr cur = new NetAddr(map.get(name));
-			NetAddr rep = new NetAddr(v);
+			NetAddr rep = new NetAddr(value);
 			if (!cur.equals(rep) && cur.within(rep)) {
-				map.put(name, v);
+				map.put(name, value);
 				map.remove("descr");
 				map.remove("country");
-				log.log(Level.INFO, REP_MSG,
-						new Object[] { name, map.get(name), values });
+				log.log(Level.INFO, REP_MSG, new Object[] { name, map.get(name), o });
 			}
 		}
 		else if ("descr".equals(name)) {
-			log.log(Level.FINE, DUP_MSG,
-					new Object[] { name, map.get(name), values });
-			String v;
-			if (values instanceof List) {
-				v = ((List<?>) values).get(0).toString();
+			if (!map.get(name).equals(value)) {
+				log.log(Level.FINE, DUP_MSG, new Object[] { name, map.get(name), o });
 			}
-			else {
-				v = values.toString();
+			if (value.contains("Inc")
+					|| value.contains("INC")
+					|| value.contains("LTD")
+					|| value.contains("Limited")
+					|| value.contains("Corp")
+					|| value.contains("Company")
+					|| value.contains("Telecom")) {
+				map.put(name, value);
+				log.log(Level.INFO, REP_MSG, new Object[] { name, map.get(name), o });
 			}
-
-			if (v.contains("Inc")
-					|| v.contains("INC")
-					|| v.contains("LTD")
-					|| v.contains("Limited")
-					|| v.contains("Corp")
-					|| v.contains("Company")
-					|| v.contains("Telecom")) {
-				map.put(name, v);
-				log.log(Level.INFO, REP_MSG,
-						new Object[] { name, map.get(name), v });
-			}
-
 		}
 		else {
-			log.log(Level.FINE, DUP_MSG,
-					new Object[] { name, map.get(name), values });
+			if (!map.get(name).equals(value)) {
+				// 必要としない属性なので出力レベルを落とす
+				log.log(Level.FINEST, DUP_MSG, new Object[] { name, map.get(name), o });
+			}
 		}
 	}
-	private void attributes(HashMap<String, String> map, String val) {
+	private void attributes(HashMap<String, String> map, String json) {
     	try (Jsonb jsonb = JsonbBuilder.create()) {
     		Type hashListType = ArrayList.class;
-    		List<Map<String, Object>> attrs = jsonb.fromJson(val, hashListType);
+    		List<Map<String, Object>> attrs = jsonb.fromJson(json, hashListType);
 
     		attrs.stream()
     			.filter(attr -> attr.containsKey("name"))
@@ -125,18 +119,18 @@ public class ApnicDeserializer implements JsonbDeserializer<Map> {
                 String className = jsonParser.getString();
 
                 jsonParser.next();
-                String val = jsonParser.getValue().toString();
+                String value = jsonParser.getValue().toString();
 
                 switch (className) {
                 case "attributes":
-                	attributes(map, val);
+                	attributes(map, value);
                 	break;
                 case "objectType":
 				case "primaryKey":
 		    		String name = className.toLowerCase();
 	    			if (!map.containsKey(name)) {
 	    				// キーが存在しない場合のみ値の置換を行う
-	    				map.put(className, val);
+	    				map.put(className, value);
 	    			}
 	    			break;
 				case "type":

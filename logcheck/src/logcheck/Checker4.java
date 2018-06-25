@@ -27,7 +27,7 @@ import logcheck.util.weld.WeldWrapper;
  */
 public class Checker4 extends AbstractChecker<Map<String ,Map<String, IspMap<Map<String, Integer>>>>> {
 
-	@Inject private Logger log;
+	@Inject private transient Logger log;
 
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;

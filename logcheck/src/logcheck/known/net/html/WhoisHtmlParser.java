@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -81,6 +82,10 @@ public class WhoisHtmlParser extends AbstractWhoisServer {
 				// check network address
 				String tmp = parse(PTN_NETADDRS, s);
 				if (tmp != null) {
+					if (netaddr != null && !netaddr.equals(tmp)) {
+						log.log(Level.FINE, "duplicate key=NETADDRS, exists={0}, new={1}",
+								new Object[] { netaddr, tmp });
+					}
 					netaddr = tmp;
 				}
 
@@ -114,12 +119,20 @@ public class WhoisHtmlParser extends AbstractWhoisServer {
 					// すでに"Inc."などを含む文字列がnameに設定されている場合はnameの変更は行わない
 				}
 				else {
+					if (name != null && !name.equals(tmp)) {
+						log.log(Level.FINE, "duplicate key=NAMES, exists={0}, new={1}",
+								new Object[] { name, tmp });
+					}
 					name = tmp;
 				}
 
 				// check country
 				tmp = parse(PTN_COUNTRIES, s);
 				if (tmp != null) {
+					if (country != null && !country.equals(tmp)) {
+						log.log(Level.FINE, "duplicate key=COUNTRIES, exists={0}, new={1}",
+								new Object[] { country, tmp });
+					}
 					country = tmp;
 				}
 			}

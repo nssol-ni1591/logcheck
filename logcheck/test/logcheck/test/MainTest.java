@@ -25,12 +25,9 @@ public class MainTest {
 	public static void beforeClass() {
 		System.out.println("start MainTest ...");
 
-		System.setProperty("proxySet" , "true");
-		System.setProperty("proxyHost", "proxy.ns-sol.co.jp");
-		System.setProperty("proxyPort", "8000");
-
 		weld = new Weld();
 		container = weld.initialize();
+		Env.init();
 	}
 	@AfterClass
 	public static void afterClass() {

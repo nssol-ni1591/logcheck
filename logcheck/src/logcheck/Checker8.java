@@ -36,7 +36,7 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 	@Inject protected KnownList knownlist;
 	@Inject protected MagList maglist;
 
-	@Inject private Logger log;
+	@Inject private transient Logger log;
 
 	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.knownlist.load(argv[0]);

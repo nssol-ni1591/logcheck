@@ -32,7 +32,7 @@ import logcheck.util.net.NetAddr;
 @Alternative
 public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownList {
 
-	@Inject private Logger log;
+	@Inject private transient Logger log;
 
 	private static final long serialVersionUID = 1L;
 

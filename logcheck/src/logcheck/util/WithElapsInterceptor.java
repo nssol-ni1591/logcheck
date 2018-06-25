@@ -18,7 +18,7 @@ import logcheck.annotations.WithElaps;
 @Priority(Interceptor.Priority.APPLICATION) // 優先度
 public class WithElapsInterceptor {
 
-	@Inject private Logger log;
+	@Inject private transient Logger log;
 
 	/**
 	 * インターセプターのメソッド
@@ -51,7 +51,6 @@ public class WithElapsInterceptor {
 		}
 
 		// メソッド終了後のログ
-		System.err.println();
 		log.log(Level.INFO, "end {0} ... elaps={1} ms", new Object[] { classAndMethod, time });
 		return rc;
 	}

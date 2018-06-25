@@ -11,7 +11,7 @@ import logcheck.util.net.NetAddr;
 
 public abstract class AbstractWhoisServer implements Whois {
 
-	@Inject protected Logger log;
+	@Inject protected transient Logger log;
 
 	protected final String url;
 	

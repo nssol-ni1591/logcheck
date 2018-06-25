@@ -26,7 +26,7 @@ import logcheck.util.net.NetAddr;
 @Alternative
 public class DbSiteList extends LinkedHashMap<String, SiteListIsp> implements SiteList {
 
-	@Inject private Logger log;
+	@Inject private transient Logger log;
 
 	private static final long serialVersionUID = 1L;
 
@@ -82,13 +82,14 @@ public class DbSiteList extends LinkedHashMap<String, SiteListIsp> implements Si
 				NetAddr addr;
 				try {
 					addr = new NetAddr(globalIp);
+					log.log(Level.FINEST, "DbSiteList={0}", site.toString());
 				}
 				catch (Exception e) {
 					addr = new NetAddr(Constants.GLOBAL_IP);
+					log.log(Level.INFO, "DbSiteList={0}, globalIp={1}、ex={2}",
+							new Object[] { site.toString(), globalIp, e.getMessage() });
 				}
 				site.addAddress(addr);
-
-				log.log(Level.FINE, "DbSiteList={0}", site.toString());
 			}
 		}
 		return this;

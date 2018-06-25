@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 
 public class NetAddr implements Comparable<NetAddr> {
 
-	private final Logger log = Logger.getLogger(NetAddr.class.getName());
+	private transient Logger log = Logger.getLogger(NetAddr.class.getName());
 
 	private final int[] srcaddr;
 	private final int[] network;
@@ -164,7 +164,8 @@ public class NetAddr implements Comparable<NetAddr> {
 				case 63:	tmp += 6; break;
 				case 127:	tmp += 7; break;
 				default:
-					log.log(Level.WARNING, "illegal inetnum: network={0}, brdcast={1}", 
+					// 本来ならばエラーだが、このNetAddrの実装でNetmaskの必要性は低いので出力レベルを落とす
+					log.log(Level.INFO, "illegal inetnum: network={0}, brdcast={1}", 
 							new Object[] { toIpaddr(network), toIpaddr(brdcast) });
 
 					// Whoisに登録されているinetnumが不正な値の場合があるので、適当に補正する

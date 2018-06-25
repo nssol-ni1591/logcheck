@@ -59,8 +59,10 @@ public class WhoisArin extends AbstractWhoisServer implements Whois {
 					String key = m.group(1);
 					String val = m.group(2);
 					if (map.containsKey(key)) {
-						log.log(Level.FINE, "duplicate key={0}, org={1}, new={2}",
-								new Object[] { key, map.get(key), val });
+						if (!map.get(key).equals(val)) {
+							log.log(Level.FINE, "duplicate key={0}, exists={1}, new={2}",
+									new Object[] { key, map.get(key), val });
+						}
 					}
 					else {
 						map.put(key, val);
@@ -75,10 +77,9 @@ public class WhoisArin extends AbstractWhoisServer implements Whois {
 		// mapから必要な情報を取得して KnownListIsp を生成する
 		String netType = map.get("NetType");
 		if (netType == null
-				|| (!netType.startsWith("Allocated to"))
-				&& !netType.startsWith("Early Registrations,")
-				) {
-			// 外部NIC参照の場合は組織名の設定は行わない
+				||
+			(!netType.startsWith("Allocated to")) && !netType.startsWith("Early Registrations,")) {
+			// 外部NIC参照の場合は組織名の設定は行わないで、以降のWhoisサーバにまかせる
 			name = getOrganization(map);
 		}
 		netaddr = getNetaddr(map);

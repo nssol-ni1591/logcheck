@@ -18,7 +18,7 @@ import logcheck.util.weld.WeldWrapper;
  */
 public class Checker25 extends Checker23 {
 
-	@Inject private Logger log;
+	@Inject private transient Logger log;
 
 	@Override
 	protected String getPattern(AccessLogBean b) {

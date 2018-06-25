@@ -15,6 +15,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -34,7 +35,7 @@ import logcheck.util.weld.WeldRunner;
  */
 public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 
-	@Inject private Logger log;
+	@Inject private transient Logger log;
 
 	private Stream<String> stream;
 
@@ -171,8 +172,8 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 			p.stopRequest();
 		}
 		finally {
-			if (exec != null) {
-				exec.shutdown();
+			while (exec.awaitTermination(1, TimeUnit.SECONDS)) {
+				// Do nothing
 			}
 		}
 		return map;
@@ -231,8 +232,9 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 					Thread.currentThread().interrupt();
 				}
 			}
+			System.err.println();
 		}
-		
+
 		public void stopRequest() {
 			stopRequest = true;
 		}
