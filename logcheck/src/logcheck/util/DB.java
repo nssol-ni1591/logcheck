@@ -34,6 +34,8 @@ public class DB {
 		log.log(Level.FINE, "jdbc.env={0}, url={1}, driver={2}", new Object[] { env, url, driver });
 
 		if (driver != null && !driver.isEmpty()) {
+			// derby, ojdbc8の場合はJDBC4.0に対応しているのでClass.forName()は必要ない
+			// ojdbc14は、JDBC4.0に対応していないためClass.forName()が必要
 			Class.forName(driver);
 		}
 
