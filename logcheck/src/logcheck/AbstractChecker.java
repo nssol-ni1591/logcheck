@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -224,20 +226,25 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 
 	private class PrintDot implements Runnable {
 
+		private final PrintStream err;
 		private boolean stopRequest = false;
+
+		private PrintDot() {
+			this.err = System.err;
+		}
 
 		public void run() {
 			while (!stopRequest) {
 				try {
 					Thread.sleep(1000);
-					System.err.print(".");
+					err.print(".");
 				} catch (InterruptedException e) {
 					// もし例外が発生してしまうとスレッドが停止してしまうが
 					// sonarのパーサが文句を言うので仕方がない
 					Thread.currentThread().interrupt();
 				}
 			}
-			System.err.println();
+			err.println();
 		}
 
 		public void stopRequest() {

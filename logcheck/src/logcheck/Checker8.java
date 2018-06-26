@@ -85,30 +85,35 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 		Map<String, AccessLogSummary> msgmap;
 		AccessLogSummary msg;
 
+		// 国/利用申請 の登録 or 更新
 		ispmap = map.get(isp.getCountry());
 		if (ispmap == null) {
 			ispmap = new TreeMap<>();
 			map.put(isp.getCountry(), ispmap);
 		}
 
+		// ISP名/プロジェクトID の登録 or 更新
 		addrmap = ispmap.get(isp);
 		if (addrmap == null) {
 			addrmap = new TreeMap<>();
 			ispmap.put(isp, addrmap);
 		}
 
+		// アドレスの登録 or 更新
 		idmap = addrmap.get(addr);
 		if (idmap == null) {
 			idmap = new TreeMap<>();
 			addrmap.put(addr, idmap);
 		}
 
+		// ユーザIDの登録 or 更新
 		msgmap = idmap.get(b.getId());
 		if (msgmap == null) {
 			msgmap = new TreeMap<>();
 			idmap.put(b.getId(), msgmap);
 		}
 
+		// パターンの登録 or 更新
 		msg = msgmap.get(pattern);
 		if (msg == null) {
 			msg = new AccessLogSummary(b, pattern);

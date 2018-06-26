@@ -88,23 +88,28 @@ public class WhoisJpnic extends AbstractWhoisServer implements Whois {
 			reader.lines()
 				.filter(s -> !s.isEmpty() && !s.startsWith("-"))
 				.forEach(s -> {
-					log.log(Level.FINE, "s={0}", s);
+					String netaddr = attrs[0];
+					String name = attrs[1];
+
 					String tmp = parse(PTN_NETADDRS, s);
 					if (tmp != null) {
-						if (attrs[0] != null) {
+						if (netaddr != null) {
 							log.log(Level.FINE, "duplicate key=NETADDRS, exists={1}, new={2}",
-									new Object[] { attrs[0], tmp });
+									new Object[] { netaddr, tmp });
 						}
-						attrs[0] = tmp;
+						netaddr = tmp;
 					}
 					tmp = parse(PTN_NAMES, s);
 					if (tmp != null) {
-						if (attrs[1] != null) {
+						if (name != null) {
 							log.log(Level.FINE, "duplicate key=NAMES, exists={1}, new={2}",
-									new Object[] { attrs[1], tmp });
+									new Object[] { name, tmp });
 						}
-						attrs[1] = tmp;
+						name = tmp;
 					}
+
+					attrs[0] = netaddr;
+					attrs[1] = name;
 				});
 			return WhoisUtils.format(addr, attrs[0], attrs[1], "JP");
 		}
