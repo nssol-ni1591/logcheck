@@ -23,19 +23,12 @@ public class ApnicDeserializer implements JsonbDeserializer<Map> {
 	private static final String DUP_MSG = "duplicate key={0}, exists={1}, new={2}";
 	private static final String REP_MSG = "replace key={0}, exists={1}, new={2}";
 
-	private void duplicate(HashMap<String, String> map, String name, Object o) {
-		String value;
-		if (o instanceof List) {
-			value = ((List<?>) o).get(0).toString();
-		}
-		else {
-			value = o.toString();
-		}
+	private void duplicate(HashMap<String, String> map, String name, String value) {
 
 		// 特定のキーの場合のみ値の置換を行う
 		if ("inetnum".equals(name)) {
 			if (!map.get(name).equals(value)) {
-				log.log(Level.FINE, DUP_MSG, new Object[] { name, map.get(name), o });
+				log.log(Level.FINE, DUP_MSG, new Object[] { name, map.get(name), value });
 			}
 			NetAddr cur = new NetAddr(map.get(name));
 			NetAddr rep = new NetAddr(value);
@@ -43,12 +36,12 @@ public class ApnicDeserializer implements JsonbDeserializer<Map> {
 				map.put(name, value);
 				map.remove("descr");
 				map.remove("country");
-				log.log(Level.INFO, REP_MSG, new Object[] { name, map.get(name), o });
+				log.log(Level.INFO, REP_MSG, new Object[] { name, map.get(name), value });
 			}
 		}
 		else if ("descr".equals(name)) {
 			if (!map.get(name).equals(value)) {
-				log.log(Level.FINE, DUP_MSG, new Object[] { name, map.get(name), o });
+				log.log(Level.FINE, DUP_MSG, new Object[] { name, map.get(name), value });
 			}
 			if (value.contains("Inc")
 					|| value.contains("INC")
@@ -58,13 +51,13 @@ public class ApnicDeserializer implements JsonbDeserializer<Map> {
 					|| value.contains("Company")
 					|| value.contains("Telecom")) {
 				map.put(name, value);
-				log.log(Level.INFO, REP_MSG, new Object[] { name, map.get(name), o });
+				log.log(Level.INFO, REP_MSG, new Object[] { name, map.get(name), value });
 			}
 		}
 		else {
 			if (!map.get(name).equals(value)) {
 				// 必要としない属性なので出力レベルを落とす
-				log.log(Level.FINEST, DUP_MSG, new Object[] { name, map.get(name), o });
+				log.log(Level.FINEST, DUP_MSG, new Object[] { name, map.get(name), value });
 			}
 		}
 	}
@@ -80,7 +73,14 @@ public class ApnicDeserializer implements JsonbDeserializer<Map> {
     				Object values = attr.get("values");
 
     				if (map.containsKey(name)) {
-    					duplicate(map, name, values);
+    					String value;
+    					if (values instanceof List) {
+    						value = ((List<?>) values).get(0).toString();
+    					}
+    					else {
+    						value = values.toString();
+    					}
+    					duplicate(map, name, value);
     				}
 					else if (values == null) {
 						// Do nothing

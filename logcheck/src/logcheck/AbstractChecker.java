@@ -158,7 +158,7 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 	}
 	private T run2() throws InterruptedException, ExecutionException {
 
-		// 2つのスレッドの実行枠を用意 - ThreadPoolを使うまでもないが ...
+		// 2つのスレッドの実行枠を用意 - ThreadPoolを使ういみはないけれど ...
 		ExecutorService exec = Executors.newFixedThreadPool(2);
 		try {
 			// PrintDotスレッドの実行

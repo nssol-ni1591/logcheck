@@ -60,6 +60,45 @@ public class WhoisHtmlParser extends AbstractWhoisServer {
 		return null;
 	}
 
+	private String selectOrganization(String name, String tmp) {
+		if (tmp == null) {
+			// Do nothing
+		}
+		else if (tmp.contains("@")) {
+			// mail address
+			// Do nothing
+		}
+		else if (tmp.contains("HaNoi")
+				|| tmp.contains("Hanoi")
+				|| tmp.contains("Bangkok")
+				|| tmp.contains("Route")
+				|| tmp.contains("STATIC")
+				|| tmp.contains("Assign for")
+				|| tmp.contains("contact ")
+				) {
+			// "Hanoi"とか地名が含まれている場合は住所の可能性が大きいのでnameに置換しない
+		}
+		else if (name != null
+				&& (name.contains("Inc.") 
+				|| name.contains("INC.")
+				|| name.contains("LTD.") 
+				|| name.contains("Limited") 
+				|| name.contains("Corp")
+				|| name.contains("Company")
+				|| name.contains("Telecom")
+				)) {
+			// すでに"Inc."などを含む文字列がnameに設定されている場合はnameの変更は行わない
+		}
+		else {
+			if (name != null && !name.equals(tmp)) {
+				log.log(Level.FINE, "duplicate key=NAMES, exists={0}, new={1}",
+						new Object[] { name, tmp });
+			}
+			return tmp;
+		}
+		return name;
+	}
+
 	/*
 	 * 引数のサイトからIPアドレスを含むISPを取得する
 	 */
@@ -79,7 +118,7 @@ public class WhoisHtmlParser extends AbstractWhoisServer {
 
 			String s;
 			while((s = reader.readLine()) != null) {
-				// check network address
+				// select network address
 				String tmp = parse(PTN_NETADDRS, s);
 				if (tmp != null) {
 					if (netaddr != null && !netaddr.equals(tmp)) {
@@ -89,42 +128,9 @@ public class WhoisHtmlParser extends AbstractWhoisServer {
 					netaddr = tmp;
 				}
 
-				// check organization name
+				// select organization name
 				tmp = parse(PTN_NAMES, s);
-				if (tmp == null) {
-					// Do nothing
-				}
-				else if (tmp.contains("@")) {
-					// Do nothing
-				}
-				else if (tmp.contains("HaNoi")
-						|| tmp.contains("Hanoi")
-						|| tmp.contains("Bangkok")
-						|| tmp.contains("Route")
-						|| tmp.contains("STATIC")
-						|| tmp.contains("Assign for")
-						|| tmp.contains("contact ")
-						) {
-					// "Hanoi"とか地名が含まれている場合は住所の可能性が大きいのでnameに置換しない
-				}
-				else if (name != null
-						&& (name.contains("Inc.") 
-						|| name.contains("INC.")
-						|| name.contains("LTD.") 
-						|| name.contains("Limited") 
-						|| name.contains("Corp")
-						|| name.contains("Company")
-						|| name.contains("Telecom")
-						)) {
-					// すでに"Inc."などを含む文字列がnameに設定されている場合はnameの変更は行わない
-				}
-				else {
-					if (name != null && !name.equals(tmp)) {
-						log.log(Level.FINE, "duplicate key=NAMES, exists={0}, new={1}",
-								new Object[] { name, tmp });
-					}
-					name = tmp;
-				}
+				name = selectOrganization(name, tmp);
 
 				// check country
 				tmp = parse(PTN_COUNTRIES, s);
