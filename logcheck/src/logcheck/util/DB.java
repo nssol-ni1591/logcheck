@@ -16,6 +16,10 @@ import javax.enterprise.inject.Produces;
 @Dependent
 public class DB {
 
+	private DB() {
+		// Do nothing
+	}
+
 	/*
 	 * Producerを使うか、try-with-resourceを使うか迷ったけれど、try-with-resourceを使用することにした
 	 */

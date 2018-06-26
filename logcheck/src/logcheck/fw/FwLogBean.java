@@ -6,9 +6,9 @@ import logcheck.util.net.NetAddr;
 public class FwLogBean implements Comparable<FwLogBean> {
 
 	private final String date;
-	// 2018/06/26 delete field: level;
+	private final String level;
 	private final NetAddr srcip;
-	// 2018/06/26 delete field: srcport;
+	private final int srcport;
 	private final NetAddr dstip;
 	private final int dstport;
 
@@ -16,16 +16,24 @@ public class FwLogBean implements Comparable<FwLogBean> {
 			String srcip, String srcport, String dstip, String dstport)
 	{
 		this.date = date + " " + time;
+		this.level = level;
 		this.srcip = new ClientAddr(srcip);
 		this.dstip = new ClientAddr(dstip);
+		this.srcport = srcport == null ? 0 : Integer.parseInt(srcport);
 		this.dstport = dstport == null ? 0 : Integer.parseInt(dstport);
 	}
 
 	public String getDate() {
 		return date;
 	}
+	public String getLevel() {
+		return level;
+	}
 	public NetAddr getSrcIp() {
 		return srcip;
+	}
+	public int getSrcPort() {
+		return srcport;
 	}
 	public NetAddr getDstIp() {
 		return dstip;

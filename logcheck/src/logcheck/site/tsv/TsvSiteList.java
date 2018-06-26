@@ -26,7 +26,7 @@ import logcheck.util.net.NetAddr;
 @Alternative
 public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteList {
 
-	@Inject private transient Logger log;
+	@Inject private Logger log;
 
 	private static final long serialVersionUID = 1L;
 

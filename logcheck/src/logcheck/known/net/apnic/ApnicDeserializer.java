@@ -19,7 +19,7 @@ import logcheck.util.net.NetAddr;
 @SuppressWarnings("rawtypes")
 public class ApnicDeserializer implements JsonbDeserializer<Map> {
 
-	private transient Logger log = Logger.getLogger(ApnicDeserializer.class.getName());
+	private Logger log = Logger.getLogger(ApnicDeserializer.class.getName());
 	private static final String DUP_MSG = "duplicate key={0}, exists={1}, new={2}";
 	private static final String REP_MSG = "replace key={0}, exists={1}, new={2}";
 

@@ -36,7 +36,7 @@ import logcheck.util.DB;
 public class MappedSSLUserList
 	extends LinkedHashMap<String, UserListBean> implements UserList<UserListBean> {
 
-	@Inject private transient Logger log;
+	@Inject private Logger log;
 
 	private static final long serialVersionUID = 1L;
 	private static final String TIME_FORMAT = "yyyy/MM/dd HH:mm:ss";

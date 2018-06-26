@@ -35,7 +35,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 	@Inject private SiteList sitelist;
 	@Inject protected UserList<UserListBean> userlist;
 
-	@Inject private transient Logger log;
+	@Inject private Logger log;
 
 	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.knownlist.load(argv[0]);

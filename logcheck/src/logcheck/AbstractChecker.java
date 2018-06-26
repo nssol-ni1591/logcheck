@@ -35,7 +35,7 @@ import logcheck.util.weld.WeldRunner;
  */
 public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 
-	@Inject private transient Logger log;
+	@Inject private Logger log;
 
 	private Stream<String> stream;
 
@@ -158,25 +158,30 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 	}
 	private T run2() throws InterruptedException, ExecutionException {
 
-		ExecutorService exec = null;
-		T map = null;
+		// 2つのスレッドの実行枠を用意 - ThreadPoolを使うまでもないが ...
+		ExecutorService exec = Executors.newFixedThreadPool(2);
 		try {
-			exec = Executors.newFixedThreadPool(2);
-			CheckProgress p = new CheckProgress();
-
-			Future<T> f1 = exec.submit(this);
+			// PrintDotスレッドの実行
+			// Executor.execute(): not Callable<T>スレッド
+			PrintDot p = new PrintDot();
 			exec.execute(p);
 
-			map = f1.get();
+			// Checkerスレッドの実行
+			// ExecutorService.submit(): implement Callable<T>スレッド
+			Future<T> f1 = exec.submit(this);
+			// Checkerスレッドの実行結果の取得
+			T map = f1.get();
 
+			// PrintDotスレッドの停止要求
 			p.stopRequest();
+			return map;
 		}
 		finally {
+			// PrintDotスレッドの終了の待ち合わせ
 			while (exec.awaitTermination(1, TimeUnit.SECONDS)) {
 				// Do nothing
 			}
 		}
-		return map;
 	}
 
 	protected abstract T call(Stream<String> stream);
@@ -217,7 +222,7 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 		return rc;
 	}
 
-	private class CheckProgress implements Runnable {
+	private class PrintDot implements Runnable {
 
 		private boolean stopRequest = false;
 

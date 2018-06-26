@@ -23,7 +23,7 @@ import logcheck.util.DB;
 @Alternative
 public class DbProjList extends LinkedHashMap<String, ProjListBean> implements ProjList<ProjListBean> {
 
-	@Inject private transient Logger log;
+	@Inject private Logger log;
 
 	private static final long serialVersionUID = 1L;
 

@@ -86,7 +86,9 @@ public class FwLogTest {
 		FwLogBean b2 = new FwLogBean("2018-04-12", "00:00:45", "notice", "172.30.90.69", "43692", "128.221.236.246", "443");
 
 		b1.getDate();
+		b1.getLevel();
 		b1.getSrcIp();
+		b1.getSrcPort();
 		b1.getDstIp();
 		b1.getDstPort();
 		b1.toString();

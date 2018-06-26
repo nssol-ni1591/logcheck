@@ -18,7 +18,7 @@ import logcheck.util.weld.WeldWrapper;
  */
 public class Checker22 extends Checker8 {
 
-	@Inject private transient Logger log;
+	@Inject private Logger log;
 
 	private static final Pattern[] ALL_PATTERNS;
 	static {

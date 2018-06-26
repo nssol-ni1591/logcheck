@@ -26,7 +26,7 @@ import logcheck.util.net.NetAddr;
 @Alternative
 public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements KnownList, Whois {
 
-	@Inject private transient Logger log;
+	@Inject private Logger log;
 	private static final long serialVersionUID = 1L;
 	
 	@SuppressWarnings("unused")

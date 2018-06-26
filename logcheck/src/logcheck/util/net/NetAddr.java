@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 
 public class NetAddr implements Comparable<NetAddr> {
 
-	private transient Logger log = Logger.getLogger(NetAddr.class.getName());
+	private Logger log = Logger.getLogger(NetAddr.class.getName());
 
 	private final int[] srcaddr;
 	private final int[] network;

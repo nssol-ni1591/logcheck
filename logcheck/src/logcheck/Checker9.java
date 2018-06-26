@@ -31,7 +31,7 @@ import logcheck.util.weld.WeldWrapper;
  */
 public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 
-	@Inject private transient Logger log;
+	@Inject private Logger log;
 
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;

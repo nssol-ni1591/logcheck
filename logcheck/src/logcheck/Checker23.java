@@ -37,7 +37,7 @@ public class Checker23 extends AbstractChecker<List<AccessLogSummary>> {
 	@Inject protected KnownList knownlist;
 	@Inject protected MagList maglist;
 
-	@Inject private transient Logger log;
+	@Inject private Logger log;
 
 	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.knownlist.load(argv[0]);

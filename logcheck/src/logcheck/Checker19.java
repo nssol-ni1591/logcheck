@@ -20,7 +20,7 @@ import logcheck.util.weld.WeldWrapper;
  */
 public class Checker19 extends AbstractChecker<ProjList<ProjListBean>> {
 
-	@Inject private transient Logger log;
+	@Inject private Logger log;
 	@Inject protected ProjList<ProjListBean> projlist;
 
 	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
