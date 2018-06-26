@@ -55,6 +55,7 @@ public class MappedSSLUserList
 		super(4000);
 	}
 
+	// for envoronment not using weld-se
 	public void init() {
 		if (log == null) {
 			// logのインスタンスが生成できないため

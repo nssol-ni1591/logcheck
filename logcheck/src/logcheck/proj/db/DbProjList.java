@@ -36,10 +36,11 @@ public class DbProjList extends LinkedHashMap<String, ProjListBean> implements P
 	public DbProjList() {
 		super(600);
 	}
-	
+
+	// for envoronment not using weld-se
 	public void init() {
 		if (log == null) {
-			// JUnitの場合、logのインスタンスが生成できないため
+			// not weld-seの場合、logのインスタンスが生成できないため
 			log = Logger.getLogger(this.getClass().getName());
 		}
 	}

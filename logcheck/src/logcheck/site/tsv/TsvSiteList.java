@@ -36,6 +36,7 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 		super(200);
 	}
 
+	// for envoronment not using weld-se
 	public void init() {
 		if (log == null) {
 			// JUnitの場合、logのインスタンスが生成できないため

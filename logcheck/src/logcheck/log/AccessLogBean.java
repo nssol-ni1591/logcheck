@@ -22,13 +22,6 @@ public class AccessLogBean {
 		this.id = id;
 		this.roles = roles;
 		this.msg = msg;
-
-		if (ip == null) {
-			throw new IllegalArgumentException("ip is null [date=" + date + "]");
-		}
-		if (msg == null) {
-			throw new IllegalArgumentException("msg is null [date=" + date + ", ip=" + ip + "]");
-		}
 	}
 
 	public String getDate() {
@@ -44,7 +37,7 @@ public class AccessLogBean {
 		return id;
 	}
 	public String[] getRoles() {
-		if (roles == null || "".equals(roles)) {
+		if (roles == null || roles.isEmpty()) {
 			return new String[] {
 				// nothing to do
 			};

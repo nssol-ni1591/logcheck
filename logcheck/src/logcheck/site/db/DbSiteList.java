@@ -42,6 +42,7 @@ public class DbSiteList extends LinkedHashMap<String, SiteListIsp> implements Si
 		super(600);
 	}
 
+	// for envoronment not using weld-se
 	public void init() {
 		if (log == null) {
 			// JUnitの場合、logのインスタンスが生成できないため

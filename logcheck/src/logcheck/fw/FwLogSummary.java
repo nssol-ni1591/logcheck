@@ -13,14 +13,7 @@ public class FwLogSummary extends Summary<FwLogBean> implements Comparable<FwLog
 	private final int dstPort;
 
 	public FwLogSummary(FwLogBean bean) {
-		super(null, bean.getDate());
-		this.dstPort = bean.getDstPort();
-		this.srcAddr = bean.getSrcIp();
-		this.dstAddr = bean.getDstIp();
-		this.srcIsp = null;
-		this.dstIsp = null;
-		// callされた時点で1回目のログがあるため初期値を1にする
-		super.addCount();
+		this(bean, null, null);
 	}
 	public FwLogSummary(FwLogBean bean, Isp srcIsp, Isp dstIsp) {
 		super(null, bean.getDate());
@@ -29,7 +22,7 @@ public class FwLogSummary extends Summary<FwLogBean> implements Comparable<FwLog
 		this.dstPort = bean.getDstPort();
 		this.srcIsp = srcIsp;
 		this.dstIsp = dstIsp;
-// callされた時点で1回目のログがあるため初期値を1にする
+		// callされた時点で1回目のログがあるため初期値を1にする
 		super.addCount();
 	}
 

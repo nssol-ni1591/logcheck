@@ -41,6 +41,7 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 	public TsvKnownList() {
 		super(200);
 	}
+
 	@Override
 	public void init() {
 		if (log == null) {

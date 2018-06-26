@@ -27,6 +27,11 @@ public class PrivateAddrList extends LinkedHashSet<KnownListIsp> implements Know
 		super();
 	}
 
+	// for envoronment not using weld-se
+	public void init() {
+		// Do nothing
+	}
+
 	/*
 	 * 引数のIPアドレスを含むISPを取得する
 	 */

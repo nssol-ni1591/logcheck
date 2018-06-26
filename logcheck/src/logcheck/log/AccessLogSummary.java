@@ -48,9 +48,6 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 		return isp;
 	}
 	public String[] getRoles() {
-		if (roles == null) {
-			return new String[] { "" };
-		}
 		return roles;
 	}
 
@@ -82,6 +79,9 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 
 	@Override
 	public int compareTo(AccessLogSummary o) {
+		if (o == null) {
+			return -1;
+		}
 		return getRef().compareTo(o.getRef());
 	}
 	@Override

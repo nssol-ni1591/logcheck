@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
+import logcheck.annotations.WithElaps;
 import logcheck.known.KnownListIsp;
 import logcheck.util.net.NetAddr;
 
@@ -30,7 +31,7 @@ public abstract class AbstractWhoisServer implements Whois {
 	/*
 	 * 引数のIPアドレスを含むISPを取得する
 	 */
-	@Override
+	@Override @WithElaps
 	public KnownListIsp get(NetAddr addr) {
 		try {
 			return search(url, addr);

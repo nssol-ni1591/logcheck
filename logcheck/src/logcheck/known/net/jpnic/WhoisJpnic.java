@@ -42,6 +42,7 @@ public class WhoisJpnic extends AbstractWhoisServer implements Whois {
 			log.log(Level.WARNING, e.getMessage());
 		}
 
+		// JPNICはTimeoutになることがあるので、再度実行のためのロジックを入れておく
 		try {
 			Thread.sleep(10 * 1000L);
 		}

@@ -22,7 +22,7 @@ public class WhoisUtils {
 
 	static {
 		final Logger log = Logger.getLogger(WhoisUtils.class.getName());
-		final Pattern p = Pattern.compile("\"([\\S ]+)\"=\"([\\S ]+)\"");
+		final Pattern p = Pattern.compile("\"([\\S ]+)\"\\s*=\\s*\"([\\S ]+)\"");
 
 		try (InputStream in = DB.class.getResourceAsStream("/META-INF/sites.properties")) {
 			new BufferedReader(new InputStreamReader(in, Charset.forName("MS932")))

@@ -10,7 +10,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 public class LoggerProducer {
 
 	@Produces
-	@Dependent
+	//@Dependent
 	public Logger getLogger(InjectionPoint ip) {
 		return Logger.getLogger(ip.getMember().getDeclaringClass().getName());
 	}

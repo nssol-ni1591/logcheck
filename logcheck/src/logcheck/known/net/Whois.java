@@ -7,6 +7,6 @@ public interface Whois {
 
 	KnownListIsp get(NetAddr addr);
 
-	// for exec JUnit
+	// for envoronment not using weld-se
 	void init();
 }

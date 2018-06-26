@@ -43,13 +43,10 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 	}
 
 	private boolean check(KnownListIsp isp) {
-		if (isp == null) {
-			return false;
-		}
 		if (isp.getName() == null) {
 			return false;
 		}
-		if (isp.getCountry() == null || isp.getCountry().equals(Constants.UNKNOWN_COUNTRY)) {
+		if (isp.getCountry() == null) {
 			return false;
 		}
 		return !isp.getAddress().isEmpty();
@@ -71,33 +68,38 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 		// 注意：jpnicはレスポンスが遅いので最後
 		final Whois[] whois = { arin, apnic, jpnic };
 
+		// check()結果がfalseの場合、取得したISP情報を一時的に保持するための領域
+		final Map<Whois, KnownListIsp> map = new HashMap<>();
+
 		KnownListIsp isp = null;
-		// check()結果がfalseの場合、取得したISP情報を一時的に保持するための
-		Map<Whois, KnownListIsp> map = new HashMap<>();
 		Optional<Whois> rc2 = Arrays.stream(whois)
 				.filter(w -> {
 					// WhoisサーバからISP情報を取得する
-					KnownListIsp i = w.get(addr);
-					map.put(w, i);
-					if (i == null) {
-						log.log(Level.INFO, "{0}: addr={1} => isp={2}", new Object[] { w.getClass().getSimpleName(), addr, i });
+					KnownListIsp tmp = w.get(addr);
+					map.put(w, tmp);
+					if (tmp == null) {
+						log.log(Level.INFO, "{0}: addr={1} => isp={2}", new Object[] { w.getClass().getSimpleName(), addr, tmp });
+						return false;
 					}
-					else {
-						log.log(Level.INFO, "{0}: addr={1} => name={2}, country={3}, net={4}",
-								new Object[] { w.getClass().getSimpleName(), addr, i.getName(), i.getCountry(), i.toStringNetwork() });
-					}
-					return check(i);
+					log.log(Level.INFO, "{0}: addr={1} => name={2}, country={3}, net={4}",
+							new Object[] { w.getClass().getSimpleName(), addr, tmp.getName(), tmp.getCountry(), tmp.toStringNetwork() });
+					return check(tmp);
 				})
 				.findFirst();
 
 		if (rc2.isPresent()) {
+			// サイト情報を正常に取得できた場合：
 			Whois w = rc2.get();
 			isp = map.get(w);
 		}
 		else {
+			//　サイト情報の取得に失敗した場合：
+			// 一時保管したmapの情報からサイト情報の組み立てを行う
+			// networkアドレスはなしで、Pivotテーブルのグルーピングキーとして使用する
 			String name = null;
 			String country = null;
 
+			// get name
 			Optional<Whois> rc3 = Arrays.stream(whois)
 					.filter(w -> map.get(w) != null)
 					.filter(w -> map.get(w).getName() != null)
@@ -105,15 +107,30 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 					.findFirst();
 			if (rc3.isPresent()) {
 				name = map.get(rc3.get()).getName();
-				country = map.get(rc3.get()).getCountry();
+			}
+			// get country
+			Optional<Whois> rc4 = Arrays.stream(whois)
+					.filter(w -> map.get(w) != null)
+					.filter(w -> map.get(w).getCountry() != null)
+					.filter(w -> !map.get(w).getCountry().isEmpty())
+					.findFirst();
+			if (rc4.isPresent()) {
+				country = map.get(rc4.get()).getCountry();
+			}
 
+			if (country == null) {
+				country = Constants.UNKNOWN_COUNTRY;
+			}
+
+			if (name != null) {
 				final KnownListIsp isp2 = new KnownListIsp(name, country);
-				map.values().forEach(i -> i.getAddress().forEach(isp2::addAddress));
+				// nameが取得できたサイトのアドレスをコピーする
+				map.get(rc3.get()).getAddress().forEach(isp2::addAddress);
 				isp = isp2;
 			}
 			else {
+				// nameの取得ができない場合は、エラー識別のためにnameに検索したアドレスを設定する
 				name = addr.toString();
-				country = Constants.UNKNOWN_COUNTRY;
 				isp = new KnownListIsp(name, country);
 			}
 		}

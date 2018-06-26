@@ -54,6 +54,7 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 		super(4000);
 	}
 
+	// for envoronment not using weld-se
 	public void init() {
 		if (log == null) {
 			// JUnitの場合、logのインスタンスが生成できないため

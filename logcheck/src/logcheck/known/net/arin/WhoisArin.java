@@ -81,9 +81,9 @@ public class WhoisArin extends AbstractWhoisServer implements Whois {
 			(!netType.startsWith("Allocated to")) && !netType.startsWith("Early Registrations,")) {
 			// 外部NIC参照の場合は組織名の設定は行わないで、以降のWhoisサーバにまかせる
 			name = getOrganization(map);
+			country = getCountry(map);
 		}
 		netaddr = getNetaddr(map);
-		country = getCountry(map);
 		return WhoisUtils.format(addr, netaddr, name, country);
 	}
 

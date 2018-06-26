@@ -10,14 +10,19 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Produces;
+
+@Dependent
 public class DB {
 
-	private DB () {
-		// Do nothing
-	}
-
+	/*
+	 * Producerを使うか、try-with-resourceを使うか迷ったけれど、try-with-resourceを使用することにした
+	 */
+	@Produces
 	public static Connection createConnection() throws ClassNotFoundException, SQLException, IOException {
 		final Logger log = Logger.getLogger(DB.class.getName());
+
 		Properties props = new Properties();
 		InputStream is = DB.class.getResourceAsStream("/META-INF/jdbc.properties");
 		if (is != null) {
