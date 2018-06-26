@@ -103,9 +103,10 @@ public class WhoisHtmlParser extends AbstractWhoisServer {
 	 * 引数のサイトからIPアドレスを含むISPを取得する
 	 */
 	public KnownListIsp search(String site, NetAddr addr) throws IOException {
-		String netaddr = null;
-		String name = null;
-		String country = null;
+		// String netaddr = null
+		// String name = null
+		// String country = null
+		final String[] attrs = new String[3];
 
 		// URLを作成してGET通信を行う
 		URL url = new URL(site + addr);
@@ -115,34 +116,41 @@ public class WhoisHtmlParser extends AbstractWhoisServer {
 
 		// サーバーからのレスポンスを取得してパースする
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(http.getInputStream()))) {
+			reader.lines()
+				.forEach(s -> {
+					String netaddr = attrs[0];
+					String name = attrs[1];
+					String country = attrs[2];
 
-			String s;
-			while((s = reader.readLine()) != null) {
-				// select network address
-				String tmp = parse(PTN_NETADDRS, s);
-				if (tmp != null) {
-					if (netaddr != null && !netaddr.equals(tmp)) {
-						log.log(Level.FINE, "duplicate key=NETADDRS, exists={0}, new={1}",
-								new Object[] { netaddr, tmp });
+					// select network address
+					String tmp = parse(PTN_NETADDRS, s);
+					if (tmp != null) {
+						if (netaddr != null && !netaddr.equals(tmp)) {
+							log.log(Level.FINE, "duplicate key=NETADDRS, exists={0}, new={1}",
+									new Object[] { netaddr, tmp });
+						}
+						netaddr = tmp;
 					}
-					netaddr = tmp;
-				}
 
-				// select organization name
-				tmp = parse(PTN_NAMES, s);
-				name = selectOrganization(name, tmp);
+					// select organization name
+					tmp = parse(PTN_NAMES, s);
+					name = selectOrganization(name, tmp);
 
-				// check country
-				tmp = parse(PTN_COUNTRIES, s);
-				if (tmp != null) {
-					if (country != null && !country.equals(tmp)) {
-						log.log(Level.FINE, "duplicate key=COUNTRIES, exists={0}, new={1}",
-								new Object[] { country, tmp });
+					// check country
+					tmp = parse(PTN_COUNTRIES, s);
+					if (tmp != null) {
+						if (country != null && !country.equals(tmp)) {
+							log.log(Level.FINE, "duplicate key=COUNTRIES, exists={0}, new={1}",
+									new Object[] { country, tmp });
+						}
+						country = tmp;
 					}
-					country = tmp;
-				}
-			}
-			return WhoisUtils.format(addr, netaddr, name, country);
+
+					attrs[0] = netaddr;
+					attrs[1] = name;;
+					attrs[2] = country;
+				});
+			return WhoisUtils.format(addr, attrs[0], attrs[1], attrs[2]);
 		}
 		finally {
 			http.disconnect();

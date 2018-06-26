@@ -48,27 +48,25 @@ public class WhoisArin extends AbstractWhoisServer implements Whois {
 		// サーバーからのレスポンスを取得してパースして map を生成する
 		Map<String, String> map = new HashMap<>();
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(http.getInputStream()))) {
-			String s;
-			while((s = reader.readLine()) != null) {
-				if (s.isEmpty() || s.startsWith("#") || s.startsWith("Comment")) {
-					continue;
-				}
-
-				Matcher m = PATTERN.matcher(s);
-				if (m.matches()) {
-					String key = m.group(1);
-					String val = m.group(2);
-					if (map.containsKey(key)) {
-						if (!map.get(key).equals(val)) {
-							log.log(Level.FINE, "duplicate key={0}, exists={1}, new={2}",
-									new Object[] { key, map.get(key), val });
+			reader.lines()
+				.filter(s -> !s.isEmpty())
+				.filter(s -> !s.startsWith("#") && !s.startsWith("Comment"))
+				.forEach(s -> {
+					Matcher m = PATTERN.matcher(s);
+					if (m.matches()) {
+						String key = m.group(1);
+						String val = m.group(2);
+						if (map.containsKey(key)) {
+							if (!map.get(key).equals(val)) {
+								log.log(Level.FINE, "duplicate key={0}, exists={1}, new={2}",
+										new Object[] { key, map.get(key), val });
+							}
+						}
+						else {
+							map.put(key, val);
 						}
 					}
-					else {
-						map.put(key, val);
-					}
-				}
-			}
+				});
 		}
 		finally {
 			http.disconnect();

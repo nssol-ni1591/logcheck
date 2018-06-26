@@ -73,8 +73,9 @@ public class WhoisJpnic extends AbstractWhoisServer implements Whois {
 	 * 引数のサイトからIPアドレスを含むISPを取得する
 	 */
 	public KnownListIsp search(String site, NetAddr addr) throws IOException {
-		String netaddr = null;
-		String name = null;
+		// String netaddr = null
+		// String name = null
+		final String[] attrs = new String[2];
 
 		// URLを作成してGET通信を行う
 		URL url = new URL(site + addr);
@@ -84,30 +85,28 @@ public class WhoisJpnic extends AbstractWhoisServer implements Whois {
 
 		// サーバーからのレスポンスを取得してパースする
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(http.getInputStream(), "windows-31j"))) {
-			String s;
-			while((s = reader.readLine()) != null) {
-				if (s.isEmpty() || s.startsWith("-")) {
-					continue;
-				}
-				log.log(Level.FINE, "s={0}", s);
-				String tmp = parse(PTN_NETADDRS, s);
-				if (tmp != null) {
-					if (netaddr != null) {
-						log.log(Level.FINE, "duplicate key=NETADDRS, exists={1}, new={2}",
-								new Object[] { netaddr, tmp });
+			reader.lines()
+				.filter(s -> !s.isEmpty() && !s.startsWith("-"))
+				.forEach(s -> {
+					log.log(Level.FINE, "s={0}", s);
+					String tmp = parse(PTN_NETADDRS, s);
+					if (tmp != null) {
+						if (attrs[0] != null) {
+							log.log(Level.FINE, "duplicate key=NETADDRS, exists={1}, new={2}",
+									new Object[] { attrs[0], tmp });
+						}
+						attrs[0] = tmp;
 					}
-					netaddr = tmp;
-				}
-				tmp = parse(PTN_NAMES, s);
-				if (tmp != null) {
-					if (name != null) {
-						log.log(Level.FINE, "duplicate key=NAMES, exists={1}, new={2}",
-								new Object[] { name, tmp });
+					tmp = parse(PTN_NAMES, s);
+					if (tmp != null) {
+						if (attrs[1] != null) {
+							log.log(Level.FINE, "duplicate key=NAMES, exists={1}, new={2}",
+									new Object[] { attrs[1], tmp });
+						}
+						attrs[1] = tmp;
 					}
-					name = tmp;
-				}
-			}
-			return WhoisUtils.format(addr, netaddr, name, "JP");
+				});
+			return WhoisUtils.format(addr, attrs[0], attrs[1], "JP");
 		}
 		finally {
 			http.disconnect();
