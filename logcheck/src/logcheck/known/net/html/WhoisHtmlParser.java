@@ -147,7 +147,7 @@ public class WhoisHtmlParser extends AbstractWhoisServer {
 					}
 
 					attrs[0] = netaddr;
-					attrs[1] = name;;
+					attrs[1] = name;
 					attrs[2] = country;
 				});
 			return WhoisUtils.format(addr, attrs[0], attrs[1], attrs[2]);

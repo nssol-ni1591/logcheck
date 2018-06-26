@@ -26,14 +26,6 @@ public class Checker21 extends AbstractChecker<Map<NetAddr, Map<String, Map<Stri
 
 	@Inject private Logger log;
 
-	private static final Pattern[] ALL_PATTERNS;
-	static {
-		ALL_PATTERNS = new Pattern[INFO_PATTERNS.length + FAIL_PATTERNS.length + FAIL_PATTERNS_DUP.length];
-		System.arraycopy(INFO_PATTERNS, 0, ALL_PATTERNS, 0, INFO_PATTERNS.length);
-		System.arraycopy(FAIL_PATTERNS, 0, ALL_PATTERNS, INFO_PATTERNS.length, FAIL_PATTERNS.length);
-		System.arraycopy(FAIL_PATTERNS_DUP, 0, ALL_PATTERNS, INFO_PATTERNS.length + FAIL_PATTERNS.length, FAIL_PATTERNS_DUP.length);
-	}
-
 	public void init(String...argv) {
 		// Do nothing
 	}

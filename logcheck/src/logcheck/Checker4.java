@@ -32,13 +32,6 @@ public class Checker4 extends AbstractChecker<Map<String ,Map<String, IspMap<Map
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-	private static final Pattern[] FAIL_PATTERNS_ALL;
-	static {
-		FAIL_PATTERNS_ALL = new Pattern[FAIL_PATTERNS.length + FAIL_PATTERNS_DUP.length];
-		System.arraycopy(FAIL_PATTERNS, 0, FAIL_PATTERNS_ALL, 0, FAIL_PATTERNS.length);
-		System.arraycopy(FAIL_PATTERNS_DUP, 0, FAIL_PATTERNS_ALL, FAIL_PATTERNS.length, FAIL_PATTERNS_DUP.length);
-	}
-
 	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.knownlist.load(argv[0]);
 		this.maglist.load(argv[1]);
@@ -80,6 +73,9 @@ public class Checker4 extends AbstractChecker<Map<String ,Map<String, IspMap<Map
 		msgmap.put(m, count);
 	}
 
+	/*
+	 * 国 > ISP > IPアドレス > メッセージ毎に出力する
+	 */
 	@Override
 	public Map<String, Map<String, IspMap<Map<String, Integer>>>> call(Stream<String> stream) {
 		final Map<String, Map<String, IspMap<Map<String, Integer>>>> map = new TreeMap<>();

@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -45,9 +44,16 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 	protected final Set<String> userErrs = new TreeSet<>(); 
 	protected final Set<NetAddr> addrErrs = new TreeSet<>(); 
 
+	// 一次エラーメッセージ
 	protected static final Pattern[] FAIL_PATTERNS;
+	// 二次以降のエラーメッセージ
 	protected static final Pattern[] FAIL_PATTERNS_DUP;
+	// 全てのエラーメッセージ
+	protected static final Pattern[] FAIL_PATTERNS_ALL;
+	// 情報メッセージ
 	protected static final Pattern[] INFO_PATTERNS;
+	// 全てのメッセージ
+	protected static final Pattern[] ALL_PATTERNS;
 
 	protected static final Pattern[] FAIL_PATTERNS_PART = {
 			Pattern.compile("Account disabled by password management on auth server '[\\S]+'"),	// 前：Primary authentication failed for ...
@@ -137,10 +143,19 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 		System.arraycopy(FAIL_PATTERNS_DUP_PART, 0, FAIL_PATTERNS_DUP, 0, FAIL_PATTERNS_DUP_PART.length);
 		FAIL_PATTERNS_DUP[FAIL_PATTERNS_DUP_PART.length] = IP_RANGE_PATTERN;
 
+		FAIL_PATTERNS_ALL = new Pattern[FAIL_PATTERNS.length + FAIL_PATTERNS_DUP.length];
+		System.arraycopy(FAIL_PATTERNS, 0, FAIL_PATTERNS_ALL, 0, FAIL_PATTERNS.length);
+		System.arraycopy(FAIL_PATTERNS_DUP, 0, FAIL_PATTERNS_ALL, FAIL_PATTERNS.length, FAIL_PATTERNS_DUP.length);
+
 		INFO_PATTERNS = new Pattern[INFO_PATTERNS_PART.length + AUTH_SUCCESS_PATTERNS.length + 1 /*SESS_START_PATTERN.length*/];
 		System.arraycopy(INFO_PATTERNS_PART, 0, INFO_PATTERNS, 0, INFO_PATTERNS_PART.length);
 		System.arraycopy(AUTH_SUCCESS_PATTERNS, 0, INFO_PATTERNS, INFO_PATTERNS_PART.length, AUTH_SUCCESS_PATTERNS.length);
 		INFO_PATTERNS[INFO_PATTERNS_PART.length + AUTH_SUCCESS_PATTERNS.length] = SESS_START_PATTERN;
+
+		ALL_PATTERNS = new Pattern[INFO_PATTERNS.length + FAIL_PATTERNS.length + FAIL_PATTERNS_DUP.length];
+		System.arraycopy(INFO_PATTERNS, 0, ALL_PATTERNS, 0, INFO_PATTERNS.length);
+		System.arraycopy(FAIL_PATTERNS, 0, ALL_PATTERNS, INFO_PATTERNS.length, FAIL_PATTERNS.length);
+		System.arraycopy(FAIL_PATTERNS_DUP, 0, ALL_PATTERNS, INFO_PATTERNS.length + FAIL_PATTERNS.length, FAIL_PATTERNS_DUP.length);
 	}
 
 	protected AbstractChecker() {

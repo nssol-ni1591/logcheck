@@ -38,14 +38,6 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 
 	private String select;
 
-	private static final Pattern[] ALL_PATTERNS;
-	static {
-		ALL_PATTERNS = new Pattern[INFO_PATTERNS.length + FAIL_PATTERNS.length + FAIL_PATTERNS_DUP.length];
-		System.arraycopy(INFO_PATTERNS, 0, ALL_PATTERNS, 0, INFO_PATTERNS.length);
-		System.arraycopy(FAIL_PATTERNS, 0, ALL_PATTERNS, INFO_PATTERNS.length, FAIL_PATTERNS.length);
-		System.arraycopy(FAIL_PATTERNS_DUP, 0, ALL_PATTERNS, INFO_PATTERNS.length + FAIL_PATTERNS.length, FAIL_PATTERNS_DUP.length);
-	}
-
 	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.select = argv[0];
 		this.knownlist.load(argv[1]);
