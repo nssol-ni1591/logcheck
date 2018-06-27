@@ -60,7 +60,6 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 				msg = list.get(ix);
 				if (!msg.getFirstDate().startsWith(date)) {
 					// ログの日付が変わった場合は検索を中止し、新たなAccessLogSummaryを要求する
-					msg = null;
 					break;
 				}
 				if (msg.getAddr().equals(b.getAddr()) && msg.getId().equals(b.getId())) {
@@ -69,13 +68,10 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 					// break
 					return;
 				}
-				msg = null;
 			}
 			// 同一の日時、クライアントアドレス、ユーザのログが存在しない場合は、新たなAccessLogSummaryを追加する
-			if (msg == null) {
-				msg = new AccessLogSummary(b, b.getMsg(), isp);
-				list.add(msg);
-			}
+			msg = new AccessLogSummary(b, b.getMsg(), isp);
+			list.add(msg);
 		}
 	}
 	// 成功メッセージの場合：
