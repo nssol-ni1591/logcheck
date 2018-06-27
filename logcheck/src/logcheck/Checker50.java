@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -87,18 +88,19 @@ public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 	public void report(final PrintWriter out, final Set<FwLogSummary> list) {
 		out.println("出現日時\t最終日時\t接続元識別\t接続元NW\t接続元IP\t接続先識別\t接続先NW\t接続先IP\t接続先ポート\tログ数");
 		list.forEach(s -> 
-			out.println(new StringBuilder(s.getFirstDate() == null ? "" : s.getFirstDate())
-					.append("\t").append(s.getLastDate())
-					.append("\t").append(s.getSrcIsp().getCountry())
-					.append("\t").append(s.getSrcIsp().getName())
-					.append("\t").append(s.getSrcAddr())
-					.append("\t").append(s.getDstIsp().getCountry())
-					.append("\t").append(s.getDstIsp().getName())
-					.append("\t").append(s.getDstAddr())
-					.append("\t").append(s.getDstPort())
-					.append("\t").append(s.getCount())
+			out.println(Stream.of(s.getFirstDate() == null ? "" : s.getFirstDate()
+					, s.getLastDate()
+					, s.getSrcIsp().getCountry()
+					, s.getSrcIsp().getName()
+					, s.getSrcAddr().toString()
+					, s.getDstIsp().getCountry()
+					, s.getDstIsp().getName()
+					, s.getDstAddr().toString()
+					, String.valueOf(s.getDstPort())
+					, String.valueOf(s.getCount())
 					)
-		);
+					.collect(Collectors.joining("\t")))
+				);
 	}
 
 	@Override

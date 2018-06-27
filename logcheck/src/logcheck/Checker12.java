@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -45,11 +46,7 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 						)
 				.forEach(b -> {
 					NetAddr addr = b.getAddr();
-					IspList isp = maglist.get(addr);
-					if (isp == null) {
-						isp = knownlist.get(addr);
-					}
-
+					IspList isp = getIsp(addr, maglist, knownlist);
 					if (isp != null) {
 						Map<Isp, Map<NetAddr, AccessLogSummary>> ispmap;
 						Map<NetAddr, AccessLogSummary> addrmap;
@@ -75,10 +72,6 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 						else {
 							msg.update(b);
 						}
-
-					}
-					else {
-						addrErrs.add(b.getAddr());
 					}
 				});
 		return map;
@@ -90,16 +83,17 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 		map.forEach((country, ispmap) -> 
 			ispmap.forEach((isp, addrmap) -> 
 				addrmap.forEach((addr, msg) -> 
-					out.println(new StringBuilder(country)
-							.append("\t").append(isp.getName())
-							.append("\t").append(addr)
-							.append("\t").append(msg.getFirstDate())
-							.append("\t").append(msg.getLastDate())
-							.append("\t").append(msg.getCount())
+					out.println(Stream.of(country
+							, isp.getName()
+							, addr.toString()
+							, msg.getFirstDate()
+							, msg.getLastDate()
+							, String.valueOf(msg.getCount())
 							)
-				)
-			)
-		);
+							.collect(Collectors.joining("\t")))
+						)
+					)
+				);
 	}
 
 	public static void main(String... argv) {

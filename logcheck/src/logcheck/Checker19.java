@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -60,24 +61,26 @@ public class Checker19 extends AbstractChecker<ProjList<ProjListBean>> {
 		projlist.values().stream()
 			.forEach(proj -> {
 				if (proj.getLogs().isEmpty()) {
-					out.println(new StringBuilder(proj.getProjId())
-							.append("\t").append(proj.getValidFlag())
-							.append("\t").append("-")
-							.append("\t").append("-")
-							.append("\t").append("-")
-							.append("\t").append("0")
-							);
+					out.println(Stream.of(proj.getProjId()
+							, proj.getValidFlag()
+							, "-"
+							, "-"
+							, "-"
+							, "0"
+							)
+							.collect(Collectors.joining("\t")));
 				}
 				else {
 					proj.getLogs().values().forEach(sum ->
-						out.println(new StringBuilder(proj.getProjId())
-								.append("\t").append(proj.getValidFlag())
-								.append("\t").append(sum.getId())
-								.append("\t").append(sum.getFirstDate())
-								.append("\t").append(sum.getLastDate())
-								.append("\t").append(sum.getCount())
+						out.println(Stream.of(proj.getProjId()
+								, proj.getValidFlag()
+								, sum.getId()
+								, sum.getFirstDate()
+								, sum.getLastDate()
+								, String.valueOf(sum.getCount())
 								)
-					);
+								.collect(Collectors.joining("\t")))
+							);
 				}
 			});
 	}

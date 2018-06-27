@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -127,21 +128,16 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 						)
 				.forEach(b -> {
 					if (b.getMsg().contains("failed")) {
-						// 失敗メッセージ:
-						// Ispの取得は失敗メッセージの場合だけ行えばよい。成功メッセージではIspの参照を行っていない。
+						// 失敗メッセージ：
+						// Ispの取得は失敗メッセージの場合だけ行えばよい
 						NetAddr addr = b.getAddr();
-						IspList isp = maglist.get(addr);
-						if (isp == null) {
-							isp = knownlist.get(addr);
-							if (isp == null) {
-								addrErrs.add(addr);
-								return;
-							}
+						IspList isp = getIsp(addr, maglist, knownlist);
+						if (isp != null) {
+							failed(list, isp, b);
 						}
-						failed(list, isp, b);
 					}
 					else {
-						// 成功メッセージ
+						// 成功メッセージ：
 						success(list, b);
 					}
 				});
@@ -162,17 +158,18 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 	public void report(final PrintWriter out, final List<AccessLogSummary> list) {
 		out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\t参考ユーザID\tエラー回数\t想定される原因\t詳細");
 		list.forEach(msg -> 
-			out.println(new StringBuilder(msg.getFirstDate())
-					.append("\t").append(msg.getIsp().getCountry())
-					.append("\t").append(msg.getIsp().getName())
-					.append("\t").append(msg.getAddr())
-					.append("\t").append(msg.getId())
-					.append("\t").append(msg.getAfterUsrId())
-					.append("\t").append(msg.getCount())
-					.append("\t").append(msg.getReason())
-					.append("\t").append(msg.getDetail())
+			out.println(Stream.of(msg.getFirstDate()
+					, msg.getIsp().getCountry()
+					, msg.getIsp().getName()
+					, msg.getAddr().toString()
+					, msg.getId()
+					, msg.getAfterUsrId()
+					, String.valueOf(msg.getCount())
+					, msg.getReason()
+					, msg.getDetail()
 					)
-		);
+					.collect(Collectors.joining("\t")))
+				);
 	}
 
 	public static void main(String... argv) {

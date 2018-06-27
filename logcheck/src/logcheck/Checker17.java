@@ -1,6 +1,8 @@
 package logcheck;
 
 import java.io.PrintWriter;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
@@ -21,28 +23,30 @@ public class Checker17 extends Checker14 {
 		userlist.values().stream()
 			.forEach(user -> {
 				if (user.getSites().isEmpty()) {
-					out.println(new StringBuilder(user.getUserId())
-							.append("\t").append("-1")
-							.append("\t").append("-1")
-							.append("\t").append("-1")
-							.append("\t").append(user.getValidFlag())
-							.append("\t").append("")
-							.append("\t").append("")
-							.append("\t").append(user.getRevoce())
-							.append("\t").append("0")
-							);
+					out.println(Stream.of(user.getUserId()
+							, "-1"
+							, "-1"
+							, "-1"
+							, user.getValidFlag()
+							, ""
+							, ""
+							, user.getRevoce()
+							, "0"
+							)
+							.collect(Collectors.joining("\t")));
 				}
 				else {
-					out.println(new StringBuilder(user.getUserId())
-							.append("\t").append(user.getProjDelFlag())
-							.append("\t").append(user.getSiteDelFlag())
-							.append("\t").append(user.getUserDelFlag())
-							.append("\t").append(user.getValidFlag())
-							.append("\t").append(user.getFirstDate())
-							.append("\t").append(user.getLastDate())
-							.append("\t").append(user.getRevoce())
-							.append("\t").append(user.getTotal())
-							);
+					out.println(Stream.of(user.getUserId()
+							, user.getProjDelFlag()
+							, user.getSiteDelFlag()
+							, user.getUserDelFlag()
+							, user.getValidFlag()
+							, user.getFirstDate()
+							, user.getLastDate()
+							, user.getRevoce()
+							, String.valueOf(user.getTotal())
+							)
+							.collect(Collectors.joining("\t")));
 				}
 			});
 	}

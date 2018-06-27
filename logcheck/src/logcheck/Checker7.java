@@ -9,6 +9,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -96,16 +97,9 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 					}
 
 					NetAddr addr = b.getAddr();
-					IspList isp = maglist.get(addr);
-					if (isp == null) {
-						isp = knownlist.get(addr);
-					}
-
+					IspList isp = getIsp(addr, maglist, knownlist);
 					if (isp != null) {
 						sub(map, isp, b, pattern);
-					}
-					else {
-						log.log(Level.WARNING, "unknown ip: addr={0}", addr);
 					}
 				});
 		return map;
@@ -127,19 +121,19 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 				).sum();
 
 				addrmap.forEach((addr, msgmap) -> 
-
 					msgmap.forEach((msg, count) -> 
-						out.println(new StringBuilder("".equals(country) ? "<MAGLIST>" : country)
-								.append("\t").append(isp.getName())
-								.append("\t").append(addr)
-								.append("\t").append(msg.getPattern())
-								.append("\t").append(msg.getFirstDate())
-								.append("\t").append(msg.getLastDate())
-								.append("\t").append(count)
-								.append("\t").append(sumIspLog)
+						out.println(Stream.of(country.isEmpty() ? "<MAGLIST>" : country
+								, isp.getName()
+								, addr.toString()
+								, msg.getPattern()
+								, msg.getFirstDate()
+								, msg.getLastDate()
+								, String.valueOf(count)
+								, String.valueOf(sumIspLog)
 								)
-						)
-				);
+								.collect(Collectors.joining("\t")))
+							)
+						);
 			})
 		);
 	}

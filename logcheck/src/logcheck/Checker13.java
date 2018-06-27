@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -47,11 +48,7 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 						)
 				.forEach(b -> {
 					NetAddr addr = b.getAddr();
-					IspList isp = maglist.get(addr);
-					if (isp == null) {
-						isp = knownlist.get(addr);
-					}
-
+					IspList isp = getIsp(addr, maglist, knownlist);
 					if (isp != null) {
 						Map<Isp, List<AccessLogBean>> ispmap;
 						List<AccessLogBean> addrmap;
@@ -70,9 +67,6 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 
 						addrmap.add(b);
 					}
-					else {
-						addrErrs.add(b.getAddr());
-					}
 				});
 		return map;
 	}
@@ -83,14 +77,14 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 		map.forEach((country, ispmap) -> 
 			ispmap.forEach((isp, addrmap) -> 
 				addrmap.forEach(msg -> 
-					out.println(new StringBuilder(country)
-							.append("\t").append(isp.getName())
-							.append("\t").append(msg.getAddr())
-							.append("\t").append(msg.getDate())
+					out.println(Stream.of(country
+							, isp.getName()
+							, msg.getAddr().toString()
+							, msg.getDate()
 							)
-				)
-			)
-		);
+							.collect(Collectors.joining("\t")))
+						))
+				);
 	}
 
 	public static void main(String... argv) {

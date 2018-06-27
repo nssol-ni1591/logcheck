@@ -77,16 +77,9 @@ public class Checker3 extends AbstractChecker<Map<String, IspMap<Map<String, Int
 					String m = rc.isPresent() ? rc.get() : b.getMsg();
 
 					NetAddr addr = b.getAddr();
-					IspList isp = maglist.get(addr);
-					if (isp == null) {
-						isp = knownlist.get(addr);
-					}
-
+					IspList isp = getIsp(addr, maglist, knownlist);
 					if (isp != null) {
 						sub(map, isp, b, m);
-					}
-					else {
-						log.log(Level.WARNING, "unknown ip: addr={0}", addr);
 					}
 				});
 		return map;

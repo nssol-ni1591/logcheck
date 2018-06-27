@@ -1,6 +1,8 @@
 package logcheck;
 
 import java.io.PrintWriter;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
@@ -22,46 +24,48 @@ public class Checker18 extends Checker14 {
 		userlist.values().stream()
 			.forEach(user -> {
 				if (user.getSites().isEmpty()) {
-					out.println(new StringBuilder(user.getUserId())
-							.append("\t").append("-")
-							.append("\t").append("-")
-							.append("\t").append("-")
-							.append("\t").append("-1")
-							.append("\t").append("-1")
-							.append("\t").append("-1")
-							.append("\t").append(user.getValidFlag())
-							.append("\t").append("")
-							.append("\t").append("")
-							.append("\t").append("0")
-							.append("\t").append(user.getRevoce())
-							.append("\t").append("0")
-							.append("\t").append("-1")
-							.append("\t").append("-1")
-							.append("\t").append("-1")
-							.append("\t").append("")
-							);
+					out.println(Stream.of(user.getUserId()
+							, "-"
+							, "-"
+							, "-"
+							, "-1"
+							, "-1"
+							, "-1"
+							, user.getValidFlag()
+							, ""
+							, ""
+							, "0"
+							, user.getRevoce()
+							, "0"
+							, "-1"
+							, "-1"
+							, "-1"
+							, ""
+							)
+							.collect(Collectors.joining("\t")));
 				}
 				else {
 					user.getSites().forEach(site -> 
-						out.println(new StringBuilder(user.getUserId())
-								.append("\t").append(site.getCountry())
-								.append("\t").append(site.getProjId())
-								.append("\t").append(site.getSiteName())
-								.append("\t").append(site.getProjDelFlag())
-								.append("\t").append(site.getSiteDelFlag())
-								.append("\t").append(site.getUserDelFlag())
-								.append("\t").append(user.getValidFlag())
-								.append("\t").append(site.getFirstDate())
-								.append("\t").append(site.getLastDate())
-								.append("\t").append(site.getCount())
-								.append("\t").append(user.getRevoce())
-								.append("\t").append(user.getTotal())
-								.append("\t").append(user.getProjDelFlag())
-								.append("\t").append(user.getSiteDelFlag())
-								.append("\t").append(user.getUserDelFlag())
-								.append("\t").append(site.getEndDate())
+						out.println(Stream.of(user.getUserId()
+								, site.getCountry()
+								, site.getProjId()
+								, site.getSiteName()
+								, site.getProjDelFlag()
+								, site.getSiteDelFlag()
+								, site.getUserDelFlag()
+								, user.getValidFlag()
+								, site.getFirstDate()
+								, site.getLastDate()
+								, String.valueOf(site.getCount())
+								, user.getRevoce()
+								, String.valueOf(user.getTotal())
+								, user.getProjDelFlag()
+								, user.getSiteDelFlag()
+								, user.getUserDelFlag()
+								, site.getEndDate()
 								)
-					);
+								.collect(Collectors.joining("\t")))
+							);
 				}
 			});
 	}

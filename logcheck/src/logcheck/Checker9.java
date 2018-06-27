@@ -67,17 +67,10 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 					String pattern = getPattern(b);
 
 					NetAddr addr = b.getAddr();
-					IspList isp = maglist.get(addr);
-					if (isp == null) {
-						isp = knownlist.get(addr);
-					}
-
+					IspList isp = getIsp(addr, maglist, knownlist);
 					if (isp != null) {
 						AccessLogSummary msg = new AccessLogSummary(b, pattern, isp);
 						list.add(msg);
-					}
-					else {
-						addrErrs.add(b.getAddr());
 					}
 				});
 		return list;
@@ -94,8 +87,7 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 					, String.join(",", msg.getRoles())
 					, msg.getPattern()
 					)
-					.collect(Collectors.joining("\t"))
-					)
+					.collect(Collectors.joining("\t")))
 		);
 	}
 

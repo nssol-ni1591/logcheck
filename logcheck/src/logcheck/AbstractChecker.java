@@ -25,6 +25,9 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 
 import logcheck.annotations.WithElaps;
+import logcheck.isp.IspList;
+import logcheck.known.KnownList;
+import logcheck.mag.MagList;
 import logcheck.util.net.NetAddr;
 import logcheck.util.weld.WeldRunner;
 
@@ -203,6 +206,29 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 
 	protected abstract T call(Stream<String> stream);
 	protected abstract void report(final PrintWriter out, final T map);
+
+	// 引数のリストからIsp情報を取得する
+	protected IspList getIsp(NetAddr addr, MagList maglist, KnownList knownlist) {
+		IspList isp = null;
+		if (addr == null) {
+			return null;
+		}
+
+		if (maglist != null) {
+			isp = maglist.get(addr);
+			if (isp != null) {
+				return isp;
+			}
+		}
+		if (knownlist != null) {
+			isp = knownlist.get(addr);
+			if (isp != null) {
+				return isp;
+			}
+		}
+		addrErrs.add(addr);
+		return null;
+	}
 
 	@Override @WithElaps
 	public T call() {

@@ -77,16 +77,9 @@ public class Checker5 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 					}
 
 					NetAddr addr = b.getAddr();
-					IspList isp = maglist.get(addr);
-					if (isp == null) {
-						isp = knownlist.get(addr);
-					}
-
+					IspList isp = getIsp(addr, maglist, knownlist);
 					if (isp != null) {
 						sub(map, isp, m);
-					}
-					else {
-						log.log(Level.WARNING, "unknown ip: addr={0}", addr);
 					}
 				});
 		return map;

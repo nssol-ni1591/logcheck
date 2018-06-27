@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.enterprise.util.AnnotationLiteral;
@@ -134,16 +135,9 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 				.forEach(b -> {
 					String pattern = getPattern(b);
 					NetAddr addr = b.getAddr();
-					IspList isp = maglist.get(addr);
-					if (isp == null) {
-						isp = knownlist.get(addr);
-					}
-
+					IspList isp = getIsp(addr, maglist, knownlist);
 					if (isp != null) {
 						sub(map, isp, b, pattern);
-					}
-					else {
-						addrErrs.add(b.getAddr());
 					}
 				});
 		return map;
@@ -160,17 +154,18 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 					idmap.forEach((id, msgmap) -> 
 						msgmap.forEach((pattern, msg) -> 
 							Stream.of(msg.getRoles()).forEach(role -> 
-								out.println(new StringBuilder(country)
-										.append("\t").append(isp.getName())
-										.append("\t").append(addr)
-										.append("\t").append(id)
-										.append("\t").append(pattern)
-										.append("\t").append(role)
-										.append("\t").append(msg.getFirstDate())
-										.append("\t").append(msg.getLastDate())
-										.append("\t").append(msg.getCount())	//　rolesの出力数倍になる
+								out.println(Stream.of(country
+										, isp.getName()
+										, addr.toString()
+										, id
+										, pattern
+										, role
+										, msg.getFirstDate()
+										, msg.getLastDate()
+										, String.valueOf(msg.getCount())	//　rolesの出力数倍になる
 										)
-							)
+										.collect(Collectors.joining("\t")))
+									)
 						)
 					)
 				)

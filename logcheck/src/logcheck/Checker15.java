@@ -3,6 +3,8 @@ package logcheck;
 import java.io.PrintWriter;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
@@ -49,12 +51,13 @@ public class Checker15 extends Checker14 {
 		out.println("ユーザID\tISP/プロジェクトID\t拠点名");
 		projmap.forEach((projId, sitemap) -> 
 			sitemap.forEach((sitename, userId) -> 
-				out.println(new StringBuilder(userId)
-						.append("\t").append(projId)
-						.append("\t").append(sitename)
+				out.println(Stream.of(userId
+						, projId
+						, sitename
 						)
-			)
-		);
+						.collect(Collectors.joining("\t")))
+					)
+				);
 	}
 
 	@Override

@@ -94,16 +94,9 @@ public class Checker4 extends AbstractChecker<Map<String ,Map<String, IspMap<Map
 					}
 
 					NetAddr addr = b.getAddr();
-					IspList isp = maglist.get(addr);
-					if (isp == null) {
-						isp = knownlist.get(addr);
-					}
-
+					IspList isp = getIsp(addr, maglist, knownlist);
 					if (isp != null) {
 						sub(map, isp, b, m);
-					}
-					else {
-						log.log(Level.WARNING, "unknown ip: addr={0}", addr);
 					}
 				});
 		return map;

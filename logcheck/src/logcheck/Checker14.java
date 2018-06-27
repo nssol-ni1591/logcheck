@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.text.Normalizer;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.enterprise.util.AnnotationLiteral;
@@ -44,7 +45,6 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 	}
 
 	private void sub(AccessLogBean b, UserListBean user) {
-		UserListSite site;
 		SiteListIsp magisp = sitelist.get(b.getAddr());
 		if (magisp == null) {
 			KnownListIsp isp = knownlist.get(b.getAddr());
@@ -52,7 +52,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 				addrErrs.add(b.getAddr());
 				return;
 			}
-			site = new UserListSite(isp/*, "0"*/);
+			UserListSite site = new UserListSite(isp/*, "0"*/);
 			user.addSite(site);
 			site.update(b.getDate());
 			//Invoke method(s) only conditionally.
@@ -60,6 +60,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 			log.fine(msg);
 		}
 		else {
+			UserListSite site;
 			if (/*b.getRoles() == null || */b.getRoles().length < 2) {
 				site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[0]), "-1", "");
 			}
@@ -120,38 +121,40 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 		userlist.values().stream()
 			.forEach(user -> {
 				if (user.getSites().isEmpty()) {
-					out.println(new StringBuilder(user.getUserId())
-							.append("\t").append("-")
-							.append("\t").append("-")
-							.append("\t").append("-")
-							.append("\t").append("-1")
-							.append("\t").append("-1")
-							.append("\t").append("-1")
-							.append("\t").append(user.getValidFlag())
-							.append("\t").append("")
-							.append("\t").append("")
-							.append("\t").append("0")
-							.append("\t").append(user.getRevoce())
-							.append("\t").append("0")
-							);
+					out.println(Stream.of(user.getUserId()
+							, "-"
+							, "-"
+							, "-"
+							, "-1"
+							, "-1"
+							, "-1"
+							, user.getValidFlag()
+							, ""
+							, ""
+							, "0"
+							, user.getRevoce()
+							,"0"
+							)
+							.collect(Collectors.joining("\t")));
 				}
 				else {
 					user.getSites().forEach(site ->
-						out.println(new StringBuilder(user.getUserId())
-								.append("\t").append(site.getCountry())
-								.append("\t").append(site.getProjId())
-								.append("\t").append(site.getSiteName())
-								.append("\t").append(site.getProjDelFlag())
-								.append("\t").append(site.getSiteDelFlag())
-								.append("\t").append(site.getUserDelFlag())
-								.append("\t").append(user.getValidFlag())
-								.append("\t").append(site.getFirstDate())
-								.append("\t").append(site.getLastDate())
-								.append("\t").append(site.getCount())
-								.append("\t").append(user.getRevoce())
-								.append("\t").append(user.getTotal())
+						out.println(Stream.of(user.getUserId()
+								, site.getCountry()
+								, site.getProjId()
+								, site.getSiteName()
+								, site.getProjDelFlag()
+								, site.getSiteDelFlag()
+								, site.getUserDelFlag()
+								, user.getValidFlag()
+								, site.getFirstDate()
+								, site.getLastDate()
+								, String.valueOf(site.getCount())
+								, user.getRevoce()
+								, String.valueOf(user.getTotal())
 								)
-					);
+								.collect(Collectors.joining("\t")))
+							);
 				}
 			});
 	}

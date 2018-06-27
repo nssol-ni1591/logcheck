@@ -88,17 +88,11 @@ public class Checker23 extends AbstractChecker<List<AccessLogSummary>> {
 					else {
 						// Ispへの変換は出力対象のメッセージの場合だけ実行すればよい
 						NetAddr addr = b.getAddr();
-						IspList isp = maglist.get(addr);
-						if (isp == null) {
-							isp = knownlist.get(addr);
-							if (isp == null) {
-								addrErrs.add(b.getAddr());
-								return;
-							}
+						IspList isp = getIsp(addr, maglist, knownlist);
+						if (isp != null) {
+							msg = new AccessLogSummary(b, pattern, isp);
+							list.add(msg);
 						}
-
-						msg = new AccessLogSummary(b, pattern, isp);
-						list.add(msg);
 					}
 				});
 		return list;
