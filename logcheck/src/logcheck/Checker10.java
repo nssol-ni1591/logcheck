@@ -44,11 +44,12 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 		this.maglist.load(argv[1]);
 	}
 
+	// 失敗メッセージの場合：
 	private void failed(List<AccessLogSummary> list, IspList isp, AccessLogBean b) {
-		// 失敗メッセージ:
-		// Ispの取得は失敗メッセージの場合だけ行えばよい。成功メッセージではIspの参照を行っていないので
 		AccessLogSummary msg = null;
 
+		// 過去のfailedリストに同一の日時、クライアントアドレス、ユーザのログの有無を確認して、
+		// 有の場合はログのカウント数を更新、無の場合はfailedリストにAccessLogSummaryを追加する
 		if (list.isEmpty()) {
 			msg = new AccessLogSummary(b, b.getMsg(), isp);
 			list.add(msg);
@@ -58,31 +59,38 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 			for (int ix = list.size() - 1; ix >= 0; ix--) {
 				msg = list.get(ix);
 				if (!msg.getFirstDate().startsWith(date)) {
+					// ログの日付が変わった場合は検索を中止し、新たなAccessLogSummaryを要求する
 					msg = null;
 					break;
 				}
 				if (msg.getAddr().equals(b.getAddr()) && msg.getId().equals(b.getId())) {
+					// listに同じクライアントアドレス、ユーザからのログが登録されていた場合はカウントを更新する
 					msg.addCount();
-					break;
+					// break
+					return;
 				}
 				msg = null;
 			}
+			// 同一の日時、クライアントアドレス、ユーザのログが存在しない場合は、新たなAccessLogSummaryを追加する
 			if (msg == null) {
 				msg = new AccessLogSummary(b, b.getMsg(), isp);
 				list.add(msg);
 			}
 		}
 	}
+	// 成功メッセージの場合：
 	private void success(List<AccessLogSummary> list, AccessLogBean b) {
-		// 成功メッセージ
-		// listをさかのぼる範囲は同じ日付のログまで
 		AccessLogSummary msg = null;
+
+		// failedリストから同一のアドレス、同一のユーザなどの情報が一致するAccessLogSummaryを探し、
+		// 一致する条件によってログイン失敗の原因を決定する. なお、listをさかのぼる範囲は同じ日付のログまで
 		String date = b.getDate().substring(0, 10);
 		for (int ix = list.size() - 1; ix >= 0; ix--) {
 			msg = list.get(ix);
 			if (!msg.getFirstDate().startsWith(date)) {
 				// listの日付が変わったのでさかのぼる処理をやめる
-				break;
+				//break
+				return;
 			}
 
 			if (!"".equals(msg.getReason()) && !msg.getReason().endsWith("（※）：")) {
@@ -124,6 +132,7 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*impleme
 				.forEach(b -> {
 					if (b.getMsg().contains("failed")) {
 						// 失敗メッセージ:
+						// Ispの取得は失敗メッセージの場合だけ行えばよい。成功メッセージではIspの参照を行っていない。
 						NetAddr addr = b.getAddr();
 						IspList isp = maglist.get(addr);
 						if (isp == null) {
