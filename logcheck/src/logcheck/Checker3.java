@@ -6,8 +6,6 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -26,8 +24,6 @@ import logcheck.util.weld.WeldWrapper;
  * ISP > IPアドレス > メッセージ毎にログ数を集計する
  */
 public class Checker3 extends AbstractChecker<Map<String, IspMap<Map<String, Integer>>>> {
-
-	@Inject private Logger log;
 
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;

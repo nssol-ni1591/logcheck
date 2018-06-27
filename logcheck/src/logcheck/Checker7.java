@@ -6,8 +6,6 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,8 +26,6 @@ import logcheck.util.weld.WeldWrapper;
  * ⇒ MsgBean, Integerでは、日時を正確に処理できない
  */
 public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAddr, Map<AccessLogSummary, Integer>>>>> {
-
-	@Inject private Logger log;
 
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
