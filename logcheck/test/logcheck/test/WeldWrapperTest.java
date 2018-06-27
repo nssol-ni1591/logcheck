@@ -18,10 +18,10 @@ import logcheck.annotations.UseChecker14;
 import logcheck.util.weld.WeldRunner;
 import logcheck.util.weld.WeldWrapper;
 
-import static logcheck.test.MainTest.ACCESSLOG;
-import static logcheck.test.MainTest.KNOWNLIST;
-import static logcheck.test.MainTest.MAGLIST;
-import static logcheck.test.MainTest.SSLINDEX;
+import static logcheck.test.CheckerMainTest.ACCESSLOG;
+import static logcheck.test.CheckerMainTest.KNOWNLIST;
+import static logcheck.test.CheckerMainTest.MAGLIST;
+import static logcheck.test.CheckerMainTest.SSLINDEX;
 
 public class WeldWrapperTest {
 

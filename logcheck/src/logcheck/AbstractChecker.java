@@ -46,6 +46,7 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 	protected final Set<String> projErrs = new TreeSet<>(); 
 	protected final Set<String> userErrs = new TreeSet<>(); 
 	protected final Set<NetAddr> addrErrs = new TreeSet<>(); 
+	protected final Set<String> ptnErrs = new TreeSet<>(); 
 
 	// 一次エラーメッセージ
 	protected static final Pattern[] FAIL_PATTERNS;
@@ -253,6 +254,7 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 		addrErrs.forEach(addr -> log.log(Level.WARNING, "unknown ip: addr={0}", addr));
 		userErrs.forEach(userId -> log.log(Level.WARNING, "not found user: userid={0}", userId));
 		projErrs.forEach(proj -> log.log(Level.WARNING, "unknown proj: proj={0}", proj));
+		ptnErrs.forEach(ptn -> log.log(Level.WARNING, "unknown patten: pattern={0}", ptn));
 
 		// 結果の出力。ただし、CSV形式とするため改行コードを"\r\n"に変更する
 		String crlf = System.getProperty(LINE_SEPARATOR);

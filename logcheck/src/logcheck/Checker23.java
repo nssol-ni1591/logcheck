@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,8 +36,6 @@ public class Checker23 extends AbstractChecker<List<AccessLogSummary>> {
 	@Inject protected KnownList knownlist;
 	@Inject protected MagList maglist;
 
-	@Inject private Logger log;
-
 	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.knownlist.load(argv[0]);
 		this.maglist.load(argv[1]);
@@ -65,7 +62,6 @@ public class Checker23 extends AbstractChecker<List<AccessLogSummary>> {
 		if (!b.getMsg().contains("failed")) {
 			return INFO_SUMMARY_MSG;
 		}
-		log.warning("(Pattern): \"" + b.getMsg() + "\"");
 		return "<Warn>" + b.getMsg();
 	}
 

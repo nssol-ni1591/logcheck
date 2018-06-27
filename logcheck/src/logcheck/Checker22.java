@@ -1,11 +1,8 @@
 package logcheck;
 
 import java.util.Optional;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-
-import javax.inject.Inject;
 
 import logcheck.log.AccessLogBean;
 import logcheck.util.weld.WeldWrapper;
@@ -18,8 +15,6 @@ import logcheck.util.weld.WeldWrapper;
  */
 public class Checker22 extends Checker8 {
 
-	@Inject private Logger log;
-
 	// ログのメッセージ部分はPatternの正規化表現で集約するため、対象ログが一致したPattern文字列を取得する
 	@Override
 	protected String getPattern(AccessLogBean b) {
@@ -30,7 +25,7 @@ public class Checker22 extends Checker8 {
 		if (rc.isPresent()) {
 			return rc.get();
 		}
-		log.warning("(Pattern): \"" + b.getMsg() + "\"");
+		ptnErrs.add(b.getMsg());
 		return b.getMsg();
 	}
 

@@ -1,11 +1,8 @@
 package logcheck;
 
 import java.util.Optional;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-
-import javax.inject.Inject;
 
 import logcheck.log.AccessLogBean;
 import logcheck.util.weld.WeldWrapper;
@@ -17,8 +14,6 @@ import logcheck.util.weld.WeldWrapper;
  * なお、このツールでは、異常系ログは個々のメッセージ単位で出力。正常系ログは集約を行う。
  */
 public class Checker25 extends Checker23 {
-
-	@Inject private Logger log;
 
 	@Override
 	protected String getPattern(AccessLogBean b) {
@@ -40,7 +35,7 @@ public class Checker25 extends Checker23 {
 			// failed が含まれないメッセージは集約する
 			return INFO_SUMMARY_MSG;
 		}
-		log.warning("(Pattern): \"" + b.getMsg() + "\"");
+		ptnErrs.add(b.getMsg());
 		return "<Warn>" + b.getMsg();
 	}
 

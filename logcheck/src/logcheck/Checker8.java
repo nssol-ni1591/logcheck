@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,8 +36,6 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 	@Inject protected KnownList knownlist;
 	@Inject protected MagList maglist;
 
-	@Inject private Logger log;
-
 	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.knownlist.load(argv[0]);
 		this.maglist.load(argv[1]);
@@ -62,8 +59,9 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 			//同一原因で複数出力されるログは識別のため"（）"を付加する
 			return "(" + rc.get() + ")";
 		}
-
-		Pattern ptn = Pattern.compile("VPN Tunneling: Session started for user with IPv4 address [\\d\\.]+, hostname [\\w\\.-]+");
+		
+		// セッション開始メッセージは集計対象にする
+		Pattern ptn = SESS_START_PATTERN;
 		if (ptn.matcher(b.getMsg()).matches()) {
 			return ptn.toString();
 		}
@@ -71,7 +69,7 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 			// failed が含まれないメッセージは集約する
 			return INFO_SUMMARY_MSG;
 		}
-		log.warning("(Pattern): \"" + b.getMsg() + "\"");
+		ptnErrs.add(b.getMsg());
 		return b.getMsg();
 	}
 

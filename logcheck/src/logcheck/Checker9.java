@@ -53,7 +53,7 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 		if (rc.isPresent()) {
 			return rc.get();
 		}
-		log.log(Level.WARNING, "(Pattern): \"{0}\"", b.getMsg());
+		ptnErrs.add(b.getMsg());
 		return b.getMsg();
 	}
 

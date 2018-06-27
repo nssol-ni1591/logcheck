@@ -4,12 +4,9 @@ import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.inject.Inject;
 
 import logcheck.log.AccessLog;
 import logcheck.log.AccessLogBean;
@@ -25,8 +22,6 @@ import logcheck.util.weld.WeldWrapper;
  */
 public class Checker21 extends AbstractChecker<Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>> {
 
-	@Inject private Logger log;
-
 	public void init(String...argv) {
 		// Do nothing
 	}
@@ -40,7 +35,7 @@ public class Checker21 extends AbstractChecker<Map<NetAddr, Map<String, Map<Stri
 		if (rc.isPresent()) {
 			return rc.get();
 		}
-		log.warning("(Pattern): \"" + b.getMsg() + "\"");
+		ptnErrs.add(b.getMsg());
 		return b.getMsg();
 	}
 

@@ -16,7 +16,7 @@ import logcheck.annotations.UseChecker23;
 import logcheck.annotations.UseChecker8;
 import logcheck.util.weld.WeldWrapper;
 
-public class MainTest {
+public class CheckerMainTest {
 
 	private static Weld weld;
 	private static WeldContainer container;
