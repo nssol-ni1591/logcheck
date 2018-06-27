@@ -94,7 +94,7 @@ public class WhoisJpnic extends AbstractWhoisServer implements Whois {
 					String tmp = parse(PTN_NETADDRS, s);
 					if (tmp != null) {
 						if (netaddr != null) {
-							log.log(Level.FINE, "duplicate key=NETADDRS, exists={1}, new={2}",
+							log.log(Level.FINE, "duplicate key=NETADDRS, exists={0}, new={1}",
 									new Object[] { netaddr, tmp });
 						}
 						netaddr = tmp;
@@ -102,7 +102,7 @@ public class WhoisJpnic extends AbstractWhoisServer implements Whois {
 					tmp = parse(PTN_NAMES, s);
 					if (tmp != null) {
 						if (name != null) {
-							log.log(Level.FINE, "duplicate key=NAMES, exists={1}, new={2}",
+							log.log(Level.FINE, "duplicate key=NAMES, exists={0}, new={1}",
 									new Object[] { name, tmp });
 						}
 						name = tmp;

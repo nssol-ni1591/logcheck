@@ -32,7 +32,7 @@ public class DbSiteListTest {
 		System.out.println("size=" + map.size());
 		assertFalse(map.isEmpty());
 		// select count(*) from sas_prj_site_info;
-		assertEquals(map.size(), 884);
+		assertEquals(884, map.size());
 
 		int ix = 0;
 		for (SiteListIsp isp : map.values()) {
@@ -48,7 +48,7 @@ public class DbSiteListTest {
 		SiteListIsp isp = map.get("268");
 		assertNotNull("site_id='268' not found", isp);
 		String prjId = isp.getProjId();
-		assertEquals("prj_id illegal", prjId, "PRJ_SDC_OM");
+		assertEquals("prj_id illegal", "PRJ_SDC_OM", prjId);
 	}
 
 }

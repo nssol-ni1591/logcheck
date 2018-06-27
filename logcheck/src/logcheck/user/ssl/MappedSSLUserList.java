@@ -85,9 +85,6 @@ public class MappedSSLUserList
 				String endDate = rs.getTimestamp(4) == null ? "" : f.format(rs.getTimestamp(4));
 				map.put(userId, new SelectUser(siteId, userId, userDelFlag, endDate));
 			}
-			rs.close();
-			stmt.close();
-			conn.close();
 		}
 
 		try (Stream<String> input = Files.lines(Paths.get(file), Charset.forName("utf-8"))) {

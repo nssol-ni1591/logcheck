@@ -32,7 +32,7 @@ public class Checker5 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 	}
 
 	private void sub(Map<String, Map<IspList, Map<String, Integer>>> map,
-			IspList isp, String m)
+			IspList isp, String msg)
 	{
 		Map<IspList, Map<String, Integer>> ispmap = map.get(isp.getCountry());
 		if (ispmap == null) {
@@ -46,13 +46,13 @@ public class Checker5 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 			ispmap.put(isp, msgmap);
 		}
 
-		Integer count = msgmap.get(m);
+		Integer count = msgmap.get(msg);
 		if (count == null) {
 			count = Integer.valueOf(0);
-			msgmap.put(m, count);
+			msgmap.put(msg, count);
 		}
 		count += 1;
-		msgmap.put(m, count);		
+		msgmap.put(msg, count);		
 	}
 
 	@Override
@@ -67,15 +67,15 @@ public class Checker5 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 							.filter(p -> p.matcher(b.getMsg()).matches())
 							.map(Pattern::toString)
 							.findFirst();
-					String m = rc.isPresent() ? rc.get() : b.getMsg();
+					String msg = rc.isPresent() ? rc.get() : b.getMsg();
 					if (!rc.isPresent()) {
-						m = INFO_SUMMARY_MSG;
+						msg = INFO_SUMMARY_MSG;
 					}
 
 					NetAddr addr = b.getAddr();
 					IspList isp = getIsp(addr, maglist, knownlist);
 					if (isp != null) {
-						sub(map, isp, m);
+						sub(map, isp, msg);
 					}
 				});
 		return map;

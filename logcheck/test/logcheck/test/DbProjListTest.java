@@ -32,7 +32,7 @@ public class DbProjListTest {
 		System.out.println("size=" + map.size());
 		assertFalse(map.isEmpty());
 		// select count(*) from mst_project;
-		assertEquals(map.size(), 1010);
+		assertEquals(1010, map.size());
 
 		int ix = 0;
 		for (ProjListBean bean : map.values()) {

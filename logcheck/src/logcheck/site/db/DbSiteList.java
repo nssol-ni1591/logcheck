@@ -83,12 +83,12 @@ public class DbSiteList extends LinkedHashMap<String, SiteListIsp> implements Si
 				NetAddr addr;
 				try {
 					addr = new NetAddr(globalIp);
-					log.log(Level.FINEST, "DbSiteList={0}", site.toString());
+					log.log(Level.FINEST, "DbSiteList={0}", site);
 				}
 				catch (Exception e) {
 					addr = new NetAddr(Constants.GLOBAL_IP);
 					log.log(Level.INFO, "DbSiteList={0}, globalIp={1}、ex={2}",
-							new Object[] { site.toString(), globalIp, e.getMessage() });
+							new Object[] { site, globalIp, e.getMessage() });
 				}
 				site.addAddress(addr);
 			}

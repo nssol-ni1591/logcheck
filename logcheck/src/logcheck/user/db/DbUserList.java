@@ -115,7 +115,7 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 				}
 				site.addAddress(addr);
 
-				log.log(Level.FINE, "DbUserList: UserListBean={0}", bean.toString());
+				log.log(Level.FINE, "DbUserList: UserListBean={0}", bean);
 			}
 		}
 		return this;

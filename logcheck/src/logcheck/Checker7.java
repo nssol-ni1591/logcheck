@@ -43,7 +43,6 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 		Map<IspList, Map<NetAddr, Map<AccessLogSummary, Integer>>> ispmap;
 		Map<NetAddr, Map<AccessLogSummary, Integer>> addrmap;
 		Map<AccessLogSummary, Integer> msgmap;
-		Integer count;
 
 		ispmap = map.get(isp.getCountry());
 		if (ispmap == null) {
@@ -64,7 +63,7 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 		}
 
 		AccessLogSummary msg = new AccessLogSummary(b, pattern);
-		count = msgmap.get(msg);
+		Integer count = msgmap.get(msg);
 		if (count == null) {
 			count = Integer.valueOf(0);
 		}

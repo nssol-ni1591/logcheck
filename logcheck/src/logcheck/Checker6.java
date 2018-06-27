@@ -33,7 +33,7 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 	}
 
 	private void sub(Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> map,
-			IspList isp, AccessLogBean b, String m)
+			IspList isp, AccessLogBean b, String msg)
 	{
 		NetAddr addr = b.getAddr();
 
@@ -54,10 +54,10 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 			ispmap.put(isp, msgmap);
 		}
 
-		addrmap = msgmap.get(m);
+		addrmap = msgmap.get(msg);
 		if (addrmap == null) {
 			addrmap = new TreeMap<>();
-			msgmap.put(m, addrmap);
+			msgmap.put(msg, addrmap);
 		}
 
 		count = addrmap.get(addr);

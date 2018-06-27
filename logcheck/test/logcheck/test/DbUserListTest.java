@@ -32,7 +32,7 @@ public class DbUserListTest {
 		System.out.println("size=" + map.size());
 		assertFalse(map.isEmpty());
 		// select count(*) from ????
-		assertEquals(map.size(), 2501);
+		assertEquals(2501, map.size());
 
 		int ix = 0;
 		int iy = 0;
