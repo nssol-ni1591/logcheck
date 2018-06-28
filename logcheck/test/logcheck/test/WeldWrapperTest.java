@@ -77,6 +77,23 @@ public class WeldWrapperTest {
 				.weld(2, KNOWNLIST, MAGLIST, ACCESSLOG);
 		assertEquals("Weld内で例外が発生した場合はcatchされて返却値が-1", -1, rc);
 	}
+	@Test
+	public void test06() {
+		// ファイル名が不正
+		/* TsvKnownListで確認
+		int rc = new WeldWrapper<Checker12>(Checker12.class)
+				.weld(2, "abc.txt", MAGLIST, ACCESSLOG);
+		assertEquals("KnownListが不正", 0, rc);
+		*/
+		/* DbSiteListが処理するため引数を参照していない
+		int rc = new WeldWrapper<Checker12>(Checker12.class)
+				.weld(2, KNOWNLIST, "abc.txt", ACCESSLOG);
+		assertEquals("MagListが不正", 0, rc);
+		*/
+		int rc = new WeldWrapper<Checker12>(Checker12.class)
+				.weld(2, KNOWNLIST, MAGLIST, "abc.txt");
+		assertEquals("AccessLogが不正", 0, rc);
+	}
 
 	public class WeldWrapperTestSub extends AbstractChecker<String> {
 
