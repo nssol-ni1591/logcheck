@@ -3,6 +3,7 @@ package logcheck.test;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutionException;
 
@@ -76,7 +77,7 @@ public class WeldWrapperTest {
 			// Do nothing
 		}
 		@Override
-		public int start(String[] argv, int argc)
+		public int start(PrintWriter out, String[] argv, int argc)
 				throws InterruptedException, ExecutionException, IOException {
 			return 0;
 		}

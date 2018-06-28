@@ -1,5 +1,6 @@
 package logcheck.util.weld;
 
+import java.io.PrintWriter;
 import java.lang.annotation.Annotation;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,6 +21,9 @@ public class WeldWrapper<T extends WeldRunner> {
 	}
 
 	public int exec(T application, int argc, String...argv) {
+		return exec(null, application, argc, argv);
+	}
+	public int exec(PrintWriter out, T application, int argc, String...argv) {
 		int rc = 0;
 		try {
 			if (argv.length < argc) {
@@ -49,7 +53,14 @@ public class WeldWrapper<T extends WeldRunner> {
 			}
 
 			if (rc == 0) {
-				rc = application.start(argv, argc);
+				if (out == null) {
+					try (PrintWriter out2 = new PrintWriter(System.out)) {
+						rc = application.start(out2, argv, argc);
+		        	}
+		        }
+				else {
+					rc = application.start(out, argv, argc);
+				}
 			}
 		}
 		catch (Exception ex) {
@@ -60,26 +71,30 @@ public class WeldWrapper<T extends WeldRunner> {
 	}
 
 	public int weld(int argc, String...argv) {
-		int rc = 0;
-
-		try(SeContainer container = SeContainerInitializer.newInstance().initialize()) {
-	        // start the container, retrieve a bean and do work with it
-	        T application = container.select(cl).get();
-			rc = exec(application, argc, argv);
-	    }
-		catch (Exception ex) {
-			log.log(Level.SEVERE, "in weld", ex);
-			rc = -1;
-		}
-		return rc;
+		return weld(null, null, argc, argv);
 	}
+	public int weld(PrintWriter out, int argc, String...argv) {
+		return weld(out, null, argc, argv);
+	}
+
 	public <E extends Annotation> int weld(AnnotationLiteral<E> anno, int argc, String...argv) {
+		return weld(null, anno, argc, argv);
+	}
+	public <E extends Annotation> int weld(PrintWriter out, AnnotationLiteral<E> anno, int argc, String...argv) {
 		int rc = 0;
 
 		try(SeContainer container = SeContainerInitializer.newInstance().initialize()) {
 	        // start the container, retrieve a bean and do work with it
-	        T application = container.select(cl, anno).get();
-			rc = exec(application, argc, argv);
+			T application;
+			if (anno == null) {
+				// AnnotationがついていないCheckerクラスの生成
+				application = container.select(cl).get();
+			}
+			else {
+				// Annotation付きCheckerクラスの生成
+				application = container.select(cl, anno).get();
+			}
+			rc = exec(out, application, argc, argv);
 	    }
 		catch (Exception ex) {
 			log.log(Level.SEVERE, "in weld", ex);

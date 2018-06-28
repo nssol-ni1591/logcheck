@@ -1,14 +1,19 @@
 package logcheck;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.SequenceInputStream;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
@@ -20,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -165,48 +171,7 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 	protected AbstractChecker() {
 	}
 
-	private T run(InputStream is) throws InterruptedException, ExecutionException {
-		log.info("checking from InputStream:");
-
-		this.stream = new BufferedReader(new InputStreamReader(is)).lines();
-		return run2();
-	}
-	private T run(String file) throws InterruptedException, ExecutionException, IOException {
-		log.log(Level.INFO, "checking from file={0}:", file);
-
-		this.stream = Files.lines(Paths.get(file), StandardCharsets.UTF_8);
-		return run2();
-	}
-	private T run2() throws InterruptedException, ExecutionException {
-
-		// 2つのスレッドの実行枠を用意 - ThreadPoolを使ういみはないけれど ...
-		ExecutorService exec = Executors.newFixedThreadPool(2);
-		try {
-			// PrintDotスレッドの実行
-			// Executor.execute(): not Callable<T>スレッド
-			PrintDot p = new PrintDot();
-			exec.execute(p);
-
-			// Checkerスレッドの実行
-			// ExecutorService.submit(): implement Callable<T>スレッド
-			Future<T> f1 = exec.submit(this);
-			// Checkerスレッドの実行結果の取得
-			T map = f1.get();
-
-			// PrintDotスレッドの停止要求
-			p.stopRequest();
-			return map;
-		}
-		finally {
-			// PrintDotスレッドの終了の待ち合わせ
-			while (exec.awaitTermination(1, TimeUnit.SECONDS)) {
-				// Do nothing
-			}
-		}
-	}
-
-	protected abstract T call(Stream<String> stream);
-	protected abstract void report(final PrintWriter out, final T map);
+	// ---- 実装クラスに対するサービスメソッド
 
 	// 引数のリストからIsp情報を取得する
 	protected IspList getIsp(NetAddr addr, MagList maglist, KnownList knownlist) {
@@ -231,24 +196,95 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 		return null;
 	}
 
-	@Override @WithElaps
-	public T call() {
-		return call(stream);
+	// ---- 実装クラスの制御クラス
+	private T run(String[] files) throws InterruptedException, ExecutionException, IOException {
+		log.log(Level.INFO, "checking from files={0}:", files);
+
+		List<String> f = Arrays.asList(files);
+		List<InputStream> list = f.stream()
+				.map(t -> {
+					try {
+						return new FileInputStream(t);
+					}
+					catch (FileNotFoundException ex) {
+						log.log(Level.WARNING, ex.getMessage());
+					}
+					return null;
+				})
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList());
+
+		Enumeration<InputStream> e = new Enumeration<InputStream>() {
+			Iterator<InputStream> i = list.iterator();
+			@Override
+			public boolean hasMoreElements() {
+				return i.hasNext();
+			}
+			@Override
+			public InputStream nextElement() {
+				return i.next();
+			}
+		};
+		SequenceInputStream sis = new SequenceInputStream(e);
+		return run(sis);
+	}
+	private T run(InputStream is) throws InterruptedException, ExecutionException {
+		log.info("checking from InputStream:");
+
+		this.stream = new BufferedReader(new InputStreamReader(is)).lines();
+		return run2();
+	}
+	private T run2() throws InterruptedException, ExecutionException {
+		// 2つのスレッドの実行枠を用意 - ThreadPoolを使ういみはないけれど ...
+		ExecutorService exec = Executors.newFixedThreadPool(2);
+		try {
+			// PrintDotスレッドの実行
+			// Executor.execute(): not Callable<T>スレッド
+			PrintDot p = new PrintDot();
+			exec.execute(p);
+
+			// Checkerスレッドの実行
+			// ExecutorService.submit(): implement Callable<T>スレッド
+			Future<T> checker = exec.submit(this);
+			// Checkerスレッドの実行結果の取得
+			T map = checker.get();
+
+			// PrintDotスレッドの停止要求
+			p.stopRequest();
+			return map;
+		}
+		finally {
+			// PrintDotスレッドの終了の待ち合わせ
+			while (exec.awaitTermination(1, TimeUnit.SECONDS)) {
+				// Do nothing
+			}
+		}
 	}
 
-	// 将来的にサブクラス外からの呼び出しを考慮してpublicとする
+	// checkerスレッドの実行メソッド
+	protected abstract T call(Stream<String> stream);
+	protected abstract void report(final PrintWriter out, final T map);
+
+	// Callable<T>.call()
+	@Override @WithElaps
+	public T call() {
+		T rc = call(stream);
+		return rc;
+	}
+
+	// サブクラス外からの呼び出しを考慮してpublicとする
 	@WithElaps
-	public int start(String[] argv, int offset)
-			throws InterruptedException, ExecutionException, IOException {
+	public int start(PrintWriter out, String[] argv, int offset)
+			throws InterruptedException, ExecutionException, IOException
+	{
 		int rc = 0;
 		T map = null;
 		if (argv.length <= offset) {
 			map = run(System.in);
 		}
 		else {
-			for (int ix = offset; ix < argv.length; ix++ ) {
-				map = run(argv[ix]);
-			}
+			String[] newargv = Arrays.copyOfRange(argv, offset, argv.length);
+			map = run(newargv);
 		}
 
 		addrErrs.forEach(addr -> log.log(Level.WARNING, "unknown ip: addr={0}", addr));
@@ -256,17 +292,20 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 		projErrs.forEach(proj -> log.log(Level.WARNING, "unknown proj: proj={0}", proj));
 		ptnErrs.forEach(ptn -> log.log(Level.WARNING, "unknown patten: pattern={0}", ptn));
 
-		// 結果の出力。ただし、CSV形式とするため改行コードを"\r\n"に変更する
+		// 結果の出力:
+		// Excelで読めるCSV形式とするためUnixでも改行コードを"\r\n"に変更する
 		String crlf = System.getProperty(LINE_SEPARATOR);
 		System.setProperty(LINE_SEPARATOR, "\r\n");
-		try (PrintWriter out = new PrintWriter(System.out)) {
-			report(out, map);
-			out.flush();
-		}
+		report(out, map);
+		out.flush();
 		System.setProperty(LINE_SEPARATOR, crlf);
+
 		return rc;
 	}
 
+	/*
+	 * 進捗状態を示すために1秒間隔で"."を出力するためのクラス
+	 */
 	private class PrintDot implements Runnable {
 
 		private final PrintStream err;
