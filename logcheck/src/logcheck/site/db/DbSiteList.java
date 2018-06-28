@@ -87,7 +87,7 @@ public class DbSiteList extends LinkedHashMap<String, SiteListIsp> implements Si
 				}
 				catch (Exception e) {
 					addr = new NetAddr(Constants.GLOBAL_IP);
-					log.log(Level.INFO, "DbSiteList={0}, globalIp={1}、ex={2}",
+					log.log(Level.FINE, "DbSiteList={0}, globalIp={1}、ex={2}",
 							new Object[] { site, globalIp, e.getMessage() });
 				}
 				site.addAddress(addr);
