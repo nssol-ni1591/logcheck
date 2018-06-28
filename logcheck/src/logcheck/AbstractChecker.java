@@ -237,11 +237,11 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 	private T run2() throws InterruptedException, ExecutionException {
 		// 2つのスレッドの実行枠を用意 - ThreadPoolを使ういみはないけれど ...
 		ExecutorService exec = Executors.newFixedThreadPool(2);
+		PrintDot dot = new PrintDot();
 		try {
 			// PrintDotスレッドの実行
-			// Executor.execute(): not Callable<T>スレッド
-			PrintDot p = new PrintDot();
-			exec.execute(p);
+			// Executor.execute(): Runnableスレッド
+			exec.execute(dot);
 
 			// Checkerスレッドの実行
 			// ExecutorService.submit(): implement Callable<T>スレッド
@@ -250,10 +250,12 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 			T map = checker.get();
 
 			// PrintDotスレッドの停止要求
-			p.stopRequest();
+			// p.stopRequest()
 			return map;
 		}
 		finally {
+			// PrintDotスレッドの停止要求
+			dot.stopRequest();
 			// PrintDotスレッドの終了の待ち合わせ
 			while (exec.awaitTermination(1, TimeUnit.SECONDS)) {
 				// Do nothing
