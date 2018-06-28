@@ -36,14 +36,7 @@ public class CheckerMainTest {
 		}
 		System.out.println("CheckerMainTest ... end");
 	}
-/*
-	public static String SSLINDEX  = "C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\xls\\index.txt";
-	public static String MAGLIST   = "C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\xls\\maglist.txt";
-	public static String KNOWNLIST = "C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\xls\\knownlist.txt";
-	public static String SDCLIST   = "C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\xls\\sdclist.txt";
-	public static String ACCESSLOG = "C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\VPN-LOG\\access.log";
-	public static String FWLOG		= "C:\\Users\\NI1591\\Desktop\\2017-セキュリティ対策\\fortigate-LOG\\fw.log";
-*/
+
 	public static String SSLINDEX	= Env.SSLINDEX;
 	public static String MAGLIST	= Env.MAGLIST;
 	public static String KNOWNLIST	= Env.KNOWNLIST;
