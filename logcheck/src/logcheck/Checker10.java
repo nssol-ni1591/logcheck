@@ -28,7 +28,7 @@ import logcheck.util.weld.WeldWrapper;
  * もし、ログがユーザ認証の成功ログの場合は、成功ログのIPアドレスとユーザIDが等しいログを、
  * [ユーザ認証失敗コレクション]を検索し、存在していた場合はコレクションのエントリを削除する。
  */
-public class Checker10 extends AbstractChecker<List<AccessLogSummary>> /*implements Predicate<AccessLogBean>*/ {
+public class Checker10 extends AbstractChecker<List<AccessLogSummary>> {
 
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;

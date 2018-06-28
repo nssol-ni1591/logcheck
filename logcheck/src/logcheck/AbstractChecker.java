@@ -268,8 +268,7 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 	// Callable<T>.call()
 	@Override @WithElaps
 	public T call() {
-		T rc = call(stream);
-		return rc;
+		return call(stream);
 	}
 
 	// サブクラス外からの呼び出しを考慮してpublicとする
