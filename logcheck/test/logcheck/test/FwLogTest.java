@@ -96,7 +96,6 @@ public class FwLogTest {
 		// equals
 		assertFalse(b1.equals(null));
 		assertTrue(b1.equals(b1));
-		assertFalse(b1.equals(this));
 		assertTrue(b1.equals(b2));
 
 		// compareTo

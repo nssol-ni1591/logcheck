@@ -71,9 +71,6 @@ public class FwLogBean implements Comparable<FwLogBean> {
 		if (o == this) {
 			return true;
 		}
-		if (getClass() != o.getClass()) {
-			return false;
-		}
 		if (o instanceof FwLogBean) {
 			return compareTo((FwLogBean)o) == 0;
 		}
