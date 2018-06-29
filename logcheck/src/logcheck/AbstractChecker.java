@@ -192,6 +192,8 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 				return isp;
 			}
 		}
+		// Whoisクラスではサイト情報が取得できない場合でも、必ずクラスを生成するので
+		// 取得できない場合はあり得ない。はず
 		addrErrs.add(addr);
 		return null;
 	}
@@ -247,11 +249,7 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 			// ExecutorService.submit(): implement Callable<T>スレッド
 			Future<T> checker = exec.submit(this);
 			// Checkerスレッドの実行結果の取得
-			T map = checker.get();
-
-			// PrintDotスレッドの停止要求
-			// p.stopRequest()
-			return map;
+			return checker.get();
 		}
 		finally {
 			// PrintDotスレッドの停止要求
