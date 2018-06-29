@@ -2,7 +2,9 @@ package logcheck.test;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.stream.Stream;
@@ -93,6 +95,22 @@ public class WeldWrapperTest {
 		int rc = new WeldWrapper<Checker12>(Checker12.class)
 				.weld(2, KNOWNLIST, MAGLIST, "abc.txt");
 		assertEquals("AccessLogが不正", 0, rc);
+	}
+	@Test
+	public void test07() {
+		InputStream backup = System.in;
+		try (InputStream is = new FileInputStream(Env.VPNLOG)) {
+			System.setIn(is);
+			int rc = new WeldWrapper<Checker12>(Checker12.class)
+					.weld(2, KNOWNLIST, MAGLIST);
+			assertEquals("System.in 動作", 0, rc);
+		}
+		catch (IOException e) {
+			System.err.println(e.getMessage());
+		}
+		finally {
+			System.setIn(backup);
+		}
 	}
 
 	public class WeldWrapperTestSub extends AbstractChecker<String> {
