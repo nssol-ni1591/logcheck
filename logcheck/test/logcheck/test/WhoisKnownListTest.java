@@ -165,7 +165,10 @@ public class WhoisKnownListTest {
 		isp = getIsp("151.0.141.74");
 		assertNotNull(isp);
 		if (check) {
-			assertEquals("Fastweb SpA", isp.getName());
+			//assertEquals("Fastweb SpA", isp.getName());
+			assertTrue("Fastweb SpA".equals(isp.getName())
+					|| "Fastweb Networks block".equals(isp.getName())
+					);
 		}
 
 		isp = getIsp("51.38.12.13");

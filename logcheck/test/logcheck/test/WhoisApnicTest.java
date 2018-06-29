@@ -28,4 +28,9 @@ public class WhoisApnicTest extends WhoisKnownListTest {
 		super.test01();
 	}
 
+	@Test
+	public void test03() {
+		// Cache Test skip.
+	}
+
 }

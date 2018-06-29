@@ -85,15 +85,14 @@ public class WhoisHtmlParser extends AbstractWhoisServer {
 				|| name.contains("Limited") 
 				|| name.contains("Corp")
 				|| name.contains("Company")
-				|| name.contains("Telecom")
-				)) {
+				|| name.contains("Telecom"))
+				//&& !name.startsWith("ARTERIA Networks")
+				) {
 			// すでに"Inc."などを含む文字列がnameに設定されている場合はnameの変更は行わない
 		}
 		else {
-			if (name != null && !name.equals(tmp)) {
-				log.log(Level.FINE, "duplicate key=NAMES, exists={0}, new={1}",
-						new Object[] { name, tmp });
-			}
+			log.log(Level.FINE, "replace key=NAMES, exists={0}, new={1}",
+					new Object[] { name, tmp });
 			return tmp;
 		}
 		return name;
@@ -106,7 +105,7 @@ public class WhoisHtmlParser extends AbstractWhoisServer {
 		// String netaddr = null
 		// String name = null
 		// String country = null
-		final String[] attrs = new String[3];
+		final String[] attrs = new String[5];
 
 		// URLを作成してGET通信を行う
 		URL url = new URL(site + addr);
@@ -124,12 +123,21 @@ public class WhoisHtmlParser extends AbstractWhoisServer {
 
 					// select network address
 					String tmp = parse(PTN_NETADDRS, s);
-					if (tmp != null) {
-						if (netaddr != null && !netaddr.equals(tmp)) {
-							log.log(Level.FINE, "duplicate key=NETADDRS, exists={0}, new={1}",
-									new Object[] { netaddr, tmp });
-						}
+					if (netaddr == null) {
 						netaddr = tmp;
+					}
+					else if (tmp != null) {
+						NetAddr addr1 = new NetAddr(netaddr);
+						NetAddr addr2 = new NetAddr(tmp);
+						if (addr1.within(addr2)) {
+							log.log(Level.FINE, "replace key=NETADDRS, exists={0}, new={1}",
+									new Object[] { netaddr, tmp });
+							netaddr = tmp;
+							attrs[3] = name;
+							attrs[4] = country;
+							name = null;
+							country = null;
+						}
 					}
 
 					// select organization name
@@ -140,7 +148,7 @@ public class WhoisHtmlParser extends AbstractWhoisServer {
 					tmp = parse(PTN_COUNTRIES, s);
 					if (tmp != null) {
 						if (country != null && !country.equals(tmp)) {
-							log.log(Level.FINE, "duplicate key=COUNTRIES, exists={0}, new={1}",
+							log.log(Level.FINE, "replace key=COUNTRIES, exists={0}, new={1}",
 									new Object[] { country, tmp });
 						}
 						country = tmp;
@@ -150,7 +158,9 @@ public class WhoisHtmlParser extends AbstractWhoisServer {
 					attrs[1] = name;
 					attrs[2] = country;
 				});
-			return WhoisUtils.format(addr, attrs[0], attrs[1], attrs[2]);
+			String name = attrs[1] != null ? attrs[1] : attrs[3];
+			String country = attrs[2] != null ? attrs[2] : attrs[4];
+			return WhoisUtils.format(addr, attrs[0], name, country);
 		}
 		finally {
 			http.disconnect();
