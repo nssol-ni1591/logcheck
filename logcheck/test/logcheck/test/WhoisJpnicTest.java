@@ -26,11 +26,11 @@ public class WhoisJpnicTest extends WhoisKnownListTest {
 	// Jpnic のレスポンスは悪いので、通常は試験しない
 	@Test
 	public void test01() {
-//		super.test01();
+		super.test01();
 	}
 	@Test
 	public void test02() {
-//		super.test02();
+		super.test02();
 	}
 	@Test
 	public void test03() {
@@ -54,7 +54,7 @@ public class WhoisJpnicTest extends WhoisKnownListTest {
 	}
 	@Test
 	public void test08() {
-//		super.test08();
+		super.test08();
 	}
 	@Test
 	public void test09() {
