@@ -249,7 +249,7 @@ public class CheckerMainTest {
 		long count = br.lines().count();
 		br.close();
 		System.out.println("count=" + count);
-		assertEquals("The number output line", 3009, count);
+		assertEquals("The number output line", 3512, count);
 		stdout.clearLog();
 
 		// main（）実行とusageメッセージ出力
@@ -266,7 +266,7 @@ public class CheckerMainTest {
 		long count = br.lines().count();
 		br.close();
 		System.out.println("count=" + count);
-		assertEquals("The number output line", 127, count);
+		assertEquals("The number output line", 148, count);
 
 		// main（）実行とusageメッセージ出力
 		exit.expectSystemExitWithStatus(2);
@@ -282,7 +282,7 @@ public class CheckerMainTest {
 		long count = br.lines().count();
 		br.close();
 		System.out.println("count=" + count);
-		assertEquals("The number output line", 1343, count);
+		assertEquals("The number output line", 1628, count);
 
 		// main（）実行とusageメッセージ出力
 		exit.expectSystemExitWithStatus(2);
@@ -314,7 +314,7 @@ public class CheckerMainTest {
 		long count = br.lines().count();
 		br.close();
 		System.out.println("count=" + count);
-		assertEquals("The number output line", 3009, count);
+		assertEquals("The number output line", 3512, count);
 
 		// main（）実行とusageメッセージ出力
 		exit.expectSystemExitWithStatus(2);
