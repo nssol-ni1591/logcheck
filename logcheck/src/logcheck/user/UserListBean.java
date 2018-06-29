@@ -28,6 +28,10 @@ public class UserListBean implements Comparable<UserListBean> {
 		this.revoce = b.getRevoce();
 		this.sites = new LinkedHashSet<>();
 	}
+	public UserListBean(String userId) {
+		this.userId = userId;
+		this.sites = new LinkedHashSet<>();
+	}
 	public UserListBean(String userId, String validFlag) {
 		this.userId = userId;
 		this.validFlag = validFlag;
@@ -55,6 +59,11 @@ public class UserListBean implements Comparable<UserListBean> {
 		}
 		LocalDateTime d = LocalDateTime.parse(revoce.substring(0, revoce.length() - 1), format1);
 		return d.format(format2);
+	}
+	public void setBean(SSLIndexBean b) {
+		this.validFlag = b.getFlag();
+		this.expire = b.getExpire();
+		this.revoce = b.getRevoce();
 	}
 
 	public Set<UserListSite> getSites() {
@@ -124,7 +133,7 @@ public class UserListBean implements Comparable<UserListBean> {
 	}
 	@Override
 	public String toString() {
-		return String.format("userId=%s, site=%s", userId, sites);
+		return String.format("userId=%s, valid=%s, site=%s", userId, validFlag, sites);
 	}
 
 	@Override

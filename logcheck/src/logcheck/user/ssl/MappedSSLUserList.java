@@ -67,7 +67,7 @@ public class MappedSSLUserList
 	public MappedSSLUserList load(String file, SiteList sitelist)
 			throws IOException, ClassNotFoundException, SQLException
 	{
-		final Map<String, SelectUser> map = new HashMap<>();
+		final Map<String, UserListBean> map = new HashMap<>();
 
 		try ( // Oracleに接続
 				Connection conn = DB.createConnection();
@@ -83,7 +83,20 @@ public class MappedSSLUserList
 				String userId = rs.getString(2);
 				String userDelFlag = rs.getString(3);
 				String endDate = rs.getTimestamp(4) == null ? "" : f.format(rs.getTimestamp(4));
-				map.put(userId, new SelectUser(siteId, userId, userDelFlag, endDate));
+				
+				UserListBean bean = map.get(userId);
+				if (bean == null) {
+					bean = new UserListBean(userId);
+					map.put(userId, bean);
+				}
+				SiteListIsp siteBean = sitelist.get(siteId);
+				if (siteBean != null) {
+					UserListSite site = new UserListSite(siteBean, userDelFlag, endDate);
+					bean.addSite(site);
+				}
+				else {
+					log.log(Level.WARNING, "site is null: siteId={0}, bean=[{1}]", new Object[] { siteId, bean });
+				}
 			}
 		}
 
@@ -99,22 +112,9 @@ public class MappedSSLUserList
 						bean.update(b);
 					}
 					else {
-						// DBから対象のユーザ情報を取得する
-						SelectUser su = map.get(b.getUserId());
-						if (su != null) {
-							bean = new UserListBean(b);
-							this.put(b.getUserId(), bean);
-
-							SiteListIsp siteBean = sitelist.get(su.getSiteId());
-							if (siteBean != null) {
-								UserListSite site =
-										new UserListSite(siteBean, su.getUserDelFlag(), su.getEndDate());
-								bean.addSite(site);
-							}
-							else {
-								log.log(Level.WARNING, "site is null: siteId={0}, bean=[{1}]",
-										new Object[] { su.getSiteId(), bean });
-							}
+						bean = map.get(b.getUserId());
+						if (bean != null) {
+							bean.update(b);
 						}
 						else {
 							// DBから対象のユーザ情報を取得できなかった、つまり、
@@ -122,8 +122,8 @@ public class MappedSSLUserList
 							// 不正な状態を検知することができるように削除フラグ"-1"でuserlistに追加する
 							log.log(Level.WARNING, "user_id not found: sslindex=[{0}]", b);
 							bean = new UserListBean(b);
-							this.put(b.getUserId(), bean);
 						}
+						this.put(b.getUserId(), bean);
 					} 
 				});
 		}
@@ -138,38 +138,6 @@ public class MappedSSLUserList
 	@Override
 	public boolean equals(Object o) {
 		return super.equals(o);
-	}
-
-	class SelectUser {
-
-		private final String siteId;
-		private final String userId;
-		private final String userDelFlag;
-		private final String endDate;
-
-		public SelectUser(String siteId, String userId, String userDelFlag, String endDate) {
-			this.siteId = siteId;
-			this.userId = userId;
-			this.userDelFlag = userDelFlag;
-			this.endDate = endDate;
-		}
-
-		public String getSiteId() {
-			return siteId;
-		}
-
-		public String getUserId() {
-			return userId;
-		}
-
-		public String getUserDelFlag() {
-			return userDelFlag;
-		}
-
-		public String getEndDate() {
-			return endDate;
-		}
-
 	}
 
 }
