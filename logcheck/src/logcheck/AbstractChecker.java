@@ -198,7 +198,7 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 		return null;
 	}
 
-	// ---- 実装クラスの制御クラス
+	// ---- 実装クラスの制御メソッド
 	private T run(String[] files) throws InterruptedException, ExecutionException, IOException {
 		log.log(Level.INFO, "checking from files={0}:", files);
 
@@ -273,7 +273,7 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 
 	// サブクラス外からの呼び出しを考慮してpublicとする
 	@WithElaps
-	public int start(PrintWriter out, String[] argv, int offset)
+	public int start(String[] argv, int offset)
 			throws InterruptedException, ExecutionException, IOException
 	{
 		int rc = 0;
@@ -295,6 +295,7 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 		// Excelで読めるCSV形式とするためUnixでも改行コードを"\r\n"に変更する
 		String crlf = System.getProperty(LINE_SEPARATOR);
 		System.setProperty(LINE_SEPARATOR, "\r\n");
+		PrintWriter out = new PrintWriter(System.out);
 		report(out, map);
 		out.flush();
 		System.setProperty(LINE_SEPARATOR, crlf);
