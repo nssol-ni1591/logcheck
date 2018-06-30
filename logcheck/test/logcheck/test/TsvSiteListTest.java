@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import logcheck.site.SiteListIsp;
 import logcheck.site.tsv.TsvSiteList;
+import logcheck.site.tsv.TsvSiteListBean;
 
 import static org.junit.Assert.*;
 
@@ -58,4 +59,13 @@ public class TsvSiteListTest {
 		map.init();
 		map.load("none");
 	}
+	@Test
+	public void test04() {
+		TsvSiteListBean b1 = new TsvSiteListBean("PRJ_1234", "1234", "SITE_1234", "192.168.0.1", "255.255.255.0");
+		assertEquals("match projId", "PRJ_1234", b1.getProjId());
+		assertEquals("match projName", "1234", b1.getProjName());
+		assertEquals("match projSiteName", "SITE_1234", b1.getSiteName());
+		assertEquals("match ip address", "192.168.0.1", b1.getMagIp());
+	}
+
 }
