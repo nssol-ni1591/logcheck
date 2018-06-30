@@ -60,11 +60,6 @@ public class UserListBean implements Comparable<UserListBean> {
 		LocalDateTime d = LocalDateTime.parse(revoce.substring(0, revoce.length() - 1), format1);
 		return d.format(format2);
 	}
-	public void setBean(SSLIndexBean b) {
-		this.validFlag = b.getFlag();
-		this.expire = b.getExpire();
-		this.revoce = b.getRevoce();
-	}
 
 	public Set<UserListSite> getSites() {
 		return sites;
@@ -147,7 +142,10 @@ public class UserListBean implements Comparable<UserListBean> {
 	}
 	@Override
 	public boolean equals(Object obj) {
-		return super.equals(obj);
+		if (obj instanceof UserListBean) {
+			return this.compareTo((UserListBean)obj) == 0;
+		}
+		return false;
 	}
 
 }
