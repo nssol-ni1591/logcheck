@@ -55,6 +55,12 @@ public class ProjListBean implements Comparable<ProjListBean> {
 	}
 	@Override
 	public boolean equals(Object obj) {
-		return super.equals(obj);
+		if (obj == null) {
+			return false;
+		}
+		if (obj instanceof ProjListBean) {
+			return this.compareTo((ProjListBean)obj) == 0;
+		}
+		return false;
 	}
 }

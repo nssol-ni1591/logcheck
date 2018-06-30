@@ -40,6 +40,9 @@ public class IspBean<E> implements Comparable<IspBean<E>> {
 	}
 	@Override
 	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
 		if (o instanceof IspBean<?>) {
 			@SuppressWarnings("unchecked")
 			IspBean<E> b = (IspBean<E>)o;

@@ -4,10 +4,12 @@ import java.io.IOException;
 
 import logcheck.sdc.SdcList;
 import logcheck.sdc.SdcListIsp;
+import logcheck.util.net.NetAddr;
 
 import static org.junit.Assert.*;
 
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -15,6 +17,8 @@ import org.junit.Test;
  * 以前の TsvMagListクラス
  */
 public class SdcListTest {
+
+	private SdcList map;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -24,14 +28,21 @@ public class SdcListTest {
 	public static void afterClass() {
 		System.out.println("SdcListTest ... end");
 	}
-
-	@Test
-	public void test01() throws IOException {
-		SdcList map = new SdcList();
+	@Before
+	public void before() throws IOException {
+		map = new SdcList();
 		map.load(Env.SDCLIST);
 		System.out.println("TsvSiteListTest.test01 size = " + map.size());
-		assertFalse(map.isEmpty());
+	}
 
+	@Test
+	public void test01() {
+		assertFalse(map.isEmpty());
+		SdcListIsp isp = map.get(new NetAddr("172.30.88.0/24"));
+		System.out.println("isp: " + isp);
+	}
+	@Test
+	public void test02() {
 		int ix = 0;
 		for (SdcListIsp isp : map.values()) {
 			isp.toString();
@@ -39,9 +50,8 @@ public class SdcListTest {
 			ix = ix + 1;
 		}
 	}
-
 	@Test(expected = IOException.class)
-	public void test02() throws IOException {
+	public void test03() throws IOException {
 		SdcList map = new SdcList();
 		map.load("Foo");
 	}

@@ -176,9 +176,6 @@ mvn install:install-file -Dfile=ojdbc14.jar -DgroupId=com.oracle -DartifactId=oj
 	<profiles>
 		<profile>
 			<id>dev</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<properties>
 				<conf>dev</conf>
 			</properties>
@@ -188,6 +185,15 @@ mvn install:install-file -Dfile=ojdbc14.jar -DgroupId=com.oracle -DartifactId=oj
 			<properties>
 				<conf>jenkins</conf>
 			</properties>
+		</profile>
+		<profile>
+			<id>home</id>
+			<properties>
+				<conf>home</conf>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 		</profile>
 	</profiles>
 </project>

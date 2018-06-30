@@ -87,9 +87,13 @@ public class AccessLogSummary extends Summary<String> {
 		}
 		if (o instanceof AccessLogSummary) {
 			AccessLogSummary sum = (AccessLogSummary)o;
-			return usrId.equals(sum.getId())
-					&& addr.equals(sum.getAddr())
-					&& isp.equals(sum.getIsp());
+			if (usrId.equals(sum.getId())
+					&& addr.equals(sum.getAddr())) {
+				if (isp == null) {
+					return sum.getIsp() == null;
+				}
+				return isp.equals(sum.getIsp());
+			}
 		}
 		return false;
 	}

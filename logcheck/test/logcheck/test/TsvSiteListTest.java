@@ -8,6 +8,7 @@ import logcheck.site.tsv.TsvSiteList;
 import static org.junit.Assert.*;
 
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -15,6 +16,8 @@ import org.junit.Test;
  * 以前の TsvMagListクラス
  */
 public class TsvSiteListTest {
+
+	private TsvSiteList map;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -24,15 +27,20 @@ public class TsvSiteListTest {
 	public static void afterClass() {
 		System.out.println("TsvSiteListTest ... end");
 	}
-
-	@Test
-	public void test01() throws Exception {
-		TsvSiteList map = new TsvSiteList();
+	@Before
+	public void before() throws IOException {
+		map = new TsvSiteList();
 		map.init();
 		map.load(Env.MAGLIST);
 		System.out.println("TsvSiteListTest.test01 size = " + map.size());
-		assertFalse(map.isEmpty());
+	}
 
+	@Test
+	public void test01() {
+		assertFalse(map.isEmpty());
+	}
+	@Test
+	public void test02() {
 		int ix = 0;
 		for (SiteListIsp isp : map.values()) {
 			isp.getSiteId();
@@ -44,9 +52,8 @@ public class TsvSiteListTest {
 			ix = ix + 1;
 		}
 	}
-
 	@Test(expected = IOException.class)
-	public void test02() throws Exception {
+	public void test03() throws Exception {
 		TsvSiteList map = new TsvSiteList();
 		map.init();
 		map.load("none");

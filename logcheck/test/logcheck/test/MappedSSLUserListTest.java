@@ -2,7 +2,11 @@ package logcheck.test;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
+import java.sql.SQLException;
+
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -16,6 +20,8 @@ import logcheck.user.ssl.MappedSSLUserList;
  */
 public class MappedSSLUserListTest {
 
+	private MappedSSLUserList map;
+
 	@BeforeClass
 	public static void beforeClass() {
 		System.out.println("start MappedSSLUserListTest ...");
@@ -24,36 +30,47 @@ public class MappedSSLUserListTest {
 	public static void afterClass() {
 		System.out.println("MappedSSLUserListTest ... end");
 	}
-
-	@Test
-	public void test01() throws Exception {
+	@Before
+	public void before() throws ClassNotFoundException, IOException, SQLException {
 		DbSiteList site = new DbSiteList();
 		site.init();
 		site.load(null);
 
-		MappedSSLUserList map = new MappedSSLUserList();
+		map = new MappedSSLUserList();
 		map.init();
 		map.load(Env.SSLINDEX, site);
 		System.out.println("size=" + map.size());
-		assertFalse(map.isEmpty());
-
-		for (UserListBean u : map.values()) {
-			assertNotNull("getUserId() is null", u.getUserId());
-			assertNotNull("getValidFlag() is null", u.getValidFlag());
-			assertNotNull("getExpire() is null", u.getExpire());
-			assertNotNull("getRevoce() is null", u.getRevoce());
-			assertNotNull("getTotal() is null", u.getTotal());
-			assertNotNull("getProjDelFlag() is null", u.getProjDelFlag());
-			assertNotNull("getSiteDelFlag() is null", u.getSiteDelFlag());
-			assertNotNull("getUserDelFlag() is null", u.getUserDelFlag());
-			assertNotNull("getFirstDate() is null", u.getFirstDate());
-			assertNotNull("getLastDate() is null", u.getLastDate());
-			assertFalse("equals(null)", u.equals(null));
-		}
 	}
-
 	@Test
-	public void test02() throws Exception {
+	public void test01() {
+		assertFalse(map.isEmpty());
+		assertFalse(map.equals(null));
+		System.out.println("hashCode()=" + map.hashCode());
+	}
+	@Test
+	public void test02() {
+		UserListBean user = null;
+		for (UserListBean u : map.values()) {
+			user = u;
+		}
+		assertFalse(user == null);
+		assertNotNull("getUserId() is null", user.getUserId());
+		assertNotNull("getValidFlag() is null", user.getValidFlag());
+		assertNotNull("getExpire() is null", user.getExpire());
+		assertNotNull("getRevoce() is null", user.getRevoce());
+		assertNotNull("getTotal() is null", user.getTotal());
+		assertNotNull("getProjDelFlag() is null", user.getProjDelFlag());
+		assertNotNull("getSiteDelFlag() is null", user.getSiteDelFlag());
+		assertNotNull("getUserDelFlag() is null", user.getUserDelFlag());
+		assertNotNull("getFirstDate() is null", user.getFirstDate());
+		assertNotNull("getLastDate() is null", user.getLastDate());
+
+		assertTrue("equals same object", user.equals(user));
+		assertFalse("equals null", user.equals(null));
+		
+	}
+	@Test
+	public void test03() throws Exception {
 		MappedSSLUserList map = new MappedSSLUserList();
 		assertTrue(map.isEmpty());
 	}

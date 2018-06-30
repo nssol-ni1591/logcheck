@@ -3,8 +3,12 @@ package logcheck.test;
 import java.util.Map;
 
 import logcheck.log.AccessLog;
+import logcheck.log.AccessLogBean;
 import logcheck.log.AccessLogSummary;
+import logcheck.util.net.ClientAddr;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -85,5 +89,16 @@ public class AccessLogTest {
 	public void test03() {
 		Map<String, AccessLogSummary> map = test.load("abc.log");
 		assumeTrue("log's map is empty", map.isEmpty());
+	}
+	@Test
+	public void test04() {
+		AccessLogBean b1 = new AccessLogBean("1970-01-01", "localhost", "192.168.0.1", "user1", null, "msg ... ");
+		assertEquals("equals date", "1970-01-01", b1.getDate());
+		assertEquals("equals host", "localhost", b1.getHost());
+		assertEquals("equals address", new ClientAddr("192.168.0.1"), b1.getAddr());
+		assertEquals("equals userId", "user1", b1.getId());
+		assertArrayEquals("equals roles", new String[0], b1.getRoles());
+		assertEquals("equals message", "msg ... ", b1.getMsg());
+		System.out.println("b1: " + b1);
 	}
 }
