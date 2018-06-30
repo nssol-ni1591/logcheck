@@ -4,9 +4,7 @@ import logcheck.isp.IspList;
 
 public interface SiteListIsp extends IspList {
 
-	default String getSiteId() {
-		return null;
-	}
+	String getSiteId();
 
 	String getSiteName();
 	String getSiteDelFlag();

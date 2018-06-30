@@ -14,6 +14,12 @@ public class SiteListKnownIsp implements SiteListIsp {
 	}
 
 	@Override
+	public String getSiteId() {
+		// IspListには対応する属性がない
+		//return null
+		throw new IllegalArgumentException("not impliment");
+	}
+	@Override
 	public String getProjId() {
 		return isp.getName();
 	}
