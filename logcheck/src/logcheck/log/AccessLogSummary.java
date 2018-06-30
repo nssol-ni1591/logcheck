@@ -4,7 +4,7 @@ import logcheck.isp.Isp;
 import logcheck.util.Summary;
 import logcheck.util.net.NetAddr;
 
-public class AccessLogSummary extends Summary<String> implements Comparable<AccessLogSummary> {
+public class AccessLogSummary extends Summary<String> {
 
 	private final NetAddr addr;
 	private final String usrId;
@@ -76,22 +76,20 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 			roles = b.getRoles();
 		}
 	}
-
-	@Override
-	public int compareTo(AccessLogSummary o) {
-		if (o == null) {
-			return -1;
-		}
-		return getRef().compareTo(o.getRef());
-	}
 	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
 	@Override
 	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
 		if (o instanceof AccessLogSummary) {
-			return compareTo((AccessLogSummary)o) == 0;
+			AccessLogSummary sum = (AccessLogSummary)o;
+			return usrId.equals(sum.getId())
+					&& addr.equals(sum.getAddr())
+					&& isp.equals(sum.getIsp());
 		}
 		return false;
 	}
