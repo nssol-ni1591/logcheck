@@ -12,15 +12,17 @@
 		<class>logcheck.site.tdv.TsvSiteList</class>
 
 		<class>logcheck.known.tsv.TsvKnownList</class>
-		<class>logcheck.known.net.Whois</class>
+		<class>logcheck.known.net.WhoisKnownList</class>
 
 		<class>logcheck.user.db.DbUserList</class>
-		<class>logcheck.user.ssl.SSLUserList</class>
+		<class>logcheck.user.ssl.FilteredSSLUserList</class>
 		<class>logcheck.user.sslindex.SSLIndexUserList</class>
+		<class>logcheck.user.ssl.MapSSLUserList</class>
+
 		 -->
-		<class>logcheck.known.net.Whois</class>
+		<class>logcheck.known.net.WhoisKnownList</class>
 		<class>logcheck.site.db.DbSiteList</class>
-		<class>logcheck.user.ssl.SSLUserList</class>
+		<class>logcheck.user.ssl.MappedSSLUserList</class>
 		<class>logcheck.proj.db.DbProjList</class>
 	</alternatives>
 </beans>

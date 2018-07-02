@@ -4,11 +4,9 @@ import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.inject.Inject;
 
 import logcheck.log.AccessLog;
 import logcheck.log.AccessLogBean;
@@ -24,17 +22,8 @@ import logcheck.util.weld.WeldWrapper;
  */
 public class Checker21 extends AbstractChecker<Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>> {
 
-	@Inject private Logger log;
-
-	private static final Pattern[] ALL_PATTERNS;
-	static {
-		ALL_PATTERNS = new Pattern[INFO_PATTERNS.length + FAIL_PATTERNS.length + FAIL_PATTERNS_DUP.length];
-		System.arraycopy(INFO_PATTERNS, 0, ALL_PATTERNS, 0, INFO_PATTERNS.length);
-		System.arraycopy(FAIL_PATTERNS, 0, ALL_PATTERNS, INFO_PATTERNS.length, FAIL_PATTERNS.length);
-		System.arraycopy(FAIL_PATTERNS_DUP, 0, ALL_PATTERNS, INFO_PATTERNS.length + FAIL_PATTERNS.length, FAIL_PATTERNS_DUP.length);
-	}
-
 	public void init(String...argv) {
+		// Do nothing
 	}
 
 	// ログのメッセージ部分はPatternの正規化表現で集約するため、対象ログが一致したPattern文字列を取得する
@@ -46,13 +35,12 @@ public class Checker21 extends AbstractChecker<Map<NetAddr, Map<String, Map<Stri
 		if (rc.isPresent()) {
 			return rc.get();
 		}
-		log.warning("(Pattern): \"" + b.getMsg() + "\"");
+		ptnErrs.add(b.getMsg());
 		return b.getMsg();
 	}
 
 	@Override
-	public Map<NetAddr, Map<String, Map<String, AccessLogSummary>>> call(Stream<String> stream)
-			throws Exception {
+	public Map<NetAddr, Map<String, Map<String, AccessLogSummary>>> call(Stream<String> stream) {
 		final Map<NetAddr, Map<String, Map<String, AccessLogSummary>>> map = new TreeMap<>();
 		stream//.parallel()
 				.filter(AccessLog::test)
@@ -93,24 +81,24 @@ public class Checker21 extends AbstractChecker<Map<NetAddr, Map<String, Map<Stri
 	public void report(final PrintWriter out, 
 			final Map<NetAddr, Map<String, Map<String, AccessLogSummary>>> map)
 	{
-		//out.println("国\tISP/プロジェクト\tアドレス\tユーザID\tメッセージ\tロール\t初回日時\t最終日時\tログ数");
 		out.println("アドレス\tユーザID\tメッセージ\tロール\t初回日時\t最終日時\tログ数");
 		map.forEach((addr, idmap) -> 
 			idmap.forEach((id, msgmap) -> 
 				msgmap.forEach((pattern, msg) -> 
 					Stream.of(msg.getRoles()).forEach(role -> 
-						out.println(new StringBuilder(addr.toString())
-								.append("\t").append(id)
-								.append("\t").append(pattern)
-								.append("\t").append(role)
-								.append("\t").append(msg.getFirstDate())
-								.append("\t").append(msg.getLastDate())
-								.append("\t").append(msg.getCount())	//　rolesの出力数倍になる
+						out.println(Stream.of(addr.toString()
+								, id
+								, pattern
+								, role
+								, msg.getFirstDate()
+								, msg.getLastDate()
+								, String.valueOf(msg.getCount())	//　rolesの出力数倍になる
+								)
+								.collect(Collectors.joining("\t")))
+							)
 						)
 					)
-				)
-			)
-		);
+				);
 	}
 
 	public static void main(String... argv) {

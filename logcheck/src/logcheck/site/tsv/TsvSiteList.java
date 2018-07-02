@@ -1,5 +1,6 @@
 package logcheck.site.tsv;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -17,6 +18,7 @@ import logcheck.annotations.WithElaps;
 import logcheck.site.SiteList;
 import logcheck.site.SiteListIsp;
 import logcheck.site.SiteListIspImpl;
+import logcheck.util.net.NetAddr;
 
 /*
  * 以前の TsvMagListクラス
@@ -32,14 +34,18 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 
 	public TsvSiteList() {
 		super(200);
+	}
+
+	// for envoronment not using weld-se
+	public void init() {
 		if (log == null) {
-			// logのインスタンスが生成できないため
-			log = Logger.getLogger(TsvSiteList.class.getName());
+			// JUnitの場合、logのインスタンスが生成できないため
+			log = Logger.getLogger(this.getClass().getName());
 		}
 	}
 
 	@WithElaps
-	public SiteList load(String file) throws Exception {
+	public SiteList load(String file) throws IOException {
 		try (Stream<String> input = Files.lines(Paths.get(file), Charset.forName("MS932"))) {
 			input.filter(this::test)
 				.map(this::parse)
@@ -49,7 +55,7 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 						site = new SiteListIspImpl(b.getSiteName(), b.getProjId());
 						this.put(b.getProjId(), site);
 					}
-					site.addAddress(b.getMagIp());
+					site.addAddress(new NetAddr(b.getMagIp()));
 				});
 		}
 		return this;
@@ -105,14 +111,14 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 		}
 		return rc;
 	}
-	/*
-	@Override
-	public boolean equals(Object o) {
-		return super.equals(o);
-	}
+
+	// equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめたい
 	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
-	*/
+	@Override
+	public boolean equals(Object o) {
+		return super.equals(o);
+	}
 }

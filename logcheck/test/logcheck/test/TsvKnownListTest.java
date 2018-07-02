@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -26,6 +25,8 @@ import logcheck.known.tsv.TsvKnownList;
  */
 public class TsvKnownListTest {
 
+	private KnownList map;
+
 	@BeforeClass
 	public static void beforeClass() {
 		System.out.println("start TsvKnownListTest ...");
@@ -34,33 +35,33 @@ public class TsvKnownListTest {
 	public static void afterClass() {
 		System.out.println("TsvKnownListTest ... end");
 	}
-
 	@Before
-	public void before() {
-	}
-	@After
-	public void after() {
+	public void before() throws IOException {
+		// TsvKnownList はAlternativeによりWeld環境では使用できない?
+		map = new TsvKnownList();
+		map.init();
+		map.load(Env.KNOWNLIST);
+		System.out.println("TsvKnownListTest.test01: size=" + map.size());
 	}
 
 	@Test
-	public void test01() throws IOException {
-		// TsvKnownList はAlternativeによりWeld環境では使用できない?
-		KnownList map = new TsvKnownList();
-		map.load(Env.KNOWNLIST);
-		System.out.println("TsvKnownListTest.test01: size=" + map.size());
+	public void test01() {
 		assertFalse(map.isEmpty());
-
+		assertFalse(map.equals(null));
+		System.out.println("hashCode()=" + map.hashCode());
+	}
+	@Test
+	public void test02() {
 		for (KnownListIsp n : map) {
-			System.out.println(n.getCountry() + "\t" + n + "\t" + n.getAddress());
-			System.out.print("\t");
-			n.getAddress().forEach(s -> System.out.printf("[%s]", s.toStringRange()));
+			System.out.println(n.getCountry() + "\t" + n.getName() + "\t" + n.getAddress());
+			System.out.print("\t" + n.toStringNetwork());
 			System.out.println();
 		}
 	}
-
 	@Test(expected = NoSuchFileException.class)
-	public void test02() throws IOException {
+	public void test03() throws IOException {
 		KnownList map = new TsvKnownList();
+		map.init();
 		map.load("abc");
 	}
 

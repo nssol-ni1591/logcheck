@@ -8,9 +8,6 @@ import logcheck.util.net.NetAddr;
 
 public class IspMap<V> extends IspBean<TreeMap<NetAddr, V>> {
 
-	public IspMap(String name) {
-		super(name, "", new TreeMap<NetAddr, V>());
-	}
 	public IspMap(String name, String country) {
 		super(name, country, new TreeMap<NetAddr, V>());
 	}

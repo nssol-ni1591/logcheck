@@ -1,10 +1,13 @@
 package logcheck;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -28,32 +31,24 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-	//private static final Pattern IP_RANGE_PATTERN = Pattern.compile("Testing Source IP realm restrictions failed for [\\S ]*/NSSDC-Auth\\d(\\(\\w+\\))? *");
-	//private static final Pattern IP_RANGE_PATTERN = Pattern.compile("Testing Source IP realm restrictions failed for [\\S ]*/NSSDC-Auth\\d+(\\([\\w_]+\\))? *");
-
-	public void init(String...argv) throws Exception {
+	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.knownlist.load(argv[0]);
 		this.maglist.load(argv[1]);
 	}
 
 	@Override
-	public Map<String, Map<Isp, List<AccessLogBean>>> call(Stream<String> stream) throws Exception {
+	public Map<String, Map<Isp, List<AccessLogBean>>> call(Stream<String> stream) {
 		final Map<String, Map<Isp, List<AccessLogBean>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
-//				.filter(b -> IP_RANGE_PATTERN.matcher(b.getMsg()).matches())
 				.filter(b -> Stream.of(IP_RANGE_PATTERN)
 						// 正規化表現に一致するメッセージのみを処理対象にする
 						.anyMatch(p -> p.matcher(b.getMsg()).matches())
 						)
 				.forEach(b -> {
 					NetAddr addr = b.getAddr();
-					IspList isp = maglist.get(addr);
-					if (isp == null) {
-						isp = knownlist.get(addr);
-					}
-
+					IspList isp = getIsp(addr, maglist, knownlist);
 					if (isp != null) {
 						Map<Isp, List<AccessLogBean>> ispmap;
 						List<AccessLogBean> addrmap;
@@ -72,9 +67,6 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 
 						addrmap.add(b);
 					}
-					else {
-						addrErrs.add(b.getAddr());
-					}
 				});
 		return map;
 	}
@@ -85,14 +77,14 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 		map.forEach((country, ispmap) -> 
 			ispmap.forEach((isp, addrmap) -> 
 				addrmap.forEach(msg -> 
-					out.println(new StringBuilder(country)
-							.append("\t").append(isp.getName())
-							.append("\t").append(msg.getAddr())
-							.append("\t").append(msg.getDate())
+					out.println(Stream.of(country
+							, isp.getName()
+							, msg.getAddr().toString()
+							, msg.getDate()
 							)
-				)
-			)
-		);
+							.collect(Collectors.joining("\t")))
+						))
+				);
 	}
 
 	public static void main(String... argv) {

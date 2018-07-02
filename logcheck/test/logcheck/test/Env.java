@@ -41,4 +41,12 @@ public class Env {
 		}
 	}
 
+	public static void init() {
+		System.setProperty("proxySet" , "true");
+		System.setProperty("proxyHost", "proxy.ns-sol.co.jp");
+		System.setProperty("proxyPort", "8000");
+		
+		System.setProperty("java.util.logging.config.class", "logcheck.util.LogConfig");
+	}
+
 }

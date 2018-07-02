@@ -1,26 +1,39 @@
 package logcheck;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.SequenceInputStream;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
 import logcheck.annotations.WithElaps;
+import logcheck.isp.IspList;
+import logcheck.known.KnownList;
+import logcheck.mag.MagList;
 import logcheck.util.net.NetAddr;
 import logcheck.util.weld.WeldRunner;
 
@@ -39,13 +52,18 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 	protected final Set<String> projErrs = new TreeSet<>(); 
 	protected final Set<String> userErrs = new TreeSet<>(); 
 	protected final Set<NetAddr> addrErrs = new TreeSet<>(); 
+	protected final Set<String> ptnErrs = new TreeSet<>(); 
 
-	/*
-			Pattern.compile(""),
-	 */
+	// 一次エラーメッセージ
 	protected static final Pattern[] FAIL_PATTERNS;
+	// 二次以降のエラーメッセージ
 	protected static final Pattern[] FAIL_PATTERNS_DUP;
+	// 全てのエラーメッセージ
+	protected static final Pattern[] FAIL_PATTERNS_ALL;
+	// 情報メッセージ
 	protected static final Pattern[] INFO_PATTERNS;
+	// 全てのメッセージ
+	protected static final Pattern[] ALL_PATTERNS;
 
 	protected static final Pattern[] FAIL_PATTERNS_PART = {
 			Pattern.compile("Account disabled by password management on auth server '[\\S]+'"),	// 前：Primary authentication failed for ...
@@ -57,7 +75,6 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 			Pattern.compile("Login failed.  Reason: No Certificate"),						// 後："Testing Certificate realm restrictions failed for [\\w\\.]*/NSSDC-Auth(1|2)(\\(MAC\\))? *"
 			Pattern.compile("Login failed.  Reason: No Roles"),								// 単独
 			Pattern.compile("Login failed.  Reason: Revoked Certificate"),					//　後："Testing Certificate realm restrictions failed for [\\w\\.]*/NSSDC-Auth(1|2)(\\(MAC\\))? , with certificate '[\\w ,=-]+' *"
-//			Pattern.compile("Login failed.  Reason: Revoked SDC-AD"),						//　後："NSSDC-Auth3(AD) authentication failed for /Primary from ..."
 			Pattern.compile("Login failed.  Reason: Wrong Certificate::unable to get certificate CRL"),	//　2017-10-26追加: 後："Testing Certificate realm restrictions failed for [\\w\\.]*/NSSDC-Auth(1|2)(\\(MAC\\))? , with certificate '[\\w ,=-]+' unable to get certificate CRL"
 			Pattern.compile("Login failed \\((NSSDC_LDAP|SDC-AD)\\)\\.  Reason: (LDAP Server|SDC-AD|Active Directory)"),			// 後： authentication failed for Primary/Z06290  from NSSDC_LDAP
 			Pattern.compile("Could not connect to LDAP server '(NSSDC_LDAP|SDC-AD)': Failed binding to admin DN: \\[\\d+\\] Can't contact LDAP server: [\\d\\.:]+ [\\d\\.:]+"),
@@ -73,7 +90,7 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 			Pattern.compile("Testing Password realm restrictions failed for [\\S ]*/NSSDC-Auth\\d+(\\([\\w_]+\\))?( , with certificate '[\\w ,=-]+')? *"),
 			Pattern.compile("Testing Source IP realm restrictions failed for [\\S ]*/NSSDC-Auth\\d+(\\([\\w_]+\\))? *"),	// 後："Login failed.  Reason: IP Denied"
 			Pattern.compile("The X\\.509 certificate for .+; Detail: '[\\w ]+' *"),
-			Pattern.compile("TLS handshake failed - client issued alert 'untrusted or unknown certificate'"),
+			Pattern.compile("TLS handshake failed - (client|server) issued alert '[\\S ]+'"),
 	};
 
 	protected static final Pattern[] INFO_PATTERNS_PART = {
@@ -134,107 +151,184 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 
 		FAIL_PATTERNS_DUP = new Pattern[FAIL_PATTERNS_DUP_PART.length + 1];
 		System.arraycopy(FAIL_PATTERNS_DUP_PART, 0, FAIL_PATTERNS_DUP, 0, FAIL_PATTERNS_DUP_PART.length);
-//		System.arraycopy(IP_RANGE_PATTERN, 0, FAIL_PATTERNS_DUP, FAIL_PATTERNS_DUP_PART.length, IP_RANGE_PATTERN.length);
 		FAIL_PATTERNS_DUP[FAIL_PATTERNS_DUP_PART.length] = IP_RANGE_PATTERN;
+
+		FAIL_PATTERNS_ALL = new Pattern[FAIL_PATTERNS.length + FAIL_PATTERNS_DUP.length];
+		System.arraycopy(FAIL_PATTERNS, 0, FAIL_PATTERNS_ALL, 0, FAIL_PATTERNS.length);
+		System.arraycopy(FAIL_PATTERNS_DUP, 0, FAIL_PATTERNS_ALL, FAIL_PATTERNS.length, FAIL_PATTERNS_DUP.length);
 
 		INFO_PATTERNS = new Pattern[INFO_PATTERNS_PART.length + AUTH_SUCCESS_PATTERNS.length + 1 /*SESS_START_PATTERN.length*/];
 		System.arraycopy(INFO_PATTERNS_PART, 0, INFO_PATTERNS, 0, INFO_PATTERNS_PART.length);
 		System.arraycopy(AUTH_SUCCESS_PATTERNS, 0, INFO_PATTERNS, INFO_PATTERNS_PART.length, AUTH_SUCCESS_PATTERNS.length);
 		INFO_PATTERNS[INFO_PATTERNS_PART.length + AUTH_SUCCESS_PATTERNS.length] = SESS_START_PATTERN;
+
+		ALL_PATTERNS = new Pattern[INFO_PATTERNS.length + FAIL_PATTERNS.length + FAIL_PATTERNS_DUP.length];
+		System.arraycopy(INFO_PATTERNS, 0, ALL_PATTERNS, 0, INFO_PATTERNS.length);
+		System.arraycopy(FAIL_PATTERNS, 0, ALL_PATTERNS, INFO_PATTERNS.length, FAIL_PATTERNS.length);
+		System.arraycopy(FAIL_PATTERNS_DUP, 0, ALL_PATTERNS, INFO_PATTERNS.length + FAIL_PATTERNS.length, FAIL_PATTERNS_DUP.length);
 	}
 
 	protected AbstractChecker() {
 	}
 
-	private T run(InputStream is) throws Exception {
+	// ---- 実装クラスに対するサービスメソッド
+
+	// 引数のリストからIsp情報を取得する
+	protected IspList getIsp(NetAddr addr, MagList maglist, KnownList knownlist) {
+		IspList isp = null;
+		if (addr == null) {
+			return null;
+		}
+
+		if (maglist != null) {
+			isp = maglist.get(addr);
+			if (isp != null) {
+				return isp;
+			}
+		}
+		if (knownlist != null) {
+			isp = knownlist.get(addr);
+			if (isp != null) {
+				return isp;
+			}
+		}
+		// Whoisクラスではサイト情報が取得できない場合でも、必ずクラスを生成するので
+		// 取得できない場合はあり得ない。はず
+		addrErrs.add(addr);
+		return null;
+	}
+
+	// ---- 実装クラスの制御メソッド
+	private T run(String[] files) throws InterruptedException, ExecutionException, IOException {
+		log.log(Level.INFO, "checking from files={0}:", files);
+
+		List<String> f = Arrays.asList(files);
+		List<InputStream> list = f.stream()
+				.map(t -> {
+					try {
+						return new FileInputStream(t);
+					}
+					catch (FileNotFoundException ex) {
+						log.log(Level.WARNING, ex.getMessage());
+					}
+					return null;
+				})
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList());
+
+		Enumeration<InputStream> e = new Enumeration<InputStream>() {
+			Iterator<InputStream> i = list.iterator();
+			@Override
+			public boolean hasMoreElements() {
+				return i.hasNext();
+			}
+			@Override
+			public InputStream nextElement() {
+				return i.next();
+			}
+		};
+		SequenceInputStream sis = new SequenceInputStream(e);
+		return run(sis);
+	}
+	private T run(InputStream is) throws InterruptedException, ExecutionException {
 		log.info("checking from InputStream:");
 
 		this.stream = new BufferedReader(new InputStreamReader(is)).lines();
 		return run2();
 	}
-	private T run(String file) throws Exception {
-		log.log(Level.INFO, "checking from file={0}:", file);
-
-		this.stream = Files.lines(Paths.get(file), StandardCharsets.UTF_8);
-		return run2();
-	}
-	private T run2() throws Exception {
-
-		ExecutorService exec = null;
-		T map = null;
+	private T run2() throws InterruptedException, ExecutionException {
+		// 2つのスレッドの実行枠を用意 - ThreadPoolを使ういみはないけれど ...
+		ExecutorService exec = Executors.newFixedThreadPool(2);
+		PrintDot dot = new PrintDot();
 		try {
-			exec = Executors.newFixedThreadPool(2);
-			CheckProgress p = new CheckProgress();
+			// PrintDotスレッドの実行
+			// Executor.execute(): Runnableスレッド
+			exec.execute(dot);
 
-			Future<T> f1 = exec.submit(this);
-			exec.execute(p);
-
-			map = f1.get();
-
-			p.stopRequest();
+			// Checkerスレッドの実行
+			// ExecutorService.submit(): implement Callable<T>スレッド
+			Future<T> checker = exec.submit(this);
+			// Checkerスレッドの実行結果の取得
+			return checker.get();
 		}
 		finally {
-			if (exec != null) {
-				exec.shutdown();
+			// PrintDotスレッドの停止要求
+			dot.stopRequest();
+			// PrintDotスレッドの終了の待ち合わせ
+			while (exec.awaitTermination(1, TimeUnit.SECONDS)) {
+				// Do nothing
 			}
 		}
-		return map;
 	}
 
-	protected abstract T call(Stream<String> stream) throws Exception;
+	// checkerスレッドの実行メソッド
+	protected abstract T call(Stream<String> stream);
 	protected abstract void report(final PrintWriter out, final T map);
 
+	// Callable<T>.call()
 	@Override @WithElaps
-	public T call() throws Exception {
+	public T call() {
 		return call(stream);
 	}
 
-	// 将来的にサブクラス外からの呼び出しを考慮してpublicとする
+	// サブクラス外からの呼び出しを考慮してpublicとする
 	@WithElaps
-	public int start(String[] argv, int offset) throws Exception {
+	public int start(String[] argv, int offset)
+			throws InterruptedException, ExecutionException, IOException
+	{
 		int rc = 0;
 		T map = null;
 		if (argv.length <= offset) {
 			map = run(System.in);
 		}
 		else {
-			for (int ix = offset; ix < argv.length; ix++ ) {
-				map = run(argv[ix]);
-			}
+			String[] newargv = Arrays.copyOfRange(argv, offset, argv.length);
+			map = run(newargv);
 		}
 
 		addrErrs.forEach(addr -> log.log(Level.WARNING, "unknown ip: addr={0}", addr));
 		userErrs.forEach(userId -> log.log(Level.WARNING, "not found user: userid={0}", userId));
 		projErrs.forEach(proj -> log.log(Level.WARNING, "unknown proj: proj={0}", proj));
+		ptnErrs.forEach(ptn -> log.log(Level.WARNING, "unknown patten: pattern={0}", ptn));
 
-		// 結果の出力。ただし、CSV形式とするため改行コードを"\r\n"に変更する
+		// 結果の出力:
+		// Excelで読めるCSV形式とするためUnixでも改行コードを"\r\n"に変更する
 		String crlf = System.getProperty(LINE_SEPARATOR);
 		System.setProperty(LINE_SEPARATOR, "\r\n");
-		try (PrintWriter out = new PrintWriter(System.out)) {
-			report(out, map);
-			out.flush();
-		}
+		PrintWriter out = new PrintWriter(System.out);
+		report(out, map);
+		out.flush();
 		System.setProperty(LINE_SEPARATOR, crlf);
+
 		return rc;
 	}
 
-	private class CheckProgress implements Runnable {
-		
+	/*
+	 * 進捗状態を示すために1秒間隔で"."を出力するためのクラス
+	 */
+	private class PrintDot implements Runnable {
+
+		private final PrintStream err;
 		private boolean stopRequest = false;
+
+		private PrintDot() {
+			this.err = System.err;
+		}
 
 		public void run() {
 			while (!stopRequest) {
 				try {
 					Thread.sleep(1000);
-					System.err.print(".");
+					err.print(".");
 				} catch (InterruptedException e) {
 					// もし例外が発生してしまうとスレッドが停止してしまうが
 					// sonarのパーサが文句を言うので仕方がない
 					Thread.currentThread().interrupt();
 				}
 			}
+			err.println();
 		}
-		
+
 		public void stopRequest() {
 			stopRequest = true;
 		}

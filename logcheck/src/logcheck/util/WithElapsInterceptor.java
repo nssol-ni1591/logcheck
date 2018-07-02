@@ -32,28 +32,18 @@ public class WithElapsInterceptor {
 		// ターゲットは、CDIのクライアントプロキシなので、スーパークラスを取得。
 		String classAndMethod = ic.getTarget().getClass().getSuperclass().getName() + "#" + ic.getMethod().getName();
 
-		// メソッド開始前のログ
-		log.log(Level.INFO, "start {0} ...", classAndMethod);
-
 		Object rc = null;
 		long time = System.currentTimeMillis();
 		try {
 			// メソッドの実行
 			rc = ic.proceed();
+			return rc;
+		}
+		finally {
 			time = System.currentTimeMillis() - time;
+			// メソッド終了に経過時間のログを出力
+			log.log(Level.INFO, "{0} elaps={1} ms", new Object[] { classAndMethod, time });
 		}
-		catch (Exception ex) {
-			// 例外のログを出したら、例外はそのまま再スローする。
-			// トランザクションインターセプターの内部で処理されるので、
-			// ここでは根本例外が出る。
-			log.log(Level.SEVERE, "logcheck", ex);
-			throw ex;
-		}
-
-		// メソッド終了後のログ
-		System.err.println();
-		log.log(Level.INFO, "end {0} ... elaps={1} ms", new Object[] { classAndMethod, time });
-		return rc;
 	}
 
 }

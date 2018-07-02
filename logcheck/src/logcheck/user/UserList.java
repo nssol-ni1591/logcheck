@@ -1,5 +1,7 @@
 package logcheck.user;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Map;
 
 import logcheck.site.SiteList;
@@ -9,7 +11,7 @@ import logcheck.site.SiteList;
  */
 public interface UserList<E> extends Map<String, E> {
 
-	UserList<E> load(String sql, SiteList sitelist) throws Exception;
+	UserList<E> load(String sql, SiteList sitelist) throws IOException, ClassNotFoundException, SQLException;
 
 	E get(Object userId);
 

@@ -1,11 +1,12 @@
 package logcheck;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,9 +36,7 @@ public class Checker23 extends AbstractChecker<List<AccessLogSummary>> {
 	@Inject protected KnownList knownlist;
 	@Inject protected MagList maglist;
 
-	@Inject private Logger log;
-
-	public void init(String...argv) throws Exception {
+	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.knownlist.load(argv[0]);
 		this.maglist.load(argv[1]);
 	}
@@ -63,13 +62,11 @@ public class Checker23 extends AbstractChecker<List<AccessLogSummary>> {
 		if (!b.getMsg().contains("failed")) {
 			return INFO_SUMMARY_MSG;
 		}
-		log.warning("(Pattern): \"" + b.getMsg() + "\"");
 		return "<Warn>" + b.getMsg();
 	}
 
 	@Override
-	public List<AccessLogSummary> call(Stream<String> stream)
-			throws Exception {
+	public List<AccessLogSummary> call(Stream<String> stream) {
 		final List<AccessLogSummary> list = Collections.synchronizedList(new LinkedList<>());
 		stream//.parallel()
 				.filter(AccessLog::test)
@@ -87,17 +84,11 @@ public class Checker23 extends AbstractChecker<List<AccessLogSummary>> {
 					else {
 						// Ispへの変換は出力対象のメッセージの場合だけ実行すればよい
 						NetAddr addr = b.getAddr();
-						IspList isp = maglist.get(addr);
-						if (isp == null) {
-							isp = knownlist.get(addr);
-							if (isp == null) {
-								addrErrs.add(b.getAddr());
-								return;
-							}
+						IspList isp = getIsp(addr, maglist, knownlist);
+						if (isp != null) {
+							msg = new AccessLogSummary(b, pattern, isp);
+							list.add(msg);
 						}
-
-						msg = new AccessLogSummary(b, pattern, isp);
-						list.add(msg);
 					}
 				});
 		return list;

@@ -1,8 +1,10 @@
 package logcheck.user.db;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -20,7 +22,9 @@ import logcheck.site.SiteListIspImpl;
 import logcheck.user.UserListBean;
 import logcheck.user.UserListSite;
 import logcheck.user.UserList;
+import logcheck.util.Constants;
 import logcheck.util.DB;
+import logcheck.util.net.NetAddr;
 
 /*
  * VPNクライアント証明書が発行されているユーザの一覧を取得する
@@ -28,10 +32,9 @@ import logcheck.util.DB;
 @Alternative
 public class DbUserList extends LinkedHashMap<String, UserListBean> implements UserList<UserListBean> {
 
-	@Inject Logger log;
+	@Inject private Logger log;
 
 	private static final long serialVersionUID = 1L;
-	private static final String DEFAULT_IP = "0.0.0.0";
 	private static final String TIME_FORMAT = "yyyy/MM/dd HH:mm:ss";
 
 	public static final String SQL_ZUSER = 
@@ -49,14 +52,19 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 
 	public DbUserList() {
 		super(4000);
+	}
+
+	// for envoronment not using weld-se
+	public void init() {
 		if (log == null) {
-			// logのインスタンスが生成できないため
-			log = Logger.getLogger(DbUserList.class.getName());
+			// JUnitの場合、logのインスタンスが生成できないため
+			log = Logger.getLogger(this.getClass().getName());
 		}
 	}
 
 	@WithElaps
-	public DbUserList load(String file, SiteList sitelist) throws Exception {
+	public DbUserList load(String file, SiteList sitelist)
+			throws IOException, ClassNotFoundException, SQLException {
 		String sql = SQL_ZUSER;
 		try (	// Oracleに接続
 				Connection conn = DB.createConnection();
@@ -91,32 +99,35 @@ public class DbUserList extends LinkedHashMap<String, UserListBean> implements U
 					this.put(userId, bean);
 				}
 
-				if (globalIp == null
-						|| "非固定".equals(globalIp)
-						|| "追加不要".equals(globalIp)) {
-					globalIp = DEFAULT_IP;	// IPアドレスとしては不正なので一致しない for 専用線、ISP経由
-				}
-
 				UserListSite site = bean.getSite(siteId);
 				if (site == null) {
 					SiteListIsp siteBean = new SiteListIspImpl(siteId, siteName, siteDelFlag, projId, projDelFlag);
 					site = new UserListSite(siteBean, userDelFlag, endDate);
 					bean.addSite(site);
 				}
-				site.addAddress(globalIp);
-				log.log(Level.FINE, "DbUserList: UserListBean={0}", bean.toString());
+
+				NetAddr addr;
+				try {
+					addr = new NetAddr(globalIp);
+				}
+				catch (Exception e) {
+					addr = new NetAddr(Constants.GLOBAL_IP);
+				}
+				site.addAddress(addr);
+
+				log.log(Level.FINE, "DbUserList: UserListBean={0}", bean);
 			}
 		}
 		return this;
 	}
-	/*
-	@Override
-	public boolean equals(Object o) {
-		return super.equals(o);
-	}
+
+	// equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめたい
 	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
-	*/
+	@Override
+	public boolean equals(Object o) {
+		return super.equals(o);
+	}
 }

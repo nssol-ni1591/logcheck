@@ -1,6 +1,8 @@
 package logcheck;
 
 import java.io.PrintWriter;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import logcheck.user.UserListBean;
 import logcheck.user.UserListSite;
@@ -38,16 +40,16 @@ public class Checker16 extends Checker14 {
 			)
 			.forEach(user -> 
 				user.getSites().forEach(site -> 
-					out.println(
-							new StringBuilder(user.getUserId())
-							.append("\t").append(site.getProjId())
-							.append("\t").append(site.getSiteName())
-							.append("\t").append(site.getProjDelFlag())
-							.append("\t").append(site.getSiteDelFlag())
-							.append("\t").append(site.getUserDelFlag())
+					out.println(Stream.of(user.getUserId()
+							, site.getProjId()
+							, site.getSiteName()
+							, site.getProjDelFlag()
+							, site.getSiteDelFlag()
+							, site.getUserDelFlag()
 							)
-			)
-		);
+							.collect(Collectors.joining("\t")))
+						)
+					);
 	}
 
 	@Override

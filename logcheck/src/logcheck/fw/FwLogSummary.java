@@ -13,14 +13,7 @@ public class FwLogSummary extends Summary<FwLogBean> implements Comparable<FwLog
 	private final int dstPort;
 
 	public FwLogSummary(FwLogBean bean) {
-		super(null, bean.getDate());
-		this.dstPort = bean.getDstPort();
-		this.srcAddr = bean.getSrcIp();
-		this.dstAddr = bean.getDstIp();
-		this.srcIsp = null;
-		this.dstIsp = null;
-		// callされた時点で1回目のログがあるため初期値を1にする
-		super.addCount();
+		this(bean, null, null);
 	}
 	public FwLogSummary(FwLogBean bean, Isp srcIsp, Isp dstIsp) {
 		super(null, bean.getDate());
@@ -29,7 +22,7 @@ public class FwLogSummary extends Summary<FwLogBean> implements Comparable<FwLog
 		this.dstPort = bean.getDstPort();
 		this.srcIsp = srcIsp;
 		this.dstIsp = dstIsp;
-// callされた時点で1回目のログがあるため初期値を1にする
+		// callされた時点で1回目のログがあるため初期値を1にする
 		super.addCount();
 	}
 
@@ -77,26 +70,16 @@ public class FwLogSummary extends Summary<FwLogBean> implements Comparable<FwLog
 			return rc;
 		}
 		return 0;
-
 	}
-	/*
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o instanceof FwLogBean) {
-			FwLogSummary summary = (FwLogSummary)o;
-			return compareTo(summary) == 0;
-		}
-		return false;
-	}
-	// equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめる
 	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
-	*/
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj);
+	}
+
 	@Override
 	public String toString() {
 		return "[" + getFirstDate() + "/" + getLastDate() + "]"

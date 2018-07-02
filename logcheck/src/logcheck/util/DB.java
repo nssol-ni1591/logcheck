@@ -7,27 +7,25 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Produces;
+
+@Dependent
 public class DB {
 
-	private static final String DEFAULT_HOST = "172.31.247.137";
-	private static final String MASTERINFO_USER = "masterinfo";
-	private static final String MASTERINFO_PASS = "masterinfo";
-
-	private DB () {
+	private DB() {
+		// Do nothing
 	}
 
-	private static String getHostname() {
-		return DEFAULT_HOST;
-	}
-	private static String getUsername() {
-		return MASTERINFO_USER;
-	}
-	private static String getPassword() {
-		return MASTERINFO_PASS;
-	}
-
+	/*
+	 * Producerを使うか、try-with-resourceを使うか迷ったけれど、try-with-resourceを使用することにした
+	 */
+	@Produces
 	public static Connection createConnection() throws ClassNotFoundException, SQLException, IOException {
+		final Logger log = Logger.getLogger(DB.class.getName());
 
 		Properties props = new Properties();
 		InputStream is = DB.class.getResourceAsStream("/META-INF/jdbc.properties");
@@ -35,23 +33,21 @@ public class DB {
 			props.load(new InputStreamReader(is));
 		}
 
-		String host = props.getProperty("host", getHostname());
-		String port = props.getProperty("port", "1521");
-		String sid = props.getProperty("sid", "sdcdb011");
-		String username = props.getProperty("username", getUsername());
-		String password = props.getProperty("password", getPassword());
+		String username = props.getProperty("username", Constants.MASTERINFO_USER);
+		String password = props.getProperty("password", Constants.MASTERINFO_PASS);
 
-		host = System.getProperty("jdbc.connect.host", host);
+		String env = System.getProperty("jdbc.env", "dev");
+		String driver = props.getProperty(env + ".driver", Constants.JDBC_DRIVER);
+		String url = props.getProperty(env + ".url", Constants.JDBC_URL);
 
-		String url = new StringBuilder("jdbc:oracle:thin:@")
-				.append(host)
-				.append(":")
-				.append(port)
-				.append(":")
-				.append(sid)
-				.toString();
+		log.log(Level.FINE, "jdbc.env={0}, url={1}, driver={2}", new Object[] { env, url, driver });
 
-		Class.forName("oracle.jdbc.driver.OracleDriver");
+		if (driver != null && !driver.isEmpty()) {
+			// derby, ojdbc8の場合はJDBC4.0に対応しているのでClass.forName()は必要ない
+			// ojdbc14は、JDBC4.0に対応していないためClass.forName()が必要
+			Class.forName(driver);
+		}
+
 		return DriverManager.getConnection(url, username, password);
 	}
 

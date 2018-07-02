@@ -42,7 +42,7 @@ public class AccessLog {
 			log.log(Level.INFO, "end load ... size={0}", map.size());
 
 		} catch (IOException e) {
-			log.log(Level.SEVERE, e.getMessage(), e);
+			log.log(Level.SEVERE, e.getMessage());
 		}
 		return map;
 	}
@@ -69,11 +69,6 @@ public class AccessLog {
 			id = id.substring(4);
 		}
 		// 2018/03/08 AccessLogBeanからZユーザの大文字置換を移した
-		/*
-		if (id.startsWith("z")) {
-			id = "Z" + id.substring(1);
-		}
-		*/
 		id = id.toUpperCase();
 
 		role = array[2].substring(pos4 + 1, array[2].length() - 1);

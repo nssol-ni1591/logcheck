@@ -1,9 +1,11 @@
 package logcheck;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -36,15 +38,7 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 
 	private String select;
 
-	private static final Pattern[] ALL_PATTERNS;
-	static {
-		ALL_PATTERNS = new Pattern[INFO_PATTERNS.length + FAIL_PATTERNS.length + FAIL_PATTERNS_DUP.length];
-		System.arraycopy(INFO_PATTERNS, 0, ALL_PATTERNS, 0, INFO_PATTERNS.length);
-		System.arraycopy(FAIL_PATTERNS, 0, ALL_PATTERNS, INFO_PATTERNS.length, FAIL_PATTERNS.length);
-		System.arraycopy(FAIL_PATTERNS_DUP, 0, ALL_PATTERNS, INFO_PATTERNS.length + FAIL_PATTERNS.length, FAIL_PATTERNS_DUP.length);
-	}
-
-	public void init(String...argv) throws Exception {
+	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.select = argv[0];
 		this.knownlist.load(argv[1]);
 		this.maglist.load(argv[2]);
@@ -59,12 +53,12 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 		if (rc.isPresent()) {
 			return rc.get();
 		}
-		log.log(Level.WARNING, "(Pattern): \"{0}\"", b.getMsg());
+		ptnErrs.add(b.getMsg());
 		return b.getMsg();
 	}
 
-	public List<AccessLogSummary> call(Stream<String> stream) throws Exception {
-		final List<AccessLogSummary> list = new Vector<>(1000000);
+	public List<AccessLogSummary> call(Stream<String> stream) {
+		final List<AccessLogSummary> list = new LinkedList<>();
 		stream//.parallel()
 				.filter(AccessLog::test)
 				.filter(s -> select.startsWith("-") || s.startsWith(select))
@@ -73,17 +67,10 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 					String pattern = getPattern(b);
 
 					NetAddr addr = b.getAddr();
-					IspList isp = maglist.get(addr);
-					if (isp == null) {
-						isp = knownlist.get(addr);
-					}
-
+					IspList isp = getIsp(addr, maglist, knownlist);
 					if (isp != null) {
 						AccessLogSummary msg = new AccessLogSummary(b, pattern, isp);
 						list.add(msg);
-					}
-					else {
-						addrErrs.add(b.getAddr());
 					}
 				});
 		return list;
@@ -100,8 +87,7 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 					, String.join(",", msg.getRoles())
 					, msg.getPattern()
 					)
-					.collect(Collectors.joining("\t"))
-					)
+					.collect(Collectors.joining("\t")))
 		);
 	}
 
@@ -113,14 +99,16 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 	public boolean check(int argc, String...argv) {
 		Pattern p = Pattern.compile("\\d\\d\\d\\d-\\d\\d-\\d\\d");
 		if (argv.length > 1 && !p.matcher(argv[0]).matches()) {
-			System.err.println("usage: java logcheck.Checker9 yyyy-mm-dd knownlist maglist [accesslog...]");
+			//Invoke method(s) only conditionally.
+			String msg = usage("Checker9");
+			log.log(Level.SEVERE, msg);
 			return false;
 		}
 		return true;
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper<Checker9>(Checker9.class).weld(2, argv);
+		int rc = new WeldWrapper<Checker9>(Checker9.class).weld(3, argv);
 		System.exit(rc);
 	}
 

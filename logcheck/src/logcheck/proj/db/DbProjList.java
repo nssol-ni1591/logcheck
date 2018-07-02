@@ -1,5 +1,6 @@
 package logcheck.proj.db;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,19 +35,21 @@ public class DbProjList extends LinkedHashMap<String, ProjListBean> implements P
 
 	public DbProjList() {
 		super(600);
+	}
+
+	// for envoronment not using weld-se
+	public void init() {
 		if (log == null) {
-			// logのインスタンスが生成できないため
-			log = Logger.getLogger(DbProjList.class.getName());
+			// not weld-seの場合、logのインスタンスが生成できないため
+			log = Logger.getLogger(this.getClass().getName());
 		}
 	}
 
 	@Override @WithElaps
-	public ProjList<ProjListBean> load() throws Exception {
+	public ProjList<ProjListBean> load() throws IOException, ClassNotFoundException, SQLException {
 		// @Overrideのため、使用しない引数のfileを定義する
 		String sql = SQL_ALL_PROJ;
 
-		// Oracle JDBC Driverのロード
-		// なぜコメントアウトで動作する？：Class.forName("oracle.jdbc.driver.OracleDriver");
 		try (	// Oracleに接続
 				Connection conn = DB.createConnection();
 				// ステートメントを作成
@@ -67,6 +70,15 @@ public class DbProjList extends LinkedHashMap<String, ProjListBean> implements P
 			log.log(Level.SEVERE, "catch SQLException", ex);
 		}
 		return this;
+	}
+
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	@Override
+	public boolean equals(Object o) {
+		return super.equals(o);
 	}
 
 }

@@ -20,4 +20,7 @@ public interface KnownList extends Set<KnownListIsp> {
 
 	KnownList load(String file) throws IOException;
 
+	// for envoronment not using weld-se
+	void init();
+
 }

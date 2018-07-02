@@ -2,14 +2,11 @@ package logcheck.known.privateaddr;
 
 import java.util.LinkedHashSet;
 import java.util.Optional;
-import java.util.logging.Logger;
-
-import javax.enterprise.inject.Alternative;
-import javax.inject.Inject;
 
 import logcheck.annotations.WithElaps;
 import logcheck.known.KnownList;
 import logcheck.known.KnownListIsp;
+import logcheck.util.Constants;
 import logcheck.util.net.NetAddr;
 
 /*
@@ -21,19 +18,18 @@ import logcheck.util.net.NetAddr;
  * IPアドレスから取得される接続元はISP名ではなく企業名を取得したい。
  * 今のHashMapでは、Hash地の値により、どちらが取得されるか判断付かない。
  */
-@Alternative
 public class PrivateAddrList extends LinkedHashSet<KnownListIsp> implements KnownList {
 
-	@Inject private Logger log;
-
 	private static final long serialVersionUID = 1L;
+	private static final String PRIVATE = "プライベート";
 
 	public PrivateAddrList() {
 		super();
-		if (log == null) {
-			// logのインスタンスが生成できないため
-			log = Logger.getLogger(PrivateAddrList.class.getName());
-		}
+	}
+
+	// for envoronment not using weld-se
+	public void init() {
+		// Do nothing
 	}
 
 	/*
@@ -49,17 +45,17 @@ public class PrivateAddrList extends LinkedHashSet<KnownListIsp> implements Know
 	@WithElaps
 	public KnownList load(String file) {
 		KnownListIsp isp;
-		isp = new KnownListIsp("LOOPBACK-RESERVED", "プライベート");
-		isp.addAddress(new NetAddr("127.0.0.0/8"));
+		isp = new KnownListIsp("LOOPBACK-RESERVED", PRIVATE);
+		isp.addAddress(new NetAddr(Constants.LOCALHOST));
 		add(isp);
-		isp = new KnownListIsp("ABLK-RFC1918-RESERVED", "プライベート");
-		isp.addAddress(new NetAddr("10.0.0.0/8"));
+		isp = new KnownListIsp("ABLK-RFC1918-RESERVED", PRIVATE);
+		isp.addAddress(new NetAddr(Constants.CLASS_A));
 		add(isp);
-		isp = new KnownListIsp("BBLK-RFC1918-RESERVED", "プライベート");
-		isp.addAddress(new NetAddr("172.16.0.0/12"));
+		isp = new KnownListIsp("BBLK-RFC1918-RESERVED", PRIVATE);
+		isp.addAddress(new NetAddr(Constants.CLASS_B));
 		add(isp);
-		isp = new KnownListIsp("CBLK-RFC1918-RESERVED", "プライベート");
-		isp.addAddress(new NetAddr("192.168.0.0/16"));
+		isp = new KnownListIsp("CBLK-RFC1918-RESERVED", PRIVATE);
+		isp.addAddress(new NetAddr(Constants.CLASS_C));
 		add(isp);
 		return this;
 	}

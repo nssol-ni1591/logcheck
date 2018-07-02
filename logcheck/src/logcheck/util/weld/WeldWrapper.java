@@ -4,16 +4,13 @@ import java.lang.annotation.Annotation;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.enterprise.inject.se.SeContainer;
+import javax.enterprise.inject.se.SeContainerInitializer;
 import javax.enterprise.util.AnnotationLiteral;
-
-import org.jboss.weld.environment.se.Weld;
-import org.jboss.weld.environment.se.WeldContainer;
 
 public class WeldWrapper<T extends WeldRunner> {
 
 	private static Logger log = Logger.getLogger(WeldWrapper.class.getName());
-
-	private static final String LINE_SEPARATOR = "line.separator";
 
 	private Class<T> cl;
 
@@ -31,7 +28,9 @@ public class WeldWrapper<T extends WeldRunner> {
 				if (index > 0) {
 					name = name.substring(0, index);
 				}
-				System.err.println(application.usage(name));
+				//Invoke method(s) only conditionally.
+				String msg = application.usage(name);
+				log.log(Level.SEVERE, msg);
 				rc = 2;
 			}
 			else if (!application.check(argc, argv)) {
@@ -44,9 +43,8 @@ public class WeldWrapper<T extends WeldRunner> {
 				application.init(argv[0], argv[1], argv[2]);
 			}
 			else {
-				System.err.printf("%s: unknown init() parameter%s",
-						application.getClass().getName(),
-						System.getProperty(LINE_SEPARATOR));
+				log.log(Level.SEVERE, "{0}: unknown init() parameter size (argc={1})",
+						new Object[] { application.getClass().getName(), argc });
 				rc = 4;
 			}
 
@@ -62,25 +60,24 @@ public class WeldWrapper<T extends WeldRunner> {
 	}
 
 	public int weld(int argc, String...argv) {
-		int rc = 0;
-		Weld weld = new Weld();
-		try (WeldContainer container = weld.initialize()) {
-			T application = container.select(cl).get();
-			rc = exec(application, argc, argv);
-		}
-		catch (Exception ex) {
-			log.log(Level.SEVERE, "in weld", ex);
-			rc = -1;
-		}
-		return rc;
+		return weld(null, argc, argv);
 	}
 	public <E extends Annotation> int weld(AnnotationLiteral<E> anno, int argc, String...argv) {
 		int rc = 0;
-		Weld weld = new Weld();
-		try (WeldContainer container = weld.initialize()) {
-			T application = container.select(cl, anno).get();
+
+		try(SeContainer container = SeContainerInitializer.newInstance().initialize()) {
+	        // start the container, retrieve a bean and do work with it
+			T application;
+			if (anno == null) {
+				// AnnotationがついていないCheckerクラスの生成
+				application = container.select(cl).get();
+			}
+			else {
+				// Annotation付きCheckerクラスの生成
+				application = container.select(cl, anno).get();
+			}
 			rc = exec(application, argc, argv);
-		}
+	    }
 		catch (Exception ex) {
 			log.log(Level.SEVERE, "in weld", ex);
 			rc = -1;

@@ -1,8 +1,11 @@
 package logcheck;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.text.Normalizer;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.enterprise.util.AnnotationLiteral;
@@ -12,6 +15,7 @@ import logcheck.annotations.UseChecker14;
 import logcheck.known.KnownList;
 import logcheck.known.KnownListIsp;
 import logcheck.log.AccessLog;
+import logcheck.log.AccessLogBean;
 import logcheck.site.SiteList;
 import logcheck.site.SiteListIsp;
 import logcheck.site.SiteListIspImpl;
@@ -33,22 +37,50 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 	@Inject protected UserList<UserListBean> userlist;
 
 	@Inject private Logger log;
-/*
-	private static final Pattern AUTH_PATTERN = 
-			Pattern.compile("VPN Tunneling: Session started for user with IPv4 address ([\\w\\.]+), hostname ([\\S]+)");
-*/
-	public void init(String...argv) throws Exception {
+
+	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.knownlist.load(argv[0]);
 		this.sitelist.load(null);
 		this.userlist.load(argv[1], sitelist);
 	}
 
+	private void sub(AccessLogBean b, UserListBean user) {
+		SiteListIsp magisp = sitelist.get(b.getAddr());
+		if (magisp == null) {
+			KnownListIsp isp = knownlist.get(b.getAddr());
+			if (isp == null) {
+				addrErrs.add(b.getAddr());
+				return;
+			}
+			UserListSite site = new UserListSite(isp/*, "0"*/);
+			user.addSite(site);
+			site.update(b.getDate());
+			//Invoke method(s) only conditionally.
+			String msg = String.format("user=%s, isp=%s", user, isp);
+			log.fine(msg);
+		}
+		else {
+			UserListSite site;
+			if (/*b.getRoles() == null || */b.getRoles().length < 2) {
+				site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[0]), "-1", "");
+			}
+			else {
+				site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[1]), "-1", "");
+			}
+			site.addAddress(b.getAddr());
+			user.addSite(site);
+			site.update(b.getDate());
+			//Invoke method(s) only conditionally.
+			String msg = String.format("user=%s, magisp=%s", user, magisp);
+			log.fine(msg);
+		}
+	}
+
 	@Override
-	public UserList<UserListBean> call(Stream<String> stream) throws Exception {
+	public UserList<UserListBean> call(Stream<String> stream) {
 		stream//.parallel()		// parallel()を使用するとOutOfMemory例外が発生する　=> なぜ?
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
-//				.filter(b -> SESS_START_PATTERN.matcher(b.getMsg()).matches())
 				.filter(b -> Stream.of(SESS_START_PATTERN)
 						// 正規化表現に一致するメッセージのみを処理対象にする
 						.anyMatch(p -> p.matcher(b.getMsg()).matches())
@@ -73,30 +105,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 					UserListSite site = user.getSite(b.getAddr());
 					if (site == null) {
-						SiteListIsp magisp = sitelist.get(b.getAddr());
-						if (magisp == null) {
-							KnownListIsp isp = knownlist.get(b.getAddr());
-							if (isp == null) {
-								addrErrs.add(b.getAddr());
-								return;
-							}
-							site = new UserListSite(isp/*, "0"*/);
-							user.addSite(site);
-							site.update(b.getDate());
-							log.config(String.format("user=%s, isp=%s", user, isp));
-						}
-						else {
-							if (/*b.getRoles() == null || */b.getRoles().length < 2) {
-								site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[0]), "-1", "");
-							}
-							else {
-								site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[1]), "-1", "");
-							}
-							site.addAddress(b.getAddr().toString());
-							user.addSite(site);
-							site.update(b.getDate());
-							log.config(String.format("user=%s, magisp=%s", user, magisp));
-						}
+						sub(b, user);
 					}
 					else {
 						site.update(b.getDate());
@@ -112,38 +121,40 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 		userlist.values().stream()
 			.forEach(user -> {
 				if (user.getSites().isEmpty()) {
-					out.println(new StringBuilder(user.getUserId())
-							.append("\t").append("-")
-							.append("\t").append("-")
-							.append("\t").append("-")
-							.append("\t").append("-1")
-							.append("\t").append("-1")
-							.append("\t").append("-1")
-							.append("\t").append(user.getValidFlag())
-							.append("\t").append("")
-							.append("\t").append("")
-							.append("\t").append("0")
-							.append("\t").append(user.getRevoce())
-							.append("\t").append("0")
-							);
+					out.println(Stream.of(user.getUserId()
+							, "-"
+							, "-"
+							, "-"
+							, "-1"
+							, "-1"
+							, "-1"
+							, user.getValidFlag()
+							, ""
+							, ""
+							, "0"
+							, user.getRevoce()
+							,"0"
+							)
+							.collect(Collectors.joining("\t")));
 				}
 				else {
 					user.getSites().forEach(site ->
-						out.println(new StringBuilder(user.getUserId())
-								.append("\t").append(site.getCountry())
-								.append("\t").append(site.getProjId())
-								.append("\t").append(site.getSiteName())
-								.append("\t").append(site.getProjDelFlag())
-								.append("\t").append(site.getSiteDelFlag())
-								.append("\t").append(site.getUserDelFlag())
-								.append("\t").append(user.getValidFlag())
-								.append("\t").append(site.getFirstDate())
-								.append("\t").append(site.getLastDate())
-								.append("\t").append(site.getCount())
-								.append("\t").append(user.getRevoce())
-								.append("\t").append(user.getTotal())
+						out.println(Stream.of(user.getUserId()
+								, site.getCountry()
+								, site.getProjId()
+								, site.getSiteName()
+								, site.getProjDelFlag()
+								, site.getSiteDelFlag()
+								, site.getUserDelFlag()
+								, user.getValidFlag()
+								, site.getFirstDate()
+								, site.getLastDate()
+								, String.valueOf(site.getCount())
+								, user.getRevoce()
+								, String.valueOf(user.getTotal())
 								)
-					);
+								.collect(Collectors.joining("\t")))
+							);
 				}
 			});
 	}

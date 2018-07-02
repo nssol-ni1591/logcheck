@@ -2,6 +2,7 @@ package logcheck.site;
 
 import java.util.Set;
 
+import logcheck.isp.Isp;
 import logcheck.isp.IspList;
 import logcheck.util.net.NetAddr;
 
@@ -13,6 +14,12 @@ public class SiteListKnownIsp implements SiteListIsp {
 		this.isp = isp;
 	}
 
+	@Override
+	public String getSiteId() {
+		// IspListには対応する属性がない
+		//return null
+		throw new IllegalArgumentException("not impliment");
+	}
 	@Override
 	public String getProjId() {
 		return isp.getName();
@@ -34,14 +41,9 @@ public class SiteListKnownIsp implements SiteListIsp {
 		return isp.getAddress();
 	}
 	@Override
-	public void addAddress(String addr) {
+	public void addAddress(NetAddr addr) {
 		isp.addAddress(addr);
 	}
-
-	public String toString() {
-		return String.format("siteId=%s, projId=%s, del=%s%s", getSiteId(), getProjId(), getSiteDelFlag(), getProjDelFlag());
-	}
-
 	@Override
 	public String getSiteDelFlag() {
 		return "0";
@@ -49,6 +51,11 @@ public class SiteListKnownIsp implements SiteListIsp {
 	@Override
 	public String getProjDelFlag() {
 		return "0";
+	}
+
+	@Override
+	public int compareTo(Isp o) {
+		return isp.compareTo(o);
 	}
 
 }

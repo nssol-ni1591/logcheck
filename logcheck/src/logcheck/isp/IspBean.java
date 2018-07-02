@@ -1,6 +1,6 @@
 package logcheck.isp;
 
-public class IspBean<E> implements Comparable<IspBean<E>> {
+public class IspBean<E> implements Isp {
 
 	private final String name;
 	private final String country;
@@ -8,7 +8,7 @@ public class IspBean<E> implements Comparable<IspBean<E>> {
 
 	public IspBean(String name, String country, E ref) {
 		this.name = name;
-		this.country = country;
+		this.country = country == null ? null : country.toUpperCase();
 		this.ref = ref;
 	}
 
@@ -23,37 +23,52 @@ public class IspBean<E> implements Comparable<IspBean<E>> {
 	}
 
 	@Override
-	public int compareTo(IspBean<E> o) {
-		int rc = country.compareTo(o.getCountry());
-		if (rc != 0) {
-			return rc;
+	public int compareTo(Isp o) {
+		if (o == null) {
+			return -1;
+		}
+
+		if (country == null) {
+			if (o.getCountry() != null) {
+				return 1;
+			}
+		}
+		else {
+			int rc = country.compareTo(o.getCountry());
+			if (rc != 0) {
+				return rc;
+			}
+		}
+		if (name == null) {
+			if (o.getName() != null) {
+				return 1;
+			}
+			else {
+				return 0;
+			}
 		}
 		return name.compareTo(o.getName());
-	}
-	/*
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o != null && this.getClass() == o.getClass()) {
-			@SuppressWarnings("unchecked")
-			IspBean<E> bean = (IspBean<E>)o;
-			return compareTo(bean) == 0;
-		}
-		return false;
 	}
 	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
-	*/
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (o instanceof IspBean<?>) {
+			@SuppressWarnings("unchecked")
+			IspBean<E> b = (IspBean<E>)o;
+			return compareTo(b) == 0;
+		}
+		return false;
+	}
+
 	@Override
 	public String toString() {
 		return name;
 	}
 
-	public String toStringWithAddress() {
-		return toString() + " " + ref.toString();
-	}
 }

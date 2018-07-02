@@ -1,11 +1,11 @@
 package logcheck;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -15,6 +15,7 @@ import logcheck.isp.IspList;
 import logcheck.isp.IspMap;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
+import logcheck.log.AccessLogBean;
 import logcheck.mag.MagList;
 import logcheck.util.net.NetAddr;
 import logcheck.util.weld.WeldWrapper;
@@ -24,25 +25,41 @@ import logcheck.util.weld.WeldWrapper;
  */
 public class Checker3 extends AbstractChecker<Map<String, IspMap<Map<String, Integer>>>> {
 
-	@Inject private Logger log;
-
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-	private static final Pattern[] FAIL_PATTERNS_ALL;
-	static {
-		FAIL_PATTERNS_ALL = new Pattern[FAIL_PATTERNS.length + FAIL_PATTERNS_DUP.length];
-		System.arraycopy(FAIL_PATTERNS, 0, FAIL_PATTERNS_ALL, 0, FAIL_PATTERNS.length);
-		System.arraycopy(FAIL_PATTERNS_DUP, 0, FAIL_PATTERNS_ALL, FAIL_PATTERNS.length, FAIL_PATTERNS_DUP.length);
-	}
-
-	public void init(String...argv) throws Exception {
+	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.knownlist.load(argv[0]);
 		this.maglist.load(argv[1]);
 	}
 
+	private void sub(Map<String, IspMap<Map<String, Integer>>> map,
+			IspList isp, AccessLogBean b, String m)
+	{
+		NetAddr addr = b.getAddr();
+
+		IspMap<Map<String, Integer>> ispmap = map.get(isp.getName());
+		if (ispmap == null) {
+			ispmap = new IspMap<>(isp.getName(), isp.getCountry());
+			map.put(isp.getName(), ispmap);
+		}
+
+		Map<String, Integer> client = ispmap.get(addr);
+		if (client == null) {
+			client = new TreeMap<>();
+			ispmap.put(addr, client);
+		}
+
+		Integer count = client.get(m);
+		if (count == null) {
+			count = Integer.valueOf(0);
+		}
+		count += 1;
+		client.put(m, count);
+	}
+
 	@Override
-	public Map<String, IspMap<Map<String, Integer>>> call(Stream<String> stream) throws Exception {
+	public Map<String, IspMap<Map<String, Integer>>> call(Stream<String> stream) {
 		final Map<String, IspMap<Map<String, Integer>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)
@@ -56,38 +73,17 @@ public class Checker3 extends AbstractChecker<Map<String, IspMap<Map<String, Int
 					String m = rc.isPresent() ? rc.get() : b.getMsg();
 
 					NetAddr addr = b.getAddr();
-					IspList isp = maglist.get(addr);
-					if (isp == null) {
-						isp = knownlist.get(addr);
-					}
-
+					IspList isp = getIsp(addr, maglist, knownlist);
 					if (isp != null) {
-						IspMap<Map<String, Integer>> ispmap = map.get(isp.getName());
-						if (ispmap == null) {
-							ispmap = new IspMap<>(isp.getName(), isp.getCountry());
-							map.put(isp.getName(), ispmap);
-						}
-
-						Map<String, Integer> client = ispmap.get(addr);
-						if (client == null) {
-							client = new TreeMap<>();
-							ispmap.put(addr, client);
-						}
-
-						Integer count = client.get(m);
-						if (count == null) {
-							count = Integer.valueOf(0);
-						}
-						count += 1;
-						client.put(m, count);
-					}
-					else {
-						log.log(Level.WARNING, "unknown ip: addr={0}", addr);
+						sub(map, isp, b, m);
 					}
 				});
 		return map;
 	}
 
+	/*
+	 * ISP > IPアドレス > メッセージ毎に出力する
+	 */
 	@Override
 	public void report(final PrintWriter out, final Map<String, IspMap<Map<String, Integer>>> map) {
 		map.values().forEach(isp -> {

@@ -1,11 +1,13 @@
 package logcheck;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.enterprise.util.AnnotationLiteral;
@@ -34,9 +36,7 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 	@Inject protected KnownList knownlist;
 	@Inject protected MagList maglist;
 
-	@Inject private Logger log;
-
-	public void init(String...argv) throws Exception {
+	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.knownlist.load(argv[0]);
 		this.maglist.load(argv[1]);
 	}
@@ -59,8 +59,9 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 			//同一原因で複数出力されるログは識別のため"（）"を付加する
 			return "(" + rc.get() + ")";
 		}
-
-		Pattern ptn = Pattern.compile("VPN Tunneling: Session started for user with IPv4 address [\\d\\.]+, hostname [\\w\\.-]+");
+		
+		// セッション開始メッセージは集計対象にする
+		Pattern ptn = SESS_START_PATTERN;
 		if (ptn.matcher(b.getMsg()).matches()) {
 			return ptn.toString();
 		}
@@ -68,13 +69,63 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 			// failed が含まれないメッセージは集約する
 			return INFO_SUMMARY_MSG;
 		}
-		log.warning("(Pattern): \"" + b.getMsg() + "\"");
+		ptnErrs.add(b.getMsg());
 		return b.getMsg();
+	}
+
+	private void sub(Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> map,
+			IspList isp, AccessLogBean b, String pattern)
+	{
+		NetAddr addr = b.getAddr();
+
+		Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>> ispmap;
+		Map<NetAddr, Map<String, Map<String, AccessLogSummary>>> addrmap;
+		Map<String, Map<String, AccessLogSummary>> idmap;
+		Map<String, AccessLogSummary> msgmap;
+		AccessLogSummary msg;
+
+		// 国/利用申請 の登録 or 更新
+		ispmap = map.get(isp.getCountry());
+		if (ispmap == null) {
+			ispmap = new TreeMap<>();
+			map.put(isp.getCountry(), ispmap);
+		}
+
+		// ISP名/プロジェクトID の登録 or 更新
+		addrmap = ispmap.get(isp);
+		if (addrmap == null) {
+			addrmap = new TreeMap<>();
+			ispmap.put(isp, addrmap);
+		}
+
+		// アドレスの登録 or 更新
+		idmap = addrmap.get(addr);
+		if (idmap == null) {
+			idmap = new TreeMap<>();
+			addrmap.put(addr, idmap);
+		}
+
+		// ユーザIDの登録 or 更新
+		msgmap = idmap.get(b.getId());
+		if (msgmap == null) {
+			msgmap = new TreeMap<>();
+			idmap.put(b.getId(), msgmap);
+		}
+
+		// パターンの登録 or 更新
+		msg = msgmap.get(pattern);
+		if (msg == null) {
+			msg = new AccessLogSummary(b, pattern);
+			msgmap.put(pattern, msg);
+		}
+		else {
+			msg.update(b);
+		}
 	}
 
 	@Override
 	public Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> call(Stream<String> stream)
-			throws Exception {
+		{
 		final Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> map = new TreeMap<>();
 		stream//.parallel()
 				.filter(AccessLog::test)
@@ -82,54 +133,9 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 				.forEach(b -> {
 					String pattern = getPattern(b);
 					NetAddr addr = b.getAddr();
-					IspList isp = maglist.get(addr);
-					if (isp == null) {
-						isp = knownlist.get(addr);
-					}
-
+					IspList isp = getIsp(addr, maglist, knownlist);
 					if (isp != null) {
-						Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>> ispmap;
-						Map<NetAddr, Map<String, Map<String, AccessLogSummary>>> addrmap;
-						Map<String, Map<String, AccessLogSummary>> idmap;
-						Map<String, AccessLogSummary> msgmap;
-						AccessLogSummary msg;
-
-						ispmap = map.get(isp.getCountry());
-						if (ispmap == null) {
-							ispmap = new TreeMap<>();
-							map.put(isp.getCountry(), ispmap);
-						}
-
-						addrmap = ispmap.get(isp);
-						if (addrmap == null) {
-							addrmap = new TreeMap<>();
-							ispmap.put(isp, addrmap);
-						}
-
-						idmap = addrmap.get(addr);
-						if (idmap == null) {
-							idmap = new TreeMap<>();
-							addrmap.put(addr, idmap);
-						}
-
-						msgmap = idmap.get(b.getId());
-						if (msgmap == null) {
-							msgmap = new TreeMap<>();
-							idmap.put(b.getId(), msgmap);
-						}
-
-						msg = msgmap.get(pattern);
-						if (msg == null) {
-							msg = new AccessLogSummary(b, pattern);
-							msgmap.put(pattern, msg);
-						}
-						else {
-							msg.update(b);
-						}
-
-					}
-					else {
-						addrErrs.add(b.getAddr());
+						sub(map, isp, b, pattern);
 					}
 				});
 		return map;
@@ -146,17 +152,18 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 					idmap.forEach((id, msgmap) -> 
 						msgmap.forEach((pattern, msg) -> 
 							Stream.of(msg.getRoles()).forEach(role -> 
-								out.println(new StringBuilder(country)
-										.append("\t").append(isp.getName())
-										.append("\t").append(addr)
-										.append("\t").append(id)
-										.append("\t").append(pattern)
-										.append("\t").append(role)
-										.append("\t").append(msg.getFirstDate())
-										.append("\t").append(msg.getLastDate())
-										.append("\t").append(msg.getCount())	//　rolesの出力数倍になる
+								out.println(Stream.of(country
+										, isp.getName()
+										, addr.toString()
+										, id
+										, pattern
+										, role
+										, msg.getFirstDate()
+										, msg.getLastDate()
+										, String.valueOf(msg.getCount())	//　rolesの出力数倍になる
 										)
-							)
+										.collect(Collectors.joining("\t")))
+									)
 						)
 					)
 				)

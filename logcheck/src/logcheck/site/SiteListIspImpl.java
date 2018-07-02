@@ -55,17 +55,18 @@ public class SiteListIspImpl extends IspListImpl implements SiteListIsp {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		return super.equals(o);
+	public String toString() {
+		return String.format("siteId=%s, projId=%s, del=%s%s, addrs=[%s]", 
+				getSiteId(), getProjId(), getSiteDelFlag(), getProjDelFlag(), getAddress());
 	}
+	// equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめたい
 	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
 	@Override
-	public String toString() {
-		return String.format("siteId=%s, projId=%s, del=%s%s, addrs=[%s]", 
-				getSiteId(), getProjId(), getSiteDelFlag(), getProjDelFlag(), getAddress());
+	public boolean equals(Object o) {
+		return super.equals(o);
 	}
 
 }

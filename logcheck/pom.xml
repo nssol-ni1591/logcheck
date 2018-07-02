@@ -124,20 +124,50 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-		</dependency>
-		<dependency>
 			<groupId>org.jboss.weld.se</groupId>
-			<artifactId>weld-se-core</artifactId>
-			<version>2.3.5.Final</version>
+			<artifactId>weld-se-shaded</artifactId>
+			<version>3.0.2.Final</version>
 		</dependency>
 		<dependency>
-			<groupId>oracle.jdbc</groupId>
-			<artifactId>oracle-jdbc</artifactId>
-			<version>8.0</version>
+			<groupId>javax.json.bind</groupId>
+			<artifactId>javax.json.bind-api</artifactId>
+			<version>1.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.json</artifactId>
+			<version>1.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>yasson</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derbyclient</artifactId>
+			<version>10.13.1.1</version>
+		</dependency>
+<!-- 
+mvn install:install-file -Dfile=ojdbc14.jar -DgroupId=com.oracle -DartifactId=ojdbc14 -Dversion=10.2.0.4.0 -Dpackaging=jar
+ -->
+ 		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc14</artifactId>
+			<version>10.2.0.4.0</version>
+		</dependency>
+ 		<dependency>
+ 			<groupId>junit</groupId>
+ 			<artifactId>junit</artifactId>
+ 			<version>4.12</version>
+ 			<scope>test</scope>
+ 		</dependency>
+ 		<dependency>
+ 			<groupId>com.github.stefanbirkner</groupId>
+ 			<artifactId>system-rules</artifactId>
+ 			<version>1.18.0</version>
+ 			<scope>test</scope>
+ 		</dependency>
 	</dependencies>
 
 	<!-- 
@@ -146,9 +176,6 @@
 	<profiles>
 		<profile>
 			<id>dev</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<properties>
 				<conf>dev</conf>
 			</properties>
@@ -158,6 +185,15 @@
 			<properties>
 				<conf>jenkins</conf>
 			</properties>
+		</profile>
+		<profile>
+			<id>home</id>
+			<properties>
+				<conf>home</conf>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 		</profile>
 	</profiles>
 </project>

@@ -48,9 +48,6 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 		return isp;
 	}
 	public String[] getRoles() {
-		if (roles == null) {
-			return new String[] { "" };
-		}
 		return roles;
 	}
 
@@ -79,33 +76,46 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 			roles = b.getRoles();
 		}
 	}
-
 	@Override
-	public int compareTo(AccessLogSummary o) {
-		return getRef().compareTo(o.getRef());
+	public int compareTo(AccessLogSummary sum) {
+		if (sum == null) {
+			return -1;
+		}
+
+		int rc = usrId.compareTo(sum.getId());
+		if (rc != 0) {
+			return rc;
+		}
+		rc = addr.compareTo(sum.getAddr());
+		if (rc != 0) {
+			return rc;
+		}
+		if (isp == null) {
+			return sum.getIsp() == null ? 0 : 1;
+		}
+		return isp.compareTo(sum.getIsp());
 	}
 	// equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめたいのだが
-	/*
 	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
+		if (o == null) {
+			return false;
 		}
 		if (o instanceof AccessLogSummary) {
-			AccessLogSummary bean = (AccessLogSummary)o;
-			return compareTo(bean) == 0;
+			AccessLogSummary sum = (AccessLogSummary)o;
+			if (usrId.equals(sum.getId())
+					&& addr.equals(sum.getAddr())) {
+				if (isp == null) {
+					return sum.getIsp() == null;
+				}
+				return isp.equals(sum.getIsp());
+			}
 		}
 		return false;
-	}
-	*/
-	@Override
-	public String toString() {
-		return String.format("[first=%s, last=%s, addr=%s, id=%s, count=%d]",
-				getFirstDate(), getLastDate(), addr.toString(), usrId, getCount());
 	}
 
 }

@@ -12,12 +12,14 @@ public class FwLogBean implements Comparable<FwLogBean> {
 	private final NetAddr dstip;
 	private final int dstport;
 
-	public FwLogBean(String date, String time, String level, String srcip, String srcport, String dstip, String dstport) {
+	public FwLogBean(String date, String time, String level,
+			String srcip, String srcport, String dstip, String dstport)
+	{
 		this.date = date + " " + time;
 		this.level = level;
 		this.srcip = new ClientAddr(srcip);
-		this.srcport = srcport == null ? 0 : Integer.parseInt(srcport);
 		this.dstip = new ClientAddr(dstip);
+		this.srcport = srcport == null ? 0 : Integer.parseInt(srcport);
 		this.dstport = dstport == null ? 0 : Integer.parseInt(dstport);
 	}
 
@@ -43,7 +45,7 @@ public class FwLogBean implements Comparable<FwLogBean> {
 	@Override
 	public int compareTo(FwLogBean bean) {
 		int rc = 0;
-		rc = dstport - bean.getDstPort();
+		rc = bean.getDstPort() - dstport;
 		if (rc != 0) {
 			return rc;
 		}
@@ -57,26 +59,23 @@ public class FwLogBean implements Comparable<FwLogBean> {
 		}
 		return 0;
 	}
-	/*
-	equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめる
-	*/
-	/*
 	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) {
+		if (o == null) {
+			return false;
+		}
+		if (o == this) {
 			return true;
 		}
 		if (o instanceof FwLogBean) {
-			FwLogBean bean = (FwLogBean)o;
-			return compareTo(bean) == 0;
+			return compareTo((FwLogBean)o) == 0;
 		}
 		return false;
 	}
-	*/
 	@Override
 	public String toString() {
 		return String.format("srcip=%s, dstip=%s, dstport=%d", srcip, dstip, dstport);

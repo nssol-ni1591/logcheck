@@ -1,11 +1,11 @@
 package logcheck;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
+import logcheck.log.AccessLogBean;
 import logcheck.mag.MagList;
 import logcheck.util.net.NetAddr;
 import logcheck.util.weld.WeldWrapper;
@@ -23,25 +24,52 @@ import logcheck.util.weld.WeldWrapper;
  */
 public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>>> {
 
-	@Inject private Logger log;
-
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
 
-	private static final Pattern[] FAIL_PATTERNS_ALL;
-	static {
-		FAIL_PATTERNS_ALL = new Pattern[FAIL_PATTERNS.length + FAIL_PATTERNS_DUP.length];
-		System.arraycopy(FAIL_PATTERNS, 0, FAIL_PATTERNS_ALL, 0, FAIL_PATTERNS.length);
-		System.arraycopy(FAIL_PATTERNS_DUP, 0, FAIL_PATTERNS_ALL, FAIL_PATTERNS.length, FAIL_PATTERNS_DUP.length);
-	}
-
-	public void init(String...argv) throws Exception {
+	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.knownlist.load(argv[0]);
 		this.maglist.load(argv[1]);
 	}
 
+	private void sub(Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> map,
+			IspList isp, AccessLogBean b, String msg)
+	{
+		NetAddr addr = b.getAddr();
+
+		Map<IspList, Map<String, Map<NetAddr, Integer>>> ispmap;
+		Map<String, Map<NetAddr, Integer>> msgmap;
+		Map<NetAddr, Integer> addrmap;
+		Integer count;
+
+		ispmap = map.get(isp.getCountry());
+		if (ispmap == null) {
+			ispmap = new TreeMap<>();
+			map.put(isp.getCountry(), ispmap);
+		}
+
+		msgmap = ispmap.get(isp);
+		if (msgmap == null) {
+			msgmap = new TreeMap<>();
+			ispmap.put(isp, msgmap);
+		}
+
+		addrmap = msgmap.get(msg);
+		if (addrmap == null) {
+			addrmap = new TreeMap<>();
+			msgmap.put(msg, addrmap);
+		}
+
+		count = addrmap.get(addr);
+		if (count == null) {
+			count = Integer.valueOf(0);
+		}
+		count += 1;
+		addrmap.put(addr, count);
+	}
+
 	@Override
-	public Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> call(Stream<String> stream) throws Exception {
+	public Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> call(Stream<String> stream) {
 		final Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> map = new TreeMap<>();
 		stream.parallel()
 				.filter(AccessLog::test)
@@ -58,49 +86,17 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 					}
 
 					NetAddr addr = b.getAddr();
-					IspList isp = maglist.get(addr);
-					if (isp == null) {
-						isp = knownlist.get(addr);
-					}
-
+					IspList isp = getIsp(addr, maglist, knownlist);
 					if (isp != null) {
-						Map<IspList, Map<String, Map<NetAddr, Integer>>> ispmap;
-						Map<String, Map<NetAddr, Integer>> msgmap;
-						Map<NetAddr, Integer> addrmap;
-						Integer count;
-
-						ispmap = map.get(isp.getCountry());
-						if (ispmap == null) {
-							ispmap = new TreeMap<>();
-							map.put(isp.getCountry(), ispmap);
-						}
-
-						msgmap = ispmap.get(isp);
-						if (msgmap == null) {
-							msgmap = new TreeMap<>();
-							ispmap.put(isp, msgmap);
-						}
-
-						addrmap = msgmap.get(m);
-						if (addrmap == null) {
-							addrmap = new TreeMap<>();
-							msgmap.put(m, addrmap);
-						}
-
-						count = addrmap.get(addr);
-						if (count == null) {
-							count = Integer.valueOf(0);
-						}
-						count += 1;
-						addrmap.put(addr, count);
-					}
-					else {
-						log.log(Level.WARNING, "unknown ip: addr={0}", addr);
+						sub(map, isp, b, m);
 					}
 				});
 		return map;
 	}
 
+	/*
+	 * 国 > ISP > メッセージ > クライアントIP 毎に出力する
+	 */
 	@Override
 	public void report(final PrintWriter out, final Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> map) {
 		out.println();

@@ -19,24 +19,9 @@ public class AccessLogBean {
 		this.date = date;
 		this.host = host;
 		this.ip = ip;
-		/* 2018/03/08 AccessLog.javaに移した
-		if (id.startsWith("z")) {
-			this.id = "Z" + id.substring(1);
-		}
-		else {
-			this.id = id;
-		}
-		*/
 		this.id = id;
 		this.roles = roles;
 		this.msg = msg;
-
-		if (ip == null) {
-			throw new IllegalArgumentException("ip is null [date=" + date + "]");
-		}
-		if (msg == null) {
-			throw new IllegalArgumentException("msg is null [date=" + date + ", ip=" + ip + "]");
-		}
 	}
 
 	public String getDate() {
@@ -52,16 +37,18 @@ public class AccessLogBean {
 		return id;
 	}
 	public String[] getRoles() {
-		if (roles == null || "".equals(roles)) {
+		if (roles == null || roles.isEmpty()) {
 			return new String[] {
 				// nothing to do
 			};
 		}
 		ArrayList<String> list = new ArrayList<>();
 		Arrays.stream(roles.split(","))
-			.map(role -> role.trim())
+			//.map(role -> role.trim())
+			.map(String::trim)
 			.filter(role -> !role.isEmpty())	// "[, NSSDC Common Role]"みたいなログ対応
-			.forEach(role -> list.add(role))
+			//.forEach(role -> list.add(role))
+			.forEach(list::add)
 			;
 		return list.toArray(new String[list.size()]);
 	}
