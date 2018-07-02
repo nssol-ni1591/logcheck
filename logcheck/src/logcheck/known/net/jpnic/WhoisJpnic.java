@@ -111,6 +111,9 @@ public class WhoisJpnic extends AbstractWhoisServer implements Whois {
 					attrs[0] = netaddr;
 					attrs[1] = name;
 				});
+			if (attrs[0] == null && attrs[1] == null) {
+				return WhoisUtils.format(addr, attrs[0], attrs[1], null);
+			}
 			return WhoisUtils.format(addr, attrs[0], attrs[1], "JP");
 		}
 		finally {
