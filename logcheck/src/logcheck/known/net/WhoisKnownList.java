@@ -29,10 +29,8 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 	@Inject private Logger log;
 	private static final long serialVersionUID = 1L;
 	
-	@SuppressWarnings("unused")
 	@Inject private WhoisTreetCoJp treet;
 	@Inject private WhoisLacnic lacnic;
-	@SuppressWarnings("unused")
 	@Inject private WhoisApnic apnic;
 	@Inject private WhoisJpnic jpnic;
 	@Inject private WhoisArin arin;
@@ -67,7 +65,7 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 		// { apnic, treet, lacnic, arin, jpnic }から選択
 		// 注意：jpnicはレスポンスが遅いので最後
 		// 注意：apnicはレスポンスが遅くなってきた ... why?
-		final Whois[] whois = { arin, lacnic, jpnic };
+		final Whois[] whois = { arin, treet, jpnic, apnic, lacnic };
 
 		// check()結果がfalseの場合、取得したISP情報を一時的に保持するための領域
 		final Map<Whois, KnownListIsp> map = new HashMap<>();
