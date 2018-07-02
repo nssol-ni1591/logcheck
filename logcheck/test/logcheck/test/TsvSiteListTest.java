@@ -65,7 +65,7 @@ public class TsvSiteListTest {
 		assertEquals("match projId", "PRJ_1234", b1.getProjId());
 		assertEquals("match projName", "1234", b1.getProjName());
 		assertEquals("match projSiteName", "SITE_1234", b1.getSiteName());
-		assertEquals("match ip address", "192.168.0.1", b1.getMagIp());
+		assertEquals("match ip address", "192.168.0.1/255.255.255.0", b1.getMagIp());
 	}
 
 }

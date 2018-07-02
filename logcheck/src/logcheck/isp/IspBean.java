@@ -1,6 +1,6 @@
 package logcheck.isp;
 
-public class IspBean<E> implements Comparable<IspBean<E>> {
+public class IspBean<E> implements Isp {
 
 	private final String name;
 	private final String country;
@@ -23,14 +23,29 @@ public class IspBean<E> implements Comparable<IspBean<E>> {
 	}
 
 	@Override
-	public int compareTo(IspBean<E> o) {
+	public int compareTo(Isp o) {
 		if (o == null) {
 			return -1;
 		}
 
-		int rc = country.compareTo(o.getCountry());
-		if (rc != 0) {
-			return rc;
+		if (country == null) {
+			if (o.getCountry() != null) {
+				return 1;
+			}
+		}
+		else {
+			int rc = country.compareTo(o.getCountry());
+			if (rc != 0) {
+				return rc;
+			}
+		}
+		if (name == null) {
+			if (o.getName() != null) {
+				return 1;
+			}
+			else {
+				return 0;
+			}
 		}
 		return name.compareTo(o.getName());
 	}

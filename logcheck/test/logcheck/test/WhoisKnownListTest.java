@@ -80,7 +80,12 @@ public class WhoisKnownListTest {
 
 	@Test
 	public void test01() {
-		getIsp("210.173.87.154");
+		KnownListIsp isp = getIsp("210.173.87.154");	// KDDI CORPORATION
+		assertTrue("equals same instance", isp.equals(isp));
+		assertFalse("equals null", isp.equals(null));
+		System.out.println("hashCode()=" + isp.hashCode());
+
+		getIsp("203.118.54.210");	// Nippon Steel Southeast Asia Pte Ltd
 	}
 	// 親ISPの情報が存在する場合
 	@Test

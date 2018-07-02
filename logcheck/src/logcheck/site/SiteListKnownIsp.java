@@ -2,6 +2,7 @@ package logcheck.site;
 
 import java.util.Set;
 
+import logcheck.isp.Isp;
 import logcheck.isp.IspList;
 import logcheck.util.net.NetAddr;
 
@@ -50,6 +51,11 @@ public class SiteListKnownIsp implements SiteListIsp {
 	@Override
 	public String getProjDelFlag() {
 		return "0";
+	}
+
+	@Override
+	public int compareTo(Isp o) {
+		return isp.compareTo(o);
 	}
 
 }

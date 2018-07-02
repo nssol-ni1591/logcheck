@@ -4,7 +4,7 @@ import logcheck.isp.Isp;
 import logcheck.util.Summary;
 import logcheck.util.net.NetAddr;
 
-public class AccessLogSummary extends Summary<String> {
+public class AccessLogSummary extends Summary<String> implements Comparable<AccessLogSummary> {
 
 	private final NetAddr addr;
 	private final String usrId;
@@ -76,6 +76,26 @@ public class AccessLogSummary extends Summary<String> {
 			roles = b.getRoles();
 		}
 	}
+	@Override
+	public int compareTo(AccessLogSummary sum) {
+		if (sum == null) {
+			return -1;
+		}
+
+		int rc = usrId.compareTo(sum.getId());
+		if (rc != 0) {
+			return rc;
+		}
+		rc = addr.compareTo(sum.getAddr());
+		if (rc != 0) {
+			return rc;
+		}
+		if (isp == null) {
+			return sum.getIsp() == null ? 0 : 1;
+		}
+		return isp.compareTo(sum.getIsp());
+	}
+	// equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめたいのだが
 	@Override
 	public int hashCode() {
 		return super.hashCode();

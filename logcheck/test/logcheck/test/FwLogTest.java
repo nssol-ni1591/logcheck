@@ -2,17 +2,11 @@ package logcheck.test;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Paths;
-import java.util.Map;
-import java.util.TreeMap;
-
-import logcheck.fw.FwLog;
 import logcheck.fw.FwLogBean;
 import logcheck.fw.FwLogSummary;
+import logcheck.isp.Isp;
+import logcheck.isp.IspBean;
+import logcheck.util.net.NetAddr;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -21,7 +15,7 @@ import org.junit.Test;
 public class FwLogTest {
 
 	@BeforeClass
-	public static void beforeClass() throws IOException {
+	public static void beforeClass() {
 		System.err.println("start FwLogTest ...");
 	}
 	@AfterClass
@@ -29,69 +23,17 @@ public class FwLogTest {
 		System.err.println("FwLogTest ... end");
 	}
 
-	private Map<FwLogBean, FwLogSummary> load(String file) throws IOException {
-		System.err.println("FwLogTest.load: loading file=" + file);
-
-		Map<FwLogBean, FwLogSummary> map = new TreeMap<>();
-		Files.lines(Paths.get(file), StandardCharsets.UTF_8)
-			.filter(FwLog::test)
-			.map(FwLog::parse)
-			.forEach(b -> {
-				FwLogSummary prevSummary = null;
-				FwLogSummary summary = map.get(b);
-				if (summary == null) {
-					summary = new FwLogSummary(b);
-					map.put(b, summary);
-				} else {
-					summary.update(b.getDate());
-				}
-
-				summary.getFirstDate();
-				summary.getLastDate();
-				summary.getSrcAddr();
-				summary.getDstAddr();
-				summary.getSrcIsp();
-				summary.getDstIsp();
-				summary.getDstPort();
-				summary.compareTo(prevSummary);
-				summary.toString();
-
-				assertNotNull("bean is null", b.toString());
-				assertFalse("bean#equals(null)", b.equals(null));
-				prevSummary = summary;
-		});
-		return map;
-	}
-
 	@Test
-	public void test01() throws IOException {
-		Map<FwLogBean, FwLogSummary> map = null;
-		map = load(Env.FWLOG);
-		//map.values().forEach(summary -> System.out.println("log: " + summary));
-
-		// 正常動作なので、ログのコレクションが返却されて正常
-		assertFalse(map.isEmpty());
-	}
-
-	@Test(expected = NoSuchFileException.class)
-	public void test02() throws IOException {
-		//Map<FwLogBean, FwLogSummary> map = null;
-		load("a.txt");
-		// 存在しないファイルを指定しているので、例外発生が正常
-	}
-
-	@Test
-	public void test03() {
+	public void test01() {
 		FwLogBean b1 = new FwLogBean("2018-04-12", "00:00:45", "notice", "172.30.90.69", "43692", "128.221.236.246", "443");
-		FwLogBean b2 = new FwLogBean("2018-04-12", "00:00:45", "notice", "172.30.90.69", "43692", "128.221.236.246", "443");
-
-		b1.getDate();
-		b1.getLevel();
-		b1.getSrcIp();
-		b1.getSrcPort();
-		b1.getDstIp();
-		b1.getDstPort();
-		b1.toString();
+		FwLogBean b2 = new FwLogBean("2018-04-13", "00:00:45", "notice", "172.30.90.69", "43692", "128.221.236.246", "443");
+		
+		assertEquals("match level", "notice", b1.getLevel());
+		assertEquals("match SrcIp", "172.30.90.69", b1.getSrcIp().toString());
+		assertEquals("match SrcPort", 43692, b1.getSrcPort());
+		assertEquals("match DstIp", "128.221.236.246", b1.getDstIp().toString());
+		assertEquals("match DstPort", 443, b1.getDstPort());
+		System.out.println("b1: " + b1);
 
 		// equals
 		assertFalse(b1.equals(null));
@@ -125,6 +67,31 @@ public class FwLogTest {
 		b2 = new FwLogBean("2018-04-12", "00:00:45", "notice", "172.30.90.69", "43692", "128.221.236.247", "443");
 		assertTrue(b1.compareTo(b2) > 0);
 		assertFalse(b1.equals(b2));
+	}
+	@Test
+	public void test02() {
+		FwLogBean b1 = new FwLogBean("2018-04-12", "00:00:45", "notice", "172.30.90.69", "43692", "128.221.236.246", "443");
+		
+		Isp isp1 = new IspBean<NetAddr>("ISP1", "JP", new NetAddr("172.30.90.69/24"));
+		Isp isp2 = new IspBean<NetAddr>("ISP2", "JP", new NetAddr("128.221.236.246/24"));
+
+		FwLogSummary sum1 = new FwLogSummary(b1, isp1, isp2);
+		sum1.update("2018-04-30");
+
+		// FWログは過去に流れていくので、update()はfirstDateを更新する
+		assertEquals("match firstDate", "2018-04-30", sum1.getFirstDate());
+		assertEquals("match lastDate", b1.getDate(), sum1.getLastDate());
+		assertEquals("match srcAddr", b1.getSrcIp(), sum1.getSrcAddr());
+		assertEquals("match srcAddr", b1.getDstIp(), sum1.getDstAddr());
+		assertEquals("match srcIsp", isp1, sum1.getSrcIsp());
+		assertEquals("match dstIsp", isp2, sum1.getDstIsp());
+		assertEquals("match dstPort", b1.getDstPort(), sum1.getDstPort());
+
+		assertTrue("compareTo == 0", sum1.compareTo(sum1) == 0);
+
+		assertTrue("equlas self", sum1.equals(sum1));
+		assertFalse("equlas null", sum1.equals(null));
+		System.out.println("hashCode()=" + sum1.hashCode());
 	}
 
 }
