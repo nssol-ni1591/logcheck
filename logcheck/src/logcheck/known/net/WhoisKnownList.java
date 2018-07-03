@@ -24,7 +24,7 @@ import logcheck.util.Constants;
 import logcheck.util.net.NetAddr;
 
 @Alternative
-public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements KnownList, Whois {
+public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements KnownList {
 
 	@Inject private Logger log;
 	private static final long serialVersionUID = 1L;
@@ -35,12 +35,17 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 	@Inject private WhoisJpnic jpnic;
 	@Inject private WhoisArin arin;
 
+	// KnownList
 	@Override
 	public void init() {
 		// No nothing
 	}
 
 	private boolean check(KnownListIsp isp) {
+		if (isp == null) {
+			return false;
+		}
+
 		if (isp.getName() == null) {
 			return false;
 		}
