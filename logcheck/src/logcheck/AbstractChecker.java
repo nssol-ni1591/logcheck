@@ -16,11 +16,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,11 +41,9 @@ import logcheck.util.weld.WeldRunner;
  * 第2引数：インターネット経由接続先一覧
  * 第3引数以降：アクセスログ
  */
-public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
+public abstract class AbstractChecker<T> implements WeldRunner {
 
 	@Inject private Logger log;
-
-	private Stream<String> stream;
 
 	protected final Set<String> projErrs = new TreeSet<>(); 
 	protected final Set<String> userErrs = new TreeSet<>(); 
@@ -199,7 +195,7 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 	}
 
 	// ---- 実装クラスの制御メソッド
-	private T run(String[] files) throws InterruptedException, ExecutionException, IOException {
+	private T run(String[] files) throws InterruptedException {
 		log.log(Level.INFO, "checking from files={0}:", files);
 
 		List<String> f = Arrays.asList(files);
@@ -230,26 +226,20 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 		SequenceInputStream sis = new SequenceInputStream(e);
 		return run(sis);
 	}
-	private T run(InputStream is) throws InterruptedException, ExecutionException {
+	@WithElaps
+	private T run(InputStream is) throws InterruptedException {
 		log.info("checking from InputStream:");
 
-		this.stream = new BufferedReader(new InputStreamReader(is)).lines();
-		return run2();
-	}
-	private T run2() throws InterruptedException, ExecutionException {
-		// 2つのスレッドの実行枠を用意 - ThreadPoolを使ういみはないけれど ...
-		ExecutorService exec = Executors.newFixedThreadPool(2);
+		Stream<String> stream = new BufferedReader(new InputStreamReader(is)).lines();
+		ExecutorService exec = Executors.newSingleThreadExecutor();
 		PrintDot dot = new PrintDot();
 		try {
 			// PrintDotスレッドの実行
 			// Executor.execute(): Runnableスレッド
 			exec.execute(dot);
 
-			// Checkerスレッドの実行
-			// ExecutorService.submit(): implement Callable<T>スレッド
-			Future<T> checker = exec.submit(this);
-			// Checkerスレッドの実行結果の取得
-			return checker.get();
+			// Checkerクラスの実行
+			return call(stream);
 		}
 		finally {
 			// PrintDotスレッドの停止要求
@@ -264,12 +254,6 @@ public abstract class AbstractChecker<T> implements Callable<T>, WeldRunner {
 	// checkerスレッドの実行メソッド
 	protected abstract T call(Stream<String> stream);
 	protected abstract void report(final PrintWriter out, final T map);
-
-	// Callable<T>.call()
-	@Override @WithElaps
-	public T call() {
-		return call(stream);
-	}
 
 	// サブクラス外からの呼び出しを考慮してpublicとする
 	@WithElaps
