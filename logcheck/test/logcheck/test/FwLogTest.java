@@ -34,6 +34,7 @@ public class FwLogTest {
 		assertEquals("match DstIp", "128.221.236.246", b1.getDstIp().toString());
 		assertEquals("match DstPort", 443, b1.getDstPort());
 		System.out.println("b1: " + b1);
+		System.out.println("hashCode()=" + b1.hashCode());
 
 		// equals
 		assertFalse(b1.equals(null));
@@ -76,6 +77,9 @@ public class FwLogTest {
 		Isp isp2 = new IspBean<NetAddr>("ISP2", "JP", new NetAddr("128.221.236.246/24"));
 
 		FwLogSummary sum1 = new FwLogSummary(b1, isp1, isp2);
+		System.out.println("sum1: " + sum1);
+		System.out.println("hashCode()=" + sum1.hashCode());
+
 		sum1.update("2018-04-30");
 
 		// FWログは過去に流れていくので、update()はfirstDateを更新する
@@ -91,7 +95,6 @@ public class FwLogTest {
 
 		assertTrue("equlas self", sum1.equals(sum1));
 		assertFalse("equlas null", sum1.equals(null));
-		System.out.println("hashCode()=" + sum1.hashCode());
 	}
 
 }

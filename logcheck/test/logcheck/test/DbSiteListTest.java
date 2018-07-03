@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import logcheck.site.SiteListIsp;
 import logcheck.site.db.DbSiteList;
+import logcheck.util.net.NetAddr;
 
 
 /*
@@ -42,7 +43,7 @@ public class DbSiteListTest {
 		assertFalse(map.isEmpty());
 		// select count(*) from sas_prj_site_info;
 		assertEquals(884, map.size());
-		
+
 		assertTrue(map.equals(map));
 		assertFalse(map.equals(null));
 		System.out.println("hashCode()=" + map.hashCode());
@@ -66,9 +67,12 @@ public class DbSiteListTest {
 		assertNotNull("site_id='268' not found", isp);
 		String prjId = isp.getProjId();
 		assertEquals("prj_id illegal", "PRJ_SDC_OM", prjId);
+		isp.getName();
+		isp.addAddress(new NetAddr("192.168.0.0/24"));
 
 		System.out.println("isp: " + isp);
 		System.out.println("hashCode()=" + isp.hashCode());
+		assertFalse("compareTo > 0", isp.compareTo(null) > 0);
 	}
 
 }
