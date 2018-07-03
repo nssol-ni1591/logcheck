@@ -12,9 +12,6 @@ public class FwLogSummary extends Summary<FwLogBean> implements Comparable<FwLog
 	private final NetAddr dstAddr;
 	private final int dstPort;
 
-	public FwLogSummary(FwLogBean bean) {
-		this(bean, null, null);
-	}
 	public FwLogSummary(FwLogBean bean, Isp srcIsp, Isp dstIsp) {
 		super(null, bean.getDate());
 		this.srcAddr = bean.getSrcIp();
