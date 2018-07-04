@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -98,35 +99,32 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 		}
 		else {
 			//　サイト情報の取得に失敗した場合：
-			// 一時保管したmapの情報からサイト情報の組み立てを行う
-			// networkアドレスはなしで、Pivotテーブルのグルーピングキーとして使用する
+			// 一時保管したmapのサイト情報から属性ごとに値を取得しサイト情報の組み立てを行う
 			String name = null;
 			String country = null;
 
+			// get country
+			Optional<String> rc4 = map.values().stream()
+					.map(KnownListIsp::getCountry)
+					.filter(Objects::nonNull)
+					.filter(c -> !c.isEmpty())
+					.findFirst();
+
+			if (rc4.isPresent()) {
+				country = rc4.get();
+			}
+			else {
+				country = Constants.UNKNOWN_COUNTRY;
+			}
+
 			// get name
-			Optional<Whois> rc3 = Arrays.stream(whois)
-					.filter(w -> map.get(w) != null)
+			Optional<Whois> rc3 = map.keySet().stream()
 					.filter(w -> map.get(w).getName() != null)
 					.filter(w -> !map.get(w).getName().isEmpty())
 					.findFirst();
 			if (rc3.isPresent()) {
 				name = map.get(rc3.get()).getName();
-			}
-			// get country
-			Optional<Whois> rc4 = Arrays.stream(whois)
-					.filter(w -> map.get(w) != null)
-					.filter(w -> map.get(w).getCountry() != null)
-					.filter(w -> !map.get(w).getCountry().isEmpty())
-					.findFirst();
-			if (rc4.isPresent()) {
-				country = map.get(rc4.get()).getCountry();
-			}
 
-			if (country == null) {
-				country = Constants.UNKNOWN_COUNTRY;
-			}
-
-			if (name != null) {
 				final KnownListIsp isp2 = new KnownListIsp(name, country);
 				// nameが取得できたサイトのアドレスをコピーする
 				map.get(rc3.get()).getAddress().forEach(isp2::addAddress);
