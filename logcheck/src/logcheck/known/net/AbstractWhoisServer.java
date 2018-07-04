@@ -66,14 +66,15 @@ public abstract class AbstractWhoisServer implements Whois {
 			KnownListIsp isp = search(url, addr);
 
 			// 実行結果の確認
+			// ExecutorService.invokeAnyでは結果がエラーの場合の処理を例外で受け取るしかないため
 			if (isp.getName() == null) {
-				throw new NullPointerException("isp.getName() == null");
+				throw new IllegalArgumentException("isp.getName() == null");
 			}
 			if (isp.getCountry() == null) {
-				throw new NullPointerException("isp.getCountry() == null");
+				throw new IllegalArgumentException("isp.getCountry() == null");
 			}
 			if (isp.getAddress().isEmpty()) {
-				throw new NullPointerException("isp.getAddress().isEmpty()");
+				throw new IllegalArgumentException("isp.getAddress().isEmpty()");
 			}
 			return isp;
 		}
