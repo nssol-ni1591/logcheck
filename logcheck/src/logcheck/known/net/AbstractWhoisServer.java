@@ -15,11 +15,13 @@ public abstract class AbstractWhoisServer implements Whois {
 	@Inject protected Logger log;
 
 	protected final String url;
-	
+	protected NetAddr addr;
+
 	public AbstractWhoisServer(String url) {
 		this.url = url;
 	}
 
+	// implement Whois
 	@Override
 	public void init() {
 		if (log == null) {
@@ -30,8 +32,10 @@ public abstract class AbstractWhoisServer implements Whois {
 
 	/*
 	 * 引数のIPアドレスを含むISPを取得する
+	 * for WhoisKnownListTest (JUnit)
 	 */
-	@Override @WithElaps
+	@Override
+	@WithElaps
 	public KnownListIsp get(NetAddr addr) {
 		try {
 			return search(url, addr);
@@ -40,6 +44,43 @@ public abstract class AbstractWhoisServer implements Whois {
 			log.log(Level.WARNING, e.getMessage());
 		}
 		return null;
+	}
+
+	/*
+	 * ISP検索に使用するIPアドレスを設定する
+	 */
+	@Override
+	public void setAddr(NetAddr addr) {
+		this.addr = addr;
+	}
+
+	/*
+	 * WHoisサーバの検索にスレッドを使用する場合のメソッド
+	 * setAddr(NetAddr)と組み合わせて使用する
+	 * @see java.util.concurrent.Callable#call()
+	 */
+	@Override
+	@WithElaps
+	public KnownListIsp call() throws Exception {
+		try {
+			KnownListIsp isp = search(url, addr);
+
+			// 実行結果の確認
+			if (isp.getName() == null) {
+				throw new NullPointerException("isp.getName() == null");
+			}
+			if (isp.getCountry() == null) {
+				throw new NullPointerException("isp.getCountry() == null");
+			}
+			if (isp.getAddress().isEmpty()) {
+				throw new NullPointerException("isp.getAddress().isEmpty()");
+			}
+			return isp;
+		}
+		catch (IOException e) {
+			log.log(Level.WARNING, e.getMessage());
+			throw e;
+		}
 	}
 
 	public abstract KnownListIsp search(String site, NetAddr addr) throws IOException;

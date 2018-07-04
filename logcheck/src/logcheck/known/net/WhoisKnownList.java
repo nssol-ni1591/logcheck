@@ -104,30 +104,29 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 			String country = null;
 
 			// get country
-			Optional<String> rc4 = map.values().stream()
-					.map(KnownListIsp::getCountry)
+			Optional<KnownListIsp> rc4 = map.values().stream()
 					.filter(Objects::nonNull)
-					.filter(c -> !c.isEmpty())
+					.filter(i -> i.getCountry() != null)
 					.findFirst();
-
 			if (rc4.isPresent()) {
-				country = rc4.get();
+				country = rc4.get().getCountry();
 			}
 			else {
 				country = Constants.UNKNOWN_COUNTRY;
 			}
 
 			// get name
-			Optional<Whois> rc3 = map.keySet().stream()
-					.filter(w -> map.get(w).getName() != null)
-					.filter(w -> !map.get(w).getName().isEmpty())
+			Optional<KnownListIsp> rc3 = map.values().stream()
+					.filter(Objects::nonNull)
+					.filter(i -> i.getName() != null)
+					.filter(i -> !i.getName().isEmpty())
 					.findFirst();
 			if (rc3.isPresent()) {
-				name = map.get(rc3.get()).getName();
+				name = rc3.get().getName();
 
 				final KnownListIsp isp2 = new KnownListIsp(name, country);
 				// nameが取得できたサイトのアドレスをコピーする
-				map.get(rc3.get()).getAddress().forEach(isp2::addAddress);
+				rc3.get().getAddress().forEach(isp2::addAddress);
 				isp = isp2;
 			}
 			else {
