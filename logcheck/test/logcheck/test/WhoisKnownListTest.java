@@ -44,6 +44,7 @@ public class WhoisKnownListTest {
 		weld = new Weld();
 		container = weld.initialize();
 		knownlist = container.select(WhoisKnownList.class).get();
+		knownlist.init();
 		whois = null;
 	}
 	@BeforeClass

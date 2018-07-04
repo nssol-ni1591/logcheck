@@ -39,19 +39,24 @@ public class TsvSiteListTest {
 	@Test
 	public void test01() {
 		assertFalse(map.isEmpty());
+		//map.values().forEach(System.out::println);
 	}
 	@Test
 	public void test02() {
-		int ix = 0;
-		for (SiteListIsp isp : map.values()) {
-			isp.getSiteId();
-			isp.getName();
-			isp.getAddress();
-			isp.toString();
-			assertFalse("equals(null) is true", isp.equals(null));
-			assertNotNull("isp#toString is null", isp.getAddress());
-			ix = ix + 1;
-		}
+		SiteListIsp isp = map.get("PRJ_SDC_OM");
+		System.out.println("isp=" + isp);
+
+		System.out.println("isp.getSiteName()=" + isp.getSiteName());
+		System.out.println("isp.getAddress()=" + isp.getAddress());
+
+		assertEquals("match projId", "PRJ_SDC_OM", isp.getProjId());
+		assertEquals("match siteId", "", isp.getSiteId());
+		assertEquals("match projId and name", isp.getProjId(), isp.getName());
+		assertEquals("match projDelFlag", "0", isp.getProjDelFlag());
+		assertEquals("match siteDelFlag", "0", isp.getSiteDelFlag());
+
+		assertFalse("equals(null) is true", isp.equals(null));
+		assertNotNull("isp#toString is null", isp.getAddress());
 	}
 	@Test(expected = IOException.class)
 	public void test03() throws Exception {

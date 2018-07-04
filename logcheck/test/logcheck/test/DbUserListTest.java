@@ -13,6 +13,7 @@ import org.junit.Test;
 import logcheck.user.UserListBean;
 import logcheck.user.UserListSite;
 import logcheck.user.db.DbUserList;
+import logcheck.util.net.NetAddr;
 
 /*
  * VPNクライアント証明書が発行されているユーザの一覧を取得する
@@ -82,9 +83,10 @@ public class DbUserListTest {
 		assertNotNull("site.getProjDelFlag() is not null", site.getProjDelFlag());
 		assertNotNull("site.getProjId() is not null", site.getProjId());
 		assertNotNull("site.getSiteDelFlag() is not null", site.getSiteDelFlag());
-		assertNotNull("site.getSiteId() is not null", site.getSiteId());
+		assertNotNull("site.getSiteId() is not null", site.getSiteId());	// 正常に取得できること
 		assertNotNull("site.getSiteName() is not null", site.getSiteName());
 		assertNotNull("site.getUserDelFlag() is not null", site.getUserDelFlag());
+		site.addAddress(new NetAddr("192.168.0.1/24"));
 		System.out.println("hashCode()=" + site.hashCode());
 	}
 	@Test
