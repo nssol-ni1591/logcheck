@@ -2,7 +2,7 @@ package logcheck.known.net;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -74,7 +74,7 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 		final Whois[] whois = { arin, treet, jpnic, apnic, lacnic };
 
 		// check()結果がfalseの場合、取得したISP情報を一時的に保持するための領域
-		final Map<Whois, KnownListIsp> map = new HashMap<>();
+		final Map<Whois, KnownListIsp> map = new LinkedHashMap<>();
 
 		KnownListIsp isp = null;
 		Optional<Whois> rc2 = Arrays.stream(whois)
