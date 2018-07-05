@@ -9,8 +9,10 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 
+import logcheck.annotations.UseChecker50;
 import logcheck.fw.FwLog;
 import logcheck.fw.FwLogSummary;
 import logcheck.isp.IspList;
@@ -28,11 +30,12 @@ import logcheck.util.weld.WeldWrapper;
  * なお、コレクションへの登録に際し、送信元アドレス、送信先アドレス、送信先ポートが等しいエントリが存在する場合は、
  * 該当エントリのログ回数の加算、初回日時（ログは新しいログ順で登録されているため）を更新する。
  */
+@UseChecker50
 public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 
-	private KnownList knownlist = new PrivateAddrList();
-	@Inject private MagList maglist;
-	@Inject private SdcList sdclist;
+	protected KnownList knownlist = new PrivateAddrList();
+	@Inject protected MagList maglist;
+	@Inject protected SdcList sdclist;
 
 	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.knownlist.load(argv[0]);
@@ -109,7 +112,9 @@ public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper<Checker50>(Checker50.class).weld(3, argv);
+		int rc = new WeldWrapper<Checker50>(Checker50.class).weld(new AnnotationLiteral<UseChecker50>(){
+			private static final long serialVersionUID = 1L;
+		}, 2, argv);
 		System.exit(rc);
 	}
 
