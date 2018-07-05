@@ -90,27 +90,16 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 			ispmap = new TreeMap<>();
 			map.put(isp.getCountry(), ispmap);
 		}
+		//ispmap = map.computeIfAbsent(isp.getCountry(), key -> new TreeMap<>())
 
 		// ISP名/プロジェクトID の登録 or 更新
-		addrmap = ispmap.get(isp);
-		if (addrmap == null) {
-			addrmap = new TreeMap<>();
-			ispmap.put(isp, addrmap);
-		}
+		addrmap = ispmap.computeIfAbsent(isp, key -> new TreeMap<>());
 
 		// アドレスの登録 or 更新
-		idmap = addrmap.get(addr);
-		if (idmap == null) {
-			idmap = new TreeMap<>();
-			addrmap.put(addr, idmap);
-		}
+		idmap = addrmap.computeIfAbsent(addr, key -> new TreeMap<>());
 
 		// ユーザIDの登録 or 更新
-		msgmap = idmap.get(b.getId());
-		if (msgmap == null) {
-			msgmap = new TreeMap<>();
-			idmap.put(b.getId(), msgmap);
-		}
+		msgmap = idmap.computeIfAbsent(b.getId(), key -> new TreeMap<>());
 
 		// パターンの登録 or 更新
 		msg = msgmap.get(pattern);

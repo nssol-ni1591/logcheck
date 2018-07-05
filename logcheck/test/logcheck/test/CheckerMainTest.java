@@ -22,6 +22,7 @@ import org.junit.Test;
 import logcheck.*;
 import logcheck.annotations.UseChecker14;
 import logcheck.annotations.UseChecker23;
+import logcheck.annotations.UseChecker50;
 import logcheck.annotations.UseChecker8;
 import logcheck.util.weld.WeldWrapper;
 
@@ -404,7 +405,9 @@ public class CheckerMainTest {
 	}
 	@Test
 	public void test50() throws IOException {
-		Checker50 application = container.select(Checker50.class).get();
+		Checker50 application = container.select(Checker50.class, new AnnotationLiteral<UseChecker50>(){
+			private static final long serialVersionUID = 1L;
+		}).get();
 		int rc = new WeldWrapper<Checker50>().exec(application, 3, KNOWNLIST, MAGLIST, SDCLIST, FWLOG);
 		assertEquals("CheckerMainTest#test50 ... NG", 0, rc);
 

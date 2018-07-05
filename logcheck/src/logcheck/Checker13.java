@@ -59,11 +59,7 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 							map.put(isp.getCountry(), ispmap);
 						}
 
-						addrmap = ispmap.get(isp);
-						if (addrmap == null) {
-							addrmap = new ArrayList<>();
-							ispmap.put(isp, addrmap);
-						}
+						addrmap = ispmap.computeIfAbsent(isp, key -> new ArrayList<>());
 
 						addrmap.add(b);
 					}

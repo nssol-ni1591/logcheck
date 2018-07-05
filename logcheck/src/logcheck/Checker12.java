@@ -57,12 +57,9 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 							ispmap = new TreeMap<>();
 							map.put(isp.getCountry(), ispmap);
 						}
+						//ispmap = map.computeIfAbsent(isp.getCountry(), key -> new TreeMap<>())
 
-						addrmap = ispmap.get(isp);
-						if (addrmap == null) {
-							addrmap = new TreeMap<>();
-							ispmap.put(isp, addrmap);
-						}
+						addrmap = ispmap.computeIfAbsent(isp, key -> new TreeMap<>());
 
 						msg = addrmap.get(addr);
 						if (msg == null) {

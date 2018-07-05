@@ -3,6 +3,7 @@ package logcheck.isp;
 import java.util.Collection;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.Function;
 
 import logcheck.util.net.NetAddr;
 
@@ -23,6 +24,10 @@ public class IspMap<V> extends IspBean<TreeMap<NetAddr, V>> {
 	}
 	public Collection<V> values() {
 		return getRef().values();
+	}
+	public V computeIfAbsent(NetAddr key,
+			Function<? super NetAddr, ? extends V> mappingFunction) {
+		return getRef().computeIfAbsent(key, mappingFunction);
 	}
 
 }

@@ -52,23 +52,21 @@ public class Checker4 extends AbstractChecker<Map<String ,Map<String, IspMap<Map
 			ispmap = new TreeMap<>();
 			map.put(isp.getCountry(), ispmap);
 		}
+		//ispmap = map.computeIfAbsent(isp.getCountry(), key -> new TreeMap<>())
+		/*
+		ispmap = map.computeIfAbsent(isp.getCountry(), new Function<String, Map<String, IspMap<Map<String, Integer>>>>() {-
+			@Override
+			public Map<String, IspMap<Map<String, Integer>>> apply(String t) {-
+				return new TreeMap<>();-
+			}-
+		});-
+		*/
 
-		addrmap = ispmap.get(isp.getName());
-		if (addrmap == null) {
-			addrmap = new IspMap<>(isp.getName(), isp.getCountry());
-			ispmap.put(isp.getName(), addrmap);
-		}
+		addrmap = ispmap.computeIfAbsent(isp.getName(), key -> new IspMap<>(isp.getName(), isp.getCountry()));
 
-		msgmap = addrmap.get(addr);
-		if (msgmap == null) {
-			msgmap = new TreeMap<>();
-			addrmap.put(addr, msgmap);
-		}
+		msgmap = addrmap.computeIfAbsent(addr, key -> new TreeMap<>());
 
-		count = msgmap.get(m);
-		if (count == null) {
-			count = Integer.valueOf(0);
-		}
+		count = msgmap.computeIfAbsent(m, key -> Integer.valueOf(0));
 		count += 1;
 		msgmap.put(m, count);
 	}
