@@ -23,13 +23,13 @@ public class Checker51 extends Checker50 {
 
 	@Inject private Logger log;
 
-	@Inject private KnownList knownlist;
+	@Inject private KnownList knownlist51;
 
 	private static final String FILENAME = "isplist.txt";
 
 	@Override
 	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
-		super.knownlist = this.knownlist;
+		super.knownlist = this.knownlist51;
 		File file = new File(FILENAME);
 		if (file.exists()) {
 			this.knownlist.load(FILENAME);

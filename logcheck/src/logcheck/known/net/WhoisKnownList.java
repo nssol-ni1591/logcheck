@@ -1,6 +1,7 @@
 package logcheck.known.net;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -149,6 +150,18 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 		list.load(file);
 		list.forEach(this::add);
 		return this;
+	}
+
+	@Override
+	public void store(String file) throws IOException {
+		try (PrintWriter out = new PrintWriter(file, "MS932")) {
+			this.forEach(isp ->
+				isp.getAddress().forEach(addr ->
+					out.printf("%s\t%s\t%s%s", addr.toStringNetwork(), isp.getName(), isp.getCountry(), System.lineSeparator())
+				)
+			);
+			out.flush();
+		}
 	}
 
 	@Override
