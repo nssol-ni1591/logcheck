@@ -1,6 +1,7 @@
 package logcheck.known.net;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -10,7 +11,7 @@ import logcheck.annotations.WithElaps;
 import logcheck.known.KnownListIsp;
 import logcheck.util.net.NetAddr;
 
-public abstract class AbstractWhoisServer {
+public abstract class AbstractWhoisServer implements Callable<KnownListIsp> {
 
 	@Inject protected Logger log;
 

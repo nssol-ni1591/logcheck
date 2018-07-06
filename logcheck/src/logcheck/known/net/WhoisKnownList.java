@@ -58,6 +58,69 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 		return !isp.getAddress().isEmpty();
 	}
 	/*
+	 * JPNICから引数のIPアドレスを含むISPを取得する
+	 */
+	private KnownListIsp getJpnic(NetAddr addr, KnownListIsp isp) {
+		boolean rc = false;
+		if (isp != null) {
+			// ただし、以下のISP名の場合、遅いJPNICを検索しても同じ結果になるので、再検索をskipする
+			final String[] names = { "KDDI CORPORATION", "SoftBank Corp.", "NTT DOCOMO, Inc.", "SO-Net Service", "IIJ Internet" };
+			rc = Stream.of(names)
+					.map(String::toLowerCase)
+					.anyMatch(isp.getName().toLowerCase()::equals)
+					;
+		}
+		if (!rc) {
+			KnownListIsp tmp = jpnic.get(addr);
+			if (check(tmp)) {
+				log.log(Level.INFO, "{0}: addr={1} => name={2}, country={3}, net={4}",
+						new Object[] { jpnic.getName(), addr, tmp.getName(), tmp.getCountry(), tmp.toStringNetwork() });
+				return tmp;
+			}
+		}
+		return isp;
+	}
+	/*
+	 * 正常なISP情報が取得できない場合、
+	 * 一時保管したmapのサイト情報から属性ごとに値を取得しサイト情報の組み立てを行う
+	 */
+	private KnownListIsp buildIsp(NetAddr addr, Map<Whois, KnownListIsp> map) {
+		String name = null;
+		String country = null;
+
+		// get country
+		Optional<KnownListIsp> rc4 = map.values().stream()
+				.filter(Objects::nonNull)
+				.filter(i -> i.getCountry() != null)
+				.findFirst();
+		if (rc4.isPresent()) {
+			country = rc4.get().getCountry();
+		}
+		else {
+			country = Constants.UNKNOWN_COUNTRY;
+		}
+
+		// get name
+		Optional<KnownListIsp> rc3 = map.values().stream()
+				.filter(Objects::nonNull)
+				.filter(i -> i.getName() != null)
+				.filter(i -> !i.getName().isEmpty())
+				.findFirst();
+		if (rc3.isPresent()) {
+			name = rc3.get().getName();
+
+			final KnownListIsp isp2 = new KnownListIsp(name, country);
+			// nameが取得できたサイトのアドレスをコピーする
+			rc3.get().getAddress().forEach(isp2::addAddress);
+			return isp2;
+		}
+		else {
+			// nameの取得ができない場合は、エラー識別のためにnameに検索したアドレスを設定する
+			name = addr.toString();
+			return new KnownListIsp(name, country);
+		}
+	}
+	/*
 	 * 引数のIPアドレスを含むISPを取得する
 	 */
 	@Override
@@ -102,62 +165,14 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 		
 		// ISPの取得に失敗した場合、もしくは、日本のISPの場合はJPNICでの再検索を行う
 		if (isp == null || isp.getCountry() == null || "JP".equals(isp.getCountry())) {
-			boolean rc3 = false;
-			if (isp != null) {
-				// ただし、以下のISP名の場合、遅いJPNICを検索しても同じ結果になるので、再検索をskipする
-				final String[] names = { "KDDI CORPORATION", "SoftBank Corp.", "NTT DOCOMO, Inc.", "SO-Net Service", "IIJ Internet" };
-				rc3 = Stream.of(names)
-						.map(String::toLowerCase)
-						.anyMatch(isp.getName().toLowerCase()::equals)
-						;
-			}
-			if (!rc3) {
-				KnownListIsp tmp = jpnic.get(addr);
-				if (check(tmp)) {
-					isp = tmp;
-					log.log(Level.INFO, "{0}: addr={1} => name={2}, country={3}, net={4}",
-							new Object[] { jpnic.getName(), addr, tmp.getName(), tmp.getCountry(), tmp.toStringNetwork() });
-				}
-			}
+			isp = getJpnic(addr, isp);
 		}
 
+		// 正常なISP情報が取得できなかった場合の処理
 		if (!check(isp)) {
-			// 一時保管したmapのサイト情報から属性ごとに値を取得しサイト情報の組み立てを行う
-			String name = null;
-			String country = null;
-
-			// get country
-			Optional<KnownListIsp> rc4 = map.values().stream()
-					.filter(Objects::nonNull)
-					.filter(i -> i.getCountry() != null)
-					.findFirst();
-			if (rc4.isPresent()) {
-				country = rc4.get().getCountry();
-			}
-			else {
-				country = Constants.UNKNOWN_COUNTRY;
-			}
-
-			// get name
-			Optional<KnownListIsp> rc3 = map.values().stream()
-					.filter(Objects::nonNull)
-					.filter(i -> i.getName() != null)
-					.filter(i -> !i.getName().isEmpty())
-					.findFirst();
-			if (rc3.isPresent()) {
-				name = rc3.get().getName();
-
-				final KnownListIsp isp2 = new KnownListIsp(name, country);
-				// nameが取得できたサイトのアドレスをコピーする
-				rc3.get().getAddress().forEach(isp2::addAddress);
-				isp = isp2;
-			}
-			else {
-				// nameの取得ができない場合は、エラー識別のためにnameに検索したアドレスを設定する
-				name = addr.toString();
-				isp = new KnownListIsp(name, country);
-			}
+			isp = buildIsp(addr, map);
 		}
+
 		// ISP情報を登録する
 		add(isp);
 		return isp;

@@ -1,11 +1,9 @@
 package logcheck.known.net;
 
-import java.util.concurrent.Callable;
-
 import logcheck.known.KnownListIsp;
 import logcheck.util.net.NetAddr;
 
-public interface Whois extends Callable<KnownListIsp> {
+public interface Whois {
 
 	KnownListIsp get(NetAddr addr);
 
