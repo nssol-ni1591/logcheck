@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import logcheck.user.UserListBean;
 import logcheck.user.sslindex.SSLIndexUserList;
 
 
