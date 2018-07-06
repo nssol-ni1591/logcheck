@@ -10,7 +10,7 @@ import logcheck.annotations.WithElaps;
 import logcheck.known.KnownListIsp;
 import logcheck.util.net.NetAddr;
 
-public abstract class AbstractWhoisServer implements Whois {
+public abstract class AbstractWhoisServer {
 
 	@Inject protected Logger log;
 
@@ -22,7 +22,6 @@ public abstract class AbstractWhoisServer implements Whois {
 	}
 
 	// implement Whois
-	@Override
 	public void init() {
 		if (log == null) {
 			// JUnitの場合、logのインスタンスが生成できないため
@@ -34,7 +33,6 @@ public abstract class AbstractWhoisServer implements Whois {
 	 * 引数のIPアドレスを含むISPを取得する
 	 * for WhoisKnownListTest (JUnit)
 	 */
-	@Override
 	@WithElaps
 	public KnownListIsp get(NetAddr addr) {
 		try {
@@ -49,7 +47,6 @@ public abstract class AbstractWhoisServer implements Whois {
 	/*
 	 * ISP検索に使用するIPアドレスを設定する
 	 */
-	@Override
 	public void setAddr(NetAddr addr) {
 		this.addr = addr;
 	}
@@ -59,7 +56,6 @@ public abstract class AbstractWhoisServer implements Whois {
 	 * setAddr(NetAddr)と組み合わせて使用する
 	 * @see java.util.concurrent.Callable#call()
 	 */
-	@Override
 	@WithElaps
 	public KnownListIsp call() throws Exception {
 		try {

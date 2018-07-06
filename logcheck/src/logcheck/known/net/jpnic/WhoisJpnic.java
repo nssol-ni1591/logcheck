@@ -121,4 +121,9 @@ public class WhoisJpnic extends AbstractWhoisServer implements Whois {
 		}
 	}
 
+	@Override
+	public String getName() {
+		return "Jpnic";
+	}
+
 }

@@ -84,4 +84,9 @@ public class WhoisApnic extends AbstractWhoisServer implements Whois {
 		return ret.isPresent() ? map.get(ret.get()) : null;
 	}
 
+	@Override
+	public String getName() {
+		return "Apnic";
+	}
+
 }

@@ -15,4 +15,6 @@ public interface Whois extends Callable<KnownListIsp> {
 	// for Callable<KnownListIsp> implement (Yet!)
 	void setAddr(NetAddr addr);
 
+	String getName();
+
 }
