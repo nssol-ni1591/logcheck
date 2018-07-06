@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
@@ -72,7 +73,7 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 		// { apnic, treet, lacnic, arin, jpnic }から選択
 		// 注意：jpnicはレスポンスが遅いので最後
 		// 注意：apnicはレスポンスが遅くなってきた ... why?
-		final Whois[] whois = { arin, treet, jpnic, apnic, lacnic };
+		final Whois[] whois = { treet, arin, apnic, lacnic };
 
 		// check()結果がfalseの場合、取得したISP情報を一時的に保持するための領域
 		final Map<Whois, KnownListIsp> map = new LinkedHashMap<>();
@@ -84,11 +85,11 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 					KnownListIsp tmp = w.get(addr);
 					map.put(w, tmp);
 					if (tmp == null) {
-						log.log(Level.INFO, "{0}: addr={1} => isp={2}", new Object[] { w.getClass().getSimpleName(), addr, tmp });
+						log.log(Level.INFO, "{0}: addr={1} => isp={2}", new Object[] { w.getName(), addr, tmp });
 						return false;
 					}
 					log.log(Level.INFO, "{0}: addr={1} => name={2}, country={3}, net={4}",
-							new Object[] { w.getClass().getSimpleName(), addr, tmp.getName(), tmp.getCountry(), tmp.toStringNetwork() });
+							new Object[] { w.getName(), addr, tmp.getName(), tmp.getCountry(), tmp.toStringNetwork() });
 					return check(tmp);
 				})
 				.findFirst();
@@ -98,8 +99,29 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 			Whois w = rc2.get();
 			isp = map.get(w);
 		}
-		else {
-			//　サイト情報の取得に失敗した場合：
+		
+		// ISPの取得に失敗した場合、もしくは、日本のISPの場合はJPNICでの再検索を行う
+		if (isp == null || isp.getCountry() == null || "JP".equals(isp.getCountry())) {
+			boolean rc3 = false;
+			if (isp != null) {
+				// ただし、以下のISP名の場合、遅いJPNICを検索しても同じ結果になるので、再検索をskipする
+				final String[] names = { "KDDI CORPORATION", "SoftBank Corp.", "NTT DOCOMO, Inc.", "SO-Net Service", "IIJ Internet" };
+				rc3 = Stream.of(names)
+						.map(String::toLowerCase)
+						.anyMatch(isp.getName().toLowerCase()::equals)
+						;
+			}
+			if (!rc3) {
+				KnownListIsp tmp = jpnic.get(addr);
+				if (check(tmp)) {
+					isp = tmp;
+					log.log(Level.INFO, "{0}: addr={1} => name={2}, country={3}, net={4}",
+							new Object[] { jpnic.getName(), addr, tmp.getName(), tmp.getCountry(), tmp.toStringNetwork() });
+				}
+			}
+		}
+
+		if (!check(isp)) {
 			// 一時保管したmapのサイト情報から属性ごとに値を取得しサイト情報の組み立てを行う
 			String name = null;
 			String country = null;
@@ -136,10 +158,8 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 				isp = new KnownListIsp(name, country);
 			}
 		}
-
-		if (isp != null) {
-			add(isp);
-		}
+		// ISP情報を登録する
+		add(isp);
 		return isp;
 	}
 
