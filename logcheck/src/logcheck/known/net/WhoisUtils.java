@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -50,16 +51,21 @@ public class WhoisUtils {
 
 	/*
 	 * 複数の名称で登録されている組織名、もしくは、分かりづらい組織名の置換
+	 * Pivotテーブルを作成した時のグルーピングはISP名称で行われる（場合もある）ので
 	 */
 	public static KnownListIsp format(NetAddr addr, String netaddr, String ispname, String country) {
 		String name = ispname;
 		if (name != null) {
 			// nameの編集処理を開始する
 
-			// nameが一致するものがあれば置換する
-			String s = map.get(name);
-			if (s != null ) {
-				name = s;
+			// 一致するものから、含むものに変更する
+			final String n = name.toLowerCase();
+			Optional<String> rc = map.keySet().stream()
+					.filter(s -> n.contains(s.toLowerCase()))
+					.map(map::get)
+					.findFirst();
+			if (rc.isPresent()) {
+				name = rc.get();
 			}
 
 			// サイトIDが設定されている場合が多いので、文字の最後が"xxx(...)"の場合、"(...)"を削除する
