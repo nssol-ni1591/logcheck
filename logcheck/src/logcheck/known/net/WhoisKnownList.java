@@ -10,7 +10,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 
 import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
@@ -63,12 +62,8 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 	private KnownListIsp getJpnic(NetAddr addr, KnownListIsp isp) {
 		boolean rc = false;
 		if (isp != null) {
-			// ただし、以下のISP名の場合、遅いJPNICを検索しても同じ結果になるので、再検索をskipする
-			final String[] names = { "KDDI CORPORATION", "SoftBank Corp.", "NTT DOCOMO, Inc.", "SO-Net Service", "IIJ Internet" };
-			rc = Stream.of(names)
-					.map(String::toLowerCase)
-					.anyMatch(isp.getName().toLowerCase()::equals)
-					;
+			// ただし、特定のISP名の場合、遅いJPNICを検索しても同じ結果になるので、再検索をskipする
+			rc = WhoisUtils.isSkipJpnic(isp.getName());
 		}
 		if (!rc) {
 			KnownListIsp tmp = jpnic.get(addr);
