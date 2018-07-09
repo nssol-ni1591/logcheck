@@ -94,7 +94,7 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper<Checker12>(Checker12.class).weld(2, argv);
+		int rc = new WeldWrapper(Checker12.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

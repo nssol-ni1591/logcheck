@@ -128,7 +128,7 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper<Checker6>(Checker6.class).weld(2, argv);
+		int rc = new WeldWrapper(Checker6.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

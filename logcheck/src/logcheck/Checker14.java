@@ -165,7 +165,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper<Checker14>(Checker14.class).weld(new AnnotationLiteral<UseChecker14>() {
+		int rc = new WeldWrapper(Checker14.class).weld(new AnnotationLiteral<UseChecker14>() {
 			private static final long serialVersionUID = 1L;
 		}, 2, argv);
 		System.exit(rc);

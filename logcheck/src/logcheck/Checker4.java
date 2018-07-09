@@ -134,7 +134,7 @@ public class Checker4 extends AbstractChecker<Map<String ,Map<String, IspMap<Map
 	}
 
 	public static void main(String ... argv) {
-		int rc = new WeldWrapper<Checker4>(Checker4.class).weld(2, argv);
+		int rc = new WeldWrapper(Checker4.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

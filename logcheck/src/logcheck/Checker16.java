@@ -58,7 +58,7 @@ public class Checker16 extends Checker14 {
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper<Checker16>(Checker16.class).weld(2, argv);
+		int rc = new WeldWrapper(Checker16.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

@@ -84,7 +84,7 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper<Checker13>(Checker13.class).weld(2, argv);
+		int rc = new WeldWrapper(Checker13.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

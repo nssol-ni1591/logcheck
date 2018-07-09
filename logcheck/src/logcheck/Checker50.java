@@ -112,7 +112,7 @@ public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper<Checker50>(Checker50.class).weld(new AnnotationLiteral<UseChecker50>(){
+		int rc = new WeldWrapper(Checker50.class).weld(new AnnotationLiteral<UseChecker50>(){
 			private static final long serialVersionUID = 1L;
 		}, 2, argv);
 		System.exit(rc);

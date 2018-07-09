@@ -91,7 +91,7 @@ public class Checker3 extends AbstractChecker<Map<String, IspMap<Map<String, Int
 	}
 
 	public static void main(String ... argv) {
-		int rc = new WeldWrapper<Checker3>(Checker3.class).weld(2, argv);
+		int rc = new WeldWrapper(Checker3.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

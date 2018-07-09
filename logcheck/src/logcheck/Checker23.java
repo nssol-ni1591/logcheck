@@ -113,7 +113,7 @@ public class Checker23 extends AbstractChecker<List<AccessLogSummary>> {
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper<Checker23>(Checker23.class).weld(new AnnotationLiteral<UseChecker23>(){
+		int rc = new WeldWrapper(Checker23.class).weld(new AnnotationLiteral<UseChecker23>(){
 			private static final long serialVersionUID = 1L;
 		}, 2, argv);
 		System.exit(rc);

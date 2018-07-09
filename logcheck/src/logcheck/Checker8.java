@@ -161,7 +161,7 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper<Checker8>(Checker8.class).weld(new AnnotationLiteral<UseChecker8>(){
+		int rc = new WeldWrapper(Checker8.class).weld(new AnnotationLiteral<UseChecker8>(){
 			private static final long serialVersionUID = 1L;
 		}, 2, argv);
 		System.exit(rc);

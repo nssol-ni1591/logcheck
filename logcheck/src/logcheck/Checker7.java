@@ -125,7 +125,7 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper<Checker7>(Checker7.class).weld(2, argv);
+		int rc = new WeldWrapper(Checker7.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

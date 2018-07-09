@@ -99,7 +99,7 @@ public class Checker5 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 	}
 
 	public static void main(String ... argv) {
-		int rc = new WeldWrapper<Checker5>(Checker5.class).weld(2, argv);
+		int rc = new WeldWrapper(Checker5.class).weld(2, argv);
 		System.exit(rc);
 	}
 }
