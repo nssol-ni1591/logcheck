@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,17 +15,17 @@ import java.util.stream.Stream;
 import logcheck.annotations.WithElaps;
 import logcheck.util.net.NetAddr;
 
-public class SdcList extends LinkedHashMap<String, SdcListIsp> {
+public class SdcList extends ArrayList<SdcListIsp> {
 
 	private static final long serialVersionUID = 1L;
 	public static final String PATTERN = "(\\d+\\.\\d+\\.\\d+\\.\\d+/?[\\d\\.]*)\t([\\S ]+)\t([\\S ]+)(\t[\\S ]*)?";
 
 	public SdcList() {
-		super(100);
+		super(200);
 	}
 
 	public SdcListIsp get(NetAddr addr) {
-		Optional<SdcListIsp> rc = values().stream()
+		Optional<SdcListIsp> rc = stream()
 				.filter(isp -> isp.within(addr))
 				.findFirst();
 		return rc.isPresent() ? rc.get() : null;
@@ -37,11 +37,8 @@ public class SdcList extends LinkedHashMap<String, SdcListIsp> {
 			input.filter(SdcList::test)
 				.map(SdcList::parse)
 				.forEach(b -> {
-					SdcListIsp isp = get(b.getName());
-					if (isp == null) {
-						isp = new SdcListIsp(b.getName(), b.getType());
-						put(b.getName(), isp);
-					}
+					final SdcListIsp isp = new SdcListIsp(b.getName(), b.getType());
+					add(isp);
 					isp.addAddress(new NetAddr(b.getAddr()));
 				});
 		}
@@ -55,6 +52,7 @@ public class SdcList extends LinkedHashMap<String, SdcListIsp> {
 
 		Pattern p = Pattern.compile(PATTERN);
 		Matcher m = p.matcher(" " + s);		// 1文字目が欠ける対策
+		//Matcher m = p.matcher(s);		// 1文字目が欠ける対策
 		if (m.find(1)) {
 			addr = m.group(1);
 		}
@@ -63,6 +61,10 @@ public class SdcList extends LinkedHashMap<String, SdcListIsp> {
 		}
 		if (m.find(3)) {
 			type = m.group(3);
+		}
+		if (name == null || addr == null || type == null) {
+			Logger.getLogger(SdcList.class.getName())
+				.log(Level.WARNING, "(SdcList): addr={0}, name={1}, type={2}", new Object[] { addr, name, type });
 		}
 		return new SdcListBean(name, addr, type);
 	}
