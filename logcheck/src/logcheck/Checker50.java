@@ -56,8 +56,7 @@ public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 		if (isp != null) {
 			return isp;
 		}
-
-		isp = new IspListImpl(addr.toString(), "社外");
+		isp = new IspListImpl("社外サイト", "社外");
 		return isp;
 	}
 
