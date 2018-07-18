@@ -1,7 +1,6 @@
 package logcheck.test;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import logcheck.sdc.SdcList;
 import logcheck.sdc.SdcListIsp;
@@ -69,37 +68,8 @@ public class SdcListTest {
 	}
 	@Test
 	public void test06() {
-		//Optional<SdcListIsp> rc = map.values().stream()
-		Optional<SdcListIsp> rc = map.stream()
-				.filter(isp -> isp.within(new NetAddr("172.30.76.0/24")))
-				.findFirst();
-		assertTrue(rc.isPresent());
-		SdcListIsp isp = rc.get();
+		SdcListIsp isp = map.get(new NetAddr("172.30.90.65"));
 		System.out.println("isp: " + isp);
-		assertEquals("sub segment", "基幹 軟件：武関(軟件小杉)", isp.getName());
+		//assertEquals("sub segment", "基幹 軟件：武関(軟件小杉)", isp.getName());
 	}
-	/*
-	@Test
-	public void test07() {
-		Optional<SdcListIsp> rc = map.keySet().stream()
-				.map(key -> map.get(key))
-				.filter(isp -> isp.within(new NetAddr("172.30.76.0/24")))
-				.findFirst();
-		assertTrue(rc.isPresent());
-		SdcListIsp isp = rc.get();
-		System.out.println("isp: " + isp);
-		assertEquals("sub segment", "基幹 軟件：武関(軟件小杉)", isp.getName());
-	}
-	@Test
-	public void test08() {
-		Optional<SdcListIsp> rc = map.entrySet().stream()
-				.map(e -> e.getValue())
-				.filter(isp -> isp.within(new NetAddr("172.30.76.0/24")))
-				.findFirst();
-		assertTrue(rc.isPresent());
-		SdcListIsp isp = rc.get();
-		System.out.println("isp: " + isp);
-		assertEquals("sub segment", "基幹 軟件：武関(軟件小杉)", isp.getName());
-	}
-*/
 }
