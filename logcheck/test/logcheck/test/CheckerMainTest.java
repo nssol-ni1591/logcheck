@@ -405,6 +405,7 @@ public class CheckerMainTest {
 	}
 	@Test
 	public void test50() throws IOException {
+		stdout.mute();
 		Checker50 application = container.select(Checker50.class, new AnnotationLiteral<UseChecker50>(){
 			private static final long serialVersionUID = 1L;
 		}).get();
