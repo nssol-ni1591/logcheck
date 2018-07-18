@@ -20,18 +20,12 @@ import logcheck.user.ssl.MappedSSLUserList;
  */
 public class MappedSSLUserListTest {
 
-	private MappedSSLUserList map;
+	private static MappedSSLUserList map;
 
 	@BeforeClass
-	public static void beforeClass() {
+	public static void beforeClass() throws ClassNotFoundException, IOException, SQLException {
 		System.out.println("start MappedSSLUserListTest ...");
-	}
-	@AfterClass
-	public static void afterClass() {
-		System.out.println("MappedSSLUserListTest ... end");
-	}
-	@Before
-	public void before() throws ClassNotFoundException, IOException, SQLException {
+
 		DbSiteList site = new DbSiteList();
 		site.init();
 		site.load(null);
@@ -40,6 +34,13 @@ public class MappedSSLUserListTest {
 		map.init();
 		map.load(Env.SSLINDEX, site);
 		System.out.println("size=" + map.size());
+	}
+	@AfterClass
+	public static void afterClass() {
+		System.out.println("MappedSSLUserListTest ... end");
+	}
+	@Before
+	public void before() throws ClassNotFoundException, IOException, SQLException {
 	}
 	@Test
 	public void test01() {

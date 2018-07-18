@@ -18,11 +18,16 @@ import org.junit.Test;
  */
 public class TsvSiteListTest {
 
-	private TsvSiteList map;
+	private static TsvSiteList map;
 
 	@BeforeClass
-	public static void beforeClass() {
+	public static void beforeClass() throws IOException {
 		System.out.println("start TsvSiteListTest ...");
+
+		map = new TsvSiteList();
+		map.init();
+		map.load(Env.MAGLIST);
+		System.out.println("TsvSiteListTest.test01 size = " + map.size());
 	}
 	@AfterClass
 	public static void afterClass() {
@@ -30,10 +35,6 @@ public class TsvSiteListTest {
 	}
 	@Before
 	public void before() throws IOException {
-		map = new TsvSiteList();
-		map.init();
-		map.load(Env.MAGLIST);
-		System.out.println("TsvSiteListTest.test01 size = " + map.size());
 	}
 
 	@Test

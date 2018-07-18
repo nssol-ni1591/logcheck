@@ -20,11 +20,16 @@ import logcheck.util.net.NetAddr;
  */
 public class DbUserListTest {
 
-	private DbUserList map;
+	private static DbUserList map;
 
 	@BeforeClass
-	public static void beforeClass() {
+	public static void beforeClass() throws ClassNotFoundException, IOException, SQLException {
 		System.out.println("start DbUserListTest ...");
+
+		map = new DbUserList();
+		map.init();
+		map.load(null, null);
+		System.out.println("size=" + map.size());
 	}
 	@AfterClass
 	public static void afterClass() {
@@ -32,10 +37,6 @@ public class DbUserListTest {
 	}
 	@Before
 	public void before() throws ClassNotFoundException, IOException, SQLException {
-		map = new DbUserList();
-		map.init();
-		map.load(null, null);
-		System.out.println("size=" + map.size());
 	}
 	
 	@Test

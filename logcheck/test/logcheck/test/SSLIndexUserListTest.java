@@ -14,11 +14,15 @@ import logcheck.user.sslindex.SSLIndexUserList;
 
 public class SSLIndexUserListTest {
 
-	private SSLIndexUserList map;
+	private static SSLIndexUserList map;
 
 	@BeforeClass
-	public static void beforeClass() {
+	public static void beforeClass() throws IOException {
 		System.out.println("start SSLIndexUserListTest ...");
+
+		map = new SSLIndexUserList();
+		map = map.load(Env.SSLINDEX, null);
+		System.out.println("size=" + map.size());
 	}
 	@AfterClass
 	public static void afterClass() {
@@ -26,9 +30,6 @@ public class SSLIndexUserListTest {
 	}
 	@Before
 	public void before() throws IOException {
-		map = new SSLIndexUserList();
-		map = map.load(Env.SSLINDEX, null);
-		System.out.println("size=" + map.size());
 	}
 
 	@Test

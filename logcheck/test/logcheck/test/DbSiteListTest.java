@@ -20,11 +20,16 @@ import logcheck.util.net.NetAddr;
  */
 public class DbSiteListTest {
 
-	private DbSiteList map;
+	private static DbSiteList map;
 
 	@BeforeClass
-	public static void beforeClass() {
+	public static void beforeClass() throws ClassNotFoundException, IOException, SQLException {
 		System.out.println("start DbSiteListTest ...");
+
+		map = new DbSiteList();
+		map.init();
+		map.load(null);
+		System.out.println("size=" + map.size());
 	}
 	@AfterClass
 	public static void afterClass() {
@@ -32,10 +37,6 @@ public class DbSiteListTest {
 	}
 	@Before
 	public void before() throws ClassNotFoundException, IOException, SQLException {
-		map = new DbSiteList();
-		map.init();
-		map.load(null);
-		System.out.println("size=" + map.size());
 	}
 
 	@Test

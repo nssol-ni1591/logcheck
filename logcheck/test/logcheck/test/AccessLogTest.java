@@ -28,8 +28,8 @@ public class AccessLogTest {
 	private static WeldContainer container;
 	private static Weld weld;
 
-	private AccessLog test;
-	private Map<String, AccessLogSummary> map;
+	private static AccessLog test;
+	private static Map<String, AccessLogSummary> map;
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -37,6 +37,10 @@ public class AccessLogTest {
 
 		weld = new Weld();
 		container = weld.initialize();
+
+		test = container.select(AccessLog.class).get();
+		map = test.load(Env.VPNLOG);
+		System.out.println("size=" + map.size());
 	}
 	@AfterClass
 	public static void afterClass() {
@@ -47,9 +51,6 @@ public class AccessLogTest {
 
 	@Before
 	public void before() {
-		test = container.select(AccessLog.class).get();
-		map = test.load(Env.VPNLOG);
-		System.out.println("size=" + map.size());
 	}
 	@After
 	public void after() {

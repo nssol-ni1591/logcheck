@@ -25,11 +25,17 @@ import logcheck.known.tsv.TsvKnownList;
  */
 public class TsvKnownListTest {
 
-	private KnownList map;
+	private static KnownList map;
 
 	@BeforeClass
-	public static void beforeClass() {
+	public static void beforeClass() throws IOException {
 		System.out.println("start TsvKnownListTest ...");
+
+		// TsvKnownList はAlternativeによりWeld環境では使用できない?
+		map = new TsvKnownList();
+		map.init();
+		map.load(Env.KNOWNLIST);
+		System.out.println("TsvKnownListTest.test01: size=" + map.size());
 	}
 	@AfterClass
 	public static void afterClass() {
@@ -37,11 +43,6 @@ public class TsvKnownListTest {
 	}
 	@Before
 	public void before() throws IOException {
-		// TsvKnownList はAlternativeによりWeld環境では使用できない?
-		map = new TsvKnownList();
-		map.init();
-		map.load(Env.KNOWNLIST);
-		System.out.println("TsvKnownListTest.test01: size=" + map.size());
 	}
 
 	@Test
