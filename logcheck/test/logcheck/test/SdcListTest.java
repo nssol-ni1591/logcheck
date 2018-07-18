@@ -55,4 +55,15 @@ public class SdcListTest {
 		SdcList map = new SdcList();
 		map.load("Foo");
 	}
+
+	@Test
+	public void test04() {
+		SdcListIsp isp = map.get(new NetAddr("172.30.76.0/24"));
+		System.out.println("isp: " + isp);
+	}
+	@Test
+	public void test05() {
+		map.values().forEach(System.out::println);
+	}
+
 }
