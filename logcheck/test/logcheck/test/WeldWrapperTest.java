@@ -117,20 +117,17 @@ public class WeldWrapperTest {
 
 		@Override
 		public void init(String... argv) throws IOException, ClassNotFoundException, SQLException {
-			// TODO Auto-generated method stub
-			
+			// Do nothing
 		}
 
 		@Override
 		protected String call(Stream<String> stream) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
 		protected void report(PrintWriter out, String map) {
-			// TODO Auto-generated method stub
-			
+			// Do nothing
 		}
 
 	}
