@@ -1,7 +1,9 @@
 package logcheck.util.net;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class NetAddr implements Comparable<NetAddr> {
 
@@ -332,9 +334,8 @@ public class NetAddr implements Comparable<NetAddr> {
 		return sb.toString();
 	}
 
-	private String toIpaddr(int[] a) {
-		String d = ".";
-		return new StringBuilder().append(a[0]).append(d).append(a[1]).append(d).append(a[2]).append(d).append(a[3]).toString();
+	protected String toIpaddr(int[] a) {
+		return Arrays.stream(a).mapToObj(String::valueOf).collect(Collectors.joining("."));
 	}
 
 }
