@@ -335,7 +335,7 @@ public class NetAddr implements Comparable<NetAddr> {
 	}
 
 	protected String toIpaddr(int[] a) {
-		//この実装が一番優秀
+		//この実装が一番理解しやすい
 		return Arrays.stream(a).mapToObj(String::valueOf).collect(Collectors.joining("."));
 		/* 次席
 		return Arrays.stream(a).collect(
