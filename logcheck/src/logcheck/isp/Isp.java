@@ -2,7 +2,7 @@ package logcheck.isp;
 
 import logcheck.util.net.NetAddr;
 
-public interface Isp extends Comparable<Isp> {
+public interface Isp {
 
 	String getName();
 

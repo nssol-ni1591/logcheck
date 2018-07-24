@@ -4,7 +4,7 @@ import java.util.Set;
 
 import logcheck.util.net.NetAddr;
 
-public interface IspList extends Isp {
+public interface IspList extends Isp, Comparable<IspList> {
 
 	Set<NetAddr> getAddress();
 

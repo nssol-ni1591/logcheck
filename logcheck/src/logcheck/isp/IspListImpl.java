@@ -25,4 +25,48 @@ public class IspListImpl extends IspBean<Set<NetAddr>> implements IspList {
 		return set;
 	}
 
+	@Override
+	public int compareTo(IspList o) {
+		if (o == null) {
+			return -1;
+		}
+		if (getCountry() == null) {
+			if (o.getCountry() != null) {
+				return 1;
+			}
+		}
+		else {
+			int rc = getCountry().compareTo(o.getCountry());
+			if (rc != 0) {
+				return rc;
+			}
+		}
+		if (getName() == null) {
+			if (o.getName() != null) {
+				return 1;
+			}
+		}
+		else {
+			int rc = getName().compareTo(o.getName());
+			if (rc != 0) {
+				return rc;
+			}
+		}
+		return 0;
+	}
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (o instanceof IspList) {
+			return compareTo((IspList)o) == 0;
+		}
+		return false;
+	}
+
 }

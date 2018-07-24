@@ -1,5 +1,6 @@
 package logcheck.sdc;
 
+import logcheck.isp.IspList;
 import logcheck.isp.IspListImpl;
 import logcheck.util.net.NetAddr;
 
@@ -46,8 +47,8 @@ public class SdcListIsp extends IspListImpl {
 		if (netName == null) {
 			return super.equals(o);
 		}
-		if (o instanceof IspListImpl) {
-			return netName.equals(((IspListImpl) o).getName()) && super.equals(o);
+		if (o instanceof IspList) {
+			return netName.equals(((IspList) o).getName()) && super.equals(o);
 		}
 		return false;
 	}

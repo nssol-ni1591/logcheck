@@ -126,6 +126,7 @@ public class WhoisKnownListTest {
 			assertEquals(isp1.getAddress(), isp2.getAddress());
 		}
 	}
+	
 	// ネットワークアドレスが異なる同じISPの名称が一致すること
 	@Test
 	public void test04() {
