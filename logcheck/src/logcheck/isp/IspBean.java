@@ -8,7 +8,13 @@ public class IspBean<E> implements Isp {
 
 	public IspBean(String name, String country, E ref) {
 		this.name = name;
-		this.country = country == null ? null : country.toUpperCase();
+		//this.country = country == null ? null : (country.length() == 2 ? country.toUpperCase() : country)
+		if (country == null || country.length() != 2) {
+			this.country = country;
+		}
+		else {
+			this.country = country.toUpperCase();
+		}
 		this.ref = ref;
 	}
 
