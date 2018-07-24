@@ -43,7 +43,7 @@ public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 		this.sdclist.load(argv[2]);
 	}
 
-	private IspList getIspList(NetAddr addr) {
+	protected IspList getIspList(NetAddr addr) {
 		IspList isp = sdclist.get(addr);
 		if (isp != null) {
 			return isp;

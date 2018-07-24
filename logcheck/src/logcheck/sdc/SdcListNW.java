@@ -6,51 +6,58 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import logcheck.annotations.UseSdcListNW;
 import logcheck.annotations.WithElaps;
+import logcheck.util.net.ClientAddr;
 import logcheck.util.net.NetAddr;
 
 /*
- * Checker50のsdclistの対象をNetworkアドレスに限定しました.
- * つまり、ホスト（ネットマスク32bit）の定義はエラーとしてコンソールに出力される.
+ * Checker50のsdclistの対象をNetworkアドレスに限定した.
  */
 @UseSdcListNW
 public class SdcListNW extends SdcList {
 
 	private static final long serialVersionUID = 1L;
-	public static final String PATTERN = "(\\d+\\.\\d+\\.\\d+\\.\\d+/[\\d\\.]+)\t([\\S ]+)\t([\\S ]+)(\t[\\S ]*)?";
 
+	@Override
 	@WithElaps
 	public SdcList load(String file) throws IOException {
+		SdcList isps = new SdcList();
 		try (Stream<String> input = Files.lines(Paths.get(file), Charset.forName("MS932"))) {
-			input.filter(SdcListNW::test)
+			input.filter(SdcList::test)
 				.map(SdcList::parse)
 				.forEach(b -> {
 					final SdcListIsp isp = new SdcListIsp(b.getName(), b.getType());
-					add(isp);
-					isp.addAddress(new NetAddr(b.getAddr()));
+
+					if (!b.getAddr().contains("/")) {
+						isp.addAddress(new ClientAddr(b.getAddr()));
+						this.add(isp);
+					}
+					else {
+						isp.addAddress(new NetAddr(b.getAddr()));
+						isps.add(isp);
+					}
 				});
 		}
+		// hostが所属するnetworkが存在する場合はNW名を設定する
+		// なぜならば、hostのnameにはホスト名が設定されているため
+		this.stream()
+			.forEach(host -> 
+				host.getAddress().stream()
+					.forEach(addr -> {
+						SdcListIsp isp = isps.get(addr);
+						if (isp == null) {
+							Logger.getLogger(SdcListNW.class.getName()).log(Level.WARNING, "(SdcList): not foun isp (isp={0})", isp);
+						}
+						else {
+							host.setName(isp.getName());
+						}
+					})
+			);
+		isps.stream().forEach(this::add);
 		return this;
-	}
-
-	public static boolean test(String s) {
-		if (s.startsWith("#")) {
-			return false;
-		}
-
-		Pattern p = Pattern.compile(PATTERN);
-		Matcher m = p.matcher(s);
-		boolean rc = m.find();
-		if (!rc) {
-			// JUnitの場合、logのインスタンスが生成できないため
-			Logger.getLogger(SdcListNW.class.getName()).log(Level.WARNING, "(SdcList): \"{0}\"", s);
-		}
-		return rc;
 	}
 
 }

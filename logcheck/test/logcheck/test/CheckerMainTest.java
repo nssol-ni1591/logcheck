@@ -438,5 +438,21 @@ public class CheckerMainTest {
 		exit.expectSystemExitWithStatus(2);
 		Checker51.main(KNOWNLIST);
 	}
+	@Test
+	public void test52() throws IOException {
+		Checker52 application = container.select(Checker52.class).get();
+		int rc = new WeldWrapper().exec(application, 3, KNOWNLIST, MAGLIST, SDCLIST, FWLOG);
+		assertEquals("CheckerMainTest#test52 ... NG", 0, rc);
+
+		BufferedReader br = new BufferedReader(new StringReader(stdout.getLog()));
+		long count = br.lines().count();
+		br.close();
+		System.out.println("count=" + count);
+		assertEquals("The number output line", 2813, count);
+
+		// main（）実行とusageメッセージ出力
+		exit.expectSystemExitWithStatus(2);
+		Checker51.main(KNOWNLIST);
+	}
 
 }
