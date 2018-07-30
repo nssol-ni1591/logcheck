@@ -60,6 +60,13 @@ public class SdcListTest {
 		SdcListIsp isp = map.get(new NetAddr("172.30.76.0/24"));
 		System.out.println("isp: " + isp);
 		assertEquals("sub segment", "基幹 軟件：武関(軟件小杉)", isp.getName());
+
+		SdcListIsp isp2 = map.get(new NetAddr("172.30.90.65"));
+		System.out.println("isp: " + isp);
+		assertEquals("isp1 and ips1", isp, isp);
+		assertEquals("isp2 and ips2", isp2, isp2);
+		assertNotEquals("isp1 and ips2", isp, isp2);
+		assertNotEquals("isp1 and abc", isp, "abc");
 	}
 	//@Test
 	public void test05() {

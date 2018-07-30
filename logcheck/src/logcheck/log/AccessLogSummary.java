@@ -90,10 +90,14 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 		if (rc != 0) {
 			return rc;
 		}
-		if (isp == null) {
-			return sum.getIsp() == null ? 0 : 1;
-		}
-		return isp.compareTo(sum.getIsp());
+		//ispにはaddrに一致するISP情報が設定されているはずなのでispの比較は不要
+		return 0;
+		/*
+		if- (isp == null) {	-
+			return sum.getIsp() == null ? 0 : 1;	-
+		}	-
+		return isp.compareTo(sum.getIsp());	-
+		*/
 	}
 	// equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめたいのだが
 	@Override

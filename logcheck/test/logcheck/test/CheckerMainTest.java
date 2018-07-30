@@ -452,7 +452,7 @@ public class CheckerMainTest {
 
 		// main（）実行とusageメッセージ出力
 		exit.expectSystemExitWithStatus(2);
-		Checker51.main(KNOWNLIST);
+		Checker52.main(KNOWNLIST);
 	}
 
 }
