@@ -23,6 +23,18 @@ import logcheck.util.weld.WeldWrapper;
 
 /*
  * ISP > IPアドレス > メッセージ毎にログ数を集計する
+ * 
+ * Checker3bと比較して
+ * (1)groupingByを見やすくするためにLogWrapperを追加した
+ * (2)lambda式を使う
+ * (3)groupingBy()ではMapに属性を持たせる仕組みはないのでMapのkeyに属性を持たせた
+ * 
+ * ちなみに、実現したかったこと：　IspMap2用のCollectorを用意したい
+ * (1)下段のCollectorとのつなぎは同実装すればよいのか
+ * (2)可能ならば、IspMap2の属性を設定するにはどうすればよいのか？
+ * 
+ * => Collector.of(...)が提供するのは、終端のtoMap()とかtoList()に対するもので、
+ * 中間のgroupingByに対するものではない。ということで諦めた
  */
 public class Checker3c extends AbstractChecker<Map<String, IspMap2<Map<String, Integer>>>> {
 
@@ -37,7 +49,7 @@ public class Checker3c extends AbstractChecker<Map<String, IspMap2<Map<String, I
 	@Override
 	public Map<String, IspMap2<Map<String, Integer>>> call(Stream<String> stream) {
 		return 
-			stream//.parallel()
+			stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
 				.map(LogWrapper::new)
@@ -117,16 +129,13 @@ public class Checker3c extends AbstractChecker<Map<String, IspMap2<Map<String, I
 	 */
 	@Override
 	public void report(final PrintWriter out, final Map<String, IspMap2<Map<String, Integer>>> map) {
-		//map.values().forEach(isp -> {
-		map.forEach((name, isp) -> {
+		map.forEach((key, isp) -> {
 			out.println();
-			out.println(name + (isp.getCountry() == null ? "" : " (" + isp.getCountry() + ")") + " : ");
+			out.println(key);
 			isp.keySet().forEach(addr -> {
 				Map<String, Integer> msgs = isp.get(addr);
 				out.println("\t" + addr + " : ");
-				msgs.keySet().forEach(msg -> 
-					out.println("\t\t[ " + msg + " ] : " + msgs.get(msg))
-				);
+				msgs.keySet().forEach(msg -> out.println("\t\t[ " + msg + " ] : " + msgs.get(msg)));
 			});
 		});
 		out.println();

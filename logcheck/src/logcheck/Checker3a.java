@@ -44,9 +44,8 @@ public class Checker3a extends AbstractChecker<Map<String, IspMap<Map<String, In
 
 	@Override
 	public Map<String, IspMap<Map<String, Integer>>> call(Stream<String> stream) {
-		//final Map<String, IspMap<Map<String, Integer>>> map = new TreeMap<>()
 		return 
-			stream //.parallel()
+			stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
 				.collect(Collectors.groupingBy(

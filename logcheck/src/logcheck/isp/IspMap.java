@@ -6,9 +6,10 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
 
+import com.sun.istack.internal.NotNull;
+
 import logcheck.util.net.NetAddr;
 
-//public class IspMap<V> extends IspBean<TreeMap<NetAddr, V>> {
 public class IspMap<V> implements Isp {
 
 	private String name;
@@ -18,12 +19,12 @@ public class IspMap<V> implements Isp {
 	public IspMap() {
 		this.ref = new TreeMap<>();
 	}
-	public IspMap(String name, String country) {
+	public IspMap(@NotNull String name, @NotNull String country) {
 		this.name = name;
 		this.country = country;
 		this.ref = new TreeMap<>();
 	}
-	
+
 	private Map<NetAddr, V> getRef() {
 		return ref;
 	}

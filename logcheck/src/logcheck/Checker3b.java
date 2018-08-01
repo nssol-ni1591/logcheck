@@ -12,6 +12,8 @@ import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -32,6 +34,8 @@ import logcheck.util.weld.WeldWrapper;
  * ISP > IPアドレス > メッセージ毎にログ数を集計する
  */
 public class Checker3b extends AbstractChecker<Map<String, IspMap<Map<String, Integer>>>> {
+
+	@Inject private Logger log;
 
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
@@ -92,15 +96,15 @@ public class Checker3b extends AbstractChecker<Map<String, IspMap<Map<String, In
 							public BinaryOperator<IspMap<Map<String, Integer>>> combiner() {
 								return (t, ispmap) -> {
 									// 使用されないらしい ... A, Tが等しいからか？
-									System.out.println("called combiner");
+									log.log(Level.SEVERE, "called combiner");
 									return null;
 								};
 							}
 
 							@Override
 							public Function<IspMap<Map<String, Integer>>, IspMap<Map<String, Integer>>> finisher() {
-								//System.out.println("called finisher")
 								// => 起動時に1回だけ呼び出される
+								log.log(Level.SEVERE, "called finisher");
 								return t -> t;
 							}
 

@@ -1,6 +1,9 @@
 package logcheck.isp;
 
+import java.util.Objects;
 import java.util.TreeMap;
+
+import com.sun.istack.internal.NotNull;
 
 import logcheck.util.net.NetAddr;
 
@@ -34,4 +37,21 @@ public class IspMap2<V> extends TreeMap<NetAddr, V> implements Isp {
 		this.country = country;
 	}
 
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+	@Override
+	public boolean equals(@NotNull Object o) {
+		if (o instanceof IspMap2) {
+			IspMap2<?> map = (IspMap2<?>)o;
+			if (!Objects.equals(country, map.getCountry())) {
+				return false;
+			}
+			if (!Objects.equals(name, map.getName())) {
+				return false;
+			}
+		}
+		return super.equals(o);
+	}
 }
