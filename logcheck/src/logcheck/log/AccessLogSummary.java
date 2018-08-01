@@ -76,6 +76,12 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 			roles = b.getRoles();
 		}
 	}
+	public synchronized void update(AccessLogSummary sum) {
+		super.update(sum.getFirstDate());
+		if (sum.getRoles() != null) {
+			roles = sum.getRoles();
+		}
+	}
 	@Override
 	public int compareTo(AccessLogSummary sum) {
 		if (sum == null) {
