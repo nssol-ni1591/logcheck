@@ -1,6 +1,7 @@
 package logcheck.util.net;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -21,9 +22,7 @@ public class NetAddr implements Comparable<NetAddr> {
 		this.netmask = netmask(network, brdcast);
 	}
 	public NetAddr(String addr, String netaddr) {
-		if (netaddr == null) {
-			throw new IllegalArgumentException("network address is null");
-		}
+		Objects.requireNonNull(netaddr);
 
 		String[] array = netaddr.split("-");
 		if (array.length == 2) {
@@ -206,9 +205,8 @@ public class NetAddr implements Comparable<NetAddr> {
 
 	// IPアドレスの型変換
 	private int[] address(String s) {
-		if (s == null) {
-			throw new IllegalArgumentException("format error: addr=null");
-		}
+		Objects.requireNonNull(s);
+
 		String[] s1 = s.split("\\.");
 		if (s1.length > 4) {
 			throw new IllegalArgumentException("format error: addr=" + s + ", len=" + s1.length);
@@ -222,9 +220,7 @@ public class NetAddr implements Comparable<NetAddr> {
 
 
 	public int compareTo(NetAddr another) {
-		if (another == null) {
-			return -1;
-		}
+		Objects.requireNonNull(another);
 
 		int[] addr = another.getNetworkAddr();
 		for (int ix = 0; ix < 4; ix++) {
@@ -246,9 +242,8 @@ public class NetAddr implements Comparable<NetAddr> {
 	}
 	@Override
 	public boolean equals(Object another) {
-		if (another == null) {
-			return false;
-		}
+		Objects.requireNonNull(another);
+
 		if (another == this) {
 			return true;
 		}
@@ -262,9 +257,7 @@ public class NetAddr implements Comparable<NetAddr> {
 	}
 
 	public boolean within(NetAddr another) {
-		if (another == null) {
-			return false;
-		}
+		Objects.requireNonNull(another);
 
 		int[] addr = another.getNetworkAddr();
 		// 多分、0.0.0.0 => 非固定 のチェックは行わなくても大丈夫

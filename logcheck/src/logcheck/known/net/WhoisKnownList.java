@@ -44,9 +44,7 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 	}
 
 	private boolean check(KnownListIsp isp) {
-		if (isp == null) {
-			return false;
-		}
+		Objects.requireNonNull(isp);
 
 		if (isp.getName() == null) {
 			return false;

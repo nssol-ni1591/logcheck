@@ -1,5 +1,7 @@
 package logcheck.isp;
 
+import java.util.Objects;
+
 public class IspBean<E> implements Isp {
 
 	private final String name;
@@ -7,14 +9,11 @@ public class IspBean<E> implements Isp {
 	private final E ref;
 
 	public IspBean(String name, String country, E ref) {
+		Objects.requireNonNull(name);
+		Objects.requireNonNull(country);
+
 		this.name = name;
-		//this.country = country == null ? null : (country.length() == 2 ? country.toUpperCase() : country)
-		if (country == null || country.length() != 2) {
-			this.country = country;
-		}
-		else {
-			this.country = country.toUpperCase();
-		}
+		this.country = country.length() != 2 ? country : country.toUpperCase();
 		this.ref = ref;
 	}
 

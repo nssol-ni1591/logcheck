@@ -1,5 +1,7 @@
 package logcheck.log;
 
+import java.util.Objects;
+
 import logcheck.isp.Isp;
 import logcheck.util.Summary;
 import logcheck.util.net.NetAddr;
@@ -84,15 +86,13 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 	}
 	@Override
 	public int compareTo(AccessLogSummary sum) {
-		if (sum == null) {
-			return -1;
-		}
+		Objects.requireNonNull(sum);
 
-		int rc = usrId.compareTo(sum.getId());
+		int rc = Objects.compare(usrId, sum.getId(), (o1, o2) -> o1.compareTo(o2));
 		if (rc != 0) {
 			return rc;
 		}
-		rc = addr.compareTo(sum.getAddr());
+		rc = Objects.compare(addr, sum.getAddr(), (o1, o2) -> o1.compareTo(o2));
 		if (rc != 0) {
 			return rc;
 		}
@@ -112,9 +112,8 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 	}
 	@Override
 	public boolean equals(Object o) {
-		if (o == null) {
-			return false;
-		}
+		Objects.requireNonNull(o);
+
 		if (o instanceof AccessLogSummary) {
 			AccessLogSummary sum = (AccessLogSummary)o;
 			if (usrId.equals(sum.getId())

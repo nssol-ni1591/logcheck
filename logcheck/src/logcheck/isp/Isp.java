@@ -1,5 +1,7 @@
 package logcheck.isp;
 
+import java.util.Objects;
+
 import logcheck.util.net.NetAddr;
 
 public interface Isp extends Comparable<Isp> {
@@ -13,30 +15,17 @@ public interface Isp extends Comparable<Isp> {
 	}
 
 	default int compareTo(Isp o) {
-		if (o == null) {
-			return -1;
-		}
+		Objects.requireNonNull(o);
 
-		if (getCountry() == null) {
-			if (o.getCountry() != null) {
-				return 1;
-			}
+		int rc = Objects.compare(getCountry(), o.getCountry(), (o1, o2) -> o1.compareTo(o2));
+		if (rc != 0) {
+			return rc;
 		}
-		else {
-			int rc = getCountry().compareTo(o.getCountry());
-			if (rc != 0) {
-				return rc;
-			}
+		rc = Objects.compare(getName(), o.getName(), (o1, o2) -> o1.compareTo(o2));
+		if (rc != 0) {
+			return rc;
 		}
-		if (getName() == null) {
-			if (o.getName() != null) {
-				return 1;
-			}
-			else {
-				return 0;
-			}
-		}
-		return getName().compareTo(o.getName());
+		return 0;
 	}
 
 }

@@ -3,6 +3,7 @@ package logcheck.user;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -142,6 +143,8 @@ public class UserListBean implements Comparable<UserListBean> {
 	}
 	@Override
 	public boolean equals(Object obj) {
+		Objects.requireNonNull(obj);
+
 		if (obj instanceof UserListBean) {
 			return this.compareTo((UserListBean)obj) == 0;
 		}
