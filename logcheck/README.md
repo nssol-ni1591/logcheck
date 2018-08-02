@@ -1,3 +1,6 @@
+[2018/07/30a]
+・groupingByの仮実装
+・Objects.requireNotNull採用によるequalsやcompareToの引数null時のNullPointerExceptionの発行
 [2018/07/06]
 ・Checker52（SdcListをNW単位で集約）
 ・WeldRrapperの実装が冗長だったので修正
