@@ -1,8 +1,10 @@
 package logcheck.fw;
 
+import java.util.Objects;
+
 import logcheck.isp.Isp;
+import logcheck.util.NetAddr;
 import logcheck.util.Summary;
-import logcheck.util.net.NetAddr;
 
 public class FwLogSummary extends Summary<FwLogBean> implements Comparable<FwLogSummary> {
 
@@ -49,9 +51,7 @@ public class FwLogSummary extends Summary<FwLogBean> implements Comparable<FwLog
 
 	@Override
 	public int compareTo(FwLogSummary summary) {
-		if (summary == null) {
-			return 1;
-		}
+		Objects.requireNonNull(summary);
 
 		int rc;
 		rc = dstPort - summary.getDstPort();
@@ -74,7 +74,12 @@ public class FwLogSummary extends Summary<FwLogBean> implements Comparable<FwLog
 	}
 	@Override
 	public boolean equals(Object obj) {
-		return super.equals(obj);
+		Objects.requireNonNull(obj);
+
+		if (obj instanceof FwLogSummary) {
+			return compareTo((FwLogSummary) obj) == 0;
+		}
+		return false;
 	}
 
 	@Override

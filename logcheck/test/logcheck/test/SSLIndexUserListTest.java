@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import logcheck.user.sslindex.SSLIndexUserList;
+import logcheck.user.impl.SSLIndexUserList;
 
 
 public class SSLIndexUserListTest {

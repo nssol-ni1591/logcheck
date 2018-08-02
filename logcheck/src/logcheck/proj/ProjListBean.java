@@ -1,6 +1,7 @@
 package logcheck.proj;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import logcheck.log.AccessLogBean;
@@ -46,6 +47,8 @@ public class ProjListBean implements Comparable<ProjListBean> {
 
 	@Override
 	public int compareTo(ProjListBean o) {
+		Objects.requireNonNull(o);
+
 		return projId.compareTo(o.getProjId());
 	}
 	// equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめたい
@@ -55,9 +58,8 @@ public class ProjListBean implements Comparable<ProjListBean> {
 	}
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
+		Objects.requireNonNull(obj);
+
 		if (obj instanceof ProjListBean) {
 			return this.compareTo((ProjListBean)obj) == 0;
 		}

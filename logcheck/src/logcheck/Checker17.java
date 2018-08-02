@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
-import logcheck.util.weld.WeldWrapper;
+import logcheck.util.WeldWrapper;
 
 /*
  * ユーザの利用状況を取得する：

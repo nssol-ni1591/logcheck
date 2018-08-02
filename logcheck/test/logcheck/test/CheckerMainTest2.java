@@ -22,10 +22,8 @@ import logcheck.Checker13a;
 import logcheck.Checker3a;
 import logcheck.Checker3b;
 import logcheck.Checker3c;
-import logcheck.Checker3d;
-import logcheck.Checker3e;
 import logcheck.Checker8a;
-import logcheck.util.weld.WeldWrapper;
+import logcheck.util.WeldWrapper;
 
 public class CheckerMainTest2 {
 
@@ -118,40 +116,6 @@ public class CheckerMainTest2 {
 		exit.expectSystemExitWithStatus(2);
 		Checker3c.main(KNOWNLIST);
 	}
-	@Test
-	public void test3d() throws IOException {
-		Checker3d application = container.select(Checker3d.class).get();
-		int rc = new WeldWrapper().exec(application, 2, KNOWNLIST, MAGLIST, ACCESSLOG);
-		assertEquals("CheckerMainTest#test3d ... NG", 0, rc);
-
-		BufferedReader br = new BufferedReader(new StringReader(stdout.getLog()));
-		long count = br.lines().count();
-		br.close();
-		System.out.println("count=" + count);
-		assertEquals("The number output line", 277, count);
-		
-		// main（）実行とusageメッセージ出力
-		exit.expectSystemExitWithStatus(2);
-		Checker3d.main(KNOWNLIST);
-	}
-	@Test
-	public void test3e() throws IOException {
-		Checker3e application = container.select(Checker3e.class).get();
-		int rc = new WeldWrapper().exec(application, 2, KNOWNLIST, MAGLIST, ACCESSLOG);
-		assertEquals("CheckerMainTest#test3e ... NG", 0, rc);
-
-		BufferedReader br = new BufferedReader(new StringReader(stdout.getLog()));
-		long count = br.lines().count();
-		br.close();
-		System.out.println("count=" + count);
-		assertEquals("The number output line", 277, count);
-		
-		// main（）実行とusageメッセージ出力
-		exit.expectSystemExitWithStatus(2);
-		Checker3e.main(KNOWNLIST);
-	}
-
-
 	@Test
 	public void test8a() throws IOException {
 		Checker8a application = container.select(Checker8a.class).get();

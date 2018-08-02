@@ -4,7 +4,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import logcheck.known.net.html.WhoisTreetCoJp;
+import logcheck.known.impl.net.WhoisTreetCoJp;
 
 public class WhoisTreetCoJpTest extends WhoisKnownListTest {
 

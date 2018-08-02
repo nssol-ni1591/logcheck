@@ -2,7 +2,7 @@ package logcheck.isp;
 
 import java.util.Set;
 
-import logcheck.util.net.NetAddr;
+import logcheck.util.NetAddr;
 
 public interface IspList extends Isp {
 

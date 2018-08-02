@@ -19,7 +19,7 @@ import logcheck.AbstractChecker;
 import logcheck.Checker12;
 import logcheck.Checker14;
 import logcheck.annotations.UseChecker14;
-import logcheck.util.weld.WeldWrapper;
+import logcheck.util.WeldWrapper;
 
 import static logcheck.test.CheckerMainTest.ACCESSLOG;
 import static logcheck.test.CheckerMainTest.KNOWNLIST;

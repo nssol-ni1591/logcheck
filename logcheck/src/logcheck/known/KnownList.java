@@ -3,7 +3,7 @@ package logcheck.known;
 import java.io.IOException;
 import java.util.Set;
 
-import logcheck.util.net.NetAddr;
+import logcheck.util.NetAddr;
 
 /*
  * 既知のISPのIPアドレスを取得する

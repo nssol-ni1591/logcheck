@@ -1,7 +1,7 @@
 package logcheck.sdc;
 
 import logcheck.isp.IspListImpl;
-import logcheck.util.net.NetAddr;
+import logcheck.util.NetAddr;
 
 public class SdcListIsp extends IspListImpl {
 
@@ -35,26 +35,18 @@ public class SdcListIsp extends IspListImpl {
 	}
 
 	@Override
+	public String toString() {
+		return String.format("name=%s, addr=%s", getName(), getAddress());
+	}
+
+	// equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめる
+	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
 	@Override
 	public boolean equals(Object o) {
-		if (o == null) {
-			return false;
-		}
-		if (netName == null) {
-			return super.equals(o);
-		}
-		if (o instanceof IspListImpl) {
-			return netName.equals(((IspListImpl) o).getName()) && super.equals(o);
-		}
-		return false;
+		return super.equals(o);
 	}
 
-	@Override
-	public String toString() {
-		return String.format("name=%s, addr=%s", getName(), getAddress());
-	}
-	// equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめる
 }

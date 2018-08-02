@@ -12,8 +12,8 @@ import org.junit.Test;
 
 import logcheck.user.UserListBean;
 import logcheck.user.UserListSite;
-import logcheck.user.db.DbUserList;
-import logcheck.util.net.NetAddr;
+import logcheck.user.impl.DbUserList;
+import logcheck.util.NetAddr;
 
 /*
  * VPNクライアント証明書が発行されているユーザの一覧を取得する

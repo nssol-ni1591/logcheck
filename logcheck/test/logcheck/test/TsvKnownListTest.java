@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
+import java.util.stream.Collectors;
 
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -12,7 +13,7 @@ import org.junit.Test;
 
 import logcheck.known.KnownList;
 import logcheck.known.KnownListIsp;
-import logcheck.known.tsv.TsvKnownList;
+import logcheck.known.impl.TsvKnownList;
 
 /*
  * 既知のISPのIPアドレスを取得する
@@ -55,7 +56,7 @@ public class TsvKnownListTest {
 	public void test02() {
 		for (KnownListIsp n : map) {
 			System.out.println(n.getCountry() + "\t" + n.getName() + "\t" + n.getAddress());
-			System.out.print("\t" + n.toStringNetwork());
+			System.out.print("\t[" + n.getAddress().stream().map(a -> a.toStringNetwork()).collect(Collectors.joining(",")) + "]");
 			System.out.println();
 		}
 	}

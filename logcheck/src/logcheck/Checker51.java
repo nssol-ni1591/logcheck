@@ -12,7 +12,7 @@ import javax.inject.Inject;
 
 import logcheck.fw.FwLogSummary;
 import logcheck.known.KnownList;
-import logcheck.util.weld.WeldWrapper;
+import logcheck.util.WeldWrapper;
 
 /*
  * FWログの集約処理：

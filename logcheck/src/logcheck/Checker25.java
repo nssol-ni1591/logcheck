@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import logcheck.log.AccessLogBean;
-import logcheck.util.weld.WeldWrapper;
+import logcheck.util.WeldWrapper;
 
 /*
  * ログ解析用の集約ツール1：

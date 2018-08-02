@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 
 import logcheck.user.UserListBean;
 import logcheck.user.UserListSite;
-import logcheck.util.weld.WeldWrapper;
+import logcheck.util.WeldWrapper;
 import logcheck.user.UserList;
 
 /*

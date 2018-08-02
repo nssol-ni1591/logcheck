@@ -1,7 +1,9 @@
 package logcheck.fw;
 
-import logcheck.util.net.ClientAddr;
-import logcheck.util.net.NetAddr;
+import java.util.Objects;
+
+import logcheck.util.ClientAddr;
+import logcheck.util.NetAddr;
 
 public class FwLogBean implements Comparable<FwLogBean> {
 
@@ -44,6 +46,8 @@ public class FwLogBean implements Comparable<FwLogBean> {
 
 	@Override
 	public int compareTo(FwLogBean bean) {
+		Objects.requireNonNull(bean);
+
 		int rc = 0;
 		rc = bean.getDstPort() - dstport;
 		if (rc != 0) {
@@ -65,12 +69,8 @@ public class FwLogBean implements Comparable<FwLogBean> {
 	}
 	@Override
 	public boolean equals(Object o) {
-		if (o == null) {
-			return false;
-		}
-		if (o == this) {
-			return true;
-		}
+		Objects.requireNonNull(o);
+
 		if (o instanceof FwLogBean) {
 			return compareTo((FwLogBean)o) == 0;
 		}

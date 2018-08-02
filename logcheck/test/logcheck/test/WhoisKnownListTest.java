@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
@@ -18,10 +19,10 @@ import org.junit.Test;
 
 import logcheck.known.KnownList;
 import logcheck.known.KnownListIsp;
-import logcheck.known.net.Whois;
-import logcheck.known.net.WhoisKnownList;
+import logcheck.known.impl.Whois;
+import logcheck.known.impl.WhoisKnownList;
+import logcheck.util.ClientAddr;
 import logcheck.util.Constants;
-import logcheck.util.net.ClientAddr;
 
 public class WhoisKnownListTest {
 
@@ -71,7 +72,8 @@ public class WhoisKnownListTest {
 
 		KnownListIsp isp = whois == null ? knownlist.get(new ClientAddr(addr)) : whois.get(new ClientAddr(addr));
 		if (isp != null) {
-			System.out.println(name + ": addr=" + addr + ", isp=[" + isp + ", C=" + isp.getCountry() +", NET=" + isp.toStringNetwork() + "]");
+			String addrs = isp.getAddress().stream().map(a -> a.toStringNetwork()).collect(Collectors.joining(","));
+			System.out.println(name + ": addr=" + addr + ", isp=[" + isp + ", C=" + isp.getCountry() +", NET=[" + addrs + "]]");
 		}
 		else {
 			System.out.println(name + ": addr=" + addr + ", isp=null");
@@ -83,12 +85,12 @@ public class WhoisKnownListTest {
 	public void test01() {
 		KnownListIsp isp = getIsp("210.173.87.154");	// KDDI CORPORATION
 		assertTrue("equals same", isp.equals(isp));
-		assertFalse("equals null", isp.equals(null));
+		//assertFalse("equals null", isp.equals(null));
 		System.out.println("isp.hashCode()=" + isp.hashCode());
 
 		if (check) {
 			assertTrue("equals same", knownlist.equals(knownlist));
-			assertFalse("equals null", knownlist.equals(null));
+			//assertFalse("equals null", knownlist.equals(null));
 			System.out.println("knownlist.hashCode()=" + knownlist.hashCode());
 		}
 		else {

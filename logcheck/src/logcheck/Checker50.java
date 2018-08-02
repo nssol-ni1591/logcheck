@@ -18,11 +18,11 @@ import logcheck.fw.FwLogSummary;
 import logcheck.isp.IspList;
 import logcheck.isp.IspListImpl;
 import logcheck.known.KnownList;
-import logcheck.known.privateaddr.PrivateAddrList;
+import logcheck.known.impl.net.PrivateAddrList;
 import logcheck.mag.MagList;
 import logcheck.sdc.SdcList;
-import logcheck.util.net.NetAddr;
-import logcheck.util.weld.WeldWrapper;
+import logcheck.util.NetAddr;
+import logcheck.util.WeldWrapper;
 
 /*
  * FWログの集約処理：
