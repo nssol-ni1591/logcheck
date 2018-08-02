@@ -6,8 +6,10 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
@@ -71,7 +73,8 @@ public class WhoisKnownListTest {
 
 		KnownListIsp isp = whois == null ? knownlist.get(new ClientAddr(addr)) : whois.get(new ClientAddr(addr));
 		if (isp != null) {
-			System.out.println(name + ": addr=" + addr + ", isp=[" + isp + ", C=" + isp.getCountry() +", NET=" + isp.toStringNetwork() + "]");
+			List<String> addrs = isp.getAddress().stream().map(a -> a.toStringNetwork()).collect(Collectors.toList());
+			System.out.println(name + ": addr=" + addr + ", isp=[" + isp + ", C=" + isp.getCountry() +", NET=" + addrs + "]");
 		}
 		else {
 			System.out.println(name + ": addr=" + addr + ", isp=null");

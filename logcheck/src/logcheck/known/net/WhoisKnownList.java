@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
@@ -67,7 +68,7 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 			KnownListIsp tmp = jpnic.get(addr);
 			if (check(tmp)) {
 				log.log(Level.INFO, "{0}: addr={1} => name={2}, country={3}, net={4}",
-						new Object[] { jpnic.getName(), addr, tmp.getName(), tmp.getCountry(), tmp.toStringNetwork() });
+						new Object[] { jpnic.getName(), addr, tmp.getName(), tmp.getCountry(), tmp.getAddress() });
 				return tmp;
 			}
 		}
@@ -145,7 +146,9 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 						return false;
 					}
 					log.log(Level.INFO, "{0}: addr={1} => name={2}, country={3}, net={4}",
-							new Object[] { w.getName(), addr, tmp.getName(), tmp.getCountry(), tmp.toStringNetwork() });
+							new Object[] { w.getName(), addr, tmp.getName(), tmp.getCountry(),
+									tmp.getAddress().stream().map(a -> a.toStringNetwork()).collect(Collectors.toList())
+					});
 					return check(tmp);
 				})
 				.findFirst();
