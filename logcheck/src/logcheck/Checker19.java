@@ -91,7 +91,7 @@ public class Checker19 extends AbstractChecker<ProjList<ProjListBean>> {
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper<Checker19>(Checker19.class).weld(2, argv);
+		int rc = new WeldWrapper(Checker19.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

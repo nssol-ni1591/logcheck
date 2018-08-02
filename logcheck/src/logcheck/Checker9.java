@@ -108,7 +108,7 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper<Checker9>(Checker9.class).weld(3, argv);
+		int rc = new WeldWrapper(Checker9.class).weld(3, argv);
 		System.exit(rc);
 	}
 

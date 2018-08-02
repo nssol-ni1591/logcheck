@@ -8,10 +8,7 @@ public class ClientAddr extends NetAddr {
 
 	@Override
 	public String toString() {
-		int[] srcaddr = getAddr();
-		StringBuilder sb = new StringBuilder();
-		sb.append(srcaddr[0]).append(".").append(srcaddr[1]).append(".").append(srcaddr[2]).append(".").append(srcaddr[3]);
-		return sb.toString();
+		return toIpaddr(getAddr());
 	}
 
 }

@@ -18,11 +18,16 @@ import org.junit.Test;
  */
 public class TsvSiteListTest {
 
-	private TsvSiteList map;
+	private static TsvSiteList map;
 
 	@BeforeClass
-	public static void beforeClass() {
+	public static void beforeClass() throws IOException {
 		System.out.println("start TsvSiteListTest ...");
+
+		map = new TsvSiteList();
+		map.init();
+		map.load(Env.MAGLIST);
+		System.out.println("TsvSiteListTest.test01 size = " + map.size());
 	}
 	@AfterClass
 	public static void afterClass() {
@@ -30,28 +35,29 @@ public class TsvSiteListTest {
 	}
 	@Before
 	public void before() throws IOException {
-		map = new TsvSiteList();
-		map.init();
-		map.load(Env.MAGLIST);
-		System.out.println("TsvSiteListTest.test01 size = " + map.size());
 	}
 
 	@Test
 	public void test01() {
 		assertFalse(map.isEmpty());
+		//map.values().forEach(System.out::println);
 	}
 	@Test
 	public void test02() {
-		int ix = 0;
-		for (SiteListIsp isp : map.values()) {
-			isp.getSiteId();
-			isp.getName();
-			isp.getAddress();
-			isp.toString();
-			assertFalse("equals(null) is true", isp.equals(null));
-			assertNotNull("isp#toString is null", isp.getAddress());
-			ix = ix + 1;
-		}
+		SiteListIsp isp = map.get("PRJ_SDC_OM");
+		System.out.println("isp=" + isp);
+
+		System.out.println("isp.getSiteName()=" + isp.getSiteName());
+		System.out.println("isp.getAddress()=" + isp.getAddress());
+
+		assertEquals("match projId", "PRJ_SDC_OM", isp.getProjId());
+		assertEquals("match siteId", "", isp.getSiteId());
+		assertEquals("match projId and name", isp.getProjId(), isp.getName());
+		assertEquals("match projDelFlag", "0", isp.getProjDelFlag());
+		assertEquals("match siteDelFlag", "0", isp.getSiteDelFlag());
+
+		assertFalse("equals(null) is true", isp.equals(null));
+		assertNotNull("isp#toString is null", isp.getAddress());
 	}
 	@Test(expected = IOException.class)
 	public void test03() throws Exception {

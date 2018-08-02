@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import logcheck.known.KnownList;
 import logcheck.known.KnownListIsp;
 import logcheck.known.net.Whois;
 import logcheck.known.net.WhoisKnownList;
@@ -27,6 +28,7 @@ public class WhoisKnownListTest {
 	private static Weld weld;
 	private static WeldContainer container;
 
+	private static KnownList knownlist;
 	protected static Whois whois;
 
 	protected String name;
@@ -41,10 +43,9 @@ public class WhoisKnownListTest {
 
 		weld = new Weld();
 		container = weld.initialize();
-		whois = container.select(WhoisKnownList.class).get();
-//		f = new WhoisKnownList();
-//		f.init();
-//		f.load(Env.KNOWNLIST);
+		knownlist = container.select(WhoisKnownList.class).get();
+		knownlist.init();
+		whois = null;
 	}
 	@BeforeClass
 	public static void setProxy() {
@@ -56,7 +57,7 @@ public class WhoisKnownListTest {
 	}
 
 	@Before
-	public void beforeInstance() throws Exception {
+	public void before() throws Exception {
 		name = this.getClass().getSimpleName();
 		if (name.equals("WhoisKnownListTest")) {
 			check = true;
@@ -68,7 +69,7 @@ public class WhoisKnownListTest {
 			return null;
 		}
 
-		KnownListIsp isp = whois.get(new ClientAddr(addr));
+		KnownListIsp isp = whois == null ? knownlist.get(new ClientAddr(addr)) : whois.get(new ClientAddr(addr));
 		if (isp != null) {
 			System.out.println(name + ": addr=" + addr + ", isp=[" + isp + ", C=" + isp.getCountry() +", NET=" + isp.toStringNetwork() + "]");
 		}
@@ -81,9 +82,19 @@ public class WhoisKnownListTest {
 	@Test
 	public void test01() {
 		KnownListIsp isp = getIsp("210.173.87.154");	// KDDI CORPORATION
-		assertTrue("equals same instance", isp.equals(isp));
+		assertTrue("equals same", isp.equals(isp));
 		assertFalse("equals null", isp.equals(null));
-		System.out.println("hashCode()=" + isp.hashCode());
+		System.out.println("isp.hashCode()=" + isp.hashCode());
+
+		if (check) {
+			assertTrue("equals same", knownlist.equals(knownlist));
+			assertFalse("equals null", knownlist.equals(null));
+			System.out.println("knownlist.hashCode()=" + knownlist.hashCode());
+		}
+		else {
+			// Do nothing
+			// whoisクラスには、equalsやhashCode()の実装がない
+		}
 
 		getIsp("203.118.54.210");	// Nippon Steel Southeast Asia Pte Ltd
 	}
@@ -109,6 +120,7 @@ public class WhoisKnownListTest {
 		KnownListIsp isp2 = getIsp("210.173.87.156");
 		assertNotNull(isp1);
 		assertNotNull(isp2);
+		assertEquals(isp1, isp2);
 		if (check) {
 			assertEquals(isp1.getName(), isp2.getName());
 			assertEquals(isp1.getAddress(), isp2.getAddress());

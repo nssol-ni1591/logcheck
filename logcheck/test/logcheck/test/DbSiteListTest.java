@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import logcheck.site.SiteListIsp;
 import logcheck.site.db.DbSiteList;
+import logcheck.util.net.NetAddr;
 
 
 /*
@@ -19,11 +20,16 @@ import logcheck.site.db.DbSiteList;
  */
 public class DbSiteListTest {
 
-	private DbSiteList map;
+	private static DbSiteList map;
 
 	@BeforeClass
-	public static void beforeClass() {
+	public static void beforeClass() throws ClassNotFoundException, IOException, SQLException {
 		System.out.println("start DbSiteListTest ...");
+
+		map = new DbSiteList();
+		map.init();
+		map.load(null);
+		System.out.println("size=" + map.size());
 	}
 	@AfterClass
 	public static void afterClass() {
@@ -31,10 +37,6 @@ public class DbSiteListTest {
 	}
 	@Before
 	public void before() throws ClassNotFoundException, IOException, SQLException {
-		map = new DbSiteList();
-		map.init();
-		map.load(null);
-		System.out.println("size=" + map.size());
 	}
 
 	@Test
@@ -42,7 +44,7 @@ public class DbSiteListTest {
 		assertFalse(map.isEmpty());
 		// select count(*) from sas_prj_site_info;
 		assertEquals(884, map.size());
-		
+
 		assertTrue(map.equals(map));
 		assertFalse(map.equals(null));
 		System.out.println("hashCode()=" + map.hashCode());
@@ -66,9 +68,12 @@ public class DbSiteListTest {
 		assertNotNull("site_id='268' not found", isp);
 		String prjId = isp.getProjId();
 		assertEquals("prj_id illegal", "PRJ_SDC_OM", prjId);
+		isp.getName();
+		isp.addAddress(new NetAddr("192.168.0.0/24"));
 
 		System.out.println("isp: " + isp);
 		System.out.println("hashCode()=" + isp.hashCode());
+		assertFalse("compareTo > 0", isp.compareTo(null) > 0);
 	}
 
 }

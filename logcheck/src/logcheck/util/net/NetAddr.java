@@ -1,7 +1,9 @@
 package logcheck.util.net;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class NetAddr implements Comparable<NetAddr> {
 
@@ -332,9 +334,44 @@ public class NetAddr implements Comparable<NetAddr> {
 		return sb.toString();
 	}
 
-	private String toIpaddr(int[] a) {
-		String d = ".";
-		return new StringBuilder().append(a[0]).append(d).append(a[1]).append(d).append(a[2]).append(d).append(a[3]).toString();
+	protected String toIpaddr(int[] a) {
+		//この実装が一番理解しやすい
+		return Arrays.stream(a).mapToObj(String::valueOf).collect(Collectors.joining("."));
+		/* 次席
+		return Arrays.stream(a).collect(
+				StringBuilder::new
+				, (t, i) -> t.append(".").append(i)
+				, (t, u) -> t.append(u)
+				)
+				.substring(1);	// 1文字目の"."を削除
+		 */
+		/*
+		return Arrays.stream(a).collect(
+				StringBuilder::new
+				, (t, i) -> {	-
+					//System.out.println("t=" + t + ", i=" + i);	-
+					-f (t.length() == 0) {	-
+						t.append(i);	-
+					}	-
+					-lse { -
+						t.append(".").append(i);	-
+					}	-
+				}	-
+				, (t, u) -> {	-
+					// この場合、この実装が呼ばれない ... なぜ?
+					// -> 2つのstreamを1つにまとめる。つまり、parallel()でないと使用されない
+					System.out.println("t=" + t + ", u=" + u);	-
+					t.append(u);	-
+				})	-
+				.toString();	-
+		 */
+		/* Stringは<R>に使用できないらしい
+		return Arrays.stream(a).collect(
+				String::new
+				, (t, i) -> t + "." + i
+				, (t, u) -> t + u
+				)
+		 */
 	}
 
 }

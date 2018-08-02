@@ -8,4 +8,9 @@ public class WhoisLacnic extends WhoisHtmlParser implements Whois {
 		super("http://lacnic.net/cgi-bin/lacnic/whois?lg=EN&query=");
 	}
 
+	@Override
+	public String getName() {
+		return "Lacnic";
+	}
+
 }

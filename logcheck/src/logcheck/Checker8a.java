@@ -4,16 +4,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 
-import logcheck.annotations.UseChecker8;
 import logcheck.isp.Isp;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
@@ -30,8 +29,7 @@ import logcheck.util.weld.WeldWrapper;
  * 利用方法としては、プログラムの出力を直接参照するのではなく、Excelに読み込ませpivotで解析する想定のためTSV形式で出力する。
  * なお、このツールでは、正常系ログは集約を行う。
  */
-@UseChecker8
-public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>>> {
+public class Checker8a extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>>> {
 
 	@Inject protected KnownList knownlist;
 	@Inject protected MagList maglist;
@@ -73,61 +71,34 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 		return b.getMsg();
 	}
 
-	private void sub(Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> map,
-			IspList isp, AccessLogBean b, String pattern)
-	{
-		NetAddr addr = b.getAddr();
-
-		Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>> ispmap;
-		Map<NetAddr, Map<String, Map<String, AccessLogSummary>>> addrmap;
-		Map<String, Map<String, AccessLogSummary>> idmap;
-		Map<String, AccessLogSummary> msgmap;
-		AccessLogSummary msg;
-
-		// 国/利用申請 の登録 or 更新
-		ispmap = map.get(isp.getCountry());
-		if (ispmap == null) {
-			ispmap = new TreeMap<>();
-			map.put(isp.getCountry(), ispmap);
-		}
-		//ispmap = map.computeIfAbsent(isp.getCountry(), key -> new TreeMap<>())
-
-		// ISP名/プロジェクトID の登録 or 更新
-		addrmap = ispmap.computeIfAbsent(isp, key -> new TreeMap<>());
-
-		// アドレスの登録 or 更新
-		idmap = addrmap.computeIfAbsent(addr, key -> new TreeMap<>());
-
-		// ユーザIDの登録 or 更新
-		msgmap = idmap.computeIfAbsent(b.getId(), key -> new TreeMap<>());
-
-		// パターンの登録 or 更新
-		msg = msgmap.get(pattern);
-		if (msg == null) {
-			msg = new AccessLogSummary(b, pattern);
-			msgmap.put(pattern, msg);
-		}
-		else {
-			msg.update(b);
-		}
-	}
-
 	@Override
 	public Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> call(Stream<String> stream)
-		{
-		final Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> map = new TreeMap<>();
-		stream//.parallel()
+	{
+		return stream//.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
-				.forEach(b -> {
-					String pattern = getPattern(b);
-					NetAddr addr = b.getAddr();
-					IspList isp = getIsp(addr, maglist, knownlist);
-					if (isp != null) {
-						sub(map, isp, b, pattern);
-					}
-				});
-		return map;
+				.map(LogWrapper::new)
+				.filter(log -> Objects.nonNull(log.getIspList()))
+				.collect(Collectors.groupingBy(
+						LogWrapper::getCountry
+						, TreeMap::new
+						, Collectors.groupingBy(
+								LogWrapper::getIspList
+								, TreeMap::new
+								, Collectors.groupingBy(
+										LogWrapper::getAddr
+										, TreeMap::new
+										, Collectors.groupingBy(
+												LogWrapper::getId
+												, TreeMap::new
+												, Collectors.toMap(
+														LogWrapper::getMsg
+														, LogWrapper::getAccessLogSummary
+														, (t, u) -> {
+															t.update(u);
+															return t;
+														}
+														))))));
 	}
 
 	@Override
@@ -161,9 +132,45 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper(Checker8.class).weld(new AnnotationLiteral<UseChecker8>(){
-			private static final long serialVersionUID = 1L;
-		}, 2, argv);
+		int rc = new WeldWrapper(Checker8.class).weld(2, argv);
 		System.exit(rc);
+	}
+	
+	class LogWrapper {
+
+		private final String country;
+		private final IspList isp;
+		private final NetAddr addr;
+		private final String id;
+		private final String msg;
+		private final AccessLogSummary sum;
+
+		LogWrapper(AccessLogBean b) {
+			this.addr = b.getAddr();
+			this.isp = getIsp(addr, maglist, knownlist);
+			this.country = isp.getCountry();
+			this.id = b.getId();
+			this.msg = getPattern(b);
+			this.sum = new AccessLogSummary(b, msg);
+		}
+
+		public String getCountry() {
+			return country;
+		}
+		public IspList getIspList() {
+			return isp;
+		}
+		public NetAddr getAddr() {
+			return addr;
+		}
+		public String getId() {
+			return id;
+		}
+		public String getMsg() {
+			return msg;
+		}
+		public AccessLogSummary getAccessLogSummary() {
+			return sum;
+		}
 	}
 }

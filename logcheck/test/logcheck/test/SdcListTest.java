@@ -13,16 +13,17 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-/*
- * 以前の TsvMagListクラス
- */
 public class SdcListTest {
 
-	private SdcList map;
+	private static SdcList map;
 
 	@BeforeClass
-	public static void beforeClass() {
+	public static void beforeClass() throws IOException {
 		System.out.println("start SdcListTest ...");
+
+		map = new SdcList();
+		map.load(Env.SDCLIST);
+		System.out.println("TsvSiteListTest.test01 size = " + map.size());
 	}
 	@AfterClass
 	public static void afterClass() {
@@ -30,21 +31,19 @@ public class SdcListTest {
 	}
 	@Before
 	public void before() throws IOException {
-		map = new SdcList();
-		map.load(Env.SDCLIST);
-		System.out.println("TsvSiteListTest.test01 size = " + map.size());
 	}
 
 	@Test
 	public void test01() {
 		assertFalse(map.isEmpty());
-		SdcListIsp isp = map.get(new NetAddr("172.30.88.0/24"));
+		SdcListIsp isp = map.get(new NetAddr("172.30.88.1"));
 		System.out.println("isp: " + isp);
 	}
 	@Test
 	public void test02() {
 		int ix = 0;
-		for (SdcListIsp isp : map.values()) {
+		//for (SdcListIsp isp : map.values()) {
+		for (SdcListIsp isp : map) {
 			isp.toString();
 			assertFalse("equals(null) ... false", isp.equals(null));
 			ix = ix + 1;
@@ -54,5 +53,30 @@ public class SdcListTest {
 	public void test03() throws IOException {
 		SdcList map = new SdcList();
 		map.load("Foo");
+	}
+
+	@Test
+	public void test04() {
+		SdcListIsp isp = map.get(new NetAddr("172.30.76.0/24"));
+		System.out.println("isp: " + isp);
+		assertEquals("sub segment", "基幹 軟件：武関(軟件小杉)", isp.getName());
+
+		SdcListIsp isp2 = map.get(new NetAddr("172.30.90.65"));
+		System.out.println("isp: " + isp);
+		assertEquals("isp1 and ips1", isp, isp);
+		assertEquals("isp2 and ips2", isp2, isp2);
+		assertNotEquals("isp1 and ips2", isp, isp2);
+		assertNotEquals("isp1 and abc", isp, "abc");
+	}
+	//@Test
+	public void test05() {
+		//map.values().forEach(System.out::println);
+		map.forEach(System.out::println);
+	}
+	@Test
+	public void test06() {
+		SdcListIsp isp = map.get(new NetAddr("172.30.90.65"));
+		System.out.println("isp: " + isp);
+		//assertEquals("sub segment", "基幹 軟件：武関(軟件小杉)", isp.getName());
 	}
 }

@@ -8,18 +8,18 @@ import javax.enterprise.inject.se.SeContainer;
 import javax.enterprise.inject.se.SeContainerInitializer;
 import javax.enterprise.util.AnnotationLiteral;
 
-public class WeldWrapper<T extends WeldRunner> {
+public class WeldWrapper {
 
 	private static Logger log = Logger.getLogger(WeldWrapper.class.getName());
 
-	private Class<T> cl;
+	private Class<? extends WeldRunner> cl;
 
 	public WeldWrapper() { }
-	public WeldWrapper(Class<T> cl) {
+	public WeldWrapper(Class<? extends WeldRunner> cl) {
 		this.cl = cl;
 	}
 
-	public int exec(T application, int argc, String...argv) {
+	public int exec(WeldRunner application, int argc, String...argv) {
 		int rc = 0;
 		try {
 			if (argv.length < argc) {
@@ -67,7 +67,7 @@ public class WeldWrapper<T extends WeldRunner> {
 
 		try(SeContainer container = SeContainerInitializer.newInstance().initialize()) {
 	        // start the container, retrieve a bean and do work with it
-			T application;
+			WeldRunner application;
 			if (anno == null) {
 				// AnnotationがついていないCheckerクラスの生成
 				application = container.select(cl).get();

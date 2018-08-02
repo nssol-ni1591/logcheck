@@ -36,11 +36,8 @@ public class Checker15 extends Checker14 {
 								String projId = site.getProjId();
 								String siteName = site.getSiteName();
 
-								Map<String, String> sitemap = projmap.get(projId);
-								if (sitemap == null) {
-									sitemap = new TreeMap<>();
-									projmap.put(projId, sitemap);
-								}
+								Map<String, String> sitemap = projmap.computeIfAbsent(projId, key -> new TreeMap<>());
+
 								String userId = sitemap.get(siteName);
 								if (userId == null) {
 									sitemap.put(siteName, user.getUserId());
@@ -66,7 +63,7 @@ public class Checker15 extends Checker14 {
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper<Checker15>(Checker15.class).weld(2, argv);
+		int rc = new WeldWrapper(Checker15.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

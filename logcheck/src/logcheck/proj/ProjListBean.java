@@ -63,4 +63,5 @@ public class ProjListBean implements Comparable<ProjListBean> {
 		}
 		return false;
 	}
+
 }

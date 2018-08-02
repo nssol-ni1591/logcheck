@@ -105,4 +105,9 @@ public class WhoisArin extends AbstractWhoisServer implements Whois {
 		return map.get("Country");
 	}
 
+	@Override
+	public String getName() {
+		return "Arin";
+	}
+
 }

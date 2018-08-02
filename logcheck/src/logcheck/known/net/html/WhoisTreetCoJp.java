@@ -8,4 +8,9 @@ public class WhoisTreetCoJp extends WhoisHtmlParser implements Whois {
 		super("http://whois.threet.co.jp/?key=");
 	}
 
+	@Override
+	public String getName() {
+		return "Treet";
+	}
+
 }

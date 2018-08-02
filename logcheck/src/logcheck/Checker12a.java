@@ -14,6 +14,7 @@ import logcheck.isp.Isp;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
+import logcheck.log.AccessLogBean;
 import logcheck.log.AccessLogSummary;
 import logcheck.mag.MagList;
 import logcheck.util.net.NetAddr;
@@ -24,7 +25,7 @@ import logcheck.util.weld.WeldWrapper;
  * VPNログを読込、送信元IPアドレスが申請外のログ（IP_RANGE_PATTERN）に合致する場合は、そのログをコレクションに登録する。
  * もし、ログのIPアドレスが、コレクションのエントリに存在していた場合はログ数を更新する。
  */
-public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>>> {
+public class Checker12a extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>>> {
 
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
@@ -36,42 +37,32 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 
 	@Override
 	public Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> call(Stream<String> stream) {
-		final Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> map = new TreeMap<>();
-		stream.parallel()
+		return stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
 				.filter(b -> Stream.of(IP_RANGE_PATTERN)
 						// 正規化表現に一致するメッセージのみを処理対象にする
 						.anyMatch(p -> p.matcher(b.getMsg()).matches())
 						)
-				.forEach(b -> {
-					NetAddr addr = b.getAddr();
-					IspList isp = getIsp(addr, maglist, knownlist);
-					if (isp != null) {
-						Map<Isp, Map<NetAddr, AccessLogSummary>> ispmap;
-						Map<NetAddr, AccessLogSummary> addrmap;
-						AccessLogSummary msg;
-
-						ispmap = map.get(isp.getCountry());
-						if (ispmap == null) {
-							ispmap = new TreeMap<>();
-							map.put(isp.getCountry(), ispmap);
-						}
-						//ispmap = map.computeIfAbsent(isp.getCountry(), key -> new TreeMap<>())
-
-						addrmap = ispmap.computeIfAbsent(isp, key -> new TreeMap<>());
-
-						msg = addrmap.get(addr);
-						if (msg == null) {
-							msg = new AccessLogSummary(b, IP_RANGE_PATTERN.toString());
-							addrmap.put(addr, msg);
-						}
-						else {
-							msg.update(b);
-						}
-					}
-				});
-		return map;
+				.map(LogWrapper::new)
+				.filter(log -> log.getIspList() != null)
+				.collect(Collectors.groupingBy(
+						LogWrapper::getCountry
+						, TreeMap::new
+						, Collectors.groupingBy(
+								LogWrapper::getIspList
+								, TreeMap::new
+								, Collectors.toMap(
+										LogWrapper::getAddr
+										, LogWrapper::getSummary
+										, (t, u) -> {
+											t.update(u);
+											return t;
+										}
+										, TreeMap::new		// 指定しないとHashMap
+										)
+								)
+						));
 	}
 
 	@Override
@@ -94,7 +85,38 @@ public class Checker12 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper(Checker12.class).weld(2, argv);
+		int rc = new WeldWrapper(Checker12a.class).weld(2, argv);
 		System.exit(rc);
+	}
+
+	class LogWrapper {
+
+		private final AccessLogBean b;
+		private final IspList isp;
+		private final NetAddr addr;
+		private final AccessLogSummary summary;
+
+		LogWrapper(AccessLogBean b) {
+			this.b = b;
+			this.addr = b.getAddr();
+			this.isp = getIsp(addr, maglist, knownlist);
+			this.summary = new AccessLogSummary(b, IP_RANGE_PATTERN.toString());
+		}
+
+		String getCountry() {
+			return isp.getCountry();
+		}
+		NetAddr getAddr() {
+			return addr;
+		}
+		IspList getIspList() {
+			return isp;
+		}
+		AccessLogSummary getSummary() {
+			return summary;
+		}
+		AccessLogBean getAccessLogBean() {
+			return b;
+		}
 	}
 }

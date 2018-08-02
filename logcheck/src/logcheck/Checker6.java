@@ -47,23 +47,18 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 			ispmap = new TreeMap<>();
 			map.put(isp.getCountry(), ispmap);
 		}
+		//ispmap = map.computeIfAbsent(isp.getCountry(), key -> new TreeMap<>())
 
-		msgmap = ispmap.get(isp);
-		if (msgmap == null) {
-			msgmap = new TreeMap<>();
-			ispmap.put(isp, msgmap);
-		}
+		msgmap = ispmap.computeIfAbsent(isp, key -> new TreeMap<>());
 
-		addrmap = msgmap.get(msg);
-		if (addrmap == null) {
-			addrmap = new TreeMap<>();
-			msgmap.put(msg, addrmap);
-		}
+		addrmap = msgmap.computeIfAbsent(msg, key -> new TreeMap<>());
 
 		count = addrmap.get(addr);
 		if (count == null) {
 			count = Integer.valueOf(0);
 		}
+		//以下の実装はクラスのロードに失敗する。なぜ？　Checker{3,4,5}とどこが異なる？
+		//count = addrmap.computeIfAbsent(addr, key -> Integer.valueOf(0))
 		count += 1;
 		addrmap.put(addr, count);
 	}
@@ -133,7 +128,7 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper<Checker6>(Checker6.class).weld(2, argv);
+		int rc = new WeldWrapper(Checker6.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

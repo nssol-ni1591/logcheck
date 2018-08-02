@@ -9,4 +9,10 @@ public interface Whois {
 
 	// for envoronment not using weld-se
 	void init();
+
+	// for Callable<KnownListIsp> implement (Yet!)
+	void setAddr(NetAddr addr);
+
+	String getName();
+
 }

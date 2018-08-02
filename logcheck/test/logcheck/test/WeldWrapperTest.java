@@ -45,14 +45,14 @@ public class WeldWrapperTest {
 	@Test
 	public void test01() {
 		// annoなし
-		int rc = new WeldWrapper<Checker12>(Checker12.class)
+		int rc = new WeldWrapper(Checker12.class)
 				.weld(2, KNOWNLIST, MAGLIST, ACCESSLOG);
 		assertEquals("Annoなし", 0, rc);
 	}
 	@Test
 	public void test02() {
 		// annoつき
-		int rc = new WeldWrapper<Checker14>(Checker14.class)
+		int rc = new WeldWrapper(Checker14.class)
 				.weld(new AnnotationLiteral<UseChecker14>(){
 					private static final long serialVersionUID = 1L;
 				}, 2, KNOWNLIST, SSLINDEX, ACCESSLOG);
@@ -61,21 +61,21 @@ public class WeldWrapperTest {
 	@Test
 	public void test03() {
 		// 引数不足
-		int rc = new WeldWrapper<Checker12>(Checker12.class)
+		int rc = new WeldWrapper(Checker12.class)
 				.weld(3, KNOWNLIST, MAGLIST);
 		assertEquals("引数不足", 2, rc);
 	}
 	@Test
 	public void test04() {
 		// argcの値が不正
-		int rc = new WeldWrapper<Checker12>(Checker12.class)
+		int rc = new WeldWrapper(Checker12.class)
 				.weld(4, KNOWNLIST, MAGLIST, ACCESSLOG, ACCESSLOG);
 		assertEquals("argcの値が不正", 4, rc);
 	}
 	@Test
 	public void test05() {
 		// Weldで例外が発生する
-		int rc = new WeldWrapper<WeldWrapperTestSub>(WeldWrapperTestSub.class)
+		int rc = new WeldWrapper(WeldWrapperTestSub.class)
 				.weld(2, KNOWNLIST, MAGLIST, ACCESSLOG);
 		assertEquals("Weld内で例外が発生した場合はcatchされて返却値が-1", -1, rc);
 	}
@@ -92,7 +92,7 @@ public class WeldWrapperTest {
 				.weld(2, KNOWNLIST, "abc.txt", ACCESSLOG);
 		assertEquals("MagListが不正", 0, rc);
 		*/
-		int rc = new WeldWrapper<Checker12>(Checker12.class)
+		int rc = new WeldWrapper(Checker12.class)
 				.weld(2, KNOWNLIST, MAGLIST, "abc.txt");
 		assertEquals("AccessLogが不正", 0, rc);
 	}
@@ -101,7 +101,7 @@ public class WeldWrapperTest {
 		InputStream backup = System.in;
 		try (InputStream is = new FileInputStream(Env.VPNLOG)) {
 			System.setIn(is);
-			int rc = new WeldWrapper<Checker12>(Checker12.class)
+			int rc = new WeldWrapper(Checker12.class)
 					.weld(2, KNOWNLIST, MAGLIST);
 			assertEquals("System.in 動作", 0, rc);
 		}
@@ -117,20 +117,17 @@ public class WeldWrapperTest {
 
 		@Override
 		public void init(String... argv) throws IOException, ClassNotFoundException, SQLException {
-			// TODO Auto-generated method stub
-			
+			// Do nothing
 		}
 
 		@Override
 		protected String call(Stream<String> stream) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
 		protected void report(PrintWriter out, String map) {
-			// TODO Auto-generated method stub
-			
+			// Do nothing
 		}
 
 	}

@@ -50,17 +50,8 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 			map.put(isp.getCountry(), ispmap);
 		}
 
-		addrmap = ispmap.get(isp);
-		if (addrmap == null) {
-			addrmap = new TreeMap<>();
-			ispmap.put(isp, addrmap);
-		}
-
-		msgmap = addrmap.get(addr);
-		if (msgmap == null) {
-			msgmap = new TreeMap<>();
-			addrmap.put(addr, msgmap);
-		}
+		addrmap = ispmap.computeIfAbsent(isp, key -> new TreeMap<>());
+		msgmap = addrmap.computeIfAbsent(addr, key -> new TreeMap<>());
 
 		AccessLogSummary msg = new AccessLogSummary(b, pattern);
 		Integer count = msgmap.get(msg);
@@ -134,7 +125,7 @@ public class Checker7 extends AbstractChecker<Map<String, Map<IspList, Map<NetAd
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper<Checker7>(Checker7.class).weld(2, argv);
+		int rc = new WeldWrapper(Checker7.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

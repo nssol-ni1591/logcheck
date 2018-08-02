@@ -30,7 +30,7 @@ public class Checker22 extends Checker8 {
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper<Checker22>(Checker22.class).weld(2, argv);
+		int rc = new WeldWrapper(Checker22.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

@@ -19,11 +19,16 @@ import logcheck.proj.db.DbProjList;
  */
 public class DbProjListTest {
 
-	private DbProjList map;
+	private static DbProjList map;
 
 	@BeforeClass
-	public static void beforeClass() {
+	public static void beforeClass() throws ClassNotFoundException, IOException, SQLException {
 		System.out.println("start DbProjListTest ...");
+
+		map = new DbProjList();
+		map.init();
+		map.load();
+		System.out.println("size=" + map.size());
 	}
 	@AfterClass
 	public static void afterClass() {
@@ -31,10 +36,6 @@ public class DbProjListTest {
 	}
 	@Before
 	public void before() throws ClassNotFoundException, IOException, SQLException {
-		map = new DbProjList();
-		map.init();
-		map.load();
-		System.out.println("size=" + map.size());
 	}
 
 	@Test

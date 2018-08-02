@@ -38,22 +38,12 @@ public class Checker3 extends AbstractChecker<Map<String, IspMap<Map<String, Int
 	{
 		NetAddr addr = b.getAddr();
 
-		IspMap<Map<String, Integer>> ispmap = map.get(isp.getName());
-		if (ispmap == null) {
-			ispmap = new IspMap<>(isp.getName(), isp.getCountry());
-			map.put(isp.getName(), ispmap);
-		}
+		IspMap<Map<String, Integer>> ispmap =
+				map.computeIfAbsent(isp.getName(), key -> new IspMap<>(isp.getName(), isp.getCountry()));
 
-		Map<String, Integer> client = ispmap.get(addr);
-		if (client == null) {
-			client = new TreeMap<>();
-			ispmap.put(addr, client);
-		}
+		Map<String, Integer> client = ispmap.computeIfAbsent(addr, key -> new TreeMap<>());
 
-		Integer count = client.get(m);
-		if (count == null) {
-			count = Integer.valueOf(0);
-		}
+		Integer count = client.computeIfAbsent(m, key -> Integer.valueOf(0));
 		count += 1;
 		client.put(m, count);
 	}
@@ -101,7 +91,7 @@ public class Checker3 extends AbstractChecker<Map<String, IspMap<Map<String, Int
 	}
 
 	public static void main(String ... argv) {
-		int rc = new WeldWrapper<Checker3>(Checker3.class).weld(2, argv);
+		int rc = new WeldWrapper(Checker3.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

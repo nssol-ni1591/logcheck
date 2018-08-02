@@ -7,7 +7,7 @@ public class Constants {
 	public static final String LOCALHOST = String.join(".", "127", "0", "0", "1");
 	
 	public static final String CLASS_A = String.join(".", "10", "0", "0", "0") + "/8";
-	public static final String CLASS_B = String.join(".", "172", "16", "0", "0") + "/16";
+	public static final String CLASS_B = String.join(".", "172", "16", "0", "0") + "/12";
 	public static final String CLASS_C = String.join(".", "192", "168", "0", "0") + "/16";
 
 	public static final String SDCDBS01_NAT = String.join(".", "172", "30", "90", "145");

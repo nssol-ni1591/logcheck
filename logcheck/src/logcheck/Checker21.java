@@ -53,17 +53,9 @@ public class Checker21 extends AbstractChecker<Map<NetAddr, Map<String, Map<Stri
 					Map<String, AccessLogSummary> msgmap;
 					AccessLogSummary msg;
 
-					idmap = map.get(addr);
-					if (idmap == null) {
-						idmap = new TreeMap<>();
-						map.put(addr, idmap);
-					}
+					idmap = map.computeIfAbsent(addr, key -> new TreeMap<>());
 
-					msgmap = idmap.get(b.getId());
-					if (msgmap == null) {
-						msgmap = new TreeMap<>();
-						idmap.put(b.getId(), msgmap);
-					}
+					msgmap = idmap.computeIfAbsent(b.getId(), key -> new TreeMap<>());
 
 					msg = msgmap.get(pattern);
 					if (msg == null) {
@@ -102,7 +94,7 @@ public class Checker21 extends AbstractChecker<Map<NetAddr, Map<String, Map<Stri
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper<Checker21>(Checker21.class).weld(2, argv);
+		int rc = new WeldWrapper(Checker21.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

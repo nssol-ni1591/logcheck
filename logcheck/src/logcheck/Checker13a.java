@@ -3,7 +3,6 @@ package logcheck;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -26,7 +25,7 @@ import logcheck.util.weld.WeldWrapper;
  * Checker12のログ数の集約を行わないバージョン
  * 全てのログが出力されるので、認証失敗の状況などより細かい解析が可能
  */
-public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessLogBean>>>> {
+public class Checker13a extends AbstractChecker<Map<String, Map<Isp, List<AccessLogBean>>>> {
 
 	@Inject private KnownList knownlist;
 	@Inject private MagList maglist;
@@ -38,33 +37,24 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 
 	@Override
 	public Map<String, Map<Isp, List<AccessLogBean>>> call(Stream<String> stream) {
-		final Map<String, Map<Isp, List<AccessLogBean>>> map = new TreeMap<>();
-		stream.parallel()
+		return stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
 				.filter(b -> Stream.of(IP_RANGE_PATTERN)
 						// 正規化表現に一致するメッセージのみを処理対象にする
 						.anyMatch(p -> p.matcher(b.getMsg()).matches())
 						)
-				.forEach(b -> {
-					NetAddr addr = b.getAddr();
-					IspList isp = getIsp(addr, maglist, knownlist);
-					if (isp != null) {
-						Map<Isp, List<AccessLogBean>> ispmap;
-						List<AccessLogBean> addrmap;
-
-						ispmap = map.get(isp.getCountry());
-						if (ispmap == null) {
-							ispmap = new TreeMap<>();
-							map.put(isp.getCountry(), ispmap);
-						}
-
-						addrmap = ispmap.computeIfAbsent(isp, key -> new ArrayList<>());
-
-						addrmap.add(b);
-					}
-				});
-		return map;
+				.map(LogWrapper::new)
+				.filter(log -> log.getIspList() != null)
+				.collect(Collectors.groupingBy(
+						LogWrapper::getCountry
+						, TreeMap::new
+						, Collectors.groupingBy(
+								LogWrapper::getIspList
+								, TreeMap::new
+								, Collectors.mapping(LogWrapper::getAccessLogBean
+										, Collectors.toList()))
+						));
 	}
 
 	@Override
@@ -84,7 +74,32 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper(Checker13.class).weld(2, argv);
+		int rc = new WeldWrapper(Checker13a.class).weld(2, argv);
 		System.exit(rc);
 	}
+
+	class LogWrapper {
+
+		private final AccessLogBean b;
+		private final String country;
+		private final IspList isp;
+
+		LogWrapper(AccessLogBean b) {
+			this.b = b;
+			NetAddr addr = b.getAddr();
+			this.isp = getIsp(addr, maglist, knownlist);
+			this.country = isp.getCountry();
+		}
+
+		String getCountry() {
+			return country;
+		}
+		IspList getIspList() {
+			return isp;
+		}
+		AccessLogBean getAccessLogBean() {
+			return b;
+		}
+	}
+
 }

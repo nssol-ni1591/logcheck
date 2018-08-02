@@ -173,7 +173,7 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> {
 	}
 
 	public static void main(String... argv) {
-		int rc = new WeldWrapper<Checker10>(Checker10.class).weld(2, argv);
+		int rc = new WeldWrapper(Checker10.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

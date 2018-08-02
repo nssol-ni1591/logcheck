@@ -40,17 +40,9 @@ public class Checker5 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 			map.put(isp.getCountry(), ispmap);
 		}
 
-		Map<String, Integer> msgmap = ispmap.get(isp);
-		if (msgmap == null) {
-			msgmap = new TreeMap<>();
-			ispmap.put(isp, msgmap);
-		}
+		Map<String, Integer> msgmap = ispmap.computeIfAbsent(isp, key -> new TreeMap<>());
 
-		Integer count = msgmap.get(msg);
-		if (count == null) {
-			count = Integer.valueOf(0);
-			msgmap.put(msg, count);
-		}
+		Integer count = msgmap.computeIfAbsent(msg, key -> Integer.valueOf(0));
 		count += 1;
 		msgmap.put(msg, count);		
 	}
@@ -107,7 +99,7 @@ public class Checker5 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 	}
 
 	public static void main(String ... argv) {
-		int rc = new WeldWrapper<Checker5>(Checker5.class).weld(2, argv);
+		int rc = new WeldWrapper(Checker5.class).weld(2, argv);
 		System.exit(rc);
 	}
 }

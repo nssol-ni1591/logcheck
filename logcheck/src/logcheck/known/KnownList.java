@@ -23,4 +23,8 @@ public interface KnownList extends Set<KnownListIsp> {
 	// for envoronment not using weld-se
 	void init();
 
+	default void store(String file) throws IOException {
+		throw new IllegalArgumentException("not impelemnt");
+	}
+
 }
