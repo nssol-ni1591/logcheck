@@ -3,8 +3,7 @@ package logcheck;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -101,19 +100,7 @@ public class Checker3a extends AbstractChecker<Map<String, IspMap<Map<String, In
 									@Override
 									public IspMap<Map<String, Integer>> apply(IspMap<Map<String, Integer>> t,
 											IspMap<Map<String, Integer>> u) {
-										u.keySet()
-											.forEach(addr -> {
-												Map<String, Integer> newMap = u.get(addr);
-												Map<String, Integer> oldMap = t.get(addr);
-												if (oldMap == null) {
-													oldMap = newMap;
-												}
-												else {
-													String key = newMap.keySet().iterator().next();
-													int count = oldMap.get(key);
-													oldMap.put(key, ++count);
-												}
-											});
+										// callされない
 										return t;
 									}
 									
@@ -134,74 +121,8 @@ public class Checker3a extends AbstractChecker<Map<String, IspMap<Map<String, In
 
 							@Override
 							public Set<Characteristics> characteristics() {
-								return new Set<Characteristics>() {
-
-									@Override
-									public int size() {
-										return 0;
-									}
-
-									@Override
-									public boolean isEmpty() {
-										return false;
-									}
-
-									@Override
-									public boolean contains(Object o) {
-										return false;
-									}
-
-									@Override
-									public Iterator<Characteristics> iterator() {
-										return null;
-									}
-
-									@Override
-									public Object[] toArray() {
-										return null;
-									}
-
-									@Override
-									public <T> T[] toArray(T[] a) {
-										return null;
-									}
-
-									@Override
-									public boolean add(Characteristics e) {
-										return false;
-									}
-
-									@Override
-									public boolean remove(Object o) {
-										return false;
-									}
-
-									@Override
-									public boolean containsAll(Collection<?> c) {
-										return false;
-									}
-
-									@Override
-									public boolean addAll(Collection<? extends Characteristics> c) {
-										return false;
-									}
-
-									@Override
-									public boolean retainAll(Collection<?> c) {
-										return false;
-									}
-
-									@Override
-									public boolean removeAll(Collection<?> c) {
-										return false;
-									}
-
-									@Override
-									public void clear() {
-										// Do nothing
-									}
-									
-								};
+								// 使用されないので、空のSetを返却する
+								return new HashSet<>();
 							}
 						}
 						))

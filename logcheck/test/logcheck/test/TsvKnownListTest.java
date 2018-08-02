@@ -56,7 +56,7 @@ public class TsvKnownListTest {
 	public void test02() {
 		for (KnownListIsp n : map) {
 			System.out.println(n.getCountry() + "\t" + n.getName() + "\t" + n.getAddress());
-			System.out.print("\t" + n.getAddress().stream().map(a -> a.toStringNetwork()).collect(Collectors.toList()));
+			System.out.print("\t[" + n.getAddress().stream().map(a -> a.toStringNetwork()).collect(Collectors.joining(",")) + "]");
 			System.out.println();
 		}
 	}

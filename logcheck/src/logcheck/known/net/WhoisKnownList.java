@@ -45,8 +45,9 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 	}
 
 	private boolean check(KnownListIsp isp) {
-		Objects.requireNonNull(isp);
-
+		if (isp == null) {
+			return false;
+		}
 		if (isp.getName() == null) {
 			return false;
 		}
@@ -145,9 +146,9 @@ public class WhoisKnownList extends LinkedHashSet<KnownListIsp> implements Known
 						log.log(Level.INFO, "{0}: addr={1} => isp={2}", new Object[] { w.getName(), addr, tmp });
 						return false;
 					}
-					log.log(Level.INFO, "{0}: addr={1} => name={2}, country={3}, net={4}",
+					log.log(Level.INFO, "{0}: addr={1} => name={2}, country={3}, net=[{4}]",
 							new Object[] { w.getName(), addr, tmp.getName(), tmp.getCountry(),
-									tmp.getAddress().stream().map(a -> a.toStringNetwork()).collect(Collectors.toList())
+									tmp.getAddress().stream().map(NetAddr::toStringNetwork).collect(Collectors.joining(","))
 					});
 					return check(tmp);
 				})

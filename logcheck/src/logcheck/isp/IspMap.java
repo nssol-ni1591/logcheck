@@ -6,8 +6,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
 
-import com.sun.istack.internal.NotNull;
-
 import logcheck.util.net.NetAddr;
 
 public class IspMap<V> implements Isp {
@@ -19,7 +17,7 @@ public class IspMap<V> implements Isp {
 	public IspMap() {
 		this.ref = new TreeMap<>();
 	}
-	public IspMap(@NotNull String name, @NotNull String country) {
+	public IspMap(String name, String country) {
 		this.name = name;
 		this.country = country;
 		this.ref = new TreeMap<>();

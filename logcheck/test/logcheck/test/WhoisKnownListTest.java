@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -73,8 +72,8 @@ public class WhoisKnownListTest {
 
 		KnownListIsp isp = whois == null ? knownlist.get(new ClientAddr(addr)) : whois.get(new ClientAddr(addr));
 		if (isp != null) {
-			List<String> addrs = isp.getAddress().stream().map(a -> a.toStringNetwork()).collect(Collectors.toList());
-			System.out.println(name + ": addr=" + addr + ", isp=[" + isp + ", C=" + isp.getCountry() +", NET=" + addrs + "]");
+			String addrs = isp.getAddress().stream().map(a -> a.toStringNetwork()).collect(Collectors.joining(","));
+			System.out.println(name + ": addr=" + addr + ", isp=[" + isp + ", C=" + isp.getCountry() +", NET=[" + addrs + "]]");
 		}
 		else {
 			System.out.println(name + ": addr=" + addr + ", isp=null");
@@ -86,12 +85,12 @@ public class WhoisKnownListTest {
 	public void test01() {
 		KnownListIsp isp = getIsp("210.173.87.154");	// KDDI CORPORATION
 		assertTrue("equals same", isp.equals(isp));
-		assertFalse("equals null", isp.equals(null));
+		//assertFalse("equals null", isp.equals(null));
 		System.out.println("isp.hashCode()=" + isp.hashCode());
 
 		if (check) {
 			assertTrue("equals same", knownlist.equals(knownlist));
-			assertFalse("equals null", knownlist.equals(null));
+			//assertFalse("equals null", knownlist.equals(null));
 			System.out.println("knownlist.hashCode()=" + knownlist.hashCode());
 		}
 		else {

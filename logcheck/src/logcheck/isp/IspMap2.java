@@ -17,7 +17,12 @@ public class IspMap2<V> extends TreeMap<NetAddr, V> implements Isp {
 	}
 	public IspMap2(String name, String country) {
 		this.name = name;
-		this.country = country;
+		if (country == null) {
+			this.country = null;
+		}
+		else {
+			this.country = country.length() != 2 ? country : country.toUpperCase();
+		}
 	}
 		
 	@Override
@@ -32,7 +37,12 @@ public class IspMap2<V> extends TreeMap<NetAddr, V> implements Isp {
 		return country;
 	}
 	public void setCountry(String country) {
-		this.country = country;
+		if (country == null) {
+			this.country = null;
+		}
+		else {
+			this.country = country.length() != 2 ? country : country.toUpperCase();
+		}
 	}
 
 	@Override
@@ -48,10 +58,7 @@ public class IspMap2<V> extends TreeMap<NetAddr, V> implements Isp {
 			if (!Objects.equals(country, map.getCountry())) {
 				return false;
 			}
-			if (!Objects.equals(name, map.getName())) {
-				return false;
-			}
-			return true;
+			return Objects.equals(name, map.getName());
 		}
 		return false;
 	}
