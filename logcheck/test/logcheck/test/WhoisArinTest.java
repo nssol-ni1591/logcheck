@@ -4,7 +4,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import logcheck.known.net.arin.WhoisArin;
+import logcheck.known.impl.net.WhoisArin;
 
 public class WhoisArinTest extends WhoisKnownListTest {
 

@@ -2,8 +2,8 @@ package logcheck.fw;
 
 import java.util.Objects;
 
-import logcheck.util.net.ClientAddr;
-import logcheck.util.net.NetAddr;
+import logcheck.util.ClientAddr;
+import logcheck.util.NetAddr;
 
 public class FwLogBean implements Comparable<FwLogBean> {
 

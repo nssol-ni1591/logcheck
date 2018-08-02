@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
 
-import logcheck.util.net.NetAddr;
+import logcheck.util.NetAddr;
 
 public class IspMap<V> implements Isp {
 

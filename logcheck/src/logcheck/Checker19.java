@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import logcheck.log.AccessLog;
 import logcheck.proj.ProjList;
 import logcheck.proj.ProjListBean;
-import logcheck.util.weld.WeldWrapper;
+import logcheck.util.WeldWrapper;
 
 /*
  * プロジェクトの利用状況を取得する：

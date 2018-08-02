@@ -4,7 +4,7 @@ import java.util.Set;
 
 import logcheck.isp.Isp;
 import logcheck.isp.IspList;
-import logcheck.util.net.NetAddr;
+import logcheck.util.NetAddr;
 
 public class SiteListKnownIsp implements SiteListIsp {
 

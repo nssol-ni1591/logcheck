@@ -22,7 +22,7 @@ import logcheck.site.SiteListIspImpl;
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
 import logcheck.user.UserListSite;
-import logcheck.util.weld.WeldWrapper;
+import logcheck.util.WeldWrapper;
 
 /*
  * ユーザの利用状況を取得する：

@@ -4,7 +4,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import logcheck.known.net.apnic.WhoisApnic;
+import logcheck.known.impl.net.WhoisApnic;
 
 public class WhoisApnicTest extends WhoisKnownListTest {
 

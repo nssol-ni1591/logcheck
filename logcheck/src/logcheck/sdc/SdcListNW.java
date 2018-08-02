@@ -10,8 +10,8 @@ import java.util.stream.Stream;
 
 import logcheck.annotations.UseSdcListNW;
 import logcheck.annotations.WithElaps;
-import logcheck.util.net.ClientAddr;
-import logcheck.util.net.NetAddr;
+import logcheck.util.ClientAddr;
+import logcheck.util.NetAddr;
 
 /*
  * Checker50のsdclistの対象をNetworkアドレスに限定した.

@@ -3,8 +3,8 @@ package logcheck.log;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import logcheck.util.net.ClientAddr;
-import logcheck.util.net.NetAddr;
+import logcheck.util.ClientAddr;
+import logcheck.util.NetAddr;
 
 public class AccessLogBean {
 

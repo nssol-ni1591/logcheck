@@ -3,8 +3,8 @@ package logcheck.test;
 import java.io.IOException;
 
 import logcheck.site.SiteListIsp;
-import logcheck.site.tsv.TsvSiteList;
-import logcheck.site.tsv.TsvSiteListBean;
+import logcheck.site.impl.TsvSiteList;
+import logcheck.site.impl.TsvSiteListBean;
 
 import static org.junit.Assert.*;
 

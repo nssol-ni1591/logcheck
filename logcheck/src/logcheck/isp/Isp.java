@@ -2,7 +2,7 @@ package logcheck.isp;
 
 import java.util.Objects;
 
-import logcheck.util.net.NetAddr;
+import logcheck.util.NetAddr;
 
 public interface Isp extends Comparable<Isp> {
 

@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import logcheck.annotations.WithElaps;
-import logcheck.util.net.NetAddr;
+import logcheck.util.NetAddr;
 
 public class SdcList extends ArrayList<SdcListIsp> {
 

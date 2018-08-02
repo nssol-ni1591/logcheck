@@ -6,7 +6,7 @@ import logcheck.fw.FwLogBean;
 import logcheck.fw.FwLogSummary;
 import logcheck.isp.Isp;
 import logcheck.isp.IspBean;
-import logcheck.util.net.NetAddr;
+import logcheck.util.NetAddr;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

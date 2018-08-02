@@ -7,8 +7,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import logcheck.user.sslindex.SSLIndexBean;
-import logcheck.util.net.NetAddr;
+import logcheck.user.impl.SSLIndexBean;
+import logcheck.util.NetAddr;
 
 public class UserListBean implements Comparable<UserListBean> {
 

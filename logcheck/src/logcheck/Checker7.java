@@ -18,8 +18,8 @@ import logcheck.log.AccessLog;
 import logcheck.log.AccessLogBean;
 import logcheck.log.AccessLogSummary;
 import logcheck.mag.MagList;
-import logcheck.util.net.NetAddr;
-import logcheck.util.weld.WeldWrapper;
+import logcheck.util.NetAddr;
+import logcheck.util.WeldWrapper;
 
 /*
  * 国 > ISP > クライアントIP > メッセージ 毎にログ数を集計する

@@ -24,7 +24,7 @@ import logcheck.annotations.UseChecker14;
 import logcheck.annotations.UseChecker23;
 import logcheck.annotations.UseChecker50;
 import logcheck.annotations.UseChecker8;
-import logcheck.util.weld.WeldWrapper;
+import logcheck.util.WeldWrapper;
 
 public class CheckerMainTest {
 

@@ -23,7 +23,7 @@ import logcheck.Checker3a;
 import logcheck.Checker3b;
 import logcheck.Checker3c;
 import logcheck.Checker8a;
-import logcheck.util.weld.WeldWrapper;
+import logcheck.util.WeldWrapper;
 
 public class CheckerMainTest2 {
 

@@ -19,10 +19,10 @@ import org.junit.Test;
 
 import logcheck.known.KnownList;
 import logcheck.known.KnownListIsp;
-import logcheck.known.net.Whois;
-import logcheck.known.net.WhoisKnownList;
+import logcheck.known.impl.Whois;
+import logcheck.known.impl.WhoisKnownList;
+import logcheck.util.ClientAddr;
 import logcheck.util.Constants;
-import logcheck.util.net.ClientAddr;
 
 public class WhoisKnownListTest {
 

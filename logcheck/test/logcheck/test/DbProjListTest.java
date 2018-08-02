@@ -11,7 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import logcheck.proj.ProjListBean;
-import logcheck.proj.db.DbProjList;
+import logcheck.proj.impl.DbProjList;
 
 
 /*

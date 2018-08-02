@@ -32,8 +32,8 @@ import logcheck.annotations.WithElaps;
 import logcheck.isp.IspList;
 import logcheck.known.KnownList;
 import logcheck.mag.MagList;
-import logcheck.util.net.NetAddr;
-import logcheck.util.weld.WeldRunner;
+import logcheck.util.NetAddr;
+import logcheck.util.WeldRunner;
 
 /*
  * アクセスログのソースIPに一致するISP名/企業名を取得し、国別にISP名/企業名と出力ログ数を出力する

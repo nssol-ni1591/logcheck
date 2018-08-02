@@ -3,7 +3,7 @@ package logcheck.isp;
 import java.util.Objects;
 import java.util.TreeMap;
 
-import logcheck.util.net.NetAddr;
+import logcheck.util.NetAddr;
 
 public class IspMap2<V> extends TreeMap<NetAddr, V> implements Isp {
 

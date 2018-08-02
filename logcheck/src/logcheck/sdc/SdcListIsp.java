@@ -1,7 +1,7 @@
 package logcheck.sdc;
 
 import logcheck.isp.IspListImpl;
-import logcheck.util.net.NetAddr;
+import logcheck.util.NetAddr;
 
 public class SdcListIsp extends IspListImpl {
 

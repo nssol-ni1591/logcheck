@@ -14,8 +14,8 @@ import logcheck.isp.IspList;
 import logcheck.isp.IspListImpl;
 import logcheck.isp.IspMap;
 import logcheck.isp.IspMap2;
-import logcheck.util.net.ClientAddr;
-import logcheck.util.net.NetAddr;
+import logcheck.util.ClientAddr;
+import logcheck.util.NetAddr;
 
 public class IspTest {
 	@BeforeClass

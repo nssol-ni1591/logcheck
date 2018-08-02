@@ -11,8 +11,8 @@ import java.util.stream.Stream;
 import logcheck.log.AccessLog;
 import logcheck.log.AccessLogBean;
 import logcheck.log.AccessLogSummary;
-import logcheck.util.net.NetAddr;
-import logcheck.util.weld.WeldWrapper;
+import logcheck.util.NetAddr;
+import logcheck.util.WeldWrapper;
 
 /*
  * ログ解析用の集約ツール1''： Checker8、22の簡略版

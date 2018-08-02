@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import logcheck.sdc.SdcList;
 import logcheck.sdc.SdcListIsp;
-import logcheck.util.net.NetAddr;
+import logcheck.util.NetAddr;
 
 import static org.junit.Assert.*;
 

@@ -10,9 +10,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import logcheck.site.db.DbSiteList;
+import logcheck.site.impl.DbSiteList;
 import logcheck.user.UserListBean;
-import logcheck.user.ssl.MappedSSLUserList;
+import logcheck.user.impl.MappedSSLUserList;
 
 
 /*

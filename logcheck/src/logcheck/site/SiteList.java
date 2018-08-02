@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import logcheck.mag.MagList;
-import logcheck.util.net.NetAddr;
+import logcheck.util.NetAddr;
 
 /*
  * VPNクライアント証明書が発行されているユーザの一覧を取得する

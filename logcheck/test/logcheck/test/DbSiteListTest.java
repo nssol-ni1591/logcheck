@@ -11,8 +11,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import logcheck.site.SiteListIsp;
-import logcheck.site.db.DbSiteList;
-import logcheck.util.net.NetAddr;
+import logcheck.site.impl.DbSiteList;
+import logcheck.util.NetAddr;
 
 
 /*

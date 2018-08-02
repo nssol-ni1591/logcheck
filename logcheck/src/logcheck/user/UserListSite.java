@@ -5,8 +5,8 @@ import java.util.Set;
 import logcheck.known.KnownListIsp;
 import logcheck.site.SiteListIsp;
 import logcheck.site.SiteListKnownIsp;
+import logcheck.util.NetAddr;
 import logcheck.util.Summary;
-import logcheck.util.net.NetAddr;
 
 public class UserListSite extends Summary<SiteListIsp> {
 

@@ -3,8 +3,8 @@ package logcheck.log;
 import java.util.Objects;
 
 import logcheck.isp.Isp;
+import logcheck.util.NetAddr;
 import logcheck.util.Summary;
-import logcheck.util.net.NetAddr;
 
 public class AccessLogSummary extends Summary<String> implements Comparable<AccessLogSummary> {
 

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import logcheck.isp.IspList;
-import logcheck.util.net.NetAddr;
+import logcheck.util.NetAddr;
 
 public interface MagList {
 

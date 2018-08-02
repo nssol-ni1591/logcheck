@@ -6,7 +6,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import logcheck.util.net.NetAddr;
+import logcheck.util.NetAddr;
 
 public class NetAddrTest {
 

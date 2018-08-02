@@ -16,8 +16,8 @@ import logcheck.known.KnownList;
 import logcheck.log.AccessLog;
 import logcheck.log.AccessLogSummary;
 import logcheck.mag.MagList;
-import logcheck.util.net.NetAddr;
-import logcheck.util.weld.WeldWrapper;
+import logcheck.util.NetAddr;
+import logcheck.util.WeldWrapper;
 
 /*
  * 利用申請外接続の検索処理：

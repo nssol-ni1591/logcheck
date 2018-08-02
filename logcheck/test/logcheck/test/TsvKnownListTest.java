@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import logcheck.known.KnownList;
 import logcheck.known.KnownListIsp;
-import logcheck.known.tsv.TsvKnownList;
+import logcheck.known.impl.TsvKnownList;
 
 /*
  * 既知のISPのIPアドレスを取得する

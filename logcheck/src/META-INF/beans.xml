@@ -20,9 +20,9 @@
 		<class>logcheck.user.ssl.MapSSLUserList</class>
 
 		 -->
-		<class>logcheck.known.net.WhoisKnownList</class>
-		<class>logcheck.site.db.DbSiteList</class>
-		<class>logcheck.user.ssl.MappedSSLUserList</class>
-		<class>logcheck.proj.db.DbProjList</class>
+		<class>logcheck.known.impl.WhoisKnownList</class>
+		<class>logcheck.site.impl.DbSiteList</class>
+		<class>logcheck.user.impl.MappedSSLUserList</class>
+		<class>logcheck.proj.impl.DbProjList</class>
 	</alternatives>
 </beans>
