@@ -51,8 +51,9 @@ public class IspMap2<V> extends TreeMap<NetAddr, V> implements Isp {
 	}
 	@Override
 	public boolean equals(Object o) {
-		Objects.requireNonNull(o);
-
+		if (o == null) {
+			return false;
+		}
 		if (o instanceof IspMap2) {
 			IspMap2<?> map = (IspMap2<?>)o;
 			if (!Objects.equals(country, map.getCountry())) {

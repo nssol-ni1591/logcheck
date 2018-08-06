@@ -82,7 +82,7 @@ public class AccessLogTest {
 		assertNotNull("getRoles() is null", sum.getRoles());
 		
 		assertTrue("equals same object", sum.equals(sum));
-		//assertFalse("equals null", sum.equals(null));
+		assertFalse("equals null", sum.equals(null));
 
 		System.out.println("hashCode()=" + sum.hashCode());
 	}

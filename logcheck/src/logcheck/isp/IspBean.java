@@ -45,8 +45,9 @@ public class IspBean<E> implements Isp {
 	}
 	@Override
 	public boolean equals(Object o) {
-		Objects.requireNonNull(o);
-
+		if (o == null) {
+			return false;
+		}
 		if (o instanceof Isp) {
 			Isp isp = (Isp) o;
 			int rc = this.compareTo(isp);

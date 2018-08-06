@@ -56,7 +56,7 @@ public class TsvSiteListTest {
 		assertEquals("match projDelFlag", "0", isp.getProjDelFlag());
 		assertEquals("match siteDelFlag", "0", isp.getSiteDelFlag());
 
-		//assertFalse("equals(null) is true", isp.equals(null));
+		assertFalse("equals(null) is true", isp.equals(null));
 		assertNotNull("isp#toString is null", isp.getAddress());
 	}
 	@Test(expected = IOException.class)

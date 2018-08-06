@@ -69,8 +69,9 @@ public class FwLogBean implements Comparable<FwLogBean> {
 	}
 	@Override
 	public boolean equals(Object o) {
-		Objects.requireNonNull(o);
-
+		if (o == null) {
+			return false;
+		}
 		if (o instanceof FwLogBean) {
 			return compareTo((FwLogBean)o) == 0;
 		}

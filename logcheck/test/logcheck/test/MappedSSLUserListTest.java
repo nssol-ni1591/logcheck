@@ -67,7 +67,7 @@ public class MappedSSLUserListTest {
 		assertNotNull("getLastDate() is null", user.getLastDate());
 
 		assertTrue("equals same object", user.equals(user));
-		//assertFalse("equals null", user.equals(null));
+		assertFalse("equals null", user.equals(null));
 		System.out.println("user=" + user.toString());
 	}
 	@Test

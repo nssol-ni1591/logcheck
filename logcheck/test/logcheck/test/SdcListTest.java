@@ -45,7 +45,7 @@ public class SdcListTest {
 		//for (SdcListIsp isp : map.values()) {
 		for (SdcListIsp isp : map) {
 			isp.toString();
-			//assertFalse("equals(null) ... false", isp.equals(null));
+			assertFalse("equals(null) ... false", isp.equals(null));
 			ix = ix + 1;
 		}
 	}

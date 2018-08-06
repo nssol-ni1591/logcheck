@@ -53,7 +53,7 @@ public class NetAddrTest {
 		NetAddr addr4 = new NetAddr("192.168.2.1");
 		assertTrue(addr1.equals(addr1));
 		assertTrue(addr1.equals(addr2));
-		//assertFalse(addr1.equals(null));
+		assertFalse(addr1.equals(null));
 		assertFalse(addr1.equals(addr3));
 		assertFalse(addr1.equals(addr4));
 	}

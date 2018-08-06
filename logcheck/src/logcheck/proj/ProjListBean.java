@@ -57,11 +57,12 @@ public class ProjListBean implements Comparable<ProjListBean> {
 		return super.hashCode();
 	}
 	@Override
-	public boolean equals(Object obj) {
-		Objects.requireNonNull(obj);
-
-		if (obj instanceof ProjListBean) {
-			return this.compareTo((ProjListBean)obj) == 0;
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (o instanceof ProjListBean) {
+			return this.compareTo((ProjListBean) o) == 0;
 		}
 		return false;
 	}

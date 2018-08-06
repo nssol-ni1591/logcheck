@@ -241,23 +241,26 @@ public class NetAddr implements Comparable<NetAddr> {
 		return super.hashCode();
 	}
 	@Override
-	public boolean equals(Object another) {
-		Objects.requireNonNull(another);
-
-		if (another == this) {
-			return true;
-		}
-		if (getClass() != another.getClass()) {
+	public boolean equals(Object o) {
+		if (o == null) {
 			return false;
 		}
-		if (another instanceof NetAddr) {
-			return compareTo((NetAddr)another) == 0;
+		if (o == this) {
+			return true;
+		}
+		if (getClass() != o.getClass()) {
+			return false;
+		}
+		if (o instanceof NetAddr) {
+			return compareTo((NetAddr) o) == 0;
 		}
 		return false;
 	}
 
 	public boolean within(NetAddr another) {
-		Objects.requireNonNull(another);
+		if (another == null) {
+			return false;
+		}
 
 		int[] addr = another.getNetworkAddr();
 		// 多分、0.0.0.0 => 非固定 のチェックは行わなくても大丈夫

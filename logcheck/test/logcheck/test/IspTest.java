@@ -70,6 +70,7 @@ public class IspTest {
 		assertFalse("ispmap1 == ispmap2", ispmap1.equals(ispmap2));
 		assertFalse("ispmap2 == ispmap3", ispmap2.equals(ispmap3));
 		assertFalse("ispmap2 == ispmap3", ispmap2.equals(ispmap4));
+		assertFalse("ispmap2 == null", ispmap2.equals(null));
 		assertEquals("getName() != a", "a", ispmap3.getName());
 		assertEquals("getCountry() != b", "b", ispmap3.getCountry());
 		System.out.println("hashCode: " + ispmap1.hashCode());
@@ -84,6 +85,7 @@ public class IspTest {
 		assertFalse("ispmap1 == ispmap2", ispmap1.equals(ispmap2));
 		assertTrue("ispmap2 == ispmap3", ispmap2.equals(ispmap3));
 		assertFalse("ispmap2 == ispmap3", ispmap2.equals(ispmap4));
+		assertFalse("ispmap2 == null", ispmap2.equals(null));
 		assertEquals("getName() != a", "a", ispmap3.getName());
 		assertEquals("getCountry() != b", "b", ispmap3.getCountry());
 		System.out.println("hashCode: " + ispmap1.hashCode());

@@ -112,8 +112,9 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 	}
 	@Override
 	public boolean equals(Object o) {
-		Objects.requireNonNull(o);
-
+		if (o == null) {
+			return false;
+		}
 		if (o instanceof AccessLogSummary) {
 			AccessLogSummary sum = (AccessLogSummary)o;
 			if (usrId.equals(sum.getId())

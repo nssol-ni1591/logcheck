@@ -74,8 +74,9 @@ public class FwLogSummary extends Summary<FwLogBean> implements Comparable<FwLog
 	}
 	@Override
 	public boolean equals(Object obj) {
-		Objects.requireNonNull(obj);
-
+		if (obj == null) {
+			return false;
+		}
 		if (obj instanceof FwLogSummary) {
 			return compareTo((FwLogSummary) obj) == 0;
 		}

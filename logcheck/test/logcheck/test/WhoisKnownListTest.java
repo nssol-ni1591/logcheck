@@ -85,12 +85,12 @@ public class WhoisKnownListTest {
 	public void test01() {
 		KnownListIsp isp = getIsp("210.173.87.154");	// KDDI CORPORATION
 		assertTrue("equals same", isp.equals(isp));
-		//assertFalse("equals null", isp.equals(null));
+		assertFalse("equals null", isp.equals(null));
 		System.out.println("isp.hashCode()=" + isp.hashCode());
 
 		if (check) {
 			assertTrue("equals same", knownlist.equals(knownlist));
-			//assertFalse("equals null", knownlist.equals(null));
+			assertFalse("equals null", knownlist.equals(null));
 			System.out.println("knownlist.hashCode()=" + knownlist.hashCode());
 		}
 		else {
