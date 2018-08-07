@@ -184,12 +184,11 @@ public abstract class AbstractChecker<T> implements WeldRunner {
 		}
 		if (knownlist != null) {
 			isp = knownlist.get(addr);
-			if (isp != null) {
-				return isp;
-			}
+			// knownlist.get(...)はnullを返却しない
+			return isp;
 		}
-		// Whoisクラスではサイト情報が取得できない場合でも、必ずクラスを生成するので
-		// 取得できない場合はあり得ない。はず
+		// Whoisクラスではサイト情報が取得できない場合でも、
+		// 必ずクラスを生成するので取得できない場合はあり得ない。はず
 		addrErrs.add(addr);
 		return null;
 	}

@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import logcheck.annotations.WithElaps;
 import logcheck.known.KnownList;
 import logcheck.known.KnownListIsp;
+import logcheck.util.Constants;
 import logcheck.util.NetAddr;
 
 /*
@@ -57,7 +58,8 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 		Optional<KnownListIsp> rc = this.stream()
 				.filter(isp -> isp.within(addr))
 				.findFirst();
-		return rc.isPresent() ? rc.get() : null;
+		//return rc.isPresent() ? rc.get() : null
+		return rc.isPresent() ? rc.get() : new KnownListIsp(addr.toString(), Constants.UNKNOWN_COUNTRY);
 	}
 
 	@WithElaps
@@ -67,12 +69,19 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 			input.filter(TsvKnownList::test)
 				.map(TsvKnownList::parse)
 				.forEach(b -> {
-					KnownListIsp isp = get(new NetAddr(b.getAddr()));
-					if (isp == null) {
-						isp = new KnownListIsp(b.getName(), b.getCountry());
-						add(isp);
+					//KnownListIsp isp = get(new NetAddr(b.getAddr()))
+					Optional<KnownListIsp> rc = this.stream()
+							.filter(i -> i.within(new NetAddr(b.getAddr())))
+							.findFirst();
+					if (rc.isPresent()) {
+						KnownListIsp isp = rc.get();
+						isp.addAddress(new NetAddr(b.getAddr()));
 					}
-					isp.addAddress(new NetAddr(b.getAddr()));
+					else {
+						KnownListIsp isp = new KnownListIsp(b.getName(), b.getCountry());
+						add(isp);
+						isp.addAddress(new NetAddr(b.getAddr()));
+					}
 				});
 		}
 		log.log(Level.INFO, "end load ... size={0}", this.size());

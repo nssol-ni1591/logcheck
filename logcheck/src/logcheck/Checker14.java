@@ -48,10 +48,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 		SiteListIsp magisp = sitelist.get(b.getAddr());
 		if (magisp == null) {
 			KnownListIsp isp = knownlist.get(b.getAddr());
-			if (isp == null) {
-				addrErrs.add(b.getAddr());
-				return;
-			}
+			// knownlist.get(...)はnullを返却しない
 			UserListSite site = new UserListSite(isp/*, "0"*/);
 			user.addSite(site);
 			site.update(b.getDate());
@@ -63,10 +60,11 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 			UserListSite site;
 			// プロジェクトIDはRoleから取得する
 			// ただ複数あるパターンが一般的で、1つ目は大体「NSSDC Common Role」なので、2つ以上ある場合は2つ目をプロジェクトIDとする
-			if (b.getRoles().length == 0) {
+			String[] roles = b.getRoles();
+			if (roles.length == 0) {
 				site = new UserListSite(new SiteListIspImpl(magisp, "--"), "-1", "");
 			}
-			else if (b.getRoles().length < 2) {
+			else if (roles.length == 1) {
 				site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[0]), "-1", "");
 			}
 			else {
