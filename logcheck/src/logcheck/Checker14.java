@@ -61,7 +61,12 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 		}
 		else {
 			UserListSite site;
-			if (/*b.getRoles() == null || */b.getRoles().length < 2) {
+			// プロジェクトIDはRoleから取得する
+			// ただ複数あるパターンが一般的で、1つ目は大体「NSSDC Common Role」なので、2つ以上ある場合は2つ目をプロジェクトIDとする
+			if (b.getRoles().length == 0) {
+				site = new UserListSite(new SiteListIspImpl(magisp, "--"), "-1", "");
+			}
+			else if (b.getRoles().length < 2) {
 				site = new UserListSite(new SiteListIspImpl(magisp, b.getRoles()[0]), "-1", "");
 			}
 			else {
