@@ -77,18 +77,19 @@ public class Checker3a extends AbstractChecker<Map<String, IspMap<Map<String, In
 												.filter(p -> p.matcher(b.getMsg()).matches())
 												.map(Pattern::toString)
 												.findFirst();
-										String m = rc.isPresent() ? rc.get() : b.getMsg();
+										if (rc.isPresent()) {
+											String m = rc.get();
+											NetAddr addr = b.getAddr();
+											IspList isp = getIsp(addr, maglist, knownlist);
+											ispmap.setName(isp.getName());
+											ispmap.setCountry(isp.getCountry());
 
-										NetAddr addr = b.getAddr();
-										IspList isp = getIsp(addr, maglist, knownlist);
-										ispmap.setName(isp.getName());
-										ispmap.setCountry(isp.getCountry());
+											Map<String, Integer> client = ispmap.computeIfAbsent(addr, key -> new TreeMap<>());
 
-										Map<String, Integer> client = ispmap.computeIfAbsent(addr, key -> new TreeMap<>());
-
-										Integer count = client.computeIfAbsent(m, key -> Integer.valueOf(0));
-										count += 1;
-										client.put(m, count);
+											Integer count = client.computeIfAbsent(m, key -> Integer.valueOf(0));
+											count += 1;
+											client.put(m, count);
+										}
 									}
 								};
 							}

@@ -51,6 +51,12 @@ public class Checker3b extends AbstractChecker<Map<String, IspMap<Map<String, In
 			stream.parallel()
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
+				// collectの終わりのコメントのとおり、FAIL_PATTERNS_ALLに含まれないメッセージを除外する必要がある
+				// 除外処理は2度手間になるが仕方がない => Checker3cのようなWrapperを用意した方が効率が良い
+				.filter(b -> Stream.of(FAIL_PATTERNS_ALL)
+						.filter(p -> p.matcher(b.getMsg()).matches())
+						.map(Pattern::toString)
+						.findFirst().isPresent())
 				.collect(Collectors.groupingBy(
 						b -> {
 							NetAddr addr = b.getAddr();
@@ -70,25 +76,24 @@ public class Checker3b extends AbstractChecker<Map<String, IspMap<Map<String, In
 									// t: キー(NetAddr)が一致するIspMap or supplier()で生成された中身が空のIspMap
 									// b: AccessLogBean
 
-									//System.out.println("t=[" + t.getCountry() + "," + t.getName() + "], b=" + b)
-									// => このメソッドが呼び出された時点でキーが判明している仕組みがわからない
-									// => groupingBy()の第一引数でキーを取得している
-
 									Optional<String> rc = Stream.of(FAIL_PATTERNS_ALL)
 											.filter(p -> p.matcher(b.getMsg()).matches())
 											.map(Pattern::toString)
 											.findFirst();
-									String m = rc.isPresent() ? rc.get() : b.getMsg();
+									if (rc.isPresent()) {
+										String m = rc.get();
+										NetAddr addr = b.getAddr();
+										IspList isp = getIsp(addr, maglist, knownlist);
+										t.setName(isp.getName());
+										t.setCountry(isp.getCountry());
 
-									NetAddr addr = b.getAddr();
-									IspList isp = getIsp(addr, maglist, knownlist);
-									t.setName(isp.getName());
-									t.setCountry(isp.getCountry());
-
-									Map<String, Integer> client = t.computeIfAbsent(addr, key -> new TreeMap<>());
-									Integer count = client.computeIfAbsent(m, key -> Integer.valueOf(0));
-									count += 1;
-									client.put(m, count);
+										Map<String, Integer> client = t.computeIfAbsent(addr, key -> new TreeMap<>());
+										Integer count = client.computeIfAbsent(m, key -> Integer.valueOf(0));
+										count += 1;
+										client.put(m, count);
+									}
+									// FAIL_PATTERNS_ALLに合致しないメッセージでもt（空マップ by Supplier）が生成されているのでMapに値が存在する
+									// => この処理の前にfilterが必要
 								};
 							}
 

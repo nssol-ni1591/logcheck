@@ -60,12 +60,13 @@ public class Checker3 extends AbstractChecker<Map<String, IspMap<Map<String, Int
 							.filter(p -> p.matcher(b.getMsg()).matches())
 							.map(Pattern::toString)
 							.findFirst();
-					String m = rc.isPresent() ? rc.get() : b.getMsg();
-
-					NetAddr addr = b.getAddr();
-					IspList isp = getIsp(addr, maglist, knownlist);
-					if (isp != null) {
-						sub(map, isp, b, m);
+					if (rc.isPresent()) {
+						String m = rc.get();
+						NetAddr addr = b.getAddr();
+						IspList isp = getIsp(addr, maglist, knownlist);
+						if (isp != null) {
+							sub(map, isp, b, m);
+						}
 					}
 				});
 		return map;

@@ -53,6 +53,7 @@ public class Checker3c extends AbstractChecker<Map<String, IspMap2<Map<String, I
 				.filter(AccessLog::test)
 				.map(AccessLog::parse)
 				.map(LogWrapper::new)
+				.filter(log -> log.getPattern() != null)
 				.collect(Collectors.groupingBy(
 						LogWrapper::getKey
 						, Collectors.groupingBy(
@@ -115,7 +116,7 @@ public class Checker3c extends AbstractChecker<Map<String, IspMap2<Map<String, I
 					.filter(p -> p.matcher(b.getMsg()).matches())
 					.map(Pattern::toString)
 					.findFirst();
-			pattern = rc.isPresent() ? rc.get() : b.getMsg();
+			pattern = rc.isPresent() ? rc.get() : null;
 		}
 
 		public NetAddr getAddr() {
