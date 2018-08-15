@@ -1,6 +1,9 @@
+[2018/08/07]
+・testデータ追加に伴うJunit実行結果の値を修正
+・equalsはnullどうし比較はtrueになるのでnullとの比較はfalseとした
 [2018/07/30a]
 ・groupingByの仮実装
-・Objects.requireNotNull採用によるequalsやcompareToの引数null時のNullPointerExceptionの発行
+・Objects.requireNotNull採用によるcompareToの引数null時のNullPointerExceptionの発行
 [2018/07/06]
 ・Checker52（SdcListをNW単位で集約）
 ・WeldRrapperの実装が冗長だったので修正
