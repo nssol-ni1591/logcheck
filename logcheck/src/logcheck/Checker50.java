@@ -16,7 +16,6 @@ import logcheck.annotations.UseChecker50;
 import logcheck.fw.FwLog;
 import logcheck.fw.FwLogSummary;
 import logcheck.isp.IspList;
-import logcheck.isp.IspListImpl;
 import logcheck.known.KnownList;
 import logcheck.known.impl.net.PrivateAddrList;
 import logcheck.mag.MagList;
@@ -53,10 +52,9 @@ public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 			return isp;
 		}
 		isp = knownlist.get(addr);
-		if (isp != null) {
-			return isp;
-		}
-		isp = new IspListImpl("社外サイト", "社外");
+		// knownlist.get(...)はnullを返却しない
+
+		//isp = new IspListImpl("社外サイト", "社外")
 		return isp;
 	}
 

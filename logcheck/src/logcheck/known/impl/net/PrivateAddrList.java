@@ -39,7 +39,8 @@ public class PrivateAddrList extends LinkedHashSet<KnownListIsp> implements Know
 		Optional<KnownListIsp> rc = this.stream()
 				.filter(isp -> isp.within(addr))
 				.findFirst();
-		return rc.isPresent() ? rc.get() : null;
+		//return rc.isPresent() ? rc.get() : null
+		return rc.isPresent() ? rc.get() : new KnownListIsp(addr.toString(), Constants.UNKNOWN_COUNTRY);
 	}
 
 	@WithElaps
