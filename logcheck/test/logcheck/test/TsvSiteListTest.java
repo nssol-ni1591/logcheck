@@ -41,14 +41,17 @@ public class TsvSiteListTest {
 	public void test01() {
 		assertFalse(map.isEmpty());
 		//map.values().forEach(System.out::println);
+		assertFalse("equals(null) is true", map.equals(null));
+		System.out.println("hashCode: " + map.hashCode());
 	}
 	@Test
 	public void test02() {
 		SiteListIsp isp = map.get("PRJ_SDC_OM");
 		System.out.println("isp=" + isp);
 
-		System.out.println("isp.getSiteName()=" + isp.getSiteName());
-		System.out.println("isp.getAddress()=" + isp.getAddress());
+		System.out.println("isp.getSiteName(): " + isp.getSiteName());
+		System.out.println("isp.getAddress(): " + isp.getAddress());
+		System.out.println("isp.hashCode(): " + isp.hashCode());
 
 		assertEquals("match projId", "PRJ_SDC_OM", isp.getProjId());
 		assertEquals("match siteId", "", isp.getSiteId());
@@ -63,7 +66,7 @@ public class TsvSiteListTest {
 	public void test03() throws Exception {
 		TsvSiteList map = new TsvSiteList();
 		map.init();
-		map.load("none");
+		map.load("abc.txt");
 	}
 	@Test
 	public void test04() {

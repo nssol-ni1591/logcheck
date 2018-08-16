@@ -10,6 +10,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import logcheck.known.KnownList;
+import logcheck.known.KnownListIsp;
+import logcheck.known.impl.TsvKnownList;
 import logcheck.user.UserListBean;
 import logcheck.user.UserListSite;
 import logcheck.user.impl.DbUserList;
@@ -108,6 +111,17 @@ public class DbUserListTest {
 
 		System.out.println("b1: " + b1);
 		System.out.println("hashCode()=" + b1.hashCode());
+	}
+	@Test(expected = IllegalArgumentException.class)
+	public void test04() throws IOException {
+		KnownList knownlist = new TsvKnownList();
+		knownlist.init();
+		knownlist.load(Env.KNOWNLIST);
+		KnownListIsp isp = knownlist.get(new NetAddr("202.248.276.105"));
+		// knownlist.get(...)はnullを返却しない
+		UserListSite site = new UserListSite(isp/*, "0"*/);
+		System.out.println("site.getSiteId(): " + site.getSiteId());
+		
 	}
 
 }

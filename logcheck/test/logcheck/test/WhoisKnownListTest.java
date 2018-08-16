@@ -246,5 +246,10 @@ public class WhoisKnownListTest {
 			assertNotEquals(Constants.UNKNOWN_COUNTRY, isp.getCountry());
 		}
 	}
+	//@Test
+	public void test11() {
+		KnownListIsp isp = getIsp("27.72.97.80");
+		System.out.println("isp: " + isp);
+	}
 
 }

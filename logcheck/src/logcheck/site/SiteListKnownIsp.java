@@ -46,6 +46,12 @@ public class SiteListKnownIsp implements SiteListIsp {
 	public String getProjDelFlag() {
 		return "0";
 	}
+	@Override
+	public String getSiteId() {
+		// 利用申請ファイル(Excel)には該当する属性は存在しないため
+		throw new IllegalArgumentException("not impliment");
+	}
+
 
 	@Override
 	public int compareTo(Isp o) {

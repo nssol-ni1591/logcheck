@@ -64,7 +64,11 @@ public class TsvKnownListTest {
 	public void test03() throws IOException {
 		KnownList map = new TsvKnownList();
 		map.init();
-		map.load("abc");
+		map.load("abc.txt");
+	}
+	@Test(expected = IllegalArgumentException.class)
+	public void test04() throws IOException {
+		map.store("abc.txt");
 	}
 
 }

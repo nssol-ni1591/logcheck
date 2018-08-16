@@ -54,7 +54,6 @@ public class SdcListTest {
 		SdcList map = new SdcList();
 		map.load("Foo");
 	}
-
 	@Test
 	public void test04() {
 		SdcListIsp isp = map.get(new NetAddr("172.30.76.0/24"));
@@ -67,6 +66,7 @@ public class SdcListTest {
 		assertEquals("isp2 and ips2", isp2, isp2);
 		assertNotEquals("isp1 and ips2", isp, isp2);
 		assertNotEquals("isp1 and abc", isp, "abc");
+		System.out.println("hashCode: " + isp.hashCode());
 	}
 	//@Test
 	public void test05() {
@@ -75,8 +75,10 @@ public class SdcListTest {
 	}
 	@Test
 	public void test06() {
-		SdcListIsp isp = map.get(new NetAddr("172.30.90.65"));
-		System.out.println("isp: " + isp);
-		//assertEquals("sub segment", "基幹 軟件：武関(軟件小杉)", isp.getName());
+		//String s = "172.30.90.73	ログ収集サーバ	SDC共通基盤公開	";
+		String s = "			";
+		assertFalse("empty string", SdcList.test(s));
+		assertNotNull("empty string", SdcList.parse(s));
 	}
+
 }
