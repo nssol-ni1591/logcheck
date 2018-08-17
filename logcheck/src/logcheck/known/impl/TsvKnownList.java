@@ -58,7 +58,6 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 		Optional<KnownListIsp> rc = this.stream()
 				.filter(isp -> isp.within(addr))
 				.findFirst();
-		//return rc.isPresent() ? rc.get() : null
 		return rc.isPresent() ? rc.get() : new KnownListIsp(addr.toString(), Constants.UNKNOWN_COUNTRY);
 	}
 
@@ -69,7 +68,6 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 			input.filter(TsvKnownList::test)
 				.map(TsvKnownList::parse)
 				.forEach(b -> {
-					//KnownListIsp isp = get(new NetAddr(b.getAddr()))
 					Optional<KnownListIsp> rc = this.stream()
 							.filter(i -> i.within(new NetAddr(b.getAddr())))
 							.findFirst();
@@ -88,7 +86,7 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 		return this;
 	}
 
-	private static TsvKnownListBean parse(String s) {
+	public static TsvKnownListBean parse(String s) {
 		String addr = null;
 		String name = null;
 		String country = null;

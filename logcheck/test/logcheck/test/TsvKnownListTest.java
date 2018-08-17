@@ -14,6 +14,7 @@ import org.junit.Test;
 import logcheck.known.KnownList;
 import logcheck.known.KnownListIsp;
 import logcheck.known.impl.TsvKnownList;
+import logcheck.known.impl.TsvKnownListBean;
 
 /*
  * 既知のISPのIPアドレスを取得する
@@ -70,5 +71,12 @@ public class TsvKnownListTest {
 	public void test04() throws IOException {
 		map.store("abc.txt");
 	}
-
+	@Test
+	public void test05() {
+		String s = "70.62.16.0/20	\"Time Warner Cable Internet LLC\"	US	(RCMS)不要";
+		TsvKnownListBean bean = TsvKnownList.parse(s);
+		System.out.println("TsvKnownListBean.addr: " + bean.getAddr());
+		System.out.println("TsvKnownListBean.name: " + bean.getName());
+		System.out.println("TsvKnownListBean.country: " + bean.getCountry());
+	}
 }
