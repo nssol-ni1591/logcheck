@@ -25,7 +25,7 @@ import logcheck.Checker3c;
 import logcheck.Checker8a;
 import logcheck.util.WeldWrapper;
 
-public class CheckerMainTest2 {
+public class CheckerMainGroupingTest {
 
 	private static Weld weld;
 	private static WeldContainer container;
@@ -45,7 +45,7 @@ public class CheckerMainTest2 {
 
 	@BeforeClass
 	public static void beforeClass() {
-		System.out.println("start CheckerMainTest2 ...");
+		System.out.println("start CheckerMainGroupingTest ...");
 
 		weld = new Weld();
 		container = weld.initialize();
@@ -56,7 +56,7 @@ public class CheckerMainTest2 {
 		if (container != null) {
 			container.close();
 		}
-		System.out.println("CheckerMainTest2 ... end");
+		System.out.println("CheckerMainGroupingTest ... end");
 	}
 
 	@Before
