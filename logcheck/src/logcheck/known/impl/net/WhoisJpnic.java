@@ -34,11 +34,9 @@ public class WhoisJpnic extends AbstractWhoisServer implements Whois {
 	 */
 	@Override
 	public KnownListIsp get(NetAddr addr) {
-		try {
-			return search(super.url, addr);
-		}
-		catch (IOException e) {
-			log.log(Level.WARNING, e.getMessage());
+		KnownListIsp isp = super.get(addr);
+		if (isp != null) {
+			return isp;
 		}
 
 		// JPNICはTimeoutになることがあるので、再度実行のためのロジックを入れておく
@@ -49,13 +47,7 @@ public class WhoisJpnic extends AbstractWhoisServer implements Whois {
 			Thread.currentThread().interrupt();
 		}
 
-		try {
-			return search(super.url, addr);
-		}
-		catch (IOException e) {
-			log.log(Level.WARNING, e.getMessage());
-		}
-		return null;
+		return super.get(addr);
 	}
 
 	public String parse(Pattern[] ptns, String s) {
@@ -72,8 +64,6 @@ public class WhoisJpnic extends AbstractWhoisServer implements Whois {
 	 * 引数のサイトからIPアドレスを含むISPを取得する
 	 */
 	public KnownListIsp search(String site, NetAddr addr) throws IOException {
-		// String netaddr = null
-		// String name = null
 		final String[] attrs = new String[2];
 
 		// URLを作成してGET通信を行う

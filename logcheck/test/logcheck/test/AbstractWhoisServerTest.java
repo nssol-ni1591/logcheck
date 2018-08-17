@@ -2,12 +2,12 @@ package logcheck.test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -35,17 +35,14 @@ public class AbstractWhoisServerTest {
 
 	@Test
 	public void test1() throws InterruptedException {
-		WhoisLacnic lacnic = new WhoisLacnic();
-		WhoisTreetCoJp treet = new WhoisTreetCoJp();
-		WhoisArin arin = new WhoisArin();
-		WhoisApnic apnic = new WhoisApnic();
-
 		ExecutorService exec = Executors.newFixedThreadPool(3);
-		final AbstractWhoisServer[] whois = { treet, arin, apnic, lacnic };
-		Stream.of(whois).forEach(w -> {
-			w.init();
-			w.setAddr(new NetAddr("203.118.54.210"));
-		});
+		String addr = "203.118.54.210";
+		AsyncWhois[] whois = { 
+				new AsyncWhois(new WhoisApnic(), addr),
+				new AsyncWhois(new WhoisLacnic(), addr),
+				new AsyncWhois(new WhoisTreetCoJp(), addr),
+				new AsyncWhois(new WhoisArin(), addr),
+		};
 		List<Future<KnownListIsp>> list = exec.invokeAll(Arrays.asList(whois), 30, TimeUnit.SECONDS);
 		list.forEach(f -> {
 			KnownListIsp isp;
@@ -57,6 +54,29 @@ public class AbstractWhoisServerTest {
 				System.out.println(e);
 			}
 		});
+	}
+	class AsyncWhois implements Callable<KnownListIsp> {
+
+		private final AbstractWhoisServer whois;
+		private final NetAddr addr;
+
+		AsyncWhois(AbstractWhoisServer whois, String addr) {
+			this.whois = whois;
+			this.addr = new NetAddr(addr);
+		}
+		
+		@Override
+		public KnownListIsp call() throws Exception {
+			whois.init();
+			whois.setAddr(addr);
+
+			long time = System.currentTimeMillis();
+			KnownListIsp isp = whois.call();
+			time = System.currentTimeMillis() - time;
+			System.out.println(whois.getName() + ": isp=\"" + isp + "\", elaps=" + time + "ms");
+			return isp;
+		}
+
 	}
 
 }

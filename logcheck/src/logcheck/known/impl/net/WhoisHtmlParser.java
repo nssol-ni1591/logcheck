@@ -100,10 +100,8 @@ public class WhoisHtmlParser extends AbstractWhoisServer {
 	/*
 	 * 引数のサイトからIPアドレスを含むISPを取得する
 	 */
+	@Override
 	public KnownListIsp search(String site, NetAddr addr) throws IOException {
-		// String netaddr = null
-		// String name = null
-		// String country = null
 		final String[] attrs = new String[5];
 
 		// URLを作成してGET通信を行う
