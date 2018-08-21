@@ -58,14 +58,14 @@ public class FwLog {
 	}
 
 	public static boolean test(String s) {
-		final Logger log = Logger.getLogger(FwLog.class.getName());
 		if (s.startsWith("#")) {
 			return false;
 		}
+
 		if (!s.contains("srcip=") || !s.contains("dstip=")) {
 			// type=eventの場合はログの出力は行わない
 			if (!s.contains("type=event")) {
-				log.log(Level.WARNING, "(FwLog): \"{0}\"", s);
+				Logger.getLogger(FwLog.class.getName()).log(Level.WARNING, "(FwLog): \"{0}\"", s);
 			}
 			return false;
 		}
