@@ -76,5 +76,9 @@ public class TsvSiteListTest {
 		assertEquals("match projSiteName", "SITE_1234", b1.getSiteName());
 		assertEquals("match ip address", "192.168.0.1/255.255.255.0", b1.getMagIp());
 	}
+	@Test(expected = IllegalArgumentException.class)
+	public void test05() throws Exception {
+		new TsvSiteListBean("PRJ_1234", "1234", "SITE_1234", "192.168.0.1/24", "255.255.255.0");
+	}
 
 }

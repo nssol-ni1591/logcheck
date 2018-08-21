@@ -94,7 +94,7 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 		Pattern p = Pattern.compile(TsvKnownList.PATTERN);
 		Matcher m = p.matcher(s);
 
-		m.matches();
+		m.find();
 		addr = m.group(1);
 		name = m.group(2);
 		country = m.group(3);
@@ -117,7 +117,7 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 
 		Pattern p = Pattern.compile(PATTERN);
 		Matcher m = p.matcher(s);
-		if (m.matches()) {
+		if (m.find()) {
 			return true;
 		}
 		Logger.getLogger(TsvKnownList.class.getName()).log(Level.WARNING, "(既知ISP_IPアドレス): s=\"{0}\"", s);
