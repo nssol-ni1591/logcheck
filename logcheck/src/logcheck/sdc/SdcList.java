@@ -51,17 +51,13 @@ public class SdcList extends ArrayList<SdcListIsp> {
 		String type = null;
 
 		Pattern p = Pattern.compile(PATTERN);
-		Matcher m = p.matcher(" " + s);		// 1文字目が欠ける対策
-		//Matcher m = p.matcher(s);		// 1文字目が欠ける対策
-		if (m.find(1)) {
-			addr = m.group(1);
-		}
-		if (m.find(2)) {
-			name = m.group(2);
-		}
-		if (m.find(3)) {
-			type = m.group(3);
-		}
+		Matcher m = p.matcher(s);
+
+		m.matches();
+		addr = m.group(1);
+		name = m.group(2);
+		type = m.group(3);
+
 		if (name == null || addr == null || type == null) {
 			Logger.getLogger(SdcList.class.getName())
 				.log(Level.WARNING, "(SdcList): addr={0}, name={1}, type={2}", new Object[] { addr, name, type });
@@ -75,12 +71,12 @@ public class SdcList extends ArrayList<SdcListIsp> {
 
 		Pattern p = Pattern.compile(PATTERN);
 		Matcher m = p.matcher(s);
-		boolean rc = m.find();
-		if (!rc) {
-			// JUnitの場合、logのインスタンスが生成できないため
-			Logger.getLogger(SdcList.class.getName()).log(Level.WARNING, "(SdcList): \"{0}\"", s);
+		if (m.matches()) {
+			return true;
 		}
-		return rc;
+		// JUnitの場合、logのインスタンスが生成できないため
+		Logger.getLogger(SdcList.class.getName()).log(Level.WARNING, "(SdcList): \"{0}\"", s);
+		return false;
 	}
 
 }
