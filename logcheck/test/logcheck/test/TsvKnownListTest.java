@@ -75,8 +75,19 @@ public class TsvKnownListTest {
 	public void test05() {
 		String s = "70.62.16.0/20	\"Time Warner Cable Internet LLC\"	US	(RCMS)不要";
 		TsvKnownListBean bean = TsvKnownList.parse(s);
-		System.out.println("TsvKnownListBean.addr: " + bean.getAddr());
-		System.out.println("TsvKnownListBean.name: " + bean.getName());
-		System.out.println("TsvKnownListBean.country: " + bean.getCountry());
+		assertEquals("TsvKnownListBean.addr", "70.62.16.0/20", bean.getAddr());
+		assertEquals("TsvKnownListBean.name", "Time Warner Cable Internet LLC", bean.getName());
+		assertEquals("TsvKnownListBean.country", "US", bean.getCountry());
+
+		String s2 = "70.62.16.0/20	Time Warner Cable Internet LLC	USAAAAAA	(RCMS)不要";
+		TsvKnownListBean bean2 = TsvKnownList.parse(s2);
+		assertEquals("TsvKnownListBean.name", "Time Warner Cable Internet LLC", bean.getName());
+		assertEquals("TsvKnownListBean.country", "US", bean2.getCountry());
 	}
+	@Test
+	public void test06() {
+		String s = "70.62.16.0/2A	Time Warner Cable Internet LLC	US";
+		assertFalse(TsvKnownList.test(s));
+	}
+
 }

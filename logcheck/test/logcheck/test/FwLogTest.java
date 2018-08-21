@@ -37,9 +37,10 @@ public class FwLogTest {
 		System.out.println("hashCode()=" + b1.hashCode());
 
 		// equals
-		assertFalse(b1.equals(null));
 		assertTrue(b1.equals(b1));
 		assertTrue(b1.equals(b2));
+		assertFalse(b1.equals(null));
+		assertFalse(b1.equals("\"\""));
 
 		// compareTo
 		assertTrue(b1.compareTo(b2) == 0);
@@ -95,6 +96,7 @@ public class FwLogTest {
 
 		assertTrue("equlas self", sum1.equals(sum1));
 		assertFalse("equlas null", sum1.equals(null));
+		assertFalse("equlas \"\"", sum1.equals("\"\""));
 	}
 
 }

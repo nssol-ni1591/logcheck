@@ -70,6 +70,7 @@ public class DbProjListTest {
 		assertTrue("equals true", p1.equals(p4));
 		assertFalse("equals false", p1.equals(p2));
 		assertFalse("equals null", p1.equals(null));
+		assertFalse("equals \"\"", p1.equals(""));
 
 		assertTrue("compareTo == 0", p2.compareTo(p2) == 0);
 		assertTrue("compareTo < 0", p2.compareTo(p3) < 0);
