@@ -92,25 +92,22 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 		String country = null;
 
 		Pattern p = Pattern.compile(TsvKnownList.PATTERN);
-		Matcher m = p.matcher("   " + s);		// 1文字目が欠ける対策
-		if (m.find(1)) {
-			addr = m.group(1);
+		Matcher m = p.matcher(s);
+
+		m.matches();
+		addr = m.group(1);
+		name = m.group(2);
+		country = m.group(3);
+
+		if (name.length() > 0 && name.charAt(0) == '\"') {
+			name = name.substring(1);
 		}
-		if (m.find(2)) {
-			name = m.group(2);
-			if (name.length() > 0 && name.charAt(0) == '\"') {
-				name = name.substring(1);
-			}
-			if (name.length() > 0 && name.charAt(name.length() - 1) == '\"') {
-				name = name.substring(0, name.length() - 1);
-			}
-		}
-		if (m.find(3)) {
-			country = m.group(3);
+		if (name.length() > 0 && name.charAt(name.length() - 1) == '\"') {
+			name = name.substring(0, name.length() - 1);
 		}
 		return new TsvKnownListBean(addr, name, country);
 	}
-	private static boolean test(String s) {
+	public static boolean test(String s) {
 		if (s.startsWith("#")) {
 			return false;
 		}
@@ -120,11 +117,11 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 
 		Pattern p = Pattern.compile(PATTERN);
 		Matcher m = p.matcher(s);
-		boolean rc = m.find();
-		if (!rc) {
-			Logger.getLogger(TsvKnownList.class.getName()).log(Level.WARNING, "(既知ISP_IPアドレス): s=\"{0}\"", s);
+		if (m.matches()) {
+			return true;
 		}
-		return rc;
+		Logger.getLogger(TsvKnownList.class.getName()).log(Level.WARNING, "(既知ISP_IPアドレス): s=\"{0}\"", s);
+		return false;
 	}
 
 	@Override
