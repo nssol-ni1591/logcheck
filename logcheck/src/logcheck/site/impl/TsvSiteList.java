@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -31,6 +32,7 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 	private static final long serialVersionUID = 1L;
 
 	public static final String PATTERN = "(PRJ_[\\w_]+)\t(.+)\t(.+)\t([\\d\\.～\\/]+)\t([\\d+\\.\\d+\\.\\d+\\.\\d+]+)\t([\\d+\\.\\d+\\.\\d+\\.\\d+]+)";
+	public static final String LOG_HEADER1 = "(インターネット経由接続先): s=\"{0}\"";
 
 	public TsvSiteList() {
 		super(200);
@@ -47,8 +49,9 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 	@WithElaps
 	public SiteList load(String file) throws IOException {
 		try (Stream<String> input = Files.lines(Paths.get(file), Charset.forName("MS932"))) {
-			input.filter(this::test)
+			input//.filter(this::test)
 				.map(this::parse)
+				.filter(Objects::nonNull)
 				.forEach(b -> {
 					SiteListIsp site = this.get(b.getProjId());
 					if (site == null) {
@@ -62,13 +65,36 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 	}
 
 	private TsvSiteListBean parse(String s) {
+		if (s.startsWith("#")) {
+			return null;
+		}
+		if (s.startsWith("\t\t")) {
+			return null;
+		}
+
+		Pattern p = Pattern.compile(PATTERN);
+		Matcher m = p.matcher(s);
+		if (!m.find()) {
+			log.log(Level.WARNING, LOG_HEADER1, s.trim());
+			return null;
+		}
+
+		String[] array = s.split("\t");
+		if (array.length > 5 && "非固定".equals(array[5])) {
+			log.log(Level.WARNING, LOG_HEADER1, s.trim());
+			return null;
+		}
+		if (array.length > 6 && "非固定".equals(array[6])) {
+			log.log(Level.WARNING, LOG_HEADER1, s.trim());
+			return null;
+		}
+
 		String projId = null;
 		String projName = null;
 		String siteName = null;
 		String magIp = null;
 		String magMask = null;
 
-		String[] array = s.split("\t");
 		if (array.length > 1) {
 			projId = array[1];
 		}
@@ -86,30 +112,6 @@ public class TsvSiteList extends HashMap<String, SiteListIsp> implements SiteLis
 			magMask = array[6];
 		}
 		return new TsvSiteListBean(projId, projName, siteName, magIp, magMask);
-	}
-	private boolean test(String s) {
-		if (s.startsWith("#")) {
-			return false;
-		}
-		if (s.startsWith("\t\t")) {
-			return false;
-		}
-
-		Pattern p = Pattern.compile(PATTERN);
-		Matcher m = p.matcher(s);
-		boolean rc = m.find();
-		if (!rc) {
-			log.log(Level.WARNING, "(インターネット経由接続先): s=\"{0}\"", s.trim());
-		}
-
-		String[] array = s.split("\t");
-		if (array.length > 5 && "非固定".equals(array[5])) {
-			rc = false;
-		}
-		if (array.length > 6 && "非固定".equals(array[6])) {
-			rc = false;
-		}
-		return rc;
 	}
 
 	// equals()を実装するとhashCode()の実装も要求され、それはBugにランク付けられるのでequals()の実装をやめたい

@@ -75,8 +75,9 @@ public class Checker8a extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr,
 	public Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> call(Stream<String> stream)
 	{
 		return stream//.parallel()
-				.filter(AccessLog::test)
+				//.filter(AccessLog::test)
 				.map(AccessLog::parse)
+				.filter(Objects::nonNull)
 				.map(LogWrapper::new)
 				.filter(log -> Objects.nonNull(log.getIspList()))
 				.collect(Collectors.groupingBy(

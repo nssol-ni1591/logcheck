@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
@@ -117,8 +118,9 @@ public class Checker8 extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr, 
 		{
 		final Map<String, Map<Isp, Map<NetAddr, Map<String, Map<String, AccessLogSummary>>>>> map = new TreeMap<>();
 		stream//.parallel()
-				.filter(AccessLog::test)
+				//.filter(AccessLog::test)
 				.map(AccessLog::parse)
+				.filter(Objects::nonNull)
 				.forEach(b -> {
 					String pattern = getPattern(b);
 					NetAddr addr = b.getAddr();

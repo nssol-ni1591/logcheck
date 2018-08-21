@@ -87,7 +87,7 @@ public class TsvKnownListTest {
 	@Test
 	public void test06() {
 		String s = "70.62.16.0/2A	Time Warner Cable Internet LLC	US";
-		assertFalse(TsvKnownList.test(s));
+		assertNull(TsvKnownList.parse(s));
 	}
 
 }

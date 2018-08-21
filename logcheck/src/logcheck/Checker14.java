@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.text.Normalizer;
+import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -82,8 +83,9 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 	@Override
 	public UserList<UserListBean> call(Stream<String> stream) {
 		stream//.parallel()		// parallel()を使用するとOutOfMemory例外が発生する　=> なぜ?
-				.filter(AccessLog::test)
+				//.filter(AccessLog::test)
 				.map(AccessLog::parse)
+				.filter(Objects::nonNull)
 				.filter(b -> Stream.of(SESS_START_PATTERN)
 						// 正規化表現に一致するメッセージのみを処理対象にする
 						.anyMatch(p -> p.matcher(b.getMsg()).matches())

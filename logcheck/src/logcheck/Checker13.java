@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,8 +41,9 @@ public class Checker13 extends AbstractChecker<Map<String, Map<Isp, List<AccessL
 	public Map<String, Map<Isp, List<AccessLogBean>>> call(Stream<String> stream) {
 		final Map<String, Map<Isp, List<AccessLogBean>>> map = new TreeMap<>();
 		stream.parallel()
-				.filter(AccessLog::test)
+				//.filter(AccessLog::test)
 				.map(AccessLog::parse)
+				.filter(Objects::nonNull)
 				.filter(b -> Stream.of(IP_RANGE_PATTERN)
 						// 正規化表現に一致するメッセージのみを処理対象にする
 						.anyMatch(p -> p.matcher(b.getMsg()).matches())

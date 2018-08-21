@@ -3,6 +3,7 @@ package logcheck;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
@@ -62,8 +63,9 @@ public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 	public Set<FwLogSummary> call(Stream<String> stream) {
 		final Set<FwLogSummary> list = new TreeSet<>();
 		stream//.parallel()			// parallelでは java.util.ConcurrentModificationException が発生
-				.filter(FwLog::test)
+				//.filter(FwLog::test)
 				.map(FwLog::parse)
+				.filter(Objects::nonNull)
 				.forEach(b -> {
 					Optional<FwLogSummary> op = list.stream()
 							.filter(isp -> (isp.getDstPort() - b.getDstPort()) == 0)

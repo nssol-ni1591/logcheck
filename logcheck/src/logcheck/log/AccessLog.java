@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -31,13 +32,16 @@ public class AccessLog {
 			log.log(Level.INFO, "start load ... file={0}", file);
 
 			try (Stream<String> input = Files.lines(Paths.get(file), StandardCharsets.UTF_8)) {
-				input.filter(AccessLog::test).map(AccessLog::parse).forEach(b -> {
-					AccessLogSummary als = map.get(b.getAddr().toString());
-					if (als == null) {
-						als = new AccessLogSummary(b, null);
-						map.put(b.getAddr().toString(), als);
-					}
-				});
+				input//.filter(AccessLog::test)
+					.map(AccessLog::parse)
+					.filter(Objects::nonNull)
+					.forEach(b -> {
+						AccessLogSummary als = map.get(b.getAddr().toString());
+						if (als == null) {
+							als = new AccessLogSummary(b, null);
+							map.put(b.getAddr().toString(), als);
+						}
+					});
 			}
 			log.log(Level.INFO, "end load ... size={0}", map.size());
 
@@ -48,22 +52,31 @@ public class AccessLog {
 	}
 
 	public static AccessLogBean parse(String s) {
-		String date = null;
-		String host = null;
-		String ip = null;
-		String id = null;
-		String role = null;
-		StringBuilder msg = null;
+		if (s.startsWith("#")) {
+			return null;
+		}
 
 		String[] array = s.split(" - ");
-		date = array[0];
-		host = array[1];
+		if (array.length < 4) {
+			Logger.getLogger(AccessLog.class.getName()).log(Level.WARNING, "(AccessLog): \"{0}\"", s);
+			return null;
+		}
+
+		Pattern p = Pattern.compile(PATTERN2);
+		Matcher m = p.matcher(array[2]);
+		if (!m.matches()) {
+			Logger.getLogger(AccessLog.class.getName()).log(Level.WARNING, "(AccessLog): \"{0}\"", s);
+			return null;
+		}
+
+		String date = array[0];
+		String host = array[1];
 		int pos1 = array[2].indexOf(']', 1);
 		int pos2 = array[2].indexOf(' ', pos1 + 1);
 		int pos3 = array[2].indexOf('(', pos2 + 1);
 		int pos4 = array[2].indexOf('[', pos3 + 1);
-		ip = array[2].substring(1, pos1);
-		id = array[2].substring(pos2 + 1, pos3);
+		String ip = array[2].substring(1, pos1);
+		String id = array[2].substring(pos2 + 1, pos3);
 		// "SDC\"始まりの場合、以降の処理で都合の悪い場合があるので"SDC\"は削除する
 		if (id.startsWith("SDC\\") && id.length() > 4) {
 			id = id.substring(4);
@@ -71,32 +84,12 @@ public class AccessLog {
 		// 2018/03/08 AccessLogBeanからZユーザの大文字置換を移した
 		id = id.toUpperCase();
 
-		role = array[2].substring(pos4 + 1, array[2].length() - 1);
-		msg = new StringBuilder(array[3]);
+		String role = array[2].substring(pos4 + 1, array[2].length() - 1);
+		StringBuilder msg = new StringBuilder(array[3]);
 		for (int ix = 4; ix < array.length; ix++) {
 			msg.append(" - ").append(array[ix]).toString();
 		}
 		return new AccessLogBean(date, host, ip, id, role, msg.toString());
-	}
-
-	public static boolean test(String s) {
-		if (s.startsWith("#")) {
-			return false;
-		}
-
-		String[] array = s.split(" - ");
-		if (array.length < 4) {
-			Logger.getLogger(AccessLog.class.getName()).log(Level.WARNING, "(AccessLog): \"{0}\"", s);
-			return false;
-		}
-
-		Pattern p = Pattern.compile(PATTERN2);
-		Matcher m = p.matcher(array[2]);
-		boolean rc = m.matches();
-		if (!rc) {
-			Logger.getLogger(AccessLog.class.getName()).log(Level.WARNING, "(AccessLog): \"{0}\"", s);
-		}
-		return rc;
 	}
 
 }

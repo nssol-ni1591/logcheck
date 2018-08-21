@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
@@ -67,8 +68,9 @@ public class Checker6 extends AbstractChecker<Map<String, Map<IspList, Map<Strin
 	public Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> call(Stream<String> stream) {
 		final Map<String, Map<IspList, Map<String, Map<NetAddr, Integer>>>> map = new TreeMap<>();
 		stream.parallel()
-				.filter(AccessLog::test)
+				//.filter(AccessLog::test)
 				.map(AccessLog::parse)
+				.filter(Objects::nonNull)
 				.forEach(b -> {
 					// ログのメッセージ部分はPatternの正規化表現で集約するため、対象ログが一致したPattern文字列を取得する
 					Optional<String> rc = Stream.of(FAIL_PATTERNS_ALL)

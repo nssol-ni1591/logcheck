@@ -56,9 +56,9 @@ public class SSLIndexUserListTest {
 	@Test
 	public void test04() {
 		String s1 = "R	280523024633Z	180526025247Z	C6ED0D7516E9DB64	unknown	/C=JP/ST=TOKYO/L=CHUOU-KU/O=sdc/OU=nssol/DN=Z12756";
-		assertFalse(SSLIndexUserList.test(s1));
+		assertNull(SSLIndexUserList.parse(s1));
 		String s2 = "R	280523024633Z	180526025247Z	C6ED0D7516E9DB64	unknown	";
-		assertFalse(SSLIndexUserList.test(s2));
+		assertNull(SSLIndexUserList.parse(s2));
 	}
 
 }

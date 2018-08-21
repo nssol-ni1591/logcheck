@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
@@ -45,8 +46,9 @@ public class Checker3a extends AbstractChecker<Map<String, IspMap<Map<String, In
 	public Map<String, IspMap<Map<String, Integer>>> call(Stream<String> stream) {
 		return 
 			stream.parallel()
-				.filter(AccessLog::test)
+				//.filter(AccessLog::test)
 				.map(AccessLog::parse)
+				.filter(Objects::nonNull)
 				.collect(Collectors.groupingBy(
 						new Function<AccessLogBean, String>() {
 							@Override

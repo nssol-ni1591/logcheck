@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,8 +35,9 @@ public class SdcList extends ArrayList<SdcListIsp> {
 	@WithElaps
 	public SdcList load(String file) throws IOException {
 		try (Stream<String> input = Files.lines(Paths.get(file), Charset.forName("MS932"))) {
-			input.filter(SdcList::test)
+			input//.filter(SdcList::test)
 				.map(SdcList::parse)
+				.filter(Objects::nonNull)
 				.forEach(b -> {
 					final SdcListIsp isp = new SdcListIsp(b.getName(), b.getType());
 					add(isp);
@@ -46,37 +48,27 @@ public class SdcList extends ArrayList<SdcListIsp> {
 	}
 
 	public static SdcListBean parse(String s) {
-		String addr = null;
-		String name = null;
-		String type = null;
+		if (s.startsWith("#")) {
+			return null;
+		}
 
 		Pattern p = Pattern.compile(PATTERN);
 		Matcher m = p.matcher(s);
+		if (!m.matches()) {
+			Logger.getLogger(SdcList.class.getName()).log(Level.WARNING, "(SdcList): \"{0}\"", s);
+			return null;
+		}
 
-		m.matches();
-		addr = m.group(1);
-		name = m.group(2);
-		type = m.group(3);
+		String addr = m.group(1);
+		String name = m.group(2);
+		String type = m.group(3);
 
 		if (name == null || addr == null || type == null) {
 			Logger.getLogger(SdcList.class.getName())
 				.log(Level.WARNING, "(SdcList): addr={0}, name={1}, type={2}", new Object[] { addr, name, type });
+			return null;
 		}
 		return new SdcListBean(name, addr, type);
-	}
-	public static boolean test(String s) {
-		if (s.startsWith("#")) {
-			return false;
-		}
-
-		Pattern p = Pattern.compile(PATTERN);
-		Matcher m = p.matcher(s);
-		if (m.matches()) {
-			return true;
-		}
-		// JUnitの場合、logのインスタンスが生成できないため
-		Logger.getLogger(SdcList.class.getName()).log(Level.WARNING, "(SdcList): \"{0}\"", s);
-		return false;
 	}
 
 }

@@ -77,8 +77,7 @@ public class SdcListTest {
 	public void test06() {
 		//String s = "172.30.90.73	ログ収集サーバ	SDC共通基盤公開	";
 		String s = "			";
-		assertFalse("empty string", SdcList.test(s));
-		//assertNotNull("empty string", SdcList.parse(s));	// test()がfalseのデータなので結果を保証しない
+		assertNull("empty string", SdcList.parse(s));
 	}
 
 }

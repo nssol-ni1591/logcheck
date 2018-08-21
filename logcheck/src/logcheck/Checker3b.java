@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
@@ -49,8 +50,9 @@ public class Checker3b extends AbstractChecker<Map<String, IspMap<Map<String, In
 	public Map<String, IspMap<Map<String, Integer>>> call(Stream<String> stream) {
 		return 
 			stream.parallel()
-				.filter(AccessLog::test)
+				//.filter(AccessLog::test)
 				.map(AccessLog::parse)
+				.filter(Objects::nonNull)
 				// collectの終わりのコメントのとおり、FAIL_PATTERNS_ALLに含まれないメッセージを除外する必要がある
 				// 除外処理は2度手間になるが仕方がない => Checker3cのようなWrapperを用意した方が効率が良い
 				.filter(b -> Stream.of(FAIL_PATTERNS_ALL)
