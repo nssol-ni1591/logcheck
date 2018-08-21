@@ -93,13 +93,11 @@ public class Checker12a extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr
 
 	class LogWrapper {
 
-		private final AccessLogBean b;
 		private final IspList isp;
 		private final NetAddr addr;
 		private final AccessLogSummary summary;
 
 		LogWrapper(AccessLogBean b) {
-			this.b = b;
 			this.addr = b.getAddr();
 			this.isp = getIsp(addr, maglist, knownlist);
 			this.summary = new AccessLogSummary(b, IP_RANGE_PATTERN.toString());
@@ -116,9 +114,6 @@ public class Checker12a extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr
 		}
 		AccessLogSummary getSummary() {
 			return summary;
-		}
-		AccessLogBean getAccessLogBean() {
-			return b;
 		}
 	}
 }

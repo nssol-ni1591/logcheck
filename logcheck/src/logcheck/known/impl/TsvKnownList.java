@@ -104,11 +104,6 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 		String name = m.group(2);
 		String country = m.group(3);
 
-		if (addr == null || name == null || country == null) {
-			Logger.getLogger(TsvKnownList.class.getName()).log(Level.WARNING, "(既知ISP_IPアドレス): s=\"{0}\"", s);
-			return null;
-		}
-
 		if (name.length() > 0 && name.charAt(0) == '\"') {
 			name = name.substring(1);
 		}

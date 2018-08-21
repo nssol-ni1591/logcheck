@@ -63,11 +63,6 @@ public class SdcList extends ArrayList<SdcListIsp> {
 		String name = m.group(2);
 		String type = m.group(3);
 
-		if (name == null || addr == null || type == null) {
-			Logger.getLogger(SdcList.class.getName())
-				.log(Level.WARNING, "(SdcList): addr={0}, name={1}, type={2}", new Object[] { addr, name, type });
-			return null;
-		}
 		return new SdcListBean(name, addr, type);
 	}
 
