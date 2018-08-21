@@ -101,8 +101,8 @@ public class MappedSSLUserList
 
 		try (Stream<String> input = Files.lines(Paths.get(file), Charset.forName("utf-8"))) {
 
-			input.filter(SSLIndexBean::test)
-				.map(SSLIndexBean::parse)
+			input.filter(SSLIndexUserList::test)
+				.map(SSLIndexUserList::parse)
 				.filter(b -> b.getUserId().startsWith("Z"))	// index.txtの読み込みなので、SQLとは別の集合
 				.forEach(b -> {
 					UserListBean bean = this.get(b.getUserId());
