@@ -2,6 +2,7 @@ package logcheck;
 
 import java.io.PrintWriter;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
@@ -43,8 +44,9 @@ public class Checker21 extends AbstractChecker<Map<NetAddr, Map<String, Map<Stri
 	public Map<NetAddr, Map<String, Map<String, AccessLogSummary>>> call(Stream<String> stream) {
 		final Map<NetAddr, Map<String, Map<String, AccessLogSummary>>> map = new TreeMap<>();
 		stream//.parallel()
-				.filter(AccessLog::test)
+				//.filter(AccessLog::test)
 				.map(AccessLog::parse)
+				.filter(Objects::nonNull)
 				.forEach(b -> {
 					String pattern = getPattern(b);
 					NetAddr addr = b.getAddr();

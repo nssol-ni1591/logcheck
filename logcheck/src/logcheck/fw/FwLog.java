@@ -11,6 +11,18 @@ public class FwLog {
 	 * どうparseするかが問題：regexか、susstringか
 	 */
 	public static FwLogBean parse(String s) {
+		if (s.startsWith("#")) {
+			return null;
+		}
+
+		if (!s.contains("srcip=") || !s.contains("dstip=")) {
+			// type=eventの場合はログの出力は行わない
+			if (!s.contains("type=event")) {
+				Logger.getLogger(FwLog.class.getName()).log(Level.WARNING, "(FwLog): \"{0}\"", s);
+			}
+			return null;
+		}
+
 		String date = null;
 		String time = null;
 		String level = null;
@@ -55,21 +67,6 @@ public class FwLog {
 			}
 		}
 		return new FwLogBean(date, time, level, srcip, srcport, dstip, dstport);
-	}
-
-	public static boolean test(String s) {
-		final Logger log = Logger.getLogger(FwLog.class.getName());
-		if (s.startsWith("#")) {
-			return false;
-		}
-		if (!s.contains("srcip=") || !s.contains("dstip=")) {
-			// type=eventの場合はログの出力は行わない
-			if (!s.contains("type=event")) {
-				log.log(Level.WARNING, "(FwLog): \"{0}\"", s);
-			}
-			return false;
-		}
-		return true;
 	}
 
 }

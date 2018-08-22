@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -69,8 +70,9 @@ public class Checker23 extends AbstractChecker<List<AccessLogSummary>> {
 	public List<AccessLogSummary> call(Stream<String> stream) {
 		final List<AccessLogSummary> list = Collections.synchronizedList(new LinkedList<>());
 		stream//.parallel()
-				.filter(AccessLog::test)
+				//.filter(AccessLog::test)
 				.map(AccessLog::parse)
+				.filter(Objects::nonNull)
 				.forEach(b -> {
 					String pattern = getPattern(b);
 					AccessLogSummary msg;

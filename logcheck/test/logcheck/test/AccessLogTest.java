@@ -80,10 +80,10 @@ public class AccessLogTest {
 		assertNull("getPattern() is null", sum.getPattern());
 		assertNotNull("getReason() is null", sum.getReason());
 		assertNotNull("getRoles() is null", sum.getRoles());
-		
+
 		assertTrue("equals same object", sum.equals(sum));
 		assertFalse("equals null", sum.equals(null));
-
+		assertFalse("equals \"\"", sum.equals(""));
 		System.out.println("hashCode()=" + sum.hashCode());
 	}
 	@Test

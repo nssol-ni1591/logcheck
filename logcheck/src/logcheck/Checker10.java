@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -120,8 +121,9 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> {
 	public List<AccessLogSummary> call(Stream<String> stream) {
 		final List<AccessLogSummary> list = new LinkedList<>();
 		stream//.parallel()
-				.filter(AccessLog::test)
+				//.filter(AccessLog::test)
 				.map(AccessLog::parse)
+				.filter(Objects::nonNull)
 				.filter(b -> Stream.of(AUTH_PATTERNS)
 						// 正規化表現に一致するメッセージのみを処理対象にする
 						.anyMatch(p -> p.matcher(b.getMsg()).matches())

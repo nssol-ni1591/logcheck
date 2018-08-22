@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,8 +39,9 @@ public class Checker12a extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr
 	@Override
 	public Map<String, Map<Isp, Map<NetAddr, AccessLogSummary>>> call(Stream<String> stream) {
 		return stream.parallel()
-				.filter(AccessLog::test)
+				//.filter(AccessLog::test)
 				.map(AccessLog::parse)
+				.filter(Objects::nonNull)
 				.filter(b -> Stream.of(IP_RANGE_PATTERN)
 						// 正規化表現に一致するメッセージのみを処理対象にする
 						.anyMatch(p -> p.matcher(b.getMsg()).matches())
@@ -91,13 +93,11 @@ public class Checker12a extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr
 
 	class LogWrapper {
 
-		private final AccessLogBean b;
 		private final IspList isp;
 		private final NetAddr addr;
 		private final AccessLogSummary summary;
 
 		LogWrapper(AccessLogBean b) {
-			this.b = b;
 			this.addr = b.getAddr();
 			this.isp = getIsp(addr, maglist, knownlist);
 			this.summary = new AccessLogSummary(b, IP_RANGE_PATTERN.toString());
@@ -114,9 +114,6 @@ public class Checker12a extends AbstractChecker<Map<String, Map<Isp, Map<NetAddr
 		}
 		AccessLogSummary getSummary() {
 			return summary;
-		}
-		AccessLogBean getAccessLogBean() {
-			return b;
 		}
 	}
 }

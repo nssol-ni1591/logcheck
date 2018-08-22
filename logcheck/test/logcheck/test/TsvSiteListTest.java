@@ -3,8 +3,10 @@ package logcheck.test;
 import java.io.IOException;
 
 import logcheck.site.SiteListIsp;
+import logcheck.site.SiteListKnownIsp;
 import logcheck.site.impl.TsvSiteList;
 import logcheck.site.impl.TsvSiteListBean;
+import logcheck.util.NetAddr;
 
 import static org.junit.Assert.*;
 
@@ -76,5 +78,19 @@ public class TsvSiteListTest {
 		assertEquals("match projSiteName", "SITE_1234", b1.getSiteName());
 		assertEquals("match ip address", "192.168.0.1/255.255.255.0", b1.getMagIp());
 	}
+	@Test(expected = IllegalArgumentException.class)
+	public void test05() throws Exception {
+		new TsvSiteListBean("PRJ_1234", "1234", "SITE_1234", "192.168.0.1/24", "255.255.255.0");
+	}
+	@Test
+	public void test06() {
+		SiteListIsp isp = map.get("PRJ_SDC_OM");
+		SiteListKnownIsp isp2 = new SiteListKnownIsp(isp);
+		assertEquals("getName: ", isp.getName(), isp2.getName());
+		NetAddr addr = new NetAddr("192.168.0.1/24");
+		isp2.addAddress(addr);
+		assertTrue("within 192.168.0.1/24", isp2.within(addr));
+		assertEquals("compareTo isp", isp2.compareTo(isp));
 
+	}
 }

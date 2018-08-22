@@ -104,6 +104,7 @@ public class DbUserListTest {
 		assertTrue("equals is true", b2.equals(b4));
 		assertFalse("equals is false", b1.equals(b2));
 		assertFalse("equals null", b1.equals(null));
+		assertFalse("equals \"\"", b1.equals(""));
 
 		assertTrue("compareTo == 0", b2.compareTo(b2) == 0);
 		assertTrue("compareTo < 0", b2.compareTo(b3) < 0);

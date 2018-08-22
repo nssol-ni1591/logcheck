@@ -66,9 +66,6 @@ public class DbProjList extends LinkedHashMap<String, ProjListBean> implements P
 				log.log(Level.FINE, "DbProjList={0}", projId);
 			}
 		}
-		catch (SQLException ex) {
-			log.log(Level.SEVERE, "catch SQLException", ex);
-		}
 		return this;
 	}
 

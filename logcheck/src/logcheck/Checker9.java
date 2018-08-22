@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -60,9 +61,10 @@ public class Checker9 extends AbstractChecker<List<AccessLogSummary>> {
 	public List<AccessLogSummary> call(Stream<String> stream) {
 		final List<AccessLogSummary> list = new LinkedList<>();
 		stream//.parallel()
-				.filter(AccessLog::test)
+				//.filter(AccessLog::test)
 				.filter(s -> select.startsWith("-") || s.startsWith(select))
 				.map(AccessLog::parse)
+				.filter(Objects::nonNull)
 				.forEach(b -> {
 					String pattern = getPattern(b);
 

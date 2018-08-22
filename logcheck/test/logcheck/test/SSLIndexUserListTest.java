@@ -45,7 +45,7 @@ public class SSLIndexUserListTest {
 	@Test
 	public void test03() {
 		String s = "R	280523024633Z	180526025247Z	C6ED0D7516E9DB64	unknown	/C=JP/ST=TOKYO/L=CHUOU-KU/O=sdc/OU=nssol/CN=Z12756";
-		SSLIndexBean bean = SSLIndexBean.parse(s);
+		SSLIndexBean bean = SSLIndexUserList.parse(s);
 		assertEquals("getFlag: ", "0", bean.getFlag());
 		assertEquals("getExpire: ", "280523024633Z", bean.getExpire());
 		assertEquals("getRevoce: ", "180526025247Z", bean.getRevoce());
@@ -53,4 +53,12 @@ public class SSLIndexUserListTest {
 		assertEquals("getFilename: ", "unknown", bean.getFilename());
 		assertEquals("getUserId: ", "Z12756", bean.getUserId());
 	}
+	@Test
+	public void test04() {
+		String s1 = "R	280523024633Z	180526025247Z	C6ED0D7516E9DB64	unknown	/C=JP/ST=TOKYO/L=CHUOU-KU/O=sdc/OU=nssol/DN=Z12756";
+		assertNull(SSLIndexUserList.parse(s1));
+		String s2 = "R	280523024633Z	180526025247Z	C6ED0D7516E9DB64	unknown	";
+		assertNull(SSLIndexUserList.parse(s2));
+	}
+
 }

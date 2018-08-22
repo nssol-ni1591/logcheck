@@ -74,6 +74,10 @@ public class IspTest {
 		assertEquals("getName() != a", "a", ispmap3.getName());
 		assertEquals("getCountry() != b", "b", ispmap3.getCountry());
 		System.out.println("hashCode: " + ispmap1.hashCode());
+
+		NetAddr addr = new NetAddr("192.168.0.1");
+		ispmap1.put(addr,  "abc");
+		assertEquals("get() == abc", "abc", ispmap1.get(addr));
 	}
 	@Test
 	public void ispmap2() {
@@ -81,21 +85,26 @@ public class IspTest {
 		IspMap2<String> ispmap2 = new IspMap2<>("a", "b");
 		IspMap2<String> ispmap3 = new IspMap2<>("a", "b");
 		IspMap2<String> ispmap4 = new IspMap2<>(null, "b");
+		IspMap2<String> ispmap5 = new IspMap2<>("a", null);
 
 		assertFalse("ispmap1 == ispmap2", ispmap1.equals(ispmap2));
 		assertTrue("ispmap2 == ispmap3", ispmap2.equals(ispmap3));
-		assertFalse("ispmap2 == ispmap3", ispmap2.equals(ispmap4));
+		assertFalse("ispmap2 != ispmap4", ispmap2.equals(ispmap4));
+		assertFalse("ispmap2 != ispmap5", ispmap2.equals(ispmap5));
 		assertFalse("ispmap2 == null", ispmap2.equals(null));
+		assertFalse("ispmap2 == \"\"", ispmap2.equals(""));
 		assertEquals("getName() != a", "a", ispmap3.getName());
 		assertEquals("getCountry() != b", "b", ispmap3.getCountry());
 		System.out.println("hashCode: " + ispmap1.hashCode());
 
 		ispmap1.setName("xxx");
-		assertEquals("getName() != xxx", "xxx", ispmap1.getName());
+		assertEquals("getName() == xxx", "xxx", ispmap1.getName());
 		ispmap1.setCountry("yyy");
-		assertEquals("getCountry() != yyy", "yyy", ispmap1.getCountry());
+		assertEquals("getCountry() == yyy", "yyy", ispmap1.getCountry());
 		ispmap1.setCountry("zz");
-		assertEquals("getCountry() != ZZ", "ZZ", ispmap1.getCountry());
+		assertEquals("getCountry() == ZZ", "ZZ", ispmap1.getCountry());
+		ispmap1.setCountry(null);
+		assertEquals("getCountry() == null", null, ispmap1.getCountry());
 	}
 
 }

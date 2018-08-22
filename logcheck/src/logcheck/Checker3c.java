@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
@@ -50,8 +51,9 @@ public class Checker3c extends AbstractChecker<Map<String, IspMap2<Map<String, I
 	public Map<String, IspMap2<Map<String, Integer>>> call(Stream<String> stream) {
 		return 
 			stream.parallel()
-				.filter(AccessLog::test)
+				//.filter(AccessLog::test)
 				.map(AccessLog::parse)
+				.filter(Objects::nonNull)
 				.map(LogWrapper::new)
 				.filter(log -> log.getPattern() != null)
 				.collect(Collectors.groupingBy(

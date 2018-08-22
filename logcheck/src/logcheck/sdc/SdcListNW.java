@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -26,8 +27,9 @@ public class SdcListNW extends SdcList {
 	public SdcList load(String file) throws IOException {
 		SdcList isps = new SdcList();
 		try (Stream<String> input = Files.lines(Paths.get(file), Charset.forName("MS932"))) {
-			input.filter(SdcList::test)
+			input//.filter(SdcList::test)
 				.map(SdcList::parse)
+				.filter(Objects::nonNull)
 				.forEach(b -> {
 					final SdcListIsp isp = new SdcListIsp(b.getName(), b.getType());
 

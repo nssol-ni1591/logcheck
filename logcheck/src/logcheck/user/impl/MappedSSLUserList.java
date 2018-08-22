@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -101,8 +102,9 @@ public class MappedSSLUserList
 
 		try (Stream<String> input = Files.lines(Paths.get(file), Charset.forName("utf-8"))) {
 
-			input.filter(SSLIndexBean::test)
-				.map(SSLIndexBean::parse)
+			input//.filter(SSLIndexUserList::test)
+				.map(SSLIndexUserList::parse)
+				.filter(Objects::nonNull)
 				.filter(b -> b.getUserId().startsWith("Z"))	// index.txtの読み込みなので、SQLとは別の集合
 				.forEach(b -> {
 					UserListBean bean = this.get(b.getUserId());

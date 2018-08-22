@@ -3,6 +3,7 @@ package logcheck;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,8 +32,9 @@ public class Checker19 extends AbstractChecker<ProjList<ProjListBean>> {
 	@Override
 	public ProjList<ProjListBean> call(Stream<String> stream) {
 		stream//.parallel()		// parallel()を使用するとOutOfMemory例外が発生する　=> なぜ?
-				.filter(AccessLog::test)
+				//.filter(AccessLog::test)
 				.map(AccessLog::parse)
+				.filter(Objects::nonNull)
 				.filter(b -> SESS_START_PATTERN.matcher(b.getMsg()).matches())
 				.forEach(b -> {
 					String[] roles = b.getRoles();

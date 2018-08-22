@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -65,8 +66,9 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 	public KnownList load(String file) throws IOException {
 		log.log(Level.INFO, "start load ... file={0}", (file == null ? "null" : file));
 		try (Stream<String> input = Files.lines(Paths.get(file), Charset.forName("MS932"))) {
-			input.filter(TsvKnownList::test)
+			input//.filter(TsvKnownList::test)
 				.map(TsvKnownList::parse)
+				.filter(Objects::nonNull)
 				.forEach(b -> {
 					Optional<KnownListIsp> rc = this.stream()
 							.filter(i -> i.within(new NetAddr(b.getAddr())))
@@ -87,44 +89,28 @@ public class TsvKnownList extends LinkedHashSet<KnownListIsp> implements KnownLi
 	}
 
 	public static TsvKnownListBean parse(String s) {
-		String addr = null;
-		String name = null;
-		String country = null;
-
-		Pattern p = Pattern.compile(TsvKnownList.PATTERN);
-		Matcher m = p.matcher("   " + s);		// 1文字目が欠ける対策
-		if (m.find(1)) {
-			addr = m.group(1);
-		}
-		if (m.find(2)) {
-			name = m.group(2);
-			if (name.length() > 0 && name.charAt(0) == '\"') {
-				name = name.substring(1);
-			}
-			if (name.length() > 0 && name.charAt(name.length() - 1) == '\"') {
-				name = name.substring(0, name.length() - 1);
-			}
-		}
-		if (m.find(3)) {
-			country = m.group(3);
-		}
-		return new TsvKnownListBean(addr, name, country);
-	}
-	private static boolean test(String s) {
 		if (s.startsWith("#")) {
-			return false;
-		}
-		if (s.isEmpty()) {
-			return false;
+			return null;
 		}
 
 		Pattern p = Pattern.compile(PATTERN);
 		Matcher m = p.matcher(s);
-		boolean rc = m.find();
-		if (!rc) {
+		if (!m.find()) {
 			Logger.getLogger(TsvKnownList.class.getName()).log(Level.WARNING, "(既知ISP_IPアドレス): s=\"{0}\"", s);
+			return null;
 		}
-		return rc;
+
+		String addr = m.group(1);
+		String name = m.group(2);
+		String country = m.group(3);
+
+		if (name.length() > 0 && name.charAt(0) == '\"') {
+			name = name.substring(1);
+		}
+		if (name.length() > 0 && name.charAt(name.length() - 1) == '\"') {
+			name = name.substring(0, name.length() - 1);
+		}
+		return new TsvKnownListBean(addr, name, country);
 	}
 
 	@Override

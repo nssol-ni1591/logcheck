@@ -92,12 +92,15 @@ public class AccessLogSummary extends Summary<String> implements Comparable<Acce
 		if (rc != 0) {
 			return rc;
 		}
-		rc = Objects.compare(addr, sum.getAddr(), (o1, o2) -> o1.compareTo(o2));
-		if (rc != 0) {
-			return rc;
-		}
+		return Objects.compare(addr, sum.getAddr(), (o1, o2) -> o1.compareTo(o2));
+		/*
+		rc = Objects.compare(addr, sum.getAddr(), (o1, o2) -> o1.compareTo(o2))
+		i-f (rc != 0) {-
+			return rc
+		}-
+		*/
 		//ispにはaddrに一致するISP情報が設定されているはずなのでispの比較は不要
-		return 0;
+		//return 0
 		/*
 		if- (isp == null) {	-
 			return sum.getIsp() == null ? 0 : 1;	-
