@@ -90,7 +90,7 @@ public class TsvSiteListTest {
 		NetAddr addr = new NetAddr("192.168.0.1/24");
 		isp2.addAddress(addr);
 		assertTrue("within 192.168.0.1/24", isp2.within(addr));
-		assertEquals("compareTo isp", isp2.compareTo(isp));
-
+		assertEquals("compareTo isp", 0, isp2.compareTo(isp));
 	}
+
 }
