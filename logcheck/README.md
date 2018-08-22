@@ -1,6 +1,7 @@
 [2018/08/17]
 ・CheckerMainTest2をCheckerMainGroupingTestに変更
 　どうやらSonarQubeはxxxTestでないとテストモジュールと認識しないようだ？
+・カバレッジ対応
 [2018/08/07]
 ・testデータ追加に伴うJunit実行結果の値を修正
 ・equalsはnullどうし比較はtrueになるのでnullとの比較はfalseとした
