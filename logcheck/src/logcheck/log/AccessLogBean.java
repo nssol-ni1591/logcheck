@@ -38,9 +38,7 @@ public class AccessLogBean {
 	}
 	public String[] getRoles() {
 		if (roles == null || roles.isEmpty()) {
-			return new String[] {
-				// nothing to do
-			};
+			return new String[] { "" };
 		}
 		ArrayList<String> list = new ArrayList<>();
 		Arrays.stream(roles.split(","))
