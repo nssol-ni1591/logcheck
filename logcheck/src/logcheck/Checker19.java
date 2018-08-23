@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Objects;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,7 +21,6 @@ import logcheck.util.WeldWrapper;
  */
 public class Checker19 extends AbstractChecker<ProjList<ProjListBean>> {
 
-	@Inject private Logger log;
 	@Inject protected ProjList<ProjListBean> projlist;
 
 	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
@@ -42,7 +40,7 @@ public class Checker19 extends AbstractChecker<ProjList<ProjListBean>> {
 							ProjListBean proj = projlist.get(projId);
 							if (proj == null) {
 								projErrs.add(projId);
-								// ログに存在するがリストに存在しない場合： 不正な状態を検知することができるようにuserlistに追加する
+								// ログに存在するがリストに存在しない場合⇒不正な状態を検知することができるようにuserlistに追加する
 								proj = new ProjListBean(projId, "-1");
 								projlist.put(projId, proj);
 							}
@@ -50,9 +48,9 @@ public class Checker19 extends AbstractChecker<ProjList<ProjListBean>> {
 						})
 						.forEach(proj -> {
 							proj.update(b, SESS_START_PATTERN.toString());
-							log.config(String.format("proj=%s, user=%s", proj.getProjId(), b.getId()));
 						});
 				});
+				//flatMap(b -> Stream.of(b.getRoles()))を使うのも可能だが、update()でAccessLogBeanを渡すことができない
 		return projlist;
 	}
 
