@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Objects;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,7 +21,6 @@ import logcheck.util.WeldWrapper;
  */
 public class Checker19 extends AbstractChecker<ProjList<ProjListBean>> {
 
-	@Inject private Logger log;
 	@Inject protected ProjList<ProjListBean> projlist;
 
 	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
@@ -32,27 +30,27 @@ public class Checker19 extends AbstractChecker<ProjList<ProjListBean>> {
 	@Override
 	public ProjList<ProjListBean> call(Stream<String> stream) {
 		stream//.parallel()		// parallel()を使用するとOutOfMemory例外が発生する　=> なぜ?
-				//.filter(AccessLog::test)
 				.map(AccessLog::parse)
 				.filter(Objects::nonNull)
 				.filter(b -> SESS_START_PATTERN.matcher(b.getMsg()).matches())
 				.forEach(b -> {
 					String[] roles = b.getRoles();
-
-					for (String projId : roles) {
-						ProjListBean proj = projlist.get(projId);
-						if (proj == null) {
-							projErrs.add(projId);
-
-							// ログに存在するがリストに存在しない場合： 不正な状態を検知することができるようにuserlistに追加する
-							proj = new ProjListBean(projId, "-1");
-							projlist.put(projId, proj);
-						}
-
-						proj.update(b, SESS_START_PATTERN.toString());
-						log.config(String.format("proj=%s, user=%s", projId, b.getId()));
-					}
+					Stream.of(roles)
+						.map(projId -> {
+							ProjListBean proj = projlist.get(projId);
+							if (proj == null) {
+								projErrs.add(projId);
+								// ログに存在するがリストに存在しない場合⇒不正な状態を検知することができるようにuserlistに追加する
+								proj = new ProjListBean(projId, "-1");
+								projlist.put(projId, proj);
+							}
+							return proj;
+						})
+						.forEach(proj -> {
+							proj.update(b, SESS_START_PATTERN.toString());
+						});
 				});
+				//flatMap(b -> Stream.of(b.getRoles()))を使うのも可能だが、update()でAccessLogBeanを渡すことができない
 		return projlist;
 	}
 

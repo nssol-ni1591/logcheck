@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -85,11 +86,11 @@ public class AccessLog {
 		id = id.toUpperCase();
 
 		String role = array[2].substring(pos4 + 1, array[2].length() - 1);
-		StringBuilder msg = new StringBuilder(array[3]);
-		for (int ix = 4; ix < array.length; ix++) {
-			msg.append(" - ").append(array[ix]).toString();
-		}
-		return new AccessLogBean(date, host, ip, id, role, msg.toString());
+		String msg = Stream.iterate(3, n -> n + 1)
+			.limit(array.length - 3L)
+			.map(n -> array[n])
+			.collect(Collectors.joining(" - "));
+		return new AccessLogBean(date, host, ip, id, role, msg);
 	}
 
 }

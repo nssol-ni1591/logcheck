@@ -109,22 +109,16 @@ public class UserListBean implements Comparable<UserListBean> {
 		return sites.stream().anyMatch(site -> "0".equals(site.getUserDelFlag())) ? "0" : "1";
 	}
 	public String getFirstDate() {
-		String date = "9999";
-		for (UserListSite site : sites) {
-			if (site.getFirstDate().compareTo(date) < 0) {
-				date = site.getFirstDate();
-			}
-		}
-		return date;
+		return sites.stream()
+				.map(UserListSite::getFirstDate)
+				.min(String::compareTo)
+				.orElse("9999");
 	}
 	public String getLastDate() {
-		String date = "";
-		for (UserListSite site : sites) {
-			if (site.getLastDate().compareTo(date) > 0) {
-				date = site.getLastDate();
-			}
-		}
-		return date;
+		return sites.stream()
+				.map(UserListSite::getFirstDate)
+				.max(String::compareTo)
+				.orElse("0");
 	}
 	@Override
 	public String toString() {
