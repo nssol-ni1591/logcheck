@@ -46,9 +46,9 @@ public class Checker19 extends AbstractChecker<ProjList<ProjListBean>> {
 							}
 							return proj;
 						})
-						.forEach(proj -> {
-							proj.update(b, SESS_START_PATTERN.toString());
-						});
+						.forEach(proj ->
+							proj.update(b, SESS_START_PATTERN.toString())
+						);
 				});
 				//flatMap(b -> Stream.of(b.getRoles()))を使うのも可能だが、update()でAccessLogBeanを渡すことができない
 		return projlist;
