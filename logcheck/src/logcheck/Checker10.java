@@ -3,7 +3,7 @@ package logcheck;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -50,44 +50,43 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> {
 	private void failed(List<AccessLogSummary> list, IspList isp, AccessLogBean b) {
 		AccessLogSummary msg = null;
 
-		// 過去のfailedリストに同一の日時、クライアントアドレス、ユーザのログの有無を確認して、
-		// 有の場合はログのカウント数を更新、無の場合はfailedリストにAccessLogSummaryを追加する
 		if (list.isEmpty()) {
 			msg = new AccessLogSummary(b, b.getMsg(), isp);
 			list.add(msg);
+			return;
 		}
-		else {
-			String date = b.getDate().substring(0, 10);
-			for (int ix = list.size() - 1; ix >= 0; ix--) {
-				msg = list.get(ix);
-				if (!msg.getFirstDate().startsWith(date)) {
-					// ログの日付が変わった場合は検索を中止し、新たなAccessLogSummaryを要求する
-					break;
-				}
-				if (msg.getAddr().equals(b.getAddr()) && msg.getId().equals(b.getId())) {
-					// listに同じクライアントアドレス、ユーザからのログが登録されていた場合はカウントを更新する
-					msg.addCount();
-					// break
-					return;
-				}
+
+		// 過去のfailedリストに(日付、クライアントアドレス)が一致するログを検索する
+		String date = b.getDate().substring(0, 10);	// ログの発生日の取得
+		for (int ix = list.size() - 1; ix >= 0; ix--) {
+			msg = list.get(ix);
+			if (!msg.getFirstDate().startsWith(date)) {
+				// ログの日付が変わった場合は検索を中止し、空のAccessLogSummaryを追加する
+				break;
 			}
-			// 同一の日時、クライアントアドレス、ユーザのログが存在しない場合は、新たなAccessLogSummaryを追加する
-			msg = new AccessLogSummary(b, b.getMsg(), isp);
-			list.add(msg);
+			if (msg.getAddr().equals(b.getAddr()) && msg.getId().equals(b.getId())) {
+				// listに同じクライアントアドレスのログが登録されていた場合はカウントを更新する
+				msg.addCount();
+				return;
+			}
 		}
+		// 同一の日時andクライアントアドレのログが存在しない場合は、空のAccessLogSummaryを追加する
+		msg = new AccessLogSummary(b, b.getMsg(), isp);
+		list.add(msg);
 	}
+
 	// 成功メッセージの場合：
 	private void success(List<AccessLogSummary> list, AccessLogBean b) {
 		AccessLogSummary msg = null;
 
-		// failedリストから同一のアドレス、同一のユーザなどの情報が一致するAccessLogSummaryを探し、
-		// 一致する条件によってログイン失敗の原因を決定する. なお、listをさかのぼる範囲は同じ日付のログまで
-		String date = b.getDate().substring(0, 10);
+		// failedリストから(日付、アドレス、ユーザ)が一致するAccessLogSummaryを検索する
+		// ⇒登録済の場合：何もしない
+		// ⇒存在しない場合：一致する条件によってログイン失敗の原因を決定する
+		String date = b.getDate().substring(0, 10);	// ログの発生日の取得
 		for (int ix = list.size() - 1; ix >= 0; ix--) {
 			msg = list.get(ix);
 			if (!msg.getFirstDate().startsWith(date)) {
 				// listの日付が変わったのでさかのぼる処理をやめる
-				//break
 				return;
 			}
 
@@ -119,9 +118,8 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> {
 
 	@Override
 	public List<AccessLogSummary> call(Stream<String> stream) {
-		final List<AccessLogSummary> list = new LinkedList<>();
+		final List<AccessLogSummary> list = new ArrayList<>();
 		stream//.parallel()
-				//.filter(AccessLog::test)
 				.map(AccessLog::parse)
 				.filter(Objects::nonNull)
 				.filter(b -> Stream.of(AUTH_PATTERNS)
