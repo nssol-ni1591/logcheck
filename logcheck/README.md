@@ -1,6 +1,7 @@
 [2018/08/23]
 ・Stream.of()でrolesを出力している場合の出力件数の漏れ
 　Stream.of()に空の配列（例 new String[] {}）を指定した場合、Streamの生成は行わなれない。ので注意
+・for文の廃止（実装をStreamに変更）
 [2018/08/17]
 ・CheckerMainTest2をCheckerMainGroupingTestに変更
 　どうやらSonarQubeはxxxTestでないとテストモジュールと認識しないようだ？
