@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import logcheck.known.KnownListIsp;
 import logcheck.util.DB;
@@ -108,11 +109,9 @@ public class WhoisUtils {
 		KnownListIsp isp = new KnownListIsp(name, country);
 		if (netaddr != null) {
 			// 複数のアドレス範囲が指定されている場合の対処："x.x.x.x/x,y.y.y.y.y/y ..."
-			String[] cidrs = netaddr.split(",");
-			for (String cidr : cidrs) {
-				NetAddr net = new NetAddr(addr.toString(), cidr.trim());
-				isp.addAddress(net);
-			}
+			Stream.of(netaddr.split(","))
+				.map(c -> new NetAddr(addr.toString(), c.trim()))
+				.forEach(isp::addAddress);
 		}
 		return isp;
 	}

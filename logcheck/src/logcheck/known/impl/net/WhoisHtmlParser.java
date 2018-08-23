@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import logcheck.known.KnownListIsp;
 import logcheck.known.impl.AbstractWhoisServer;
@@ -49,14 +50,13 @@ public class WhoisHtmlParser extends AbstractWhoisServer {
 		super(url);
 	}
 
-	public String parse(Pattern[] ptns, String s) {
-		for (Pattern p : ptns) {
-			Matcher m = p.matcher(s);
-			if (m.matches()) {
-				return m.group(1);
-			}
-		}
-		return null;
+	public String parse(Pattern[] ptns, final String s) {
+		return Stream.of(ptns)
+				.map(p -> p.matcher(s))
+				.filter(Matcher::matches)
+				.findFirst()
+				.map(m -> m.group(1))
+				.orElse(null);
 	}
 
 	private String selectOrganization(String name, String tmp) {
