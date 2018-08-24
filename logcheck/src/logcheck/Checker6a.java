@@ -107,7 +107,7 @@ public class Checker6a extends AbstractChecker<Map<String, Map<IspList, Map<Stri
 				msgmap.get(INFO_SUMMARY_MSG) == null ? 0 : msgmap.get(INFO_SUMMARY_MSG).values().stream().mapToInt(Integer::intValue).sum()
 			).sum();
 
-			out.println(String.format("%s : %d / %d => %%d"
+			out.println(String.format("%s : %d / %d => %d%%"
 					, country
 					, (sum - sum1)
 					, sum
