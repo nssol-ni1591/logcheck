@@ -1,8 +1,6 @@
 package logcheck;
 
 import java.io.PrintWriter;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
