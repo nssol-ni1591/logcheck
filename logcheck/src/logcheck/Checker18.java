@@ -17,14 +17,31 @@ public class Checker18 extends Checker14 {
 
 	@Override
 	public void report(final PrintWriter out, final UserList<UserListBean> list) {
-		// アドレスを出力してはいけない。拠点ごとに回数を取得しているのに、アドレスを出力すると、回数は実際の値のアドレス数の倍になる
-		out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効"
-				+ "\t初回日時\t最終日時\t接続回数\t失効日時"
-				+ "\t接続回数集計\tプロジェクト削除集計\t拠点削除集計\tユーザ削除集計\t終了日時");
+		// 拠点ごとに接続回数を取得しているので、アドレスを出力してはいけない。
+		// アドレスを出力すると、接続回数は実際の値のアドレス数の倍になる
+		out.println(String.join("\t"
+				, "ユーザID"
+				, "国"
+				, "ISP/プロジェクトID"
+				, "拠点名"
+				, "プロジェクト削除"
+				, "拠点削除"
+				, "ユーザ削除"
+				, "有効"
+				, "初回日時"
+				, "最終日時"
+				, "接続回数"
+				, "失効日時"
+				, "接続回数集計"
+				, "プロジェクト削除集計"
+				, "拠点削除集計"
+				, "ユーザ削除集計"
+				, "終了日時"));
 		userlist.values().stream()
 			.forEach(user -> {
 				if (user.getSites().isEmpty()) {
-					out.println(Stream.of(user.getUserId()
+					out.println(String.join("\t"
+							, user.getUserId()
 							, "-"
 							, "-"
 							, "-"
@@ -41,12 +58,12 @@ public class Checker18 extends Checker14 {
 							, "-1"
 							, "-1"
 							, ""
-							)
-							.collect(Collectors.joining("\t")));
+							));
 				}
 				else {
 					user.getSites().forEach(site -> 
-						out.println(Stream.of(user.getUserId()
+						out.println(String.join("\t"
+								, user.getUserId()
 								, site.getCountry()
 								, site.getProjId()
 								, site.getSiteName()
@@ -63,8 +80,7 @@ public class Checker18 extends Checker14 {
 								, user.getSiteDelFlag()
 								, user.getUserDelFlag()
 								, site.getEndDate()
-								)
-								.collect(Collectors.joining("\t")))
+								))
 							);
 				}
 			});

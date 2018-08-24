@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.enterprise.util.AnnotationLiteral;
@@ -63,7 +62,6 @@ public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 	public Set<FwLogSummary> call(Stream<String> stream) {
 		final Set<FwLogSummary> list = new TreeSet<>();
 		stream//.parallel()			// parallelでは java.util.ConcurrentModificationException が発生
-				//.filter(FwLog::test)
 				.map(FwLog::parse)
 				.filter(Objects::nonNull)
 				.forEach(b -> {
@@ -88,9 +86,21 @@ public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 
 	@Override
 	public void report(final PrintWriter out, final Set<FwLogSummary> list) {
-		out.println("出現日時\t最終日時\t接続元識別\t接続元NW\t接続元IP\t接続先識別\t接続先NW\t接続先IP\t接続先ポート\tログ数");
+		out.println(String.join("\t"
+				, "出現日時"
+				, "最終日時"
+				, "接続元識別"
+				, "接続元NW"
+				, "接続元IP"
+				, "接続先識別"
+				, "接続先NW"
+				, "接続先IP"
+				, "接続先ポート"
+				, "ログ数"
+				));
 		list.forEach(s -> 
-			out.println(Stream.of(s.getFirstDate() == null ? "" : s.getFirstDate()
+			out.println(String.join("\t"
+					, s.getFirstDate() == null ? "" : s.getFirstDate()
 					, s.getLastDate()
 					, s.getSrcIsp().getCountry()
 					, s.getSrcIsp().getName()
@@ -100,8 +110,7 @@ public class Checker50 extends AbstractChecker<Set<FwLogSummary>> {
 					, s.getDstAddr().toString()
 					, String.valueOf(s.getDstPort())
 					, String.valueOf(s.getCount())
-					)
-					.collect(Collectors.joining("\t")))
+					))
 				);
 	}
 

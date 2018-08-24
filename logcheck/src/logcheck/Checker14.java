@@ -41,6 +41,22 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 	@Inject private Logger log;
 
+	private static final String HEADER =
+			String.join("\t"
+					, "ユーザID"
+					, "国"
+					, "ISP/プロジェクトID"
+					, "拠点名"
+					, "プロジェクト削除"
+					, "拠点削除"
+					, "ユーザ削除"
+					, "有効"
+					, "初回日時"
+					, "最終日時"
+					, "接続回数"
+					, "失効日時"
+					, "ユーザ回数");
+
 	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.knownlist.load(argv[0]);
 		this.sitelist.load(null);
@@ -85,7 +101,6 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 	@Override
 	public UserList<UserListBean> call(Stream<String> stream) {
 		stream//.parallel()		// parallel()を使用するとOutOfMemory例外が発生する　=> なぜ?
-				//.filter(AccessLog::test)
 				.map(AccessLog::parse)
 				.filter(Objects::nonNull)
 				.filter(b -> Stream.of(SESS_START_PATTERN)
@@ -123,8 +138,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 
 	@WithElaps
 	private void report1(final PrintWriter out, final UserList<UserListBean> list) {
-		// アドレスを出力してはいけない。拠点ごとに回数を取得しているのに、アドレスを出力すると、回数は実際の値のアドレス数の倍になる
-		out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t接続回数\t失効日時\tユーザ回数");
+		out.println(HEADER);
 		userlist.values().stream()
 			.forEach(user -> {
 				if (user.getSites().isEmpty()) {
@@ -167,8 +181,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 	}
 	@WithElaps
 	private void report2(final PrintWriter out, final UserList<UserListBean> list) {
-		// アドレスを出力してはいけない。拠点ごとに回数を取得しているのに、アドレスを出力すると、回数は実際の値のアドレス数の倍になる
-		out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t接続回数\t失効日時\tユーザ回数");
+		out.println(HEADER);
 		userlist.values().stream()
 			.forEach(user -> {
 				if (user.getSites().isEmpty()) {
@@ -211,8 +224,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 	}
 	@WithElaps
 	private void report3(final PrintWriter out, final UserList<UserListBean> list) {
-		// アドレスを出力してはいけない。拠点ごとに回数を取得しているのに、アドレスを出力すると、回数は実際の値のアドレス数の倍になる
-		out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t接続回数\t失効日時\tユーザ回数");
+		out.println(HEADER);
 		userlist.values().stream()
 			.forEach(user -> {
 				if (user.getSites().isEmpty()) {
@@ -253,8 +265,7 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 	}
 	@WithElaps
 	private void report4(final PrintWriter out, final UserList<UserListBean> list) {
-		// アドレスを出力してはいけない。拠点ごとに回数を取得しているのに、アドレスを出力すると、回数は実際の値のアドレス数の倍になる
-		out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t接続回数\t失効日時\tユーザ回数");
+		out.println(HEADER);
 		userlist.values().stream()
 			.forEach(user -> {
 				if (user.getSites().isEmpty()) {
@@ -295,6 +306,10 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 				}
 			});
 	}
+	/*
+	 * アドレスを出力してはいけない。拠点ごとに回数を取得しているのに、アドレスを出力すると、回数は実際の値のアドレス数の倍になる(non-Javadoc)
+	 * @see logcheck.AbstractChecker#report(java.io.PrintWriter, java.lang.Object)
+	 */
 	@Override
 	public void report(final PrintWriter out, final UserList<UserListBean> list) {
 		long elaps;
