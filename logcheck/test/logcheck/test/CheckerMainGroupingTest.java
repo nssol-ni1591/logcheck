@@ -19,6 +19,8 @@ import org.junit.Test;
 
 import logcheck.Checker12a;
 import logcheck.Checker13a;
+import logcheck.Checker14a;
+import logcheck.Checker18a;
 import logcheck.Checker3a;
 import logcheck.Checker3b;
 import logcheck.Checker3c;
@@ -181,6 +183,38 @@ public class CheckerMainGroupingTest {
 		// main（）実行とusageメッセージ出力
 		exit.expectSystemExitWithStatus(2);
 		Checker13a.main(KNOWNLIST);
+	}
+	@Test
+	public void test14a() throws IOException {
+		Checker14a application = container.select(Checker14a.class).get();
+		int rc = new WeldWrapper().exec(application, 2, KNOWNLIST, SSLINDEX, ACCESSLOG);
+		assertEquals("CheckerMainTest#test14a ... NG", 0, rc);
+
+		BufferedReader br = new BufferedReader(new StringReader(stdout.getLog()));
+		long count = br.lines().count();
+		br.close();
+		System.out.println("count=" + count);
+		assertEquals("The number output line", 3514, count);
+		
+		// main（）実行とusageメッセージ出力
+		exit.expectSystemExitWithStatus(2);
+		Checker14a.main(KNOWNLIST);
+	}
+	@Test
+	public void test18a() throws IOException {
+		Checker18a application = container.select(Checker18a.class).get();
+		int rc = new WeldWrapper().exec(application, 2, KNOWNLIST, SSLINDEX, ACCESSLOG);
+		assertEquals("CheckerMainTest#test18a ... NG", 0, rc);
+
+		BufferedReader br = new BufferedReader(new StringReader(stdout.getLog()));
+		long count = br.lines().count();
+		br.close();
+		System.out.println("count=" + count);
+		assertEquals("The number output line", 3514, count);
+
+		// main（）実行とusageメッセージ出力
+		exit.expectSystemExitWithStatus(2);
+		Checker18a.main(KNOWNLIST);
 	}
 
 }

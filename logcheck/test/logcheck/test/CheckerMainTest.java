@@ -240,6 +240,7 @@ public class CheckerMainTest {
 	}
 	@Test
 	public void test14() throws IOException {
+		stdout.mute();
 		Checker14 application = container.select(Checker14.class, new AnnotationLiteral<UseChecker14>(){
 			private static final long serialVersionUID = 1L;
 		}).get();

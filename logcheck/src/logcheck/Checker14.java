@@ -2,19 +2,16 @@ package logcheck;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.sql.SQLException;
 import java.text.Normalizer;
 import java.util.Objects;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 
 import logcheck.annotations.UseChecker14;
-import logcheck.annotations.WithElaps;
 import logcheck.known.KnownList;
 import logcheck.known.KnownListIsp;
 import logcheck.log.AccessLog;
@@ -136,220 +133,18 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 		return userlist;
 	}
 
-	@WithElaps
-	private void report1(final PrintWriter out, final UserList<UserListBean> list) {
-		out.println(HEADER);
-		userlist.values().stream()
-			.forEach(user -> {
-				if (user.getSites().isEmpty()) {
-					out.println(Stream.of(user.getUserId()
-							, "-"
-							, "-"
-							, "-"
-							, "-1"
-							, "-1"
-							, "-1"
-							, user.getValidFlag()
-							, ""
-							, ""
-							, "0"
-							, user.getRevoce()
-							,"0"
-							)
-							.collect(Collectors.joining("\t")));
-				}
-				else {
-					user.getSites().forEach(site ->
-						out.println(Stream.of(user.getUserId()
-								, site.getCountry()
-								, site.getProjId()
-								, site.getSiteName()
-								, site.getProjDelFlag()
-								, site.getSiteDelFlag()
-								, site.getUserDelFlag()
-								, user.getValidFlag()
-								, site.getFirstDate()
-								, site.getLastDate()
-								, String.valueOf(site.getCount())
-								, user.getRevoce()
-								, String.valueOf(user.getTotal())
-								)
-								.collect(Collectors.joining("\t")))
-							);
-				}
-			});
-	}
-	@WithElaps
-	private void report2(final PrintWriter out, final UserList<UserListBean> list) {
-		out.println(HEADER);
-		userlist.values().stream()
-			.forEach(user -> {
-				if (user.getSites().isEmpty()) {
-					out.println(String.join("\t"
-							, user.getUserId()
-							, "-"
-							, "-"
-							, "-"
-							, "-1"
-							, "-1"
-							, "-1"
-							, user.getValidFlag()
-							, ""
-							, ""
-							, "0"
-							, user.getRevoce()
-							,"0"
-							));
-				}
-				else {
-					user.getSites().forEach(site ->
-						out.println(String.join("\t"
-								, user.getUserId()
-								, site.getCountry()
-								, site.getProjId()
-								, site.getSiteName()
-								, site.getProjDelFlag()
-								, site.getSiteDelFlag()
-								, site.getUserDelFlag()
-								, user.getValidFlag()
-								, site.getFirstDate()
-								, site.getLastDate()
-								, String.valueOf(site.getCount())
-								, user.getRevoce()
-								, String.valueOf(user.getTotal())
-								))
-							);
-				}
-			});
-	}
-	@WithElaps
-	private void report3(final PrintWriter out, final UserList<UserListBean> list) {
-		out.println(HEADER);
-		userlist.values().stream()
-			.forEach(user -> {
-				if (user.getSites().isEmpty()) {
-					out.println(user.getUserId()
-							+ "\t" +  "-"
-							+ "\t" +  "-"
-							+ "\t" +  "-"
-							+ "\t" +  "-1"
-							+ "\t" +  "-1"
-							+ "\t" +  "-1"
-							+ "\t" +  user.getValidFlag()
-							+ "\t" +  ""
-							+ "\t" +  ""
-							+ "\t" +  "0"
-							+ "\t" +  user.getRevoce()
-							+ "\t" + "0"
-							);
-				}
-				else {
-					user.getSites().forEach(site ->
-						out.println(user.getUserId()
-								+ "\t" +  site.getCountry()
-								+ "\t" +  site.getProjId()
-								+ "\t" +  site.getSiteName()
-								+ "\t" +  site.getProjDelFlag()
-								+ "\t" +  site.getSiteDelFlag()
-								+ "\t" +  site.getUserDelFlag()
-								+ "\t" +  user.getValidFlag()
-								+ "\t" +  site.getFirstDate()
-								+ "\t" +  site.getLastDate()
-								+ "\t" +  site.getCount()
-								+ "\t" +  user.getRevoce()
-								+ "\t" +  user.getTotal()
-								)
-							);
-				}
-			});
-	}
-	@WithElaps
-	private void report4(final PrintWriter out, final UserList<UserListBean> list) {
-		out.println(HEADER);
-		userlist.values().stream()
-			.forEach(user -> {
-				if (user.getSites().isEmpty()) {
-					out.println(new StringBuilder()
-							.append("\t").append(user.getUserId())
-							.append("\t").append("-")
-							.append("\t").append("-")
-							.append("\t").append("-")
-							.append("\t").append("-1")
-							.append("\t").append("-1")
-							.append("\t").append("-1")
-							.append("\t").append(user.getValidFlag())
-							.append("\t").append("")
-							.append("\t").append("")
-							.append("\t").append("0")
-							.append("\t").append(user.getRevoce())
-							.append("\t").append("0")
-							);
-				}
-				else {
-					user.getSites().forEach(site ->
-						out.println(new StringBuilder()
-								.append("\t").append(user.getUserId())
-								.append("\t").append(site.getCountry())
-								.append("\t").append(site.getProjId())
-								.append("\t").append(site.getSiteName())
-								.append("\t").append(site.getProjDelFlag())
-								.append("\t").append(site.getSiteDelFlag())
-								.append("\t").append(site.getUserDelFlag())
-								.append("\t").append(user.getValidFlag())
-								.append("\t").append(site.getFirstDate())
-								.append("\t").append(site.getLastDate())
-								.append("\t").append(site.getCount())
-								.append("\t").append(user.getRevoce())
-								.append("\t").append(user.getTotal())
-								)
-							);
-				}
-			});
-	}
 	/*
-	 * アドレスを出力してはいけない。拠点ごとに回数を取得しているのに、アドレスを出力すると、回数は実際の値のアドレス数の倍になる(non-Javadoc)
+	 * 拠点ごとに接続回数を取得しているので、アドレスを出力してはいけない。
+	 * アドレスを出力すると、接続回数は実際の値のアドレス数の倍になる
 	 * @see logcheck.AbstractChecker#report(java.io.PrintWriter, java.lang.Object)
 	 */
 	@Override
 	public void report(final PrintWriter out, final UserList<UserListBean> list) {
-		long elaps;
-		PrintWriter nul;
-
-		nul = new PrintWriter(new StringWriter(100000));
-		elaps = System.currentTimeMillis();
-		report2(out, list);
-		System.err.println("dummy__: elapse=" + (System.currentTimeMillis() - elaps) + "ms");
-		nul.close();
-
-		nul = new PrintWriter(new StringWriter(100000));
-		elaps = System.currentTimeMillis();
-		report1(nul, list);
-		System.err.println("report1: elapse=" + (System.currentTimeMillis() - elaps) + "ms");
-		nul.close();
-
-		nul = new PrintWriter(new StringWriter(100000));
-		elaps = System.currentTimeMillis();
-		report1(nul, list);
-		System.err.println("report1: elapse=" + (System.currentTimeMillis() - elaps) + "ms");
-		nul.close();
-
-		nul = new PrintWriter(new StringWriter(100000));
-		elaps = System.currentTimeMillis();
-		report2(nul, list);
-		System.err.println("report2: elapse=" + (System.currentTimeMillis() - elaps) + "ms");
-		nul.close();
-
-		nul = new PrintWriter(new StringWriter(100000));
-		elaps = System.currentTimeMillis();
-		report3(nul, list);
-		System.err.println("report3: elapse=" + (System.currentTimeMillis() - elaps) + "ms");
-		nul.close();
-
-		nul = new PrintWriter(new StringWriter(100000));
-		elaps = System.currentTimeMillis();
-		report4(nul, list);
-		System.err.println("report4: elapse=" + (System.currentTimeMillis() - elaps) + "ms");
-		nul.close();
+		out.println(HEADER);
+		userlist.values().stream()
+			.map(OutWrapper::new)
+			.flatMap(OutWrapper::stream)
+			.forEach(out::println);
 	}
 
 	@Override
@@ -363,4 +158,86 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 		}, 2, argv);
 		System.exit(rc);
 	}
+
+	public class OutWrapper {
+
+		protected final UserListBean user;
+		protected final UserListSite site;
+
+		public OutWrapper(UserListBean user) {
+			this.user = user;
+			this.site = null;
+		}
+		public OutWrapper(UserListBean user, UserListSite site) {
+			this.user = user;
+			this.site = site;
+		}
+
+		String getUserId() {
+			return user.getUserId();
+		}
+		String getCountry() {
+			return site == null ? "-" : site.getCountry();
+		}
+		String getProjId() {
+			return site == null ? "-" : site.getProjId();
+		}
+		String getSiteName() {
+			return site == null ? "-" : site.getSiteName();
+		}
+		String getProjDelFlag() {
+			return site == null ? "-1" : site.getProjDelFlag();
+		}
+		String getSiteDelFlag() {
+			return site == null ? "-1" : site.getSiteDelFlag();
+		}
+		String getUserDelFlag() {
+			return site == null ? "-1" : site.getUserDelFlag();
+		}
+		String getValidFlag() {
+			return user.getValidFlag();
+		}
+		String getFirstDate() {
+			return site == null ? "" : site.getFirstDate();
+		}
+		String getLastDate() {
+			return site == null ? "" : site.getLastDate();
+		}
+		String getCount() {
+			return site == null ? "0" : String.valueOf(site.getCount());
+		}
+		String getRevoce() {
+			return user.getRevoce();
+		}
+		String getTotal() {
+			return site == null ? "0" : String.valueOf(user.getTotal());
+		}
+
+		// 本来ならばstaticにしたいが、innerのため定義できない
+		public Stream<OutWrapper> stream() {
+			if (user.getSites().isEmpty()) {
+				return Stream.of(this);
+			}
+			return user.getSites().stream().map(s -> new OutWrapper(user, s));
+		}
+
+		@Override
+		public String toString() {
+			return String.join("\t"
+					, getUserId()
+					, getCountry()
+					, getProjId()
+					, getSiteName()
+					, getProjDelFlag()
+					, getSiteDelFlag()
+					, getUserDelFlag()
+					, getValidFlag()
+					, getFirstDate()
+					, getLastDate()
+					, getCount()
+					, getRevoce()
+					, getTotal());
+		}
+	}
+
 }
