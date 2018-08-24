@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -46,9 +45,9 @@ public class Checker19 extends AbstractChecker<ProjList<ProjListBean>> {
 							}
 							return proj;
 						})
-						.forEach(proj -> {
-							proj.update(b, SESS_START_PATTERN.toString());
-						});
+						.forEach(proj ->
+							proj.update(b, SESS_START_PATTERN.toString())
+						);
 				});
 				//flatMap(b -> Stream.of(b.getRoles()))を使うのも可能だが、update()でAccessLogBeanを渡すことができない
 		return projlist;
@@ -56,30 +55,37 @@ public class Checker19 extends AbstractChecker<ProjList<ProjListBean>> {
 
 	@Override
 	public void report(final PrintWriter out, final ProjList<ProjListBean> list) {
-		// アドレスを出力してはいけない。拠点ごとに回数を取得しているのに、アドレスを出力すると、回数は実際の値のアドレス数の倍になる
-		out.println("プロジェクトID\tプロジェクト削除\tユーザID\t初回日時\t最終日時\t接続回数");
+		// 拠点ごとに接続回数を取得しているので、アドレスを出力してはいけない。
+		// アドレスを出力すると、接続回数は実際の値のアドレス数の倍になる
+		out.println(String.join("\t"
+				, "プロジェクトID"
+				, "プロジェクト削除"
+				, "ユーザID"
+				, "初回日時"
+				, "最終日時"
+				, "接続回数"));
 		projlist.values().stream()
 			.forEach(proj -> {
 				if (proj.getLogs().isEmpty()) {
-					out.println(Stream.of(proj.getProjId()
+					out.println(String.join("\t"
+							, proj.getProjId()
 							, proj.getValidFlag()
 							, "-"
 							, "-"
 							, "-"
 							, "0"
-							)
-							.collect(Collectors.joining("\t")));
+							));
 				}
 				else {
 					proj.getLogs().values().forEach(sum ->
-						out.println(Stream.of(proj.getProjId()
+						out.println(String.join("\t"
+								, proj.getProjId()
 								, proj.getValidFlag()
 								, sum.getId()
 								, sum.getFirstDate()
 								, sum.getLastDate()
 								, String.valueOf(sum.getCount())
-								)
-								.collect(Collectors.joining("\t")))
+								))
 							);
 				}
 			});

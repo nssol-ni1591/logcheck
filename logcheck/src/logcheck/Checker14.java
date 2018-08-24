@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.text.Normalizer;
 import java.util.Objects;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.enterprise.util.AnnotationLiteral;
@@ -38,6 +37,22 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 	@Inject protected UserList<UserListBean> userlist;
 
 	@Inject private Logger log;
+
+	private static final String HEADER =
+			String.join("\t"
+					, "ユーザID"
+					, "国"
+					, "ISP/プロジェクトID"
+					, "拠点名"
+					, "プロジェクト削除"
+					, "拠点削除"
+					, "ユーザ削除"
+					, "有効"
+					, "初回日時"
+					, "最終日時"
+					, "接続回数"
+					, "失効日時"
+					, "ユーザ回数");
 
 	public void init(String...argv) throws IOException, ClassNotFoundException, SQLException {
 		this.knownlist.load(argv[0]);
@@ -83,7 +98,6 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 	@Override
 	public UserList<UserListBean> call(Stream<String> stream) {
 		stream//.parallel()		// parallel()を使用するとOutOfMemory例外が発生する　=> なぜ?
-				//.filter(AccessLog::test)
 				.map(AccessLog::parse)
 				.filter(Objects::nonNull)
 				.filter(b -> Stream.of(SESS_START_PATTERN)
@@ -119,49 +133,18 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 		return userlist;
 	}
 
+	/*
+	 * 拠点ごとに接続回数を取得しているので、アドレスを出力してはいけない。
+	 * アドレスを出力すると、接続回数は実際の値のアドレス数の倍になる
+	 * @see logcheck.AbstractChecker#report(java.io.PrintWriter, java.lang.Object)
+	 */
 	@Override
 	public void report(final PrintWriter out, final UserList<UserListBean> list) {
-		// アドレスを出力してはいけない。拠点ごとに回数を取得しているのに、アドレスを出力すると、回数は実際の値のアドレス数の倍になる
-		out.println("ユーザID\t国\tISP/プロジェクトID\t拠点名\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t接続回数\t失効日時\tユーザ回数");
+		out.println(HEADER);
 		userlist.values().stream()
-			.forEach(user -> {
-				if (user.getSites().isEmpty()) {
-					out.println(Stream.of(user.getUserId()
-							, "-"
-							, "-"
-							, "-"
-							, "-1"
-							, "-1"
-							, "-1"
-							, user.getValidFlag()
-							, ""
-							, ""
-							, "0"
-							, user.getRevoce()
-							,"0"
-							)
-							.collect(Collectors.joining("\t")));
-				}
-				else {
-					user.getSites().forEach(site ->
-						out.println(Stream.of(user.getUserId()
-								, site.getCountry()
-								, site.getProjId()
-								, site.getSiteName()
-								, site.getProjDelFlag()
-								, site.getSiteDelFlag()
-								, site.getUserDelFlag()
-								, user.getValidFlag()
-								, site.getFirstDate()
-								, site.getLastDate()
-								, String.valueOf(site.getCount())
-								, user.getRevoce()
-								, String.valueOf(user.getTotal())
-								)
-								.collect(Collectors.joining("\t")))
-							);
-				}
-			});
+			.map(OutWrapper::new)
+			.flatMap(OutWrapper::stream)
+			.forEach(out::println);
 	}
 
 	@Override
@@ -175,4 +158,86 @@ public class Checker14 extends AbstractChecker<UserList<UserListBean>> {
 		}, 2, argv);
 		System.exit(rc);
 	}
+
+	public class OutWrapper {
+
+		protected final UserListBean user;
+		protected final UserListSite site;
+
+		public OutWrapper(UserListBean user) {
+			this.user = user;
+			this.site = null;
+		}
+		public OutWrapper(UserListBean user, UserListSite site) {
+			this.user = user;
+			this.site = site;
+		}
+
+		String getUserId() {
+			return user.getUserId();
+		}
+		String getCountry() {
+			return site == null ? "-" : site.getCountry();
+		}
+		String getProjId() {
+			return site == null ? "-" : site.getProjId();
+		}
+		String getSiteName() {
+			return site == null ? "-" : site.getSiteName();
+		}
+		String getProjDelFlag() {
+			return site == null ? "-1" : site.getProjDelFlag();
+		}
+		String getSiteDelFlag() {
+			return site == null ? "-1" : site.getSiteDelFlag();
+		}
+		String getUserDelFlag() {
+			return site == null ? "-1" : site.getUserDelFlag();
+		}
+		String getValidFlag() {
+			return user.getValidFlag();
+		}
+		String getFirstDate() {
+			return site == null ? "" : site.getFirstDate();
+		}
+		String getLastDate() {
+			return site == null ? "" : site.getLastDate();
+		}
+		String getCount() {
+			return site == null ? "0" : String.valueOf(site.getCount());
+		}
+		String getRevoce() {
+			return user.getRevoce();
+		}
+		String getTotal() {
+			return site == null ? "0" : String.valueOf(user.getTotal());
+		}
+
+		// 本来ならばstaticにしたいが、innerのため定義できない
+		public Stream<OutWrapper> stream() {
+			if (user.getSites().isEmpty()) {
+				return Stream.of(this);
+			}
+			return user.getSites().stream().map(s -> new OutWrapper(user, s));
+		}
+
+		@Override
+		public String toString() {
+			return String.join("\t"
+					, getUserId()
+					, getCountry()
+					, getProjId()
+					, getSiteName()
+					, getProjDelFlag()
+					, getSiteDelFlag()
+					, getUserDelFlag()
+					, getValidFlag()
+					, getFirstDate()
+					, getLastDate()
+					, getCount()
+					, getRevoce()
+					, getTotal());
+		}
+	}
+
 }

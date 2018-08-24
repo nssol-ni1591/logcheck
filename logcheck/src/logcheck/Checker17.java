@@ -1,8 +1,6 @@
 package logcheck;
 
 import java.io.PrintWriter;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import logcheck.user.UserList;
 import logcheck.user.UserListBean;
@@ -18,12 +16,23 @@ public class Checker17 extends Checker14 {
 
 	@Override
 	public void report(final PrintWriter out, final UserList<UserListBean> list) {
-		// アドレスを出力してはいけない。拠点ごとに回数を取得しているのに、アドレスを出力すると、回数は実際の値のアドレス数の倍になる
-		out.println("ユーザID\tプロジェクト削除\t拠点削除\tユーザ削除\t有効\t初回日時\t最終日時\t失効日時\tユーザ回数");
+		// 拠点ごとに接続回数を取得しているので、アドレスを出力してはいけない。
+		// アドレスを出力すると、接続回数は実際の値のアドレス数の倍になる
+		out.println(String.join("\t"
+				, "ユーザID"
+				, "プロジェクト削除"
+				, "拠点削除"
+				, "ユーザ削除"
+				, "有効"
+				, "初回日時"
+				, "最終日時"
+				, "失効日時"
+				, "ユーザ回数"));
 		userlist.values().stream()
 			.forEach(user -> {
 				if (user.getSites().isEmpty()) {
-					out.println(Stream.of(user.getUserId()
+					out.println(String.join("\t"
+							, user.getUserId()
 							, "-1"
 							, "-1"
 							, "-1"
@@ -32,11 +41,11 @@ public class Checker17 extends Checker14 {
 							, ""
 							, user.getRevoce()
 							, "0"
-							)
-							.collect(Collectors.joining("\t")));
+							));
 				}
 				else {
-					out.println(Stream.of(user.getUserId()
+					out.println(String.join("\t"
+							, user.getUserId()
 							, user.getProjDelFlag()
 							, user.getSiteDelFlag()
 							, user.getUserDelFlag()
@@ -45,8 +54,7 @@ public class Checker17 extends Checker14 {
 							, user.getLastDate()
 							, user.getRevoce()
 							, String.valueOf(user.getTotal())
-							)
-							.collect(Collectors.joining("\t")));
+							));
 				}
 			});
 	}

@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -32,9 +30,21 @@ public class Checker52 extends Checker50 {
 
 	@Override
 	public void report(final PrintWriter out, final Set<FwLogSummary> list) {
-		out.println("出現日時\t最終日時\t接続元識別\t接続元NW\t接続元IP\t接続先識別\t接続先NW\t接続先IP\t接続先ポート\tログ数");
+		out.println(String.join("\t"
+				, "出現日時"
+				, "最終日時"
+				, "接続元識別"
+				, "接続元NW"
+				, "接続元IP"
+				, "接続先識別"
+				, "接続先NW"
+				, "接続先IP"
+				, "接続先ポート"
+				, "ログ数"
+				));
 		list.forEach(s -> 
-			out.println(Stream.of(s.getFirstDate() == null ? "" : s.getFirstDate()
+			out.println(String.join("\t"
+					, s.getFirstDate() == null ? "" : s.getFirstDate()
 					, s.getLastDate()
 					, s.getSrcIsp().getCountry()
 					, s.getSrcIsp().getName()
@@ -44,8 +54,7 @@ public class Checker52 extends Checker50 {
 					, s.getDstIsp().getHostname(s.getDstAddr())	//s.getDstAddr().toString()
 					, String.valueOf(s.getDstPort())
 					, String.valueOf(s.getCount())
-					)
-					.collect(Collectors.joining("\t")))
+					))
 				);
 	}
 

@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -156,9 +155,19 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> {
 
 	@Override
 	public void report(final PrintWriter out, final List<AccessLogSummary> list) {
-		out.println("出力日時\t国\tISP/プロジェクト\tアドレス\tユーザID\t参考ユーザID\tエラー回数\t想定される原因\t詳細");
+		out.println(String.join("\t"
+				, "出力日時"
+				, "国"
+				, "ISP/プロジェクト"
+				, "アドレス"
+				, "ユーザID"
+				, "参考ユーザID"
+				, "エラー回数"
+				, "想定される原因"
+				, "詳細"));
 		list.forEach(msg -> 
-			out.println(Stream.of(msg.getFirstDate()
+			out.println(String.join("\t"
+					, msg.getFirstDate()
 					, msg.getIsp().getCountry()
 					, msg.getIsp().getName()
 					, msg.getAddr().toString()
@@ -167,8 +176,7 @@ public class Checker10 extends AbstractChecker<List<AccessLogSummary>> {
 					, String.valueOf(msg.getCount())
 					, msg.getReason()
 					, msg.getDetail()
-					)
-					.collect(Collectors.joining("\t")))
+					))
 				);
 	}
 
