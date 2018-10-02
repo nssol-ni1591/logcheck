@@ -5,6 +5,11 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
+/*
+ * 設定方法：
+ * java.util.logging.config.class：設定クラス
+ * java.util.logging.config.file：設定ファイル
+ */
 public class LogConfig {
 
 	private static final Logger log = Logger.getLogger(LogConfig.class.getName());
