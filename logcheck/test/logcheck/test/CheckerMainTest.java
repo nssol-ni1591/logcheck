@@ -46,11 +46,14 @@ public class CheckerMainTest {
 
 	@BeforeClass
 	public static void beforeClass() {
+		// システムプロパティの設定は早めに行う
+		Env.init();
+
 		System.out.println("start CheckerMainTest ...");
 
 		weld = new Weld();
 		container = weld.initialize();
-		Env.init();
+		//Env.init()
 	}
 	@AfterClass
 	public static void afterClass() {

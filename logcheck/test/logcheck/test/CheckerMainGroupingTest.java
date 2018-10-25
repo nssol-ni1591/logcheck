@@ -48,11 +48,14 @@ public class CheckerMainGroupingTest {
 
 	@BeforeClass
 	public static void beforeClass() {
+		// システムプロパティの設定は早めに行う
+		Env.init();
 		System.out.println("start CheckerMainGroupingTest ...");
 
 		weld = new Weld();
 		container = weld.initialize();
-		Env.init();
+		// この位置ではloggingのプロパティが有効にならない
+		//Env.init()
 	}
 	@AfterClass
 	public static void afterClass() {
@@ -186,6 +189,7 @@ public class CheckerMainGroupingTest {
 	}
 	@Test
 	public void test14a() throws IOException {
+		stdout.mute();
 		Checker14a application = container.select(Checker14a.class).get();
 		int rc = new WeldWrapper().exec(application, 2, KNOWNLIST, SSLINDEX, ACCESSLOG);
 		assertEquals("CheckerMainTest#test14a ... NG", 0, rc);
@@ -195,7 +199,8 @@ public class CheckerMainGroupingTest {
 		br.close();
 		System.out.println("count=" + count);
 		assertEquals("The number output line", 3514, count);
-		
+		stdout.clearLog();
+
 		// main（）実行とusageメッセージ出力
 		exit.expectSystemExitWithStatus(2);
 		Checker14a.main(KNOWNLIST);

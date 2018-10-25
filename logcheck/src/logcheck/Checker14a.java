@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 
 import logcheck.Checker14.OutWrapper;
+import logcheck.annotations.WithElaps;
 import logcheck.known.KnownList;
 import logcheck.known.KnownListIsp;
 import logcheck.log.AccessLog;
@@ -135,6 +136,7 @@ public class Checker14a extends AbstractChecker<UserList<UserListBean>> {
 	}
 
 	// Stream.collectを使用する場合
+	@WithElaps
 	private void report1(final PrintWriter out, final UserList<UserListBean> list) {
 		out.println(HEADER);
 		userlist.values().stream()
@@ -178,6 +180,7 @@ public class Checker14a extends AbstractChecker<UserList<UserListBean>> {
 			});
 	}
 	// String.joinを使用する場合
+	@WithElaps
 	private void report2(final PrintWriter out, final UserList<UserListBean> list) {
 		out.println(HEADER);
 		userlist.values().stream()
@@ -221,6 +224,7 @@ public class Checker14a extends AbstractChecker<UserList<UserListBean>> {
 			});
 	}
 	// String連結を使用する場合
+	@WithElaps
 	private void report3(final PrintWriter out, final UserList<UserListBean> list) {
 		out.println(HEADER);
 		userlist.values().stream()
@@ -262,6 +266,7 @@ public class Checker14a extends AbstractChecker<UserList<UserListBean>> {
 			});
 	}
 	// StringBuilderを使用する場合
+	@WithElaps
 	private void report4(final PrintWriter out, final UserList<UserListBean> list) {
 		out.println(HEADER);
 		userlist.values().stream()
@@ -305,6 +310,7 @@ public class Checker14a extends AbstractChecker<UserList<UserListBean>> {
 			});
 	}
 	// Wrapperを使用する場合
+	@WithElaps
 	private void report5(final PrintWriter out, final UserList<UserListBean> list) {
 		Checker14 c14 = new Checker14();
 		out.println(HEADER);
@@ -320,6 +326,7 @@ public class Checker14a extends AbstractChecker<UserList<UserListBean>> {
 			});
 	}
 	// Wrapperを使用する場合
+	@WithElaps
 	private void report6(final PrintWriter out, final UserList<UserListBean> list) {
 		Checker14 c14 = new Checker14();
 		out.println(HEADER);
@@ -332,6 +339,7 @@ public class Checker14a extends AbstractChecker<UserList<UserListBean>> {
 			.forEach(out::println);
 	}
 	// Wrapperを使用する場合：条件判断をWrapper側で行う
+	@WithElaps
 	private void report7(final PrintWriter out, final UserList<UserListBean> list) {
 		Checker14 c14 = new Checker14();
 		out.println(HEADER);

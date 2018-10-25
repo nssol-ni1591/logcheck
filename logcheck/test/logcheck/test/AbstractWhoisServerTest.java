@@ -25,8 +25,9 @@ public class AbstractWhoisServerTest {
 
 	@BeforeClass
 	public static void beforeClass() {
-		System.out.println("start AbstractWhoisServerTest ...");
+		// システムプロパティの設定は早めに行う
 		Env.init();
+		System.out.println("start AbstractWhoisServerTest ...");
 	}
 	@AfterClass
 	public static void afterClass() {

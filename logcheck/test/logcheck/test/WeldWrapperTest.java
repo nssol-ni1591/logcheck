@@ -33,9 +33,9 @@ public class WeldWrapperTest {
 	 */
 	@BeforeClass
 	public static void beforeClass() throws Exception {
-		System.out.println("start WeldWrapperTest ...");
+		// システムプロパティの設定は早めに行う
 		Env.init();
-
+		System.out.println("start WeldWrapperTest ...");
 	}
 	@AfterClass
 	public static void afterClass() throws Exception {
